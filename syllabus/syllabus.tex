@@ -1,0 +1,359 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[colorlinks=true, linkcolor=noteblue, urlcolor=noteblue]{hyperref}
+\usepackage{soul}
+
+\definecolor{sbgreen}{HTML}{00704A}
+\definecolor{warnred}{HTML}{CC0000}
+\definecolor{noteblue}{HTML}{2060A0}
+
+% Items still to be decided are highlighted; search the source for \tbd.
+\newcommand{\tbd}[1]{\sethlcolor{yellow}\hl{#1}}
+\newcommand{\wk}[1]{\multicolumn{6}{l}{\rule{0pt}{3.2ex}\textbf{\textcolor{sbgreen}{#1}}}\\}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\setlist{itemsep=0.15em, topsep=0.3em}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+
+\title{\textbf{SHBI-GB 7342: Applied Causal Inference for Business}\\[0.3em]
+\large Syllabus (draft, version 2)}
+\author{Zhikun Lu}
+\date{Fall 2026}
+
+\begin{document}
+\maketitle
+\vspace{-1.5em}
+
+\begin{center}
+\small
+\begin{tabular}{ll}
+\toprule
+Meetings & 12 meetings of 180 minutes over seven weeks: two a week in Weeks 1--5, \\
+ & one a week in Weeks 6 and 7 \\
+Each meeting & Two 50-minute lectures (blocks A and B) and a 60-minute lab (block C) \\
+Days and time & \tbd{to be announced} \\
+Room & \tbd{to be announced} \\
+Instructor & Zhikun Lu \quad \tbd{email; office hours} \\
+Teaching assistant & \tbd{name; office hours} \\
+Companion text & \emph{Applied Causal Machine Learning for Business} \tbd{(chapter mapping to be added)} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{What this course is about}
+
+This is a course in causal inference for business in the age of AI. AI now makes prediction and
+code cheap. What remains scarce is knowing what a number means for a decision: which comparison
+identifies the effect you need, and whether the analysis that produced it can be trusted. The
+course therefore trains two skills above all others: \emph{identification} (where does the
+counterfactual come from, and what must be true for it to be right?) and \emph{verification} (how
+do you check an estimate, a report or a piece of code, including code you did not write?).
+
+Earlier courses taught models that predict. This course asks what will happen \emph{if we act}:
+whether a coupon causes purchases, which customers to target and at what cost, whether a price
+rise pays, whether a staffing change was worth rolling out. Each of these needs a counterfactual:
+what would have happened without the action. The course is organised around where that
+counterfactual comes from. As in the companion text, experimental identification comes first and
+observational methods follow.
+
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Meetings} & \textbf{The comparison comes from} & \textbf{What may be unobserved} \\
+\midrule
+1--6 & a randomised control group & anything \\
+7--8 & units that look alike on measured variables & nothing relevant \\
+9 & an outside shifter of the treatment (an instrument) & confounders, within limits \\
+10--11 & untreated units observed over time & time-stable confounders \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three businesses carry the lectures: a coffee chain deciding who gets a coupon (Meetings 1--7), a
+hotel group deciding its rates (Meetings 8--9), and a retail chain rolling out a new staffing model
+(Meetings 10--11). Every meeting opens with a decision and the number that settles it (a break-even
+lift, an elasticity or a sales gain), and every method arrives because a simpler one failed to
+deliver that number.
+
+\textbf{Four roles of AI.} AI enters the course in four roles, each of which raises a causal
+question:
+\begin{enumerate}
+    \item \emph{AI as a tool for the analyst}: generating analysis code, and verifying it against a
+    known answer before trusting it.
+    \item \emph{AI as a source of data}: variables coded by a language model, and what their
+    measurement error does to an estimate.
+    \item \emph{AI as an intervention to evaluate}: testing an AI feature the way you would test any
+    other product change.
+    \item \emph{AI as the decision-maker}: evaluating, and learning, the rule an automated system
+    uses to decide who gets what.
+\end{enumerate}
+Lectures stay focused on causal reasoning. Hands-on work with language models and agents happens
+only in labs and projects.
+
+\section*{Learning objectives}
+
+By the end of the course you should be able to:
+\begin{enumerate}
+    \item state the counterfactual a business decision needs, and the break-even that decides it;
+    \item estimate average and conditional treatment effects from experiments, with honest uncertainty;
+    \item turn effect estimates into a targeting policy under costs, caps and budgets, and evaluate
+    that policy, including one chosen by an automated system, on data it was not chosen on;
+    \item estimate effects from observational data by adjustment, double machine learning,
+    instrumental variables and difference-in-differences;
+    \item tie each method's identifying assumption to specific facts about how the data were
+    generated, and say how wrong it would have to be to change the decision;
+    \item read a report that makes a causal claim, identify the comparison it rests on, and name
+    what else could produce the pattern, with the mechanism and the direction of the bias;
+    \item verify an analysis you did not write by hand, using tests against a known effect, and
+    explain how a model-coded variable can bias an estimate;
+    \item write a recommendation that says what was estimated, for whom, and what could overturn it.
+\end{enumerate}
+
+\textbf{Prerequisites.} \tbd{Part I of Applied ML for Business, or equivalent: regression,
+cross-validation, tree ensembles, and Python.}
+
+\section*{How a meeting runs}
+
+Each meeting has three blocks: A (minutes 0--50), B (60--110) and C (120--180), with ten-minute
+breaks between them. Blocks A and B are lectures. Block C is a sixty-minute lab of one of two kinds:
+\begin{itemize}
+    \item \textbf{Causal workshops} (Meetings 1, 4, 5, 8, 9 and 11): you predict, calculate by
+    hand, implement, perturb and interpret. The workshops in Meetings 1 and 4 are done without AI,
+    so that you build a hand-coded reference point first. In the other workshops the prediction
+    and hand-calculation steps are done without AI.
+    \item \textbf{LLM labs} (Meetings 2, 3, 6 and 10, plus a self-paced Lab 5): they build, in the
+    order the projects need them, the skills to generate, structure, connect and evaluate work
+    done with language models. See the weekly schedule.
+\end{itemize}
+In Meetings 6 and 10, block A is an exam (55 minutes of work). Meeting 7's block C is the project
+proposal presentations. Meeting 12 is the final presentations. The take-home cores of Meetings 6, 7
+and 10 (30--45 minutes each) are done after class.
+
+Case material is released in stages during class. Worksheets ask you to attempt a calculation before
+the slides explain it: commit to your answer in writing, even when you are unsure.
+
+\textbf{Reading and critique.} Six meetings (2, 3, 5, 7, 9 and 11) open block A with a short
+reading-and-critique exercise, about 15 minutes, done on paper without AI or devices. You read a
+one- or two-page case silently, write individual notes, discuss in pairs, then discuss as a class.
+The questions are always the same:
+\begin{enumerate}
+    \item What is the claim?
+    \item What causal question does the decision need?
+    \item Who is the comparison group?
+    \item What else could produce this pattern? Give the mechanism and the direction of the bias.
+    \item What would you do to find out?
+\end{enumerate}
+Early cases are constructed and contain one flaw, matched to a concept already taught. Later cases
+are excerpts of real industry reports with several flaws, which you must rank by how much they
+matter for the decision. Occasionally a report is sound, and saying so, with reasons, is the right
+answer.
+
+\textbf{Before each meeting} (Meetings 1--11) there is a short warm-up, 8--20 minutes, that revisits
+something you already know. Warm-ups never introduce new material.
+
+\textbf{After each meeting} there are technical notes. Section~1 of each set is the general result
+and is examinable; Section~2 is a worked example in a different business; Section~3 and anything
+marked \emph{Extension} are reference material for projects and are not examinable. Notes for
+Meetings 10 and 11 are released together after Meeting 11.
+
+\section*{Assessment}
+
+\begin{center}
+\small
+\begin{tabular}{lrL{8.6cm}}
+\toprule
+\textbf{Component} & \textbf{Points} & \textbf{Details} \\
+\midrule
+Exams & 40 & Exam I (Meeting 6) on Meetings 1--5; Exam II (Meeting 10) on Meetings 6--9. 55 minutes each. No AI. \tbd{Split between the two exams.} \tbd{Each exam may include one case in the reading-and-critique format.} \\
+Projects & 20 & P1--P4, 5 points each (below). Teams of 2 or 4. \\
+Final project & 20 & In pairs: slides and abstract, presentation and defence, report with required appendices. \tbd{Breakdown.} \\
+Project proposal & 5 & Presented in Meeting 7. \\
+Participation & 5 & Reading-and-critique discussions, worksheets, workshops, presentations and defence questions. \\
+Coding notebooks & 10 & Eleven notebooks, one per Meeting 1--11, each marked out of 10 and weighted equally: $10 \times \text{(total)}/110$. \\
+\midrule
+Total & 100 & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Examinable material.} The slides of the meetings each exam covers and Section~1 of their
+notes. Regression discontinuity is covered only in the notes and is not on Exam II.
+
+\subsection*{Projects}
+
+Four projects replace the applied assignments of earlier versions of the course. Each is a
+team deliverable (teams of 2 or 4) with substantial scaffolding. Detailed specifications are
+released separately with each project.
+
+\begin{description}[leftmargin=1.5em, style=nextline]
+\item[P1: Guided project (write once, then delegate)] Released after Meeting 2; due 72 hours after
+Meeting 4. An analysis of the email experiment data with traditional methods. You implement one core
+estimator by hand, then have a language model generate the full version and verify it with
+simulation tests against a known effect.
+\item[P2: Causal audit skill] Released after Meeting 3; due 48 hours before Meeting 8. You build a
+language-model skill that audits reports for causal flaws: it extracts claims, labels each claim's
+strength and type of evidence, diagnoses flaws with their mechanism and bias direction, and writes a
+ranked critique. The model access, decomposition, output format, case set and scoring script are
+provided; you control the flaw taxonomy, the contrastive examples and the diagnosis instructions.
+Graded mostly on your error analysis and a logged iteration record (hypothesis, one change,
+predicted effect, observed effect over repeated runs), and lightly on a hidden test set.
+\item[P3: LLM-only analysis] Released after Meeting 8, once P1 is complete; due 48 hours before
+Meeting 10. An observational analysis of job-training data with a known experimental benchmark and
+planted traps. All code must be generated by a language model through a provided logging tool, with
+no hand edits. You write plain-language test specifications and run a sabotage check: a
+deliberately introduced bug that your tests must catch.
+\item[P4: Causal decision agent] Released after Meeting 10; due 72 hours after Meeting 11. An
+experiment-review agent working on a simulated experimentation platform (experiment records,
+design documents, draft readouts) with planted issues such as sample-ratio mismatch, a switched
+primary metric, early stopping, a unit mismatch, interference, guardrail violations and underpowered
+nulls. Evaluated on detection precision and recall, false alarms on clean experiments, verdict
+accuracy, and comparison with a rule-based checklist.
+\end{description}
+
+\subsection*{Final project}
+
+You work in pairs on a causal question with business stakes, using a design from the course, and
+write an industry-style report. You may use AI however you choose, with disclosure (see the AI use
+policy). Regression discontinuity and synthetic control are acceptable designs, supported by the
+notes and instructor feedback. A two-page \emph{design menu}, released with the Meeting 3 prompt,
+maps kinds of data to designs, their assumptions and the meeting that teaches each.
+
+The report has two required appendices:
+\begin{enumerate}[label=(\alph*)]
+    \item \textbf{Review record.} Your causal audit skill's review of your own draft, with your
+    response to each flag (accepted and fixed, or rejected with reasons), alongside a human peer
+    review of the same draft.
+    \item \textbf{Alternative recommendations.} Wherever the decision agent's recommendation, or an
+    alternative of your own, differs from the path you chose, an explanation of which is right and
+    why.
+\end{enumerate}
+Agreement with the tools earns no credit by itself; the quality of your reasoning does.
+
+\begin{center}
+\small
+\begin{tabular}{L{7.6cm}L{7.4cm}}
+\toprule
+\textbf{Milestone} & \textbf{Due} \\
+\midrule
+Form pairs & Meeting 2 \\
+Question and data idea & 48 hours after Meeting 3 \\
+Proposal (at most two slides and a one-page proposal) & 72 hours before Meeting 7 \\
+Proposal presentation (2 min 30 s talk, 2 min feedback) & Meeting 7, block C \\
+Revised identification plan & 48 hours after Meeting 8 (IV or panel designs: 72 hours after Meeting 10) \\
+Final slides and a 150-word abstract & 24 hours before Meeting 12 \\
+Presentation and defence (8 min talk, 4 min defence) & Meeting 12 \\
+Draft report to your peer-review pair & 48 hours after Meeting 12 \\
+Peer review returned & 96 hours after Meeting 12 \\
+Final report with appendices, and code & Seven calendar days after Meeting 12 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Both partners speak in the final presentation and each answers a defence question. Every defence
+includes at least one question about the comparison group or the identifying assumption.
+
+\subsection*{Deadlines and workload}
+
+No week has more than one major deliverable (a project, the proposal, the final slides or the final
+report). No more than two graded deadlines fall in any 72-hour window; milestones that receive
+feedback but no separate marks (question and data idea, revised identification plan, draft
+exchange, peer review) do not count toward this limit. Notebooks are due 48 hours after their
+meeting, except Notebooks 6 and 10, due 72 hours after their meeting, and Notebook 7, due 96 hours
+after Meeting 7. Take-home cores are submitted with the meeting's notebook. \tbd{Late-work policy.}
+
+Outside class, expect 8--20 minutes per warm-up, 30--45 minutes per take-home core, 60--90 minutes
+for the self-paced Lab 5, and roughly 4--6 hours per team member for each project, plus reading,
+exam preparation and the final project. The heaviest weeks are Week 3 (Exam I and the proposal)
+and Week 5 (P3 and Exam II).
+
+\section*{AI use policy}
+
+\begin{description}[leftmargin=1.5em, style=nextline]
+\item[Required] In the LLM labs (Meetings 2, 3, 6 and 10, and Lab 5); in P2 and P4, which are
+built on language models; in P3, where all code must be generated by a language model through the
+provided logging tool; and in the delegation step of P1.
+\item[Allowed, with disclosure] In the final project, in any way you choose. Disclose which tools
+you used and for what, and keep the record needed for the appendices. You are responsible for
+every number and claim in your report. Also allowed in the implementation steps of the Meeting 5,
+8, 9 and 11 workshops and in the notebooks, unless a task is marked AI-free.
+\item[Prohibited] In the reading-and-critique exercises, which are done on paper; in the exams; in
+the Meeting 1 and Meeting 4 workshops and in the prediction and hand-calculation steps of the other
+workshops; and in the hand-implemented estimator of P1.
+\end{description}
+\tbd{School policy on AI use, and how it applies here.}
+
+\section*{Other policies}
+
+\tbd{Academic integrity, accommodations, attendance, and the late-work policy are to be added.}
+
+\newpage
+\section*{Weekly schedule}
+
+Due dates in the right-hand column assume that Weeks 1--5 meet on Monday and Thursday and that
+Weeks 6 and 7 meet on Thursday. They are \tbd{provisional until the meeting days are set}; the
+rules above govern. Critique cases open block A. ``No AI'' marks a lab done without AI.
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{L{0.4cm}L{2.7cm}L{4.0cm}L{2.5cm}L{2.9cm}L{2.5cm}}
+\toprule
+\textbf{\#} & \textbf{Title, case, warm-up} & \textbf{Lecture topics (A and B)} & \textbf{Critique case} & \textbf{Lab (C)} & \textbf{Due} \\
+\midrule
+\endhead
+\wk{Week 1 \quad \tbd{dates}}
+1 & \textbf{The Coupon and the Coin}\newline Coffee chain\newline \emph{Warm-up: row selection} & Potential outcomes; selection bias; randomisation; OLS on a dummy; well-defined interventions; coupon economics. & None & Workshop, no AI: arm means, label reversal, sampling variation; hand-coded reference estimator. & Notebook 1 (Wed) \\
+2 & \textbf{Real, Profitable, and Where It Holds}\newline Coffee chain\newline \emph{Warm-up: variance and standard error} & Standard errors; testing against a break-even; transport to a second campaign; CUPED; power and MDE; assignment units, clustering, interference. & Constructed, one flaw: selection bias (users of an AI feature vs non-users). & Lab 1: prompt specifications; generating the effect, CUPED and store-level SE estimators; simulation tests against a known effect. & Pairs formed. P1 released. Notebook 2 (Sat) \\
+\wk{Week 2 \quad \tbd{dates}}
+3 & \textbf{Coupon Whom?}\newline Coffee chain\newline \emph{Warm-up: fit and predict} & Conditional effects; overlap; S- and T-learners; effect modifiers vs prognostic variables; fit, choose, assess. & Constructed, one flaw: a lift tested against zero, not the break-even. & Lab 2: structured outputs; a model-coded effect modifier checked against gold labels; measurement error and conditional effects. & P2 released. Question and data idea (Wed). Notebook 3 (Wed) \\
+4 & \textbf{Honest Segments}\newline Coffee chain\newline \emph{Warm-up: depth-one regression tree} & Effect-based splits; committing a discovery; honest estimation on fresh data; the winner's curse; causal forests and their uncertainty. & None & Workshop, no AI: honest leaf estimation; discovery vs honest across seeds. & Notebook 4 (Sat). \textbf{P1} (Sun) \\
+\wk{Week 3 \quad \tbd{dates}}
+5 & \textbf{What Is the List Worth?}\newline Coffee chain\newline \emph{Warm-up: weighted contributions} & Gain curves; ranking vs calibration; the policy-value identity; row contributions; selection vs evaluation data; freezing a policy. Review for Exam I. & Constructed, one flaw: best segment found and estimated on the same data. & Workshop: policy-gain contributions; threshold perturbation; selection-sample vs held-out value. & Notebook 5 (Wed). \textbf{Proposal} (Fri) \\
+6 & \textbf{Exam I}, then \textbf{Caps, Budgets and Spending Risk}\newline Coffee chain\newline \emph{Warm-up: profit arithmetic} & Net value per customer; thresholds; contact caps; customer-specific costs; budgets and their shadow price; spending risk; noisy estimates. & Exam I \tbd{(may include a case)} & Lab 3: tool calling over experiment records and statistical functions. & Notebook 6 and targeting core (Sun) \\
+\wk{Week 4 \quad \tbd{dates}}
+7 & \textbf{When the Logs Must Answer}\newline Coffee chain\newline \emph{Warm-up: target population} & Confounding by a targeting rule; exchangeability; standardisation; good and bad controls; regression adjustment; propensity scores and IPW; overlap and trimming. & A sound report: an automated targeting rule evaluated on a held-out randomised sample. & Proposal presentations. & \textbf{P2} (Tue). Notebook 7 and adjustment core (Fri) \\
+8 & \textbf{Flexible Controls and Double Machine Learning}\newline Meridian Hotels\newline \emph{Warm-up: residuals and demeaning} & Residualisation; the partially linear model; why plug-in machine learning fails; cross-fitting; inference; overlap; sensitivity to hidden confounding. & None & Workshop: out-of-fold predictions; fold perturbations; four estimates vs the truth. & P3 released. Revised identification plan (Sat). Notebook 8 (Sat) \\
+\wk{Week 5 \quad \tbd{dates}}
+9 & \textbf{Rates the Hotel Did Not Choose}\newline Meridian Hotels\newline \emph{Warm-up: assignment vs receipt} & Intention to treat and first stage; compliance types; LATE and its four assumptions; exclusion violations; two-stage least squares; weak instruments; locality. Review for Exam II. & Real excerpt, several flaws to rank: self-selection, a post-treatment control, poor overlap. & Workshop: Wald ratio with a first-stage guard; first-stage perturbation; interval coverage. & \textbf{P3} (Tue). Notebook 9 (Wed) \\
+10 & \textbf{Exam II}, then \textbf{Before, After, and Everyone Else}\newline Retail chain\newline \emph{Warm-up: within-unit transformation} & The $2 \times 2$ difference-in-differences; parallel trends and trend sensitivity; store-level standard errors; the within transformation; two-way fixed effects; auditing a report. & Exam II \tbd{(may include a case)} & Lab 4: an agent loop for experiment review. Lab 5 (self-paced) released. & P4 released. Notebook 10 and panel core (Sun). IV/panel identification plan (Sun) \\
+\wk{Week 6 \quad \tbd{dates}}
+11 & \textbf{Staggered Rollouts and the Flagship Store}\newline Retail chain\newline \emph{Warm-up: event time} & Event time; staggered adoption and contaminated comparisons; group-time effects; event studies; synthetic control and its limits. & Real excerpt, several flaws to rank: a before-and-after rollout with selected stores and wrong-level standard errors. & Workshop: cohort vs never-treated contrast; already-treated control perturbation; two aggregations vs TWFE. & Notebook 11 (Sat). \textbf{P4} (Sun) \\
+\wk{Week 7 \quad \tbd{dates}}
+12 & \textbf{Final presentations} & Twelve pairs, three blocks of four. & None & None & \textbf{Final slides and abstract} (Wed). Draft to peer pair (Sat) \\
+\wk{After the course}
+& & & & & Peer review returned (Mon). \textbf{Final report} (Thu) \\
+\bottomrule
+\end{longtable}
+\end{center}
+
+\appendix
+\section*{Appendix: lab tooling}
+
+This appendix holds the details that change from year to year. They appear only here and in the lab
+materials.
+
+\begin{center}
+\small
+\begin{tabular}{L{5cm}L{9.5cm}}
+\toprule
+Language model and provider & \tbd{to be announced} \\
+Access, accounts and cost to students & \tbd{to be announced} \\
+Provided wrapper and logging tool & \tbd{to be announced} \\
+Structured-output library & \tbd{to be announced} \\
+Simulated experimentation platform & \tbd{to be announced} \\
+Computing environment & \tbd{to be announced} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}

@@ -1,0 +1,350 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\begin{document}
+\notesheader{5}{Evaluating Targeting Policies}{What is the list worth, measured on data it was not chosen on?}
+
+\begin{decision}
+A model produces a ranked list of customers to target. Before it is deployed, someone must say what the list is
+worth, in money, with a standard error, and whether it beats the list already in use. That number has to
+come from randomised data the list was not chosen on.
+\end{decision}
+
+\begin{goals}
+  \item define a policy's value and gain, and estimate them from a randomised sample by inverse-probability
+  weighting with the design's own probabilities;
+  \item read gain, profit and Qini curves, and summarise a ranking with RATE;
+  \item separate ranking from calibration, say which one a decision uses, and recalibrate a score by isotonic
+  regression without changing its ranking;
+  \item explain why a policy's value on the data that chose it is optimistic, and run the freeze-and-evaluate
+  protocol;
+  \item compare two policies with a paired standard error.
+\end{goals}
+
+%=====================================================================================
+\sectionone
+
+\subsection{Policies, values and gains}
+
+A \emph{policy} is a rule $\pi: x \mapsto \{0,1\}$. Let $R(d)$ be the reward a unit would generate under decision $d$, a
+potential outcome in money. The policy's \emph{value} and its \emph{gain} over treating no one are
+\[
+  V(\pi) = \E[R(\pi(X))], \qquad G(\pi) = V(\pi) - V(\mathbf{0}) .
+\]
+With margin $m$ per purchase, cost $c$ per redemption and $k$ per unit treated, $R(d) = (m - cd)Y(d) - kd$, and
+the net value of treating $x$ is $v(x) = \E[R(1) - R(0) \mid X = x] = m\tau(x) - c\mu_1(x) - k$.
+
+\begin{prop}{The policy-value identity}{pvi}
+$G(\pi) = \E[\pi(X)\,v(X)] = \Pr(\pi(X) = 1)\cdot\E[v(X) \mid \pi(X) = 1]$.
+\end{prop}
+\begin{proof}
+$R(\pi(X)) - R(0) = \pi(X)\{R(1) - R(0)\}$; take expectations, conditioning on $X$ first.
+\end{proof}
+
+The gain depends only on the net values of the units the policy selects, not on how well the score predicts
+outcomes. It is reach times average effect: a policy can raise its average by treating fewer units and still lose
+total value. Since $v(x)$ is never observed for anyone, a list's gain is a population average and must be
+estimated as one.
+
+\subsection{Estimating value from a randomised sample}
+
+\begin{prop}{Inverse-probability-weighted value}{ipw}
+Suppose $D \indep \{R(0), R(1)\} \mid X$ with known $e(x) \in (0,1)$, and let $p_\pi(X) = e(X)$ if $\pi(X) = 1$ and
+$1 - e(X)$ otherwise. Then
+\[
+  V(\pi) = \E\!\left[\frac{\ind{D = \pi(X)}}{p_\pi(X)}\,R\right], \qquad
+  G(\pi) = \E\!\left[\pi(X)\left\{\frac{DR}{e(X)} - \frac{(1-D)R}{1-e(X)}\right\}\right].
+\]
+\end{prop}
+\begin{proof}
+On $\{D = \pi(X)\}$, $R = R(\pi(X))$. Given $X$, independence gives
+$\E[\ind{D = \pi(X)}R(\pi(X)) \mid X] = p_\pi(X)\E[R(\pi(X)) \mid X]$; divide and average over $X$. The gain follows the
+same way from $\E[DR/e(X) \mid X] = \E[R(1) \mid X]$ and $\E[(1-D)R/(1-e(X)) \mid X] = \E[R(0) \mid X]$.
+\end{proof}
+
+The sample version averages \emph{row contributions}
+$g_i = \pi(X_i)\{D_iR_i/e(X_i) - (1-D_i)R_i/(1-e(X_i))\}$, with standard error $\text{sd}(g_i)/\sqrt n$. With $e$ known,
+the identity is exact and the only uncertainty is sampling. The weights must be the design's: in a 25\%-treated
+test a treated buyer counts $1/0.25 = 4$ times, not twice. Normalising the weights within each arm (the
+\emph{H\'ajek} version) is usually less variable.
+
+\begin{prop}{Variance of a row contribution}{var}
+$\Var(g_i) = \E\!\left[\pi(X)\left\{\dfrac{\E[R(1)^2 \mid X]}{e(X)} + \dfrac{\E[R(0)^2 \mid X]}{1-e(X)}\right\}\right] - G(\pi)^2$.
+\end{prop}
+\begin{proof}
+$D(1-D) = 0$ removes the cross term, so $g_i^2 = \pi(X_i)\{D_iR_i^2/e^2 + (1-D_i)R_i^2/(1-e)^2\}$; condition on $X$ and
+use independence, then subtract $G(\pi)^2$.
+\end{proof}
+
+The variance is driven by the second moments of the whole reward, not by the effect: a small effect on a large,
+noisy reward needs a large evaluation sample. Replacing $g_i$ with the doubly robust score (subtract a prediction
+of the reward fitted on other data, then weight the residual) keeps the expectation and can cut the variance
+sharply.
+
+\subsection{Gain, profit and Qini curves}
+
+Rank units by a score $s(x)$ and let $S_\phi$ be the top fraction $\phi$. The \emph{gain curve}
+$Q(\phi) = \phi\{\E[Y(1) \mid S_\phi] - \E[Y(0) \mid S_\phi]\}$ is the incremental outcome per unit of the population from
+treating the top $\phi$. Every ranking starts at $0$ and ends at the ATE; random ranking traces $\phi\cdot\ATE$. With
+four equal groups whose effects are $0.20, 0.10, 0.00, -0.10$ (ATE $0.05$), the best ranking gives $Q = 0.050, 0.075, 0.075,
+0.050$ at $\phi = \tfrac14, \tfrac12, \tfrac34, 1$: it rises, flattens and falls once it reaches the harmed group. A curve
+that does not start at $0$ and end at the ATE has been computed incorrectly. The \emph{Qini curve} is the same plot in counts.
+
+\begin{prop}{Estimate rates within a group, then scale}{rates}
+For a group $S$ of $n_S$ units with $n_{dS}$ in arm $d$ and arm totals $B_{dS}$, the estimator
+$n_S(B_{1S}/n_{1S} - B_{0S}/n_{0S})$ is unbiased, given arm sizes, for the group's incremental outcome. The raw count
+difference $B_{1S} - B_{0S}$ is not, unless the arms are equal, and even then it is half of it.
+\end{prop}
+\begin{proof}
+Each arm is a random sample of the group, so $B_{dS}/n_{dS}$ is unbiased for its mean; scale by $n_S$. The count
+difference has expectation $n_{1S}\mu_{1S} - n_{0S}\mu_{0S}$.
+\end{proof}
+
+Replace the outcome by net value and the curve becomes the \emph{profit curve} $P(\phi) = \phi\,\E[v(X) \mid S_\phi]$.
+
+\begin{prop}{Where the profit curve peaks}{peak}
+If units are ranked by their true net value $v$ (with a continuous distribution), $P$ is concave, its slope at $\phi$
+is the net value of the marginal unit, and it is maximised where that net value is zero.
+\end{prop}
+\begin{proof}
+$P(\phi) = \int_0^\phi v_{(u)}\,du$ with $v_{(u)}$ the net value at rank $u$, which decreases in $u$; its derivative
+$v_{(\phi)}$ is decreasing and crosses zero at the maximum.
+\end{proof}
+
+A gain curve in purchases can still be rising while the profit curve falls: the marginal unit adds purchases but
+costs more than they earn. Under a per-redemption cost, ranking by $\hatt$ is not ranking by $v$.
+
+\paragraph{RATE.} The \emph{targeting operator characteristic} $\text{TOC}(q) = \E[\tau(X) \mid s(X)$ in the top $q] - \ATE$
+measures how much better the top $q$ respond than average. The \emph{rank-weighted average treatment effect} is
+\[
+  \text{RATE} = \int_0^1 w(q)\,\text{TOC}(q)\,dq .
+\]
+With $w(q) = 1$ it is the AUTOC, which emphasises the top of the list; with $w(q) = q$ it is the Qini coefficient,
+which weighs the whole list. Under a ranking independent of the effects, TOC is zero at every $q$ and so is any
+RATE; a RATE significantly above zero on held-out data shows the score ranks better than random. Use AUTOC when
+only a small fraction will be treated and the Qini coefficient when a large fraction will. In practice the integral
+is approximated on a grid (for example, deciles).
+
+\subsection{Ranking is not calibration}
+
+\begin{prop}{Gain curves see only ranks}{ranks}
+For any strictly increasing $h$, the scores $s$ and $h \circ s$ give identical gain curves and RATEs. A threshold
+policy $\ind{s(x) > t}$ and its gain change with $h$.
+\end{prop}
+\begin{proof}
+The groups $S_\phi$ depend only on the order of scores, which $h$ preserves; which units exceed a fixed $t$ does
+change.
+\end{proof}
+
+Under a fixed budget (``treat the top $B$'') only the ranking matters. Under a break-even threshold
+(``treat if $\hatt(x) > k/m$'') the score must be calibrated: a model whose scores are twice the true effects ranks
+perfectly and sends to everyone with true effect above half the break-even. Check calibration with the test and
+group effects of Meeting~4.
+
+\paragraph{Recalibrating a score.} A miscalibrated score can be repaired without touching its ranking. On units not used
+to fit the score, let $\psi_i = D_iY_i/e(X_i) - (1 - D_i)Y_i/\{1 - e(X_i)\}$, or the doubly robust score $\phi_i$ of Meeting~3; either
+has conditional mean $\tau(X_i)$.
+
+\begin{prop}{Isotonic calibration}{iso}
+Let $s$ be a score fixed before the calibration sample, and let $\hat h$ minimise $\sum_i\{\psi_i - h(s(X_i))\}^2$ over
+non-decreasing functions $h$. Then $\hat h \circ s$ never reverses the order of $s$, and $\hat h$ is constant on blocks of
+consecutive scores, equal on each block to the block's average of $\psi_i$.
+\end{prop}
+\begin{proof}
+A non-decreasing $h$ cannot reverse an order. Take the blocks to be maximal runs of units with a common fitted value, so
+neighbouring blocks differ strictly. If a block's value differed from its average $\psi$, moving it slightly towards the
+average would keep the order with its neighbours and lower the sum of squares.
+\end{proof}
+
+Each block's value estimates that block's average effect, a group effect on data-chosen groups, so the cautions of
+Meeting~4 apply. By Result~\ref{prop:ranks}, gain curves and RATE are unchanged except for the order within tied blocks;
+what changes is the scale a threshold rule reads. The pool-adjacent-violators algorithm computes $\hat h$: start from each
+unit (or score bin) alone and merge any neighbour pair whose averages are out of order until none is. Fit the map on the
+selection sample of the protocol below, never on the evaluation sample.
+
+\subsection{Choosing and evaluating are different jobs}
+
+\begin{prop}{The chosen policy's selection value is optimistic}{optimistic}
+Let $\hat G_S(\pi_1), \dots, \hat G_S(\pi_K)$ be unbiased on a selection sample $S$ and $\hat\pi$ the maximiser. Then
+$\E[\hat G_S(\hat\pi)] \ge \E[G(\hat\pi)]$. On an evaluation sample $E$ independent of everything used to choose $\hat\pi$,
+$\E[\hat G_E(\hat\pi) \mid \hat\pi] = G(\hat\pi)$.
+\end{prop}
+\begin{proof}
+The first is the winner's curse (Meeting~4). For the second, $\hat\pi$ is fixed given data independent of $E$, so
+Result~\ref{prop:ipw} applies to it on $E$.
+\end{proof}
+
+Candidates are not only models: cut-offs, feature sets, budgets, and any adjustment after looking at results are
+all choices. An automated system that tunes its own cut-off is making one.
+
+\paragraph{The evaluation protocol.} (1) \emph{Split before fitting}: draw training, selection and evaluation samples
+from the experiment at random. (2) \emph{Fit} on training data. (3) \emph{Choose} among candidates on the selection
+sample. (4) \emph{Freeze}: record the chosen policy's decision for every evaluation unit, and the code, before
+evaluation outcomes are released. (5) \emph{Evaluate once} and report that number. A disappointing evaluation is a
+correct result, not a reason to return to step 3, which would turn the evaluation sample into a selection sample.
+
+\subsection{Comparing two policies}
+
+\begin{prop}{Paired comparison}{paired}
+For frozen policies $\pi_a, \pi_b$ evaluated on the same randomised sample, let $d_i = g_i(\pi_a) - g_i(\pi_b)$. Then
+$\bar d$ is unbiased for $G(\pi_a) - G(\pi_b)$ with standard error $\text{sd}(d_i)/\sqrt n$.
+\end{prop}
+\begin{proof}
+Linearity and Result~\ref{prop:ipw} for each policy; the $d_i$ are functions of independent rows.
+\end{proof}
+
+$d_i = 0$ wherever the two lists agree. Combining the two lists' separate SEs as if they were independent ignores
+the shared noise and, for overlapping lists, badly overstates the uncertainty of the difference.
+
+\begin{pitfall}[evaluation errors]
+Reporting a policy's value on the data that chose it; reusing $e = 0.5$ for a design that was not 50/50; drawing
+gain curves with different endpoints; comparing two lists with unpaired SEs; re-thresholding after seeing the
+evaluation result.
+\end{pitfall}
+
+%=====================================================================================
+\sectiontwo
+
+\paragraph{Setting.} QuickBite emails customers an offer to join QuickBite Plus (a delivery-fee subscription), with a
+small incentive. Each email and incentive costs ¥1.00; each additional subscription is worth ¥120 of margin.
+Break-even lift $= 1/120 = 0.0083$. An uplift model was trained and its cut-off chosen on last year's experiment. This
+year a 20{,}000-customer randomised test (50/50) is the evaluation sample.
+
+\paragraph{Step 1: by hand on ten rows.} Policy: treat the four highest scores.
+\begin{center}
+\begin{tabular}{ccccccc}
+\toprule
+Customer & Score & $\pi$ & $D$ & $Y$ & $D = \pi$? & $\pi \cdot (2D-1)\cdot 2Y$ \\
+\midrule
+1 & 0.09 & 1 & 1 & 1 & yes & 2 \\
+2 & 0.08 & 1 & 0 & 0 & no & 0 \\
+3 & 0.07 & 1 & 1 & 0 & yes & 0 \\
+4 & 0.06 & 1 & 0 & 0 & no & 0 \\
+5 & 0.04 & 0 & 1 & 1 & no & 0 \\
+6 & 0.03 & 0 & 0 & 1 & yes & 0 \\
+7 & 0.02 & 0 & 1 & 0 & no & 0 \\
+8 & 0.01 & 0 & 0 & 1 & yes & 0 \\
+9 & 0.00 & 0 & 1 & 0 & no & 0 \\
+10 & $-0.01$ & 0 & 0 & 0 & yes & 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Agreeing rows have outcomes $1, 0, 1, 1, 0$, so $\hat V(\pi) = 3/(10 \times 0.5) = 0.6$; the five controls give
+$\hat V(\mathbf 0) = 2/(10 \times 0.5) = 0.4$; gain $0.2$, equal to the average of the last column, $2/10$
+(Result~\ref{prop:ipw} in outcome units).
+
+\paragraph{Step 2: deciles on the full evaluation sample.} Deciles of 2{,}000 (1{,}000 per arm), effects by difference
+in means, scaled by Result~\ref{prop:rates}:
+\begin{center}
+\begin{tabular}{cccccc}
+\toprule
+Deciles & Effect of & Incremental & Net & Mean effect & TOC \\
+treated & this decile & sales & profit (¥) & of treated & \\
+\midrule
+1 & 0.050 & 100 & 10{,}000 & 0.0500 & 0.0365 \\
+2 & 0.035 & 170 & 16{,}400 & 0.0425 & 0.0290 \\
+3 & 0.025 & 220 & 20{,}400 & 0.0367 & 0.0232 \\
+4 & 0.015 & 250 & 22{,}000 & 0.0313 & 0.0178 \\
+5 & 0.010 & 270 & 22{,}400 & 0.0270 & 0.0135 \\
+6 & 0.005 & 280 & 21{,}600 & 0.0233 & 0.0098 \\
+7 & 0.002 & 284 & 20{,}080 & 0.0203 & 0.0068 \\
+8 & 0.000 & 284 & 18{,}080 & 0.0178 & 0.0043 \\
+9 & $-0.002$ & 280 & 15{,}600 & 0.0156 & 0.0021 \\
+10 & $-0.005$ & 270 & 12{,}400 & 0.0135 & 0.0000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Net profit is $120 \times$ incremental sales $- 1.00 \times 2{,}000 \times$ deciles treated. Emailing everyone nets ¥12{,}400;
+profit peaks at five deciles (¥22{,}400), where the marginal decile's effect ($0.010$) is the last above $0.0083$
+(Result~\ref{prop:peak}).
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=0.7\linewidth, height=5cm, xlabel={share of customers emailed}, ylabel={net profit (¥ thousand)},
+  xmin=0, xmax=1, ymin=0, ymax=25, axis lines=left, legend style={draw=none, font=\footnotesize, at={(0.98,0.05)}, anchor=south east}]
+\addplot[thick, sbgreen, mark=*, mark size=1.2pt] coordinates {(0,0) (0.1,10) (0.2,16.4) (0.3,20.4) (0.4,22) (0.5,22.4) (0.6,21.6) (0.7,20.08) (0.8,18.08) (0.9,15.6) (1,12.4)};
+\addplot[thick, dashed, extgrey] coordinates {(0,0) (1,12.4)};
+\legend{uplift model, random order}
+\end{axis}
+\end{tikzpicture}
+
+\small Figure 1. The profit curve peaks at five deciles; random order earns the straight line.
+\end{center}
+
+\paragraph{Step 3: RATE.} Averaging the TOC column over the ten grid points gives AUTOC $\approx 0.0143$; weighting each by
+$q$ gives a Qini-type RATE of $0.0046$. Both are positive: the score ranks better than random.
+
+\paragraph{Step 4: selection versus evaluation.} On last year's selection data the top half showed 340 incremental
+subscriptions per 20{,}000; on the evaluation sample, 270. The 70-subscription gap (about ¥8{,}400) is the optimism of
+Result~\ref{prop:optimistic}. Report ¥22{,}400.
+
+\paragraph{Step 5: calibration.} Had QuickBite used ``email if score $> 0.0083$'' with scores twice the true effects, it
+would email everyone with true effect above $0.0042$ (deciles 1--6) and earn ¥21{,}600, ¥800 less. Isotonic calibration on
+the selection sample (Result~\ref{prop:iso}) would have mapped each decile's score to an estimate of its own effect, about
+half the raw score, and restored the five-decile rule without refitting the model.
+
+\begin{exercise}[computation]
+QuickBite compares ``top 5 deciles'' with ``top 4 deciles'' on the same evaluation sample; the two lists differ only on
+decile 5, where 4\% of emailed and 3\% of non-emailed customers subscribed. With reward $R(d) = 120\,Y(d) - 1.00\,d$ and
+$e = 0.5$: (a) list the possible row contributions $d_i = g_i(\pi_a) - g_i(\pi_b)$ on decile-5 rows and their mean;
+(b) compute the paired SE of the per-customer difference over all $n = 20{,}000$ rows; (c) is the fifth decile worth
+adding?
+\end{exercise}
+\answer{(a) Emailed subscriber $2(120 - 1) = 238$; emailed non-subscriber $-2$; non-emailed subscriber $-240$; non-emailed
+non-subscriber $0$. Mean on decile-5 rows: $0.5(0.04 \times 238 - 0.96 \times 2) - 0.5(0.03 \times 240) = 0.20$, which is
+$120 \times 0.01 - 1$. (b) $\E[d_i^2]$ on decile-5 rows $= 0.5(0.04 \times 238^2 + 0.96 \times 4) + 0.5(0.03 \times 240^2) \approx 1{,}999$;
+over all rows $d_i = 0$ on 90\% of them, so $\text{sd}(d) \approx \sqrt{0.1 \times 1{,}999} = 14.1$ and
+$\SE = 14.1/\sqrt{20{,}000} = 0.10$ per customer. (c) The difference is $0.02$ per customer (¥400 in total), a fifth of
+one SE: not established. The reward's noise, not the effect, sets the SE (Result~\ref{prop:var}). Adding the decile is a
+judgement call; a larger test would be needed to settle it.}
+
+\begin{exercise}[computation]
+On the selection sample, six equal-sized score bins (lowest first) have mean scores $0.004, 0.008, 0.012, 0.016, 0.020, 0.024$ and
+mean transformed outcomes $\bar\psi = 0.002, 0.006, 0.004, 0.010, 0.018, 0.016$. (a) Run pool-adjacent-violators to get the
+calibrated value of each bin. (b) With break-even $0.0083$, which bins does ``email if score $> 0.0083$'' treat, before and after
+calibration? (c) Why fit the map on the selection sample rather than the evaluation sample?
+\end{exercise}
+\answer{(a) Bins 2 and 3 are out of order ($0.006 > 0.004$): pool to $0.005$. Bins 5 and 6 likewise: pool to $0.017$. Result:
+$0.002, 0.005, 0.005, 0.010, 0.017, 0.017$, now non-decreasing. (b) Raw scores treat bins 3--6; calibrated values treat bins 4--6.
+Bin 3's raw score $0.012$ overstates an effect of about $0.005$, below break-even. The order of the bins is unchanged. (c) The map
+is fitted to outcomes, so it is a choice; fitting it on the evaluation sample would make that sample a selection sample
+(Result~\ref{prop:optimistic}).}
+
+\begin{exercise}[judgement]
+After the evaluation, the team notices that moving the cut-off from five to four and a half deciles would raise the
+estimated profit by ¥300 and proposes to report the higher figure. What should they report, and what would justify
+using the new cut-off?
+\end{exercise}
+\answer{Report ¥22{,}400 for the frozen five-decile policy. Choosing the cut-off on the evaluation data makes it a selection
+sample (Result~\ref{prop:optimistic}); the ¥300 is partly noise. To adopt the new cut-off, freeze it and evaluate it on
+fresh data, such as next month's randomised holdout.}
+
+%=====================================================================================
+\sectionthree
+
+\begin{extension}[Doubly robust policy evaluation]
+Replace $R$ in the row contributions with the AIPW score: a prediction $\hat\mu_d(X)$ fitted on other data plus the weighted
+residual. The estimate stays unbiased with known $e$ and its variance falls by as much as the reward model explains.
+\end{extension}
+
+\begin{extension}[Inference for RATE and for learned policies]
+Yadlowsky et al.\ derive the sampling distribution of RATE estimators and justify a half-sample bootstrap. Imai and Li
+(2023) give variance estimators for individualised rules evaluated on experimental data, including rules learned by
+cross-fitting on the same experiment.
+\end{extension}
+
+\subsection*{Annotated reading}
+\begin{readinglist}
+\reading{van der Laan, Ulloa-P\'erez, Carone and Luedtke (2023), ``Causal isotonic calibration for heterogeneous treatment
+effects'', \emph{ICML}}{Isotonic calibration of effect scores on doubly robust outcomes}{Sections 1--3}{3}
+\reading{Yadlowsky, Fleming, Shah, Brunskill and Wager, ``Evaluating treatment prioritization rules via rank-weighted
+average treatment effects'', \emph{JASA} (2025)}{TOC, AUTOC and Qini as members of one family, with inference}{Sections
+1--3}{3}
+\reading{Imai and Li (2023), ``Experimental evaluation of individualized treatment rules'', \emph{JASA}}{Finite-sample
+evaluation of a rule on a randomised sample}{Sections 1--3}{3}
+\reading{Radcliffe (2007), ``Using control groups to target on predicted lift'', \emph{Direct Marketing Analytics
+Journal}}{The original Qini curve, from practice}{All}{1}
+\reading{Athey and Wager (2021), ``Policy learning with observational data'', \emph{Econometrica}}{Doubly robust value
+estimation as the basis for choosing policies (Meeting~6)}{Sections 1--2}{3}
+\end{readinglist}
+
+\end{document}

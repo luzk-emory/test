@@ -1,0 +1,440 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\begin{document}
+\notesheader{1}{Causal Basics}{Estimands, selection bias, randomisation and causal graphs}
+
+\begin{decision}
+A firm can send a coupon. It costs $c$ each time it is redeemed and each purchase earns margin $m$. The
+number that settles the decision is the coupon's effect on purchase probability, compared with a
+break-even that depends on who would have bought anyway. These notes are about how to get that effect out of
+data, and what can go wrong on the way.
+\end{decision}
+
+\begin{goals}
+  \item write a business question as an estimand in potential outcomes, and say which population it
+  refers to;
+  \item compute a treatment's net value and break-even, including the cost of ``sure things'';
+  \item decompose a naive comparison into an effect plus selection bias, and say why randomisation
+  removes the bias;
+  \item read a causal graph: chains, forks, colliders and backdoor paths, and decide what to adjust for;
+  \item show that the difference in means is unbiased over the randomisation, and that it equals OLS on a
+  dummy.
+\end{goals}
+
+%=====================================================================================
+\sectionone
+
+\subsection{The estimand}
+
+Index units by $i = 1, \dots, n$ and let $D_i \in \{0,1\}$ record treatment. Each unit has two
+\emph{potential outcomes}, $Y_i(1)$ if treated and $Y_i(0)$ if not; they exist before treatment is
+assigned, and assignment only decides which one we see. The individual effect is
+$\tau_i = Y_i(1) - Y_i(0)$.
+
+\begin{defn}{Estimand}{estimand}
+An estimand is a summary of potential outcomes for a named population. It specifies the units, the
+intervention and its comparator, the outcome and its horizon. It is fixed before, and independently of,
+any data or method.
+\end{defn}
+
+Three averages recur throughout the course:
+\[
+  \ATE = \E[Y(1) - Y(0)], \qquad \ATT = \E[Y(1) - Y(0) \mid D = 1], \qquad \ATU = \E[Y(1) - Y(0) \mid D = 0].
+\]
+The ATT and ATU depend on the assignment mechanism, because it defines who the treated are; the ATE does
+not. Which one you need depends on the decision: ``keep treating the people we treat now?'' needs the ATT;
+``treat everyone?'' needs the ATE; ``whom to treat?'' needs the conditional effect
+$\tau(x) = \E[Y(1) - Y(0) \mid X = x]$ (Meeting~3).
+
+\paragraph{Which population?} In the \emph{finite-population} (design-based) reading, $\E$ averages over
+the $n$ units in the study and the estimand is the \emph{sample average treatment effect}
+$\tau_S = \frac1n \sum_i \tau_i$, a fixed number. This is the reading used for experiments in Meetings 1
+and 2: it is the answer about the customers in front of us and needs no assumption about how they were
+sampled. In the \emph{superpopulation} reading, units are a sample from a larger population. The two
+coincide when the study is a random sample of the population the decision covers; otherwise moving to
+another population is a separate, assumed step called transport (Meeting~2).
+
+\begin{prop}{The ATE averages the ATT and ATU}{ate-mix}
+With $\pi = \Pr(D=1)$, \quad $\ATE = \pi\,\ATT + (1-\pi)\,\ATU$.
+\end{prop}
+\begin{proof}
+The law of total expectation applied to $Y(1) - Y(0)$, conditioning on $D$.
+\end{proof}
+
+\paragraph{Response types.} With a binary outcome each unit has one of four pairs $(Y(0), Y(1))$:
+\emph{lost cause} $(0,0)$, \emph{sure thing} $(1,1)$, \emph{persuadable} $(0,1)$ and \emph{do-not-disturb}
+$(1,0)$, with individual effects $0, 0, +1, -1$.
+
+\begin{prop}{The ATE in response types}{types}
+$\ATE = \Pr(\text{persuadable}) - \Pr(\text{do-not-disturb})$.
+\end{prop}
+\begin{proof}
+$\E[\tau_i] = \sum_{\text{types}} \Pr(\text{type})\,\tau_{\text{type}}$, and only two types have a nonzero
+effect.
+\end{proof}
+
+A lift of $0.10$ is consistent with 10\% persuadables and no do-not-disturbs, or with 30\% and 20\%. Data
+identify the difference but not the two shares; Section~3 gives bounds.
+
+\subsection{What a treatment is worth}
+
+Let each purchase earn margin $m$, let the coupon cost $c$ per redemption (paid only when a treated unit
+buys), and write $p_1 = \E[Y(1)]$, $p_0 = \E[Y(0)]$ for the population to be treated.
+
+\begin{prop}{Net value and break-even}{econ}
+The expected net value per unit treated, relative to not treating, is
+\[
+  V = m\tau - c\,p_1 = (m-c)\,\tau - c\,p_0,
+\]
+and treating pays if and only if $\tau > \tau^\ast = c\,p_1/m$.
+\end{prop}
+\begin{proof}
+Treated, a unit yields $(m-c)Y(1)$; untreated, $m\,Y(0)$. The expected difference is
+$(m-c)p_1 - m p_0 = m(p_1 - p_0) - c\,p_1$. Substitute $p_1 = p_0 + \tau$ for the second form.
+\end{proof}
+
+The second form separates what the coupon does: it earns $m-c$ on every purchase it causes and loses $c$
+on every purchase that would have happened anyway, the \emph{sure-thing cost} $c\,p_0$. Per type, with
+$m = 30$ and $c = 10$:
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Type & Untreated & Treated & Change \\
+\midrule
+Persuadable & 0 & $m-c = 20$ & $+20$ \\
+Sure thing & $m = 30$ & $m-c = 20$ & $-10$ \\
+Lost cause & 0 & 0 & $0$ \\
+Do-not-disturb & $m = 30$ & 0 & $-30$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+A lost cause costs nothing when the treatment is paid only on use. If instead it costs $c$ per unit
+\emph{treated} (a phone call, a trainer's hour), the net value is $m\tau - c$ and the break-even is
+$\tau^\ast = c/m$. Always state which cost model applies. In both, the break-even depends on the
+population, so a lift measured on one population must be held against the break-even of the population
+the decision covers.
+
+\subsection{Identification}
+
+We observe $Y_i = D_i Y_i(1) + (1-D_i) Y_i(0)$, so one potential outcome is always missing: causal
+inference is a missing-data problem in which the missing values are missing by design. Writing the
+observed outcome this way already assumes two things.
+
+\begin{assum}{SUTVA}{sutva}
+(i) \emph{No interference}: unit $i$'s outcome depends only on its own treatment. (ii) \emph{Consistency}:
+``treated'' names one well-defined intervention, so $Y_i = Y_i(d)$ when $D_i = d$.
+\end{assum}
+
+No interference fails when a coupon is shared with friends or a discount at one store draws shoppers from
+the next (Handout H4). Consistency fails when ``a coupon'' is sometimes 10\% off and sometimes 30\%; then
+the effect is a mixture over versions with weights set by whatever produced the data. In practice, describe
+the intervention precisely enough that you could, in principle, assign it.
+
+\begin{prop}{Selection-bias decomposition}{sb}
+Under consistency,
+\[
+  \E[Y \mid D=1] - \E[Y \mid D=0] = \underbrace{\ATT}_{\text{effect on the treated}}
+  + \underbrace{\E[Y(0) \mid D=1] - \E[Y(0) \mid D=0]}_{\text{selection bias}} .
+\]
+\end{prop}
+\begin{proof}
+By consistency the left side is $\E[Y(1) \mid D=1] - \E[Y(0) \mid D=0]$. Add and subtract
+$\E[Y(0) \mid D=1]$.
+\end{proof}
+
+Selection bias asks how treated and untreated would have differed \emph{without} treatment. A manager who
+treats units that would do well anyway makes it positive; one who treats struggling units makes it
+negative and can reverse the sign. It does not shrink as the sample grows.
+
+\begin{prop}{Two sources of bias relative to the ATE}{twobias}
+Under consistency,
+\[
+\begin{aligned}
+  \E[Y \mid D=1] - \E[Y \mid D=0] - \ATE &= \underbrace{\E[Y(0) \mid D=1] - \E[Y(0) \mid D=0]}_{\text{baseline selection}}\\
+  &\quad + \underbrace{(1-\pi)(\ATT - \ATU)}_{\text{selection on gains}} .
+\end{aligned}
+\]
+\end{prop}
+\begin{proof}
+Subtract $\ATE$ from Result~\ref{prop:sb} and use Result~\ref{prop:ate-mix}:
+$\ATT - \ATE = (1-\pi)(\ATT - \ATU)$.
+\end{proof}
+
+\begin{assum}{Random assignment}{ra}
+$D \indep \{Y(0), Y(1)\}$ and $0 < \Pr(D=1) < 1$.
+\end{assum}
+
+\begin{prop}{Identification by randomisation}{id}
+Under SUTVA and random assignment, $\ATE = \E[Y \mid D=1] - \E[Y \mid D=0]$, and $\ATE = \ATT = \ATU$.
+\end{prop}
+\begin{proof}
+$\E[Y \mid D=d] = \E[Y(d) \mid D=d] = \E[Y(d)]$, by consistency and then independence. Independence also
+makes both bias terms in Result~\ref{prop:twobias} zero.
+\end{proof}
+
+Independence is a property of the \emph{procedure}, not of the customers: a random number generator does
+not know anyone's potential outcomes. That is why randomisation removes confounding by variables nobody
+recorded, and why it can be audited (the seed, the draw log, no post-draw exclusions) rather than argued
+for. Independence holds over the distribution of possible draws. Any single draw can still be unbalanced by
+chance, and standard errors measure how much that matters.
+
+\subsection{Causal graphs}
+
+A \emph{directed acyclic graph} (DAG) writes down assumptions about what causes what: an arrow $A \to B$
+says $A$ may directly cause $B$; a missing arrow says it does not. The graph is a claim about the world,
+not something estimated. Three building blocks decide whether two variables are associated.
+
+\begin{center}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\small}]
+  \node (a1) at (0,0) {$A$}; \node (m1) at (1.3,0) {$M$}; \node (b1) at (2.6,0) {$B$};
+  \draw[->] (a1) -- (m1); \draw[->] (m1) -- (b1); \node at (1.3,-1.0) {\textbf{Chain}};
+  \node (a2) at (4.6,0) {$A$}; \node (f2) at (5.9,0.8) {$F$}; \node (b2) at (7.2,0) {$B$};
+  \draw[->] (f2) -- (a2); \draw[->] (f2) -- (b2); \node at (5.9,-1.0) {\textbf{Fork}};
+  \node (a3) at (9.2,0) {$A$}; \node (c3) at (10.5,-0.6) {$C$}; \node (b3) at (11.8,0) {$B$};
+  \draw[->] (a3) -- (c3); \draw[->] (b3) -- (c3); \node at (10.5,-1.2) {\textbf{Collider}};
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+  \item \textbf{Chain} $A \to M \to B$, with $M$ a mediator: $A$ and $B$ are associated; conditioning on $M$
+  blocks the association.
+  \item \textbf{Fork} $A \leftarrow F \to B$, with $F$ a common cause: $A$ and $B$ are associated although
+  neither causes the other; conditioning on $F$ blocks it.
+  \item \textbf{Collider} $A \to C \leftarrow B$, with $C$ a common effect: $A$ and $B$ are \emph{not}
+  associated; conditioning on $C$, or on anything it causes, \emph{creates} an association.
+\end{itemize}
+
+A \emph{path} is any sequence of arrows between two variables, whatever their direction. It is
+\emph{blocked} by a conditioned-on middle node of a chain or fork, or by a collider that is not conditioned
+on (nor any of its descendants). Two variables are associated, given a conditioning set, only through
+unblocked paths.
+
+\begin{prop}{Collider bias in the simplest case}{collider}
+Let $D$ and $U$ be independent with $\Pr(D=1) = \Pr(U=1) = \tfrac12$, let $Y = U$ (so $D$ has no effect),
+and let $C = \max(D, U)$. Then $\E[Y \mid D=1, C=1] - \E[Y \mid D=0, C=1] = \tfrac12 - 1 = -\tfrac12$.
+\end{prop}
+\begin{proof}
+Given $D=1$, $C=1$ always, so the first mean is $\E[U] = \tfrac12$. Given $D=0$, $C=1$ forces $U=1$.
+\end{proof}
+
+A \emph{backdoor path} from $D$ to $Y$ is a path that starts with an arrow \emph{into} $D$.
+
+\begin{prop}{Adjustment for a backdoor set}{backdoor}
+Suppose a set $X$ of variables (i) contains nothing caused by $D$ and (ii) blocks every backdoor path from
+$D$ to $Y$. Then conditional exchangeability holds, $\{Y(0), Y(1)\} \indep D \mid X$, and if
+$0 < \Pr(D=1 \mid X) < 1$,
+\[
+  \E[Y(d)] = \sum_x \E[Y \mid D=d, X=x]\,\Pr(X=x) .
+\]
+\end{prop}
+\begin{proof}
+That (i) and (ii) imply conditional exchangeability is Pearl's backdoor theorem (Section~3). Given it,
+$\E[Y(d)] = \sum_x \E[Y(d) \mid X=x]\Pr(X=x) = \sum_x \E[Y(d) \mid D=d, X=x]\Pr(X=x)$, and consistency
+replaces $Y(d)$ by $Y$.
+\end{proof}
+
+The formula is \emph{standardisation}: compare within levels of $X$, then average with the population's
+weights; using the treated units' weights instead gives the ATT. Randomisation is graph surgery: a coin
+deletes every arrow into $D$, so no backdoor paths remain and no adjustment is needed.
+
+\paragraph{Simpson's paradox.} An association can reverse when data are split by a third variable. Which
+answer is right is decided by the graph: if the variable is a fork (a common cause of $D$ and $Y$), compare
+within its levels and standardise; if it is a mediator or a collider, the pooled comparison is right and
+splitting is wrong.
+
+\subsection{Estimation: what the randomisation guarantees}
+
+In a completely randomised experiment exactly $n_1$ of $n$ units are treated, each subset equally likely.
+Hold the potential outcomes fixed; the only randomness is the draw.
+
+\begin{prop}{Unbiasedness over the design}{unbiased}
+$\hatt = \bar Y_1 - \bar Y_0$ satisfies $\E_D[\hatt] = \tau_S$, where $\E_D$ averages over draws.
+\end{prop}
+\begin{proof}
+$\bar Y_1 = \frac{1}{n_1}\sum_i D_i Y_i(1)$ and $\E_D[D_i] = n_1/n$ by symmetry, so
+$\E_D[\bar Y_1] = \frac1n\sum_i Y_i(1)$; likewise $\E_D[\bar Y_0] = \frac1n\sum_i Y_i(0)$.
+\end{proof}
+
+The proof uses nothing but the draw: no outcome model, no sampling assumption, no large-sample
+approximation. The collection of $\hatt$ values over all possible draws is the \emph{randomisation
+distribution}; its spread is what a standard error estimates (Meeting~2).
+
+\begin{prop}{OLS on a dummy is the difference in means}{ols}
+In the least-squares fit of $Y_i = \alpha + \beta D_i + \varepsilon_i$, $\hat\alpha = \bar Y_0$ and
+$\hat\beta = \bar Y_1 - \bar Y_0$.
+\end{prop}
+\begin{proof}
+The normal equation for $\beta$ gives $\sum_{D_i=1} Y_i = n_1(\alpha + \beta)$, so $\alpha + \beta = \bar Y_1$;
+the one for $\alpha$ then gives $\sum_{D_i=0} Y_i = n_0\alpha$.
+\end{proof}
+
+The regression is a computing device. Whether its coefficient is causal is decided by identification, not
+by the software. The familiar omitted-variable-bias formula is Result~\ref{prop:sb} written for a regression: for binary
+$D$, $\Cov(D,Y)/\Var(D) = \E[Y(0) \mid D=1] - \E[Y(0) \mid D=0] + \ATT$.
+
+\subsection{Identification, estimation, inference}
+
+Keep the three questions apart. \textbf{Identification}: with infinite data, would the comparison equal
+the estimand? Settled by assumptions about how the data were generated. \textbf{Estimation}: how is the
+comparison computed from finite data? \textbf{Inference}: how far is the estimate likely to be from the
+truth because of chance? A sophisticated estimator cannot rescue a failed identification argument, and a
+small standard error does not make a biased comparison right.
+
+\begin{pitfall}[three common errors]
+\begin{itemize}[leftmargin=1.2em]
+  \item Holding a lift against zero instead of the break-even of the population the decision covers.
+  \item ``Controlling for everything available'': a mediator removes part of the effect and a collider
+  adds bias.
+  \item Reading a large sample as protection against selection bias. It only makes the wrong number more
+  precise.
+\end{itemize}
+\end{pitfall}
+
+\checkpoint{A retailer finds that customers who used its app spent 40\% more than those who did not. Name
+the potential outcomes, the estimand a decision to promote the app needs, the likely sign of selection bias,
+and one fork in this setting.}
+
+%=====================================================================================
+\sectiontwo
+
+\paragraph{Setting.} FitLife, a fitness-club chain, lets front-desk staff offer a free personal-training
+session to members whose contracts are about to expire. The outcome $Y$ is renewal. A session costs ¥300
+of trainer time whether or not the member renews, so the cost is per unit treated; a renewal is worth ¥1{,}000
+of margin. Break-even: $\tau^\ast = 300/1{,}000 = 0.30$.
+
+\paragraph{The hidden truth.} In a simulation both potential outcomes are visible. Staff offered sessions
+to the four members they knew best, who mostly renew anyway.
+\begin{center}
+\begin{tabular}{lccccl}
+\toprule
+Member & $Y(0)$ & $Y(1)$ & $\tau_i$ & $D$ & Type \\
+\midrule
+A & 1 & 1 & 0 & 1 & sure thing \\
+B & 1 & 1 & 0 & 1 & sure thing \\
+C & 0 & 1 & 1 & 1 & persuadable \\
+D & 1 & 1 & 0 & 1 & sure thing \\
+E & 0 & 0 & 0 & 0 & lost cause \\
+F & 0 & 1 & 1 & 0 & persuadable \\
+G & 0 & 1 & 1 & 0 & persuadable \\
+H & 1 & 1 & 0 & 0 & sure thing \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Estimands.} $\ATE = 3/8 = 0.375$; $\ATT = 1/4 = 0.25$; $\ATU = 2/4 = 0.50$. Check
+Result~\ref{prop:ate-mix}: $0.5 \times 0.25 + 0.5 \times 0.50 = 0.375$.
+
+\paragraph{The naive comparison.} Treated renewal rate $4/4 = 1.00$; untreated $1/4 = 0.25$; difference
+$0.75$. Selection bias $= 3/4 - 1/4 = 0.50$, and $\ATT + 0.50 = 0.75$ (Result~\ref{prop:sb}). Relative to
+the ATE: $0.50 + 0.5 \times (0.25 - 0.50) = 0.375$ of bias, so $0.375 + 0.375 = 0.75$
+(Result~\ref{prop:twobias}).
+
+\paragraph{The decision.} Taken at face value, the naive $0.75$ makes the programme look like a clear success.
+In truth the members staff choose gain $0.25 < 0.30$, so the programme as run loses money; the members they
+ignore gain $0.50$; and a blanket offer gains $0.375 > 0.30$. The selection that inflated the naive number also put the sessions in
+the wrong hands. A randomised offer would have shown this.
+
+\paragraph{A Simpson reversal at FitLife.} The chain also invited members to a free group class, mostly
+new members, who renew less often.
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{Invited} & \multicolumn{2}{c}{Not invited} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Member type & Renewed / members & Rate & Renewed / members & Rate \\
+\midrule
+New & 40 / 200 & 0.20 & 9 / 60 & 0.15 \\
+Long-standing & 38 / 50 & 0.76 & 140 / 200 & 0.70 \\
+\midrule
+Pooled & 78 / 250 & 0.312 & 149 / 260 & 0.573 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Pooled, invited members renew far less; within each type they renew more (by $0.05$ and $0.06$). Member
+type is a fork: it drove invitations and renewal, and the class cannot change it. Standardising to all 510
+members (Result~\ref{prop:backdoor}): $(260 \times 0.05 + 250 \times 0.06)/510 = 0.055$. To the invited
+members (the ATT): $(200 \times 0.05 + 50 \times 0.06)/250 = 0.052$.
+
+\begin{center}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\small}]
+  \node (t) at (0,1.2) {member type};
+  \node (d) at (-2.2,0) {invited};
+  \node (y) at (2.2,0) {renewed};
+  \node (a) at (0,-1.1) {attended a class};
+  \draw[->] (t) -- (d); \draw[->] (t) -- (y); \draw[->] (d) -- (y);
+  \draw[->] (d) -- (a); \draw[->,dashed] (y) -- (a);
+  \node[font=\footnotesize, text=extgrey] at (4.6,-1.1) {(dashed: members who plan to renew attend more)};
+\end{tikzpicture}
+\end{center}
+
+\begin{exercise}[computation]
+(a) Classify FitLife's eight members by response type and verify Result~\ref{prop:types}. (b) FitLife then
+randomises the session offer among 1{,}000 members and finds renewal rates $p_1 = 0.80$ and $p_0 = 0.45$.
+Give the bounds on the persuadable share (Section~3), and say what extra assumption would pin it down.
+\end{exercise}
+\answer{(a) Persuadables C, F, G (3/8); sure things A, B, D, H; lost cause E; no do-not-disturbs. So
+$\Pr(\text{persuadable}) - \Pr(\text{do-not-disturb}) = 3/8 = \ATE$. (b)
+$\max(0, 0.80 - 0.45) = 0.35 \le \Pr(\text{persuadable}) \le \min(0.80, 0.55) = 0.55$. Monotonicity (no
+member is put off by the offer) collapses the bounds to $0.35$.}
+
+\begin{exercise}[judgement]
+An analyst proposes to compare renewal among invited and uninvited members ``who attended at least one
+class that month'', to compare like with like. Use the graph to explain what goes wrong.
+\end{exercise}
+\answer{Attendance is caused by the invitation and, through members' intention to renew, related to the
+outcome: it is a descendant of $D$ and a collider on the path invited $\to$ attended $\leftarrow$ renewed.
+Conditioning on it violates condition (i) of Result~\ref{prop:backdoor} and opens a non-causal path.
+Uninvited members who attended anyway are unusually committed, so the comparison is biased towards zero or
+below. Standardise on member type, which is pre-treatment, instead.}
+
+%=====================================================================================
+\sectionthree
+
+\begin{extension}[Bounds on the persuadable share]
+Randomisation identifies $p_1$ and $p_0$, hence $\tau = \Pr(\text{P}) - \Pr(\text{DND})$, but not the
+shares. Since $\Pr(\text{DND}) \ge 0$, $\Pr(\text{P}) \ge \tau$; since persuadables have $Y(1)=1$ and
+$Y(0)=0$, $\Pr(\text{P}) \le \min(p_1, 1-p_0)$. So $\max(0, p_1 - p_0) \le \Pr(\text{P}) \le \min(p_1, 1-p_0)$.
+The bounds collapse to $\tau$ under \emph{monotonicity} (no unit is harmed), an assumption about behaviour
+that the experiment cannot check. It reappears as ``no defiers'' in Handout H1.
+\end{extension}
+
+\begin{extension}[d-separation, the backdoor theorem and beyond]
+The blocking rules of Section~1.4 (causal graphs) are \emph{d-separation}. If a graph is correct, every d-separation it
+implies appears as a conditional independence in the data, which gives a partial test (it can reject a
+graph, never confirm one). Pearl's backdoor theorem shows that a set satisfying (i) and (ii) in
+Result~\ref{prop:backdoor} delivers conditional exchangeability. When no such set is observed, the
+\emph{front-door criterion} can identify an effect through a fully observed, unconfounded mediator.
+Single-world intervention graphs (SWIGs) put potential outcomes on the graph and unify the two languages.
+\end{extension}
+
+\begin{extension}[Designs other than complete randomisation]
+Bernoulli randomisation flips an independent coin per unit, so $n_1$ is random and the difference in means
+is unbiased only conditional on both arms being non-empty. Stratified (blocked) designs randomise within
+strata of a pre-treatment covariate; the estimator is the stratum-weighted average of within-stratum
+differences, which is Result~\ref{prop:backdoor} applied where it is exact by construction.
+\end{extension}
+
+\begin{extension}[Attributes, audits, and causes of effects]
+Attributes such as race or loyalty are not interventions; audit studies randomise a \emph{signal} of the
+attribute (a name on comparable résumés) and estimate the effect of the signal on a reader's decision.
+Reverse questions (``what caused this customer to leave?'') ask for causes of effects; they are best
+rewritten as forward questions, one per candidate cause.
+\end{extension}
+
+\subsection*{Annotated reading}
+\begin{readinglist}
+\reading{Hern\'an and Robins, \emph{Causal Inference: What If} (2020, free online)}{Potential outcomes,
+randomisation, standardisation and graphs in one consistent notation}{Ch.\ 1--3, 6--8}{1}
+\reading{Pearl, Glymour and Jewell, \emph{Causal Inference in Statistics: A Primer} (Wiley, 2016)}{The
+shortest rigorous route to d-separation and the backdoor and front-door criteria}{Ch.\ 1--3}{2}
+\reading{Cinelli, Forney and Pearl, ``A crash course in good and bad controls'', \emph{Sociological Methods
+\& Research} (2024)}{A catalogue of graphs showing when adjusting helps or hurts}{All}{1}
+\reading{Imbens and Rubin, \emph{Causal Inference for Statistics, Social, and Biomedical Sciences}
+(Cambridge, 2015)}{The design-based view of experiments used in Meetings 1--2}{Ch.\ 1--4}{2}
+\reading{Holland, ``Statistics and causal inference'', \emph{JASA} (1986)}{The classic statement of the
+fundamental problem and ``no causation without manipulation''}{Sections 1--4}{1}
+\reading{Bertrand and Mullainathan, ``Are Emily and Greg more employable than Lakisha and Jamal?'',
+\emph{AER} (2004)}{How an audit study turns an attribute into a randomised signal}{Intro, design}{1}
+\end{readinglist}
+
+\end{document}

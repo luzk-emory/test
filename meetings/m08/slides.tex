@@ -1,0 +1,998 @@
+% \documentclass[aspectratio=169, 11pt]{beamer}
+\documentclass[aspectratio=169, 11pt, handout]{beamer}
+
+% ── Theme ──
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{%
+  \leavevmode\hbox{%
+    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
+      \usebeamerfont{author in head/foot}\insertshortauthor
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
+      \usebeamerfont{title in head/foot}\insertshorttitle
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+      \usebeamerfont{date in head/foot}\insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+    \end{beamercolorbox}}}
+
+% ── Packages ──
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+
+% ── Colors ──
+\definecolor{sbgreen}{HTML}{00704A}  % course accent
+\definecolor{warnred}{HTML}{CC0000}
+\definecolor{noteblue}{HTML}{2060A0}
+
+% ── Commands ──
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\Prob}{\mathrm{Pr}}
+\newcommand{\indep}{\perp\!\!\!\perp}
+
+\usepackage{soul}
+\newcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\marginpar{\tiny #2}}
+% Beamer frames are typeset inside boxes, where \marginpar raises "Not in outer par mode"
+% and \marginparwidth is 4pt. Same marker; the provenance note goes to the frame footnote.
+\renewcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\footnote[frame]{\tiny #2}}
+% Compact footnote layout so several provenance notes fit under one frame.
+\setbeamertemplate{footnote}{\noindent\raggedright\hspace*{0.6em}\tiny\insertfootnotemark\,\insertfootnotetext\par}
+
+% Version 2 (2026-09-29). Course spine: estimand -> identification -> estimation.
+% Changes from slides.tex: m08/CHANGES-v2.md.
+\newcommand{\spinestep}[1]{\textcolor{sbgreen}{\textbf{#1}}}
+
+% ── Title ──
+\title[Meeting 8]{Meeting 8: Flexible Controls and Double Machine Learning}
+\subtitle{Applied Causal Inference for Business}
+\author{Zhikun Lu}
+\date{\today}
+
+\begin{document}
+
+% ====================================================================
+\begin{frame}
+\titlepage
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Where Does the Counterfactual Come From?}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=0.45cm and 0.7cm,
+    box/.style={draw, rounded corners, minimum width=2.9cm, minimum height=1.5cm,
+                font=\scriptsize, align=center, text width=2.7cm},
+    active/.style={box, fill=sbgreen!20, draw=sbgreen, very thick},
+    inactive/.style={box, fill=gray!10, draw=gray!50}
+]
+\node[inactive] (A) {\textbf{M1--M6}\\[2pt] A randomised control group\\[3pt] \emph{anything} may be unobserved};
+\node[active, right=of A] (B) {\textbf{M7--M8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
+\node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] An external shifter of treatment\\[3pt] confounders allowed};
+\node[inactive, right=of C] (D) {\textbf{M10--M11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
+
+\draw[-{Stealth}, thick, sbgreen] (A) -- (B);
+\draw[-{Stealth}, gray!50] (B) -- (C);
+\draw[-{Stealth}, gray!50] (C) -- (D);
+\end{tikzpicture}
+\end{center}
+
+\bigskip
+
+\begin{center}
+\small Each step gives up an assumption the one before it relied on.\\
+Today we keep M7's assumption and ask how $X$ must \emph{enter} the model.
+\end{center}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Today's Plan}
+
+\begin{enumerate}
+    \item \spinestep{Estimand:} a pricing decision with money on it --- an elasticity, of which nights?
+    \item \spinestep{Identification:} the RM system is the assignment mechanism; what must be true of its signals
+    \item \spinestep{Estimation:} residualisation (Frisch--Waugh--Lovell) and the partially linear model; three ways an analyst would do this at scale, and why each fails; cross-fitting
+    \item What the recommendation can and cannot say --- and what the logs do not contain
+\end{enumerate}
+
+\bigskip
+
+\textbf{Case:} Meridian Hotels, Meeting 8 (Releases 1--5). \quad \textbf{Workshop:} out-of-fold prediction (prediction and hand calculation without AI).
+
+\bigskip
+
+\textbf{Reading:} technical notes for Meeting 8. No critique today; the slip order is the elasticity discussion first, then the partial-$R^2$ sensitivity.
+\end{frame}
+
+% ====================================================================
+\section{The Estimand: The Proposal}
+% ====================================================================
+
+% [RELEASE R1 — narrative and six-row table]
+\begin{frame}{Meridian Hotels}
+
+\textbf{Wen} is commercial director of a group of 80 properties.
+
+\bigskip
+
+A revenue management (RM) system sets the rate for every hotel-night from forecast demand, competitor rates, booking pace and the event calendar. \textbf{No human sets these rates night by night}: the system is an automated decision-maker --- and, as in M7, its decisions are what the analysis must adjust for.
+
+\bigskip
+\pause
+
+\textbf{On her desk:} sales proposes raising midweek premium rates by \textbf{8\%} across the portfolio.
+
+\bigskip
+
+Their evidence is the RM system's own reporting: nights with higher rates sell more rooms.
+
+\bigskip
+
+Current rate \textyen 800. Variable cost \textyen 200 per occupied room. Three years of logs: 80 hotels $\times$ 1{,}095 nights, 47 recorded signals per night.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The Exhibit}
+
+\begin{center}
+\includegraphics[width=0.82\textwidth]{fig-exhibit.pdf}
+\end{center}
+
+\vspace{-0.3em}
+\begin{center}
+\small Sales team's reading: demand is strong, the system is under-pricing.
+\end{center}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The Number That Decides It}
+
+An 8\% rise takes contribution per occupied room from \textyen 600 to \textyen 664, a gain of \textbf{10.7\%}.
+
+\bigskip
+
+The rise pays only if bookings fall by \emph{less} than that.
+
+\bigskip
+\pause
+
+\begin{alertblock}{Break-even elasticity}
+\[
+\eta^{*} = \frac{\ln(600/664)}{\ln(1.08)} = \mathbf{-1.32}
+\]
+\end{alertblock}
+
+\bigskip
+
+Every estimate today is an elasticity. The only question is \textbf{which side of $-1.32$} it lands on.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Six Comparable Nights}
+
+\begin{center}
+\small
+\begin{tabular}{crrr}
+\toprule
+\textbf{Night} & \textbf{Category} & \textbf{Price $P$} & \textbf{Demand $Q$} \\
+\midrule
+1 & Standard & 30 & 110 \\
+2 & Standard & 40 & 100 \\
+3 & Standard & 50 & \phantom{0}90 \\
+4 & Premium  & 70 & 210 \\
+5 & Premium  & 80 & 200 \\
+6 & Premium  & 90 & 190 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+
+Overall means: $\bar P = 60$, $\bar Q = 150$.
+
+\[
+\widehat b_{\text{pooled}}
+= \frac{\sum_i (P_i - 60)(Q_i - 150)}{\sum_i (P_i - 60)^2}
+\]
+
+\bigskip
+
+\textbf{In pairs:} compute it, then commit in writing --- does Wen raise rates?
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Pooled, Then Within Category}
+
+\[
+\widehat b_{\text{pooled}} = \frac{5600}{2800} = \textcolor{warnred}{+2.0}
+\]
+
+\pause
+\bigskip
+
+Within either category, a \textyen 10 rise goes with \textbf{10 fewer} rooms:
+
+\begin{center}
+\small
+\begin{tabular}{lrr}
+\toprule
+& \textbf{Mean price} & \textbf{Mean demand} \\
+\midrule
+Standard & 40 & 100 \\
+Premium  & 80 & 200 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+
+\[
+\widehat\theta = \frac{\sum_i \widetilde P_i \widetilde Q_i}{\sum_i \widetilde P_i^{2}}
+= \frac{-400}{400} = \textcolor{sbgreen}{-1.0}
+\]
+
+\bigskip
+
+Same six nights. Opposite sign.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Confounding by the Pricing System}
+
+The RM system prices high \emph{because} it forecasts high demand.
+
+\bigskip
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.1cm and 2.0cm,
+    v/.style={draw, rounded corners, minimum width=2.4cm, minimum height=0.8cm, font=\small},
+    hid/.style={v, fill=warnred!10, draw=warnred, thick}
+]
+\node[hid] (X) {demand signals};
+\node[v, below left=of X] (P) {rate $P$};
+\node[v, below right=of X] (Q) {bookings $Q$};
+\draw[-{Stealth}, warnred, thick] (X) -- (P);
+\draw[-{Stealth}, warnred, thick] (X) -- (Q);
+\draw[-{Stealth}, thick] (P) -- node[below, font=\small] {$\theta$} (Q);
+\end{tikzpicture}
+\end{center}
+
+\medskip
+\pause
+
+In regression language, omitting the signals $X$ gives
+
+\[
+\widehat\theta_{\text{naive}} \;=\; \theta \;+\; \underbrace{\gamma \cdot \frac{\Cov(P, X)}{\Var(P)}}_{\text{omitted-variable bias}}
+\]
+
+\bigskip
+
+Both arrows are positive here, so the bias is positive --- large enough to flip the sign.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Three Steps for a Price}
+
+\begin{center}
+\small
+\begin{tabular}{p{2.8cm}p{9.8cm}}
+\toprule
+\spinestep{Estimand} & $\theta$: the \% change in bookings from a 1\% change in rate, holding the demand signals fixed --- a \textbf{local} slope, held against $-1.32$. If the slope varies across nights, the estimator below averages it with weights on the nights where the rate moved most. \\[0.5em]
+\spinestep{Identification} & The \textbf{RM system's rule is the assignment mechanism}. Given the signals it saw, \emph{as of the moment it set the rate}, what is left of the rate must be unrelated to demand --- and there must be something left. \\[0.5em]
+\spinestep{Estimation} & Residualise rate and bookings on the signals, regress residual on residual; fit the two nuisance models flexibly and \textbf{out of fold}; SEs clustered by night. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+
+Every method in the second half of today is a candidate for the third row. None of them can repair the second.
+\end{frame}
+
+% ====================================================================
+\section{Identification and Estimation: Residualisation}
+% ====================================================================
+
+% [RELEASE R2 — residual columns]
+\begin{frame}{Subtract What the System Already Knew}
+
+Write demand as
+\[
+Q = \theta P + g(X) + \varepsilon, \qquad \E[\varepsilon \mid P, X] = 0 .
+\]
+
+\bigskip
+\pause
+
+Define the two \textbf{conditional expectations}
+\[
+\ell(X) = \E[Q \mid X], \qquad r(X) = \E[P \mid X].
+\]
+
+\bigskip
+
+Subtracting them removes everything $X$ can explain from \emph{both} sides:
+
+\begin{alertblock}{Frisch--Waugh--Lovell}
+\[
+Q - \ell(X) \;=\; \theta \,\bigl\{P - r(X)\bigr\} \;+\; \varepsilon
+\]
+\end{alertblock}
+
+\bigskip
+
+The coefficient from the full regression \textbf{equals} the slope of one residual on the other.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Two Nuisances, One Parameter}
+
+\[
+\underbrace{Q - \ell(X)}_{\widetilde Q}
+\;=\; \theta \underbrace{\bigl\{P - r(X)\bigr\}}_{\widetilde P} \;+\; \varepsilon
+\qquad\Longrightarrow\qquad
+\widehat\theta = \frac{\sum_i \widetilde P_i \widetilde Q_i}{\sum_i \widetilde P_i^{\,2}}
+\]
+
+\bigskip
+\pause
+
+\begin{block}{A warning about $\ell$ and $g$}
+Predicting $Q$ from $X$ estimates $\ell(X) = \theta\, r(X) + g(X)$, \textbf{not} $g(X)$.
+
+\medskip
+
+$\ell$ already contains the part of price that $X$ explains. That is exactly why subtracting $\ell$ from $Q$ and $r$ from $P$ leaves a clean comparison.
+\end{block}
+
+\bigskip
+\pause
+
+$\theta$ is the one thing we want. $\ell$ and $r$ are \textbf{nuisances}: needed, but not of interest.
+\end{frame}
+
+% ====================================================================
+% [MERGED from old-decks/lecture08.tex:547, re-skinned to Meridian]
+\begin{frame}{What the Residuals Mean}
+
+\begin{center}
+\begin{tikzpicture}[
+    block/.style={draw, rounded corners, minimum width=3.4cm, minimum height=1.0cm,
+                  font=\small, align=center}
+]
+\node[block, fill=noteblue!10] (X)     at (5, 2.1)  {demand signals $X$\\(what the system saw)};
+\node[block, fill=gray!10]     (Ptil)  at (0, 0)    {$\widetilde P = P - r(X)$\\``surprise rate''};
+\node[block, fill=gray!10]     (Qtil)  at (10, 0)   {$\widetilde Q = Q - \ell(X)$\\``surprise bookings''};
+\node[block, fill=sbgreen!15]  (theta) at (5, -1.3) {$\widehat{\theta} = $ slope of $\widetilde Q$ on $\widetilde P$};
+\draw[-{Stealth}, noteblue] (X) -- node[left, font=\scriptsize]{predict the rate} (Ptil);
+\draw[-{Stealth}, noteblue] (X) -- node[right, font=\scriptsize]{predict bookings} (Qtil);
+\draw[-{Stealth}, sbgreen, thick]  (Ptil) -- (theta);
+\draw[-{Stealth}, sbgreen, thick]  (Qtil) -- (theta);
+\end{tikzpicture}
+\end{center}
+
+\medskip
+
+$\widetilde P$: a night the system priced \emph{above} (or below) what its own signals called for.
+
+$\widetilde Q$: a night that booked \emph{above} (or below) what the same signals predicted.
+
+\medskip
+
+$\widehat{\theta}$ asks one question: on nights the rate came in higher than the signals called for, did bookings come in lower? A night priced exactly by rule has $\widetilde P = 0$ and \textbf{answers nothing}.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{What Must Be True}
+
+\begin{alertblock}{Identifying assumption}
+Given the signals the system recorded, the rate it charged is as good as randomly assigned.
+\[
+\varepsilon \indep P \mid X
+\]
+\end{alertblock}
+
+\bigskip
+
+Tied to Meridian:
+
+\begin{itemize}
+    \item The RM system is the \emph{only} thing setting rates \hfill (no unrecorded human input)
+    \item Every input it used is in the feed \hfill (nothing it saw is missing from $X$)
+    \item Rates still move for reasons unrelated to demand \hfill (something left to compare)
+    \item Every signal is measured \emph{as of} the moment the rate was set \hfill (no post-treatment control)
+\end{itemize}
+
+\bigskip
+\pause
+
+\textbf{Hold onto the first one.} We come back to it at the end of the hour.
+
+\small Booking pace recorded \emph{after} the rate posted, or a competitor index that reacts to Meridian's own rate, is partly caused by the rate: a mediator or collider (M7), not a control.
+\end{frame}
+
+% ====================================================================
+% [RELEASE R3 — dataset description (hand out here, before the ladder); collect three proposals on the board]
+
+\begin{frame}{Predict Before You Look}
+
+Category worked on six rows. The real logs have 80 hotels and 47 signals.
+
+\bigskip
+
+\textbf{In pairs, write down three numbers} --- the log-log rate/bookings slope:
+
+\bigskip
+
+\begin{enumerate}
+    \item with no controls
+    \item controlling for the hotel
+    \item controlling for the hotel \emph{and} splitting forecast occupancy into six bands
+\end{enumerate}
+
+\bigskip
+
+\begin{center}
+\small Commit before the next slide.
+\end{center}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The Ladder}
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+\textbf{Comparison} & \textbf{Log-log slope} \\
+\midrule
+Pooled, no controls & \textcolor{warnred}{$+0.40$} \\
+Within hotel & \textcolor{warnred}{$+0.49$} \\
+Within hotel $\times$ occupancy band & $-0.07$ \\
+\midrule
+\textit{(today's destination)} & \textcolor{sbgreen}{$-1.57$} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+\pause
+
+\begin{itemize}
+    \item Controlling for the hotel \textbf{did nothing}. The system charges different rates at the \emph{same} hotel on different nights.
+    \item Binning one signal recovered the \textbf{sign} and almost none of the \textbf{magnitude}.
+\end{itemize}
+
+\bigskip
+
+\begin{center}
+\textbf{So: how must $X$ enter the model?}
+\end{center}
+\end{frame}
+
+% ====================================================================
+\section{Estimation: Three Attempts}
+% ====================================================================
+
+% [R3 is handed out at "Predict Before You Look" — see the marker there]
+\begin{frame}{The Real Logs}
+
+\begin{center}
+\small
+\begin{tabular}{lr}
+\toprule
+Hotel-nights & 87{,}600 \\
+Recorded signals & 47 \\
+Median rate & \textyen 803 \quad (5th--95th: \textyen 439--\textyen 1{,}920) \\
+Median premium rooms booked & 61 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+\pause
+
+The RM system is \textbf{rule-based}. Log rate is a step function of bucketed signals:
+
+\begin{itemize}\small
+    \item six forecast-occupancy bands, competitor-index bands, booking-pace bands
+    \item an event flag interacted with a lead-time tercile
+    \item day-of-week and month adjustments, plus a weekend rule that differs by occupancy band
+\end{itemize}
+
+\bigskip
+
+Around that rule, rates still move for reasons tied to no recorded signal.
+
+\bigskip
+\textbf{In pairs:} write down the model you would fit. Three proposals go on the board.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{From Slope to Elasticity}
+
+Wen needs a percentage, not yuan per room. Put both sides in logs:
+
+\[
+\ln Q = \theta \ln P + g(X) + \varepsilon
+\]
+
+\bigskip
+
+Now $\theta$ is the \textbf{elasticity}: the \% change in bookings from a 1\% change in rate.
+
+\bigskip
+\pause
+
+\begin{itemize}
+    \item The model is \textbf{linear in $\ln P$} --- a local approximation, good near observed rates
+    \item It is \textbf{unrestricted in $X$} --- $g$ can be any shape at all
+\end{itemize}
+
+\bigskip
+
+\begin{center}
+Break-even is $\mathbf{-1.32}$. Keep it on the board.
+\end{center}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Attempt 1 --- Put All 47 Controls in Linearly}
+
+\[
+\ln Q_i = \theta \ln P_i + X_i'\beta + \varepsilon_i
+\]
+
+\bigskip
+\pause
+
+\begin{center}
+\Large $\widehat\theta = \textcolor{warnred}{-0.54}$ \qquad $\Longrightarrow$ \qquad \textcolor{warnred}{\textbf{raise}}
+\end{center}
+
+\bigskip
+\pause
+
+\textbf{Why it fails.} The rule is a \emph{staircase}, and the model is a \emph{ramp}.
+
+\begin{itemize}
+    \item A linear term in occupancy cannot represent six discrete bands
+    \item An additive model cannot represent \textsc{weekend} $\times$ \textsc{occupancy band}
+    \item Whatever the controls miss stays in the error and keeps confounding $\theta$
+\end{itemize}
+
+\bigskip
+
+\begin{center}
+\small Getting the functional form wrong is not a small sin when $X$ drives both sides.
+\end{center}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Attempt 2 --- Let ML Fit It, With Price as a Feature}
+
+Fit a boosted model of $\ln Q$ on $(\ln P, X)$; read the elasticity off the fitted model.
+
+\bigskip
+\pause
+
+\begin{center}
+\Large $\widehat\theta = \textcolor{warnred}{-1.03}$ \qquad $\Longrightarrow$ \qquad \textcolor{warnred}{\textbf{raise}}
+\end{center}
+
+\bigskip
+\pause
+
+\textbf{Why it fails.} Price is a near-deterministic function of $X$, so the model uses it \textbf{as a stand-in} for the signals:
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model of bookings} & \textbf{$R^2$} & \textbf{comp.\ index share} & \textbf{$\ln P$ share} \\
+\midrule
+on $X$ only & 0.951 & 4.2\% & --- \\
+on $X$ and $\ln P$ & 0.970 & \textcolor{warnred}{0.9\%} & 17.6\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+
+The confounder's share falls by \textbf{80\%}. Its effect is loaded onto price.
+
+\bigskip
+A good \emph{prediction} of bookings is not a good \emph{estimate} of $\theta$.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Attempt 3 --- Residualise, Fitting the Models on All Rows}
+
+The right idea: predict $\ln Q$ and $\ln P$ from $X$, regress residual on residual.
+
+\bigskip
+
+The wrong execution: fit both models on \emph{all} rows, then predict \emph{those same} rows.
+
+\bigskip
+\pause
+
+\begin{center}
+\Large $\widehat\theta = \textcolor{warnred}{-0.95}$ \qquad $\Longrightarrow$ \qquad \textcolor{warnred}{\textbf{raise}}
+\end{center}
+
+\bigskip
+\pause
+
+\textbf{Why it fails.} A flexible model partly \textbf{memorises} each row.
+
+\begin{itemize}
+    \item In-sample $R^2 = 0.97$; the honest out-of-sample figure is far lower
+    \item Residuals come out too small, and the two residuals' errors are correlated
+    \item That correlation lands directly on $\theta$
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{And You Cannot Size the Bias}
+
+\begin{center}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{How the nuisance models were fitted} & $\widehat\theta$ \\
+\midrule
+Well-regularised model, on all rows & $-1.57$ \\
+Well-regularised model, cross-fitted & $-1.56$ \\
+\midrule
+Flexible model, on all rows & \textcolor{warnred}{$-0.95$} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+\pause
+
+\begin{alertblock}{The real lesson}
+The bias grows with how flexible the nuisance model is --- and you have \textbf{no way to know how big it is} from inside the fit.
+\end{alertblock}
+
+\bigskip
+
+Cross-fitting removes the need to guess.
+\end{frame}
+
+% ====================================================================
+\section{Estimation: Cross-Fitting}
+% ====================================================================
+
+\begin{frame}{Cross-Fitting}
+
+Split the rows into $K$ folds. Predict each fold from models that \textbf{never saw it}.
+
+\bigskip
+
+\begin{center}
+\begin{tikzpicture}[
+    cell/.style={draw, minimum width=1.9cm, minimum height=0.62cm, font=\scriptsize},
+    tr/.style={cell, fill=gray!12, draw=gray!55},
+    te/.style={cell, fill=sbgreen!25, draw=sbgreen, thick}
+]
+\foreach \k in {1,...,4} {
+  \node[font=\scriptsize, anchor=east] at (-0.15, -0.72*\k) {fold \k\ scored:};
+  \foreach \j in {1,...,4} {
+     \pgfmathparse{int(\j)}
+     \ifnum\j=\k
+        \node[te] at (1.95*\j, -0.72*\k) {predict};
+     \else
+        \node[tr] at (1.95*\j, -0.72*\k) {train};
+     \fi
+  }
+}
+\foreach \j in {1,...,4} {
+  \node[font=\scriptsize, anchor=south] at (1.95*\j, -0.35) {block \j};
+}
+\end{tikzpicture}
+\end{center}
+
+\medskip
+
+Two models per fold: one for $\ln Q$, one for $\ln P$. Stack the out-of-fold residuals, then
+
+\[
+\widehat\theta = \frac{\sum_i \widetilde P_i \widetilde Q_i}{\sum_i \widetilde P_i^{\,2}} .
+\]
+
+\smallskip
+\small Every row is predicted exactly once, by a model trained elsewhere.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Why Residualise \emph{Both} Sides?}
+
+Write the nuisance errors as $e_r = \widehat r - r$ and $e_\ell = \widehat\ell - \ell$.
+
+\bigskip
+
+The bias in $\widehat\theta$ is \textbf{second order}: it depends on products of the errors --- $e_r \cdot e_\ell$, and the price model's error with itself, $e_r^2$ --- not on either error alone.
+
+\bigskip
+\pause
+
+\begin{block}{The practical consequence}
+Two models that are each \emph{moderately} wrong give a bias that is \emph{very} small.
+
+\medskip
+
+Model only one side and its error enters directly --- that is Attempt 2.
+\end{block}
+
+\bigskip
+\pause
+
+This is why the method survives ML nuisances at all: boosted trees are biased, and products of small errors are negligible. (The price model matters twice: fit it well.)
+
+\bigskip
+\small (The formal statement --- Neyman orthogonality and the rate conditions --- is in the notes.)
+\end{frame}
+
+% ====================================================================
+% [MERGED from old-decks/lecture08.tex:452, re-skinned to Meridian]
+\begin{frame}{Why DML Needs Both Ingredients}
+
+\begin{center}
+\footnotesize
+\begin{tabular}{llll}
+\toprule
+\textbf{Problem} & \textbf{Where you saw it} & \textbf{Source} & \textbf{Fix} \\
+\midrule
+Regularisation bias & Attempt 2: \textcolor{warnred}{$-1.03$} & price stands in for & residualise \emph{both} sides \\
+ & & the signals it shrinks & (bias is a product of errors) \\[0.5em]
+Overfitting bias & Attempt 3: \textcolor{warnred}{$-0.95$} & nuisance models memorise & cross-fit \\
+ & & the rows they score & (predict each row out of fold) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+\pause
+
+\textbf{Residualising alone is not enough:} Attempt 3 residualised both sides and still recommended the rise.
+
+\medskip
+
+\textbf{Cross-fitting alone is not enough:} a cross-fitted model of bookings on $(\ln P, X)$ still lets price absorb the signals it shrinks.
+
+\medskip
+
+\textbf{Together:} $\widehat\theta = \textcolor{sbgreen}{-1.56}$, with an interval you can use.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Inference}
+
+\textbf{Standard error} comes from the residual regression. Two cautions at Meridian:
+
+\bigskip
+
+\begin{itemize}
+    \item The group adjusts rates system-wide on some nights, and demand shocks hit every hotel on the same night. Treating rows as independent makes the SE about \textbf{three times too small}.
+    \bigskip
+    \item Folds should be assigned \textbf{by night}, not by row, or the shared nightly move leaks across folds.
+\end{itemize}
+
+\bigskip
+\pause
+
+\begin{center}
+Cross-fitting fixes the \emph{estimate}. Neither of these does --- they are about the \emph{interval}.
+\end{center}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Where the Evidence Actually Comes From}
+
+\begin{center}
+\includegraphics[width=0.66\textwidth]{fig-overlap.pdf}
+\end{center}
+
+\vspace{-0.2em}
+
+On 12\% of nights the system pins the rate to its rule: almost nothing is left over once $X$ is accounted for.
+
+\medskip
+
+Those rows carry \textbf{almost no weight} in $\widehat\theta$. The estimate speaks for nights where the system left itself some room.
+\end{frame}
+
+% ====================================================================
+\section{The Decision}
+% ====================================================================
+
+% [RELEASE R4 — decision table]
+\begin{frame}{Wen's Table}
+
+\begin{center}
+\includegraphics[width=0.78\textwidth]{fig-decision.pdf}
+\end{center}
+
+\vspace{-0.2em}
+\begin{center}
+\small Four methods recommend the rise. They are \textbf{not} ordered worst to best --- each fails for its own reason.
+\end{center}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{What the Rise Would Actually Do}
+
+At $\widehat\theta = -1.56$:
+
+\begin{center}
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Rate} & \textbf{Change} & \textbf{Bookings} & \textbf{Contribution} \\
+\midrule
+\textyen 736 & $-8\%$  & $+13.9\%$ & \textcolor{sbgreen}{$+1.7\%$} \\
+\textyen 768 & $-4\%$  & $+6.6\%$  & \textcolor{sbgreen}{$+0.9\%$} \\
+\textyen 800 & $0\%$   & $0.0\%$   & $0.0\%$ \\
+\textyen 832 & $+4\%$  & $-5.9\%$  & \textcolor{warnred}{$-0.9\%$} \\
+\textyen 864 & $+8\%$  & $-11.3\%$ & \textcolor{warnred}{$-1.9\%$} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+\pause
+
+The proposed rise costs roughly \textbf{2\% of premium-room contribution}.
+
+\bigskip
+
+Date-clustered 95\% interval on the elasticity: $[-1.64,\; -1.51]$ --- comfortably past break-even.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Do Not Read the Formula Too Literally}
+
+Constant elasticity plus constant marginal cost implies an optimal rate
+\[
+P^{*} = c\,\frac{\theta}{1+\theta} = 200 \times \frac{-1.56}{-0.56} \approx 557 \text{ yuan}.
+\]
+
+\bigskip
+\pause
+
+\begin{alertblock}{Should Wen cut rates by 30\%?}
+\textbf{No.} Holding the signals fixed, the system varied rates over roughly \textyen 703--\textyen 910. \textyen 557 is far outside anything the data ever saw.
+\end{alertblock}
+
+\bigskip
+
+$\theta$ is a \textbf{local slope}, not a global demand curve.
+
+\bigskip
+
+What the evidence supports: \emph{do not raise}, and a modest cut is worth testing --- deliberately, with randomised variation.
+
+\small And the formula inherits the interval: with $\kappa = -\theta$, $P^* = 200\,\kappa/(\kappa - 1)$ maps the CI $\kappa \in [1.51, 1.64]$ to $P^* \in [\text{\textyen}513, \text{\textyen}592]$ --- the \emph{whole range} outside the support.
+\end{frame}
+
+% ====================================================================
+\section{What the Logs Do Not Contain}
+% ====================================================================
+
+% [RELEASE R5 — the override reveal]
+\begin{frame}{One More Thing, Says Wen}
+
+Property revenue managers \textbf{override} the system on about \textbf{8\% of nights}.
+
+\bigskip
+
+They override on local knowledge: a wedding block, a competitor closing a wing, a conference that never reached the event calendar.
+
+\bigskip
+
+\begin{center}
+The override is logged. \textcolor{warnred}{\textbf{The reason is not.}}
+\end{center}
+
+\bigskip
+\pause
+
+Return to the assumption from earlier:
+
+\begin{center}
+\emph{``The RM system is the only thing setting rates.''} \quad \textcolor{warnred}{\textbf{False.}}
+\end{center}
+
+\bigskip
+
+Something moves both the rate and bookings, and it is not in $X$. No amount of flexibility in $g$ repairs that.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{How Strong Would It Have To Be?}
+
+The estimate sits $0.24$ away from break-even. Ask how much residual variation a hidden factor would need to explain --- in \textbf{both} rate and bookings --- to close that gap.
+
+\begin{center}
+\small
+\begin{tabular}{crl}
+\toprule
+\textbf{Partial $R^2$ on each side} & \textbf{Largest bias} & \\
+\midrule
+1\%  & $0.03$ & \\
+2\%  & $0.06$ & \\
+5\%  & $0.15$ & \\
+10\% & $0.32$ & \textcolor{warnred}{reaches break-even} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+\pause
+
+The overrides would have to be doing a great deal of work. The recommendation survives --- \textbf{conditionally}.
+
+\bigskip
+
+\begin{center}
+\small Sensitivity analysis does not prove the assumption. It prices the doubt.
+\end{center}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Key Takeaways}
+
+\begin{itemize}
+    \item \spinestep{Estimand.} A local elasticity, holding the system's signals fixed, held against the break-even. With heterogeneous slopes, a variance-weighted average over the nights where rates moved.
+    \item \spinestep{Identification.} The RM system is the assignment mechanism. Unconfoundedness given its signals --- measured as of pricing time --- and overlap: rates must move off the rule.
+    \item \spinestep{Estimation.} Controls must enter as flexibly as the system that set the treatment; residualise \emph{both} sides (the bias is second-order in the nuisance errors); \textbf{cross-fit}, with folds and SEs by night.
+    \item \textbf{A good prediction is not a causal estimate.} Attempt 2 had the best $R^2$ and the wrong answer.
+    \item \textbf{None of this survives an unrecorded confounder.} Sensitivity prices the doubt; it does not remove it.
+\end{itemize}
+
+\bigskip
+
+\textbf{Next time:} rates the hotel did \emph{not} choose --- randomised variation, and what it can and cannot identify.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Workshop: Out-of-Fold Arrays, Perturbations, the Truth}
+
+The Meridian logs, simulated with known elasticities. Sixty minutes, scripted.
+
+\medskip
+
+\begin{center}
+\scriptsize
+\begin{tabular}{rlp{8.4cm}}
+\toprule
+\textbf{Min} & \textbf{Slot} & \textbf{Prompt} \\
+\midrule
+7  & Predict (no AI) & Rank four estimates --- pooled, linear controls, in-sample residualised, cross-fitted DML --- by distance from the truth. \\
+10 & Hand calculation (no AI) & Six records, folds $(A, B, A, B, A, B)$: which model predicts which row? If predictions are concatenated in fold order, rows come out as $(1, 3, 5, 2, 4, 6)$ --- what happens to the residuals? \\
+5  & Demonstration & Two-fold cross-fitting; residual on residual; date-clustered SE. \\
+15 & Implement & Your own out-of-fold arrays, placed by held-out row index. \\
+10 & \textbf{Perturbation} & Refit the nuisances in-sample; then with folds by row instead of by night. Record $\widehat\theta$ each time. \\
+8  & \textbf{Comparison} & The four estimates against the simulation's true elasticity (revealed here, not in lecture); binary-treatment version for comparison. \\
+5  & Interpret & One sentence to Wen: which number, and for which nights. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\small \textbf{Close (3 min):} predictions must land on the rows they were made for; in-sample nuisances bias $\widehat\theta$ toward the confounded answer; folds must respect the night, because shocks are shared.
+\end{frame}
+
+\end{document}

@@ -1,0 +1,205 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\begin{document}
+\handoutheader{H3}{Staggered Adoption}{Cohorts, clean comparisons, and what two-way fixed effects really averages}{Meeting 10 (Panel data and DiD)}
+
+\begin{decision}
+Real rollouts are staggered: some stores adopt in March, some in May, some never. The two-way fixed-effects regression that
+works for one adoption date also compares late adopters with early ones that are already treated, without saying so. If effects grow or fade
+over time, its answer can be far from any average effect, even of the wrong sign. This handout builds the estimate from clean
+comparisons instead.
+\end{decision}
+
+\begin{goals}
+  \item define group-time effects with adoption-date potential outcomes;
+  \item identify each group-time effect with never-treated or not-yet-treated comparisons, and handle anticipation;
+  \item show why already-treated units are contaminated controls, and what TWFE averages;
+  \item aggregate group-time effects by event time and overall, and build event studies from clean comparisons;
+  \item describe the design-based alternative: randomised adoption dates.
+\end{goals}
+
+%=====================================================================================
+\sectionone
+
+\subsection{Setup}
+
+Unit $i$ first receives treatment in period $G_i \in \{2, \dots, T\} \cup \{\infty\}$ and stays treated (no reversal); $D_{it} = \ind{t \ge G_i}$. Potential
+outcomes are indexed by adoption date: $Y_{it}(g)$, with $Y_{it}(\infty)$ if never treated; we observe $Y_{it} = Y_{it}(G_i)$. Units sharing an adoption
+date form a \emph{cohort}. The building block is the \emph{group-time average treatment effect on the treated}
+\[
+  \ATT(g, t) = \E[Y_{it}(g) - Y_{it}(\infty) \mid G_i = g], \qquad t \ge g .
+\]
+Every reported number (event-study coefficients, overall averages) is an average of these.
+
+\begin{assum}{No anticipation}{noant}
+$Y_{it}(g) = Y_{it}(\infty)$ for all $t < g$.
+\end{assum}
+\begin{assum}{Parallel trends with the never-treated}{ptnev}
+For every cohort $g$ and $t \ge g$: $\E[Y_{it}(\infty) - Y_{i,g-1}(\infty) \mid G_i = g] = \E[Y_{it}(\infty) - Y_{i,g-1}(\infty) \mid G_i = \infty]$.
+\end{assum}
+\begin{assum}{Parallel trends with the not-yet-treated}{ptnyt}
+The same equality holds with $G_i = \infty$ replaced by $G_i = s$ for every $s > t$.
+\end{assum}
+
+\subsection{Identification from clean comparisons}
+
+\begin{prop}{Group-time effects}{gt}
+Under no anticipation and parallel trends with the never-treated, for $t \ge g$,
+\[
+  \ATT(g, t) = \{\E[Y_{it} \mid G=g] - \E[Y_{i,g-1} \mid G=g]\} - \{\E[Y_{it} \mid G=\infty] - \E[Y_{i,g-1} \mid G=\infty]\}.
+\]
+Under parallel trends with the not-yet-treated, the same holds with the never-treated replaced by $\{i : G_i > t\}$.
+\end{prop}
+\begin{proof}
+For cohort $g$ the first brace is $\E[Y_{it}(g) - Y_{i,g-1}(\infty) \mid G=g]$ by no anticipation, which is $\ATT(g,t)$ plus cohort $g$'s untreated change; the
+second brace is the comparison group's untreated change (not-yet-treated units are untreated at $t$ and $g - 1$ by no anticipation); parallel trends
+equates the two untreated changes.
+\end{proof}
+
+Each $\ATT(g,t)$ is a two-by-two DiD with a \emph{clean} control, whose treatment status does not change between the base period and $t$, and with the
+base fixed at $g - 1$. This is the estimator of Callaway and Sant'Anna (2021).
+
+\paragraph{Anticipation moves the base.} If units change behaviour $k$ periods before adoption (training staff off the floor), the base must be $g - k - 1$,
+and a later cohort stops being a clean control once \emph{its} anticipation begins. Build the table of eligible controls and base periods from the calendar
+before computing any effect.
+
+\subsection{Why already-treated units are contaminated controls}
+
+\begin{prop}{Contamination}{contam}
+Let cohort $k$ adopt before cohort $l$, and use $k$ as the control for $l$ between periods $t_0 < l \le t_1$ with $t_0 \ge k$. Under parallel trends for both,
+\[
+  \text{DiD}_{l\ \text{vs}\ k}(t_0, t_1) = \ATT(l, t_1) - [\ATT(k, t_1) - \ATT(k, t_0)].
+\]
+\end{prop}
+\begin{proof}
+Cohort $l$'s change is $\ATT(l, t_1)$ plus its untreated change (no anticipation at $t_0$). Cohort $k$ is treated in both periods, so its change is
+$\ATT(k,t_1) - \ATT(k,t_0)$ plus its untreated change. Parallel trends equates the untreated changes; subtract.
+\end{proof}
+
+The bias is the \emph{change} in the control cohort's own effect: downward if effects grow, upward if they fade, zero if constant.
+
+\subsection{What two-way fixed effects averages}
+
+\begin{prop}{The Goodman-Bacon decomposition (statement)}{bacon}
+With staggered adoption, the TWFE coefficient on $D_{it}$ equals a weighted average of all two-by-two DiDs in the panel: each cohort against the
+never-treated, earlier against later cohorts before the later ones adopt, and later against earlier cohorts after the earlier ones adopt. The weights are
+non-negative, sum to one, and grow with group sizes and with the variance of treatment within each pair; they are set by the adoption calendar, not by
+any estimand.
+\end{prop}
+\begin{proof}
+A Frisch--Waugh--Lovell decomposition of the variance of the two-way demeaned $D_{it}$; see Goodman-Bacon (2021) for the weights.
+\end{proof}
+
+The ``later versus earlier'' terms are the contaminated comparisons of Result~\ref{prop:contam}. In terms of the underlying $\ATT(g,t)$, some implicit weights
+can be negative, so TWFE can lie outside the range of every group-time effect. With one adoption date there are no such terms, which is why TWFE is fine in
+that case.
+
+\subsection{Aggregation and event studies}
+
+\paragraph{By event time.} For $e \ge 0$, $\ATT(e) = \sum_g \Pr(G = g \mid g + e \le T)\,\ATT(g, g+e)$: the average effect $e$ periods after adoption, across
+cohorts observed that long. This is what a rollout decision needs: a unit adopting tomorrow starts at $e = 0$.
+
+\paragraph{Overall.} Average all treated $\ATT(g,t)$ cells weighted by cohort size, or average within cohort first. It depends on how long each cohort has been
+observed.
+
+\paragraph{Event studies.} Pre-period placebo contrasts (cohort $g$'s one-period change relative to the control, before $g$) should be near zero. Build event
+studies from clean comparisons: event-time dummies in a TWFE regression inherit the contaminated comparisons and can show spurious pre-trends.
+
+\paragraph{Imputation.} An alternative estimator fits unit and period effects on untreated observations only (never-treated units and not-yet-treated periods),
+imputes $Y_{it}(\infty)$ for treated cells, and averages $Y_{it} - \hat Y_{it}(\infty)$ with chosen weights (Borusyak, Jaravel and Spiess, 2024). It uses all
+pre-periods efficiently and never uses treated cells as controls.
+
+\subsection{Inference}
+
+Group-time estimates share control units and base periods, and a unit's observations are correlated over time. Cluster by unit (or by the level of adoption);
+for simultaneous bands across event times, use the multiplier bootstrap over units. The number of clusters is the number of units, not unit-periods.
+
+\subsection{The design-based alternative: randomise the dates}
+
+\begin{prop}{Randomised adoption dates}{random}
+If the adoption date of each unit is assigned at random from a fixed set of dates (independently of potential outcomes), then for each $t$ and each pair of
+cohorts $g \le t < s$, the difference in mean outcomes at $t$ between cohort $g$ and cohort $s$ is unbiased for $\E[Y_{it}(g) - Y_{it}(s)]$, and under no
+anticipation, for $\E[Y_{it}(g) - Y_{it}(\infty)]$ over the randomised population.
+\end{prop}
+\begin{proof}
+Random assignment of dates makes cohort membership independent of the potential-outcome vector, so each cohort's mean at $t$ is unbiased for the
+population mean of $Y_{it}(g)$ (Meeting~1). No anticipation gives $Y_{it}(s) = Y_{it}(\infty)$ for $t < s$.
+\end{proof}
+
+No parallel-trends assumption is needed: the comparison is identified by design, as in an experiment, and the design-based inference of Meeting~2
+applies with the randomised dates (Athey and Imbens, 2022). ``Stagger the rest at random'' is therefore the cheapest upgrade to any rollout plan.
+
+\begin{pitfall}[staggered DiD errors]
+TWFE with staggered adoption; event-time dummies in TWFE; a base period inside an anticipation window; later cohorts used as controls after their
+anticipation begins; choosing which units adopt first by expected benefit when the order could have been randomised.
+\end{pitfall}
+
+%=====================================================================================
+\sectiontwo
+
+\paragraph{Setting.} FitLife extends app booking in waves. Club group E adopts in month 2, group L in month 3, group N not in the window. The outcome is
+classes booked per club per day. A common trend of $+1$ per month runs through all groups; the true effect is $6$ in the first month after adoption and
+$3$ in the second (members try the app, then some revert).
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+& Month 1 & Month 2 & Month 3 \\
+\midrule
+E (adopts month 2) & 40 & \textbf{47} & \textbf{45} \\
+L (adopts month 3) & 50 & 51 & \textbf{58} \\
+N (never) & 60 & 61 & 62 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Clean comparisons.} $\ATT(E,2) = (47 - 40) - (61 - 60) = 6$; $\ATT(E,3) = (45 - 40) - (62 - 60) = 3$; $\ATT(L,3) = (58 - 51) - (62 - 61) = 6$. Event-time path
+$(\ATT(0), \ATT(1)) = (6, 3)$; overall average $5$.
+
+\paragraph{The contaminated comparison.} L against E, months $2 \to 3$: $(58 - 51) - (45 - 47) = 9$. Result~\ref{prop:contam} predicts
+$\ATT(L,3) - [\ATT(E,3) - \ATT(E,2)] = 6 - (3 - 6) = 9$: E's effect \emph{fell} by $3$, and the comparison credited the fall to L as extra gain.
+
+\paragraph{TWFE.} With equal group sizes the Goodman-Bacon weights are $\tfrac13$ (E vs N), $\tfrac13$ (L vs N), $\tfrac16$ (E vs L before L adopts) and $\tfrac16$ (L vs E after
+E adopts). The four two-by-two estimates are $4.5$, $6$, $6$ and $9$, so
+$\hat\beta_{\text{TWFE}} = \tfrac13(4.5) + \tfrac13(6) + \tfrac16(6) + \tfrac16(9) = 6$, which least squares on the nine cells confirms. TWFE overstates the overall average of
+$5$ and reports the first-month effect as if it lasted.
+
+\paragraph{The decision.} If the app is worth extending only when it adds at least $5.5$ classes a day in steady state, TWFE says yes and the event-time path
+says the gain fades to $3$: no, unless the fade can be reversed.
+
+\begin{exercise}[computation]
+Add a fourth month in which both E's and L's effects are $3$ (E: 46, L: 56, N: 63). (a) Compute $\ATT(L,4)$ with N as the control and base month 2.
+(b) Compute the same comparison with E as the control. (c) Explain the difference with Result~\ref{prop:contam}.
+\end{exercise}
+\answer{(a) $(56 - 51) - (63 - 61) = 3$. (b) $(56 - 51) - (46 - 47) = 5 + 1 = 6$. (c) E is treated in both month 2 and month 4, and its own effect fell from $6$ to
+$3$ between them; Result~\ref{prop:contam} gives $\ATT(L,4) - [\ATT(E,4) - \ATT(E,2)] = 3 - (3 - 6) = 6$. The already-treated control credits E's fade to L.}
+
+\begin{exercise}[judgement]
+FitLife's operations team wants the next wave to go to the clubs ``most ready for the app''. What does that do to the evaluation, and what would you
+propose?
+\end{exercise}
+\answer{Readiness probably predicts both adoption timing and the size of the effect (and perhaps trends), which threatens parallel trends and makes
+early-cohort effects unrepresentative of later ones. Propose randomising the order of the remaining waves (possibly within readiness strata), so cohort
+comparisons are identified by design (Result~\ref{prop:random}).}
+
+%=====================================================================================
+\sectionthree
+
+\subsection*{Annotated reading}
+\begin{readinglist}
+\reading{Goodman-Bacon (2021), ``Difference-in-differences with variation in treatment timing'', \emph{Journal of Econometrics}}{The decomposition of
+TWFE into two-by-two comparisons}{Sections 1--3}{2}
+\reading{Callaway and Sant'Anna (2021), ``Difference-in-differences with multiple time periods'', \emph{Journal of Econometrics}}{Group-time effects,
+aggregation and inference}{Sections 1--4}{2}
+\reading{Sun and Abraham (2021), ``Estimating dynamic treatment effects in event studies with heterogeneous treatment effects'', \emph{Journal of
+Econometrics}}{Why TWFE event studies mislead, and a fix}{Sections 1--3}{3}
+\reading{Borusyak, Jaravel and Spiess (2024), ``Revisiting event-study designs: robust and efficient estimation'', \emph{Review of Economic
+Studies}}{The imputation estimator}{Sections 1--3}{3}
+\reading{de Chaisemartin and D'Haultf\oe uille (2020), ``Two-way fixed effects estimators with heterogeneous treatment effects'', \emph{AER}}{Negative
+weights in TWFE}{Sections I--III}{3}
+\reading{Athey and Imbens (2022), ``Design-based analysis in difference-in-differences settings with staggered adoption'', \emph{Journal of
+Econometrics}}{Randomised adoption dates and design-based inference}{Sections 1--4}{3}
+\reading{Roth, Sant'Anna, Bilinski and Poe (2023), ``What's trending in difference-in-differences?'', \emph{Journal of Econometrics}}{A synthesis of
+the literature}{All}{2}
+\end{readinglist}
+
+\end{document}

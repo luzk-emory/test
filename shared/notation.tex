@@ -1,0 +1,66 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\newgeometry{top=0.8in,bottom=0.8in,left=1in,right=1in}
+\begin{document}
+\begin{center}
+{\small\textcolor{extgrey}{SHBI-GB 7342 \quad Applied Causal Inference for Business \quad Version 4}}\\[0.5em]
+{\LARGE\bfseries Notation sheet}\\[0.3em]
+{\normalsize Used in every set of notes and every handout}
+\end{center}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Units, treatments, outcomes}} \\
+$i = 1, \dots, n$ & units (customers, clubs, zone-hours, cities) \\
+$D_i \in \{0,1\}$ & treatment received; a continuous treatment (a log price) is also written $D$ \\
+$Z_i$ & an assignment or encouragement that is randomised but may not equal receipt \\
+$X_i$ & pre-treatment covariates (measured before the treatment decision) \\
+$Y_i(1), Y_i(0)$ & potential outcomes with and without treatment \\
+$Y_i = D_i Y_i(1) + (1-D_i)Y_i(0)$ & observed outcome (consistency) \\
+$\tau_i = Y_i(1) - Y_i(0)$ & individual effect \\
+$Y_{it}(g)$ & panel potential outcome in period $t$ if first treated in period $g$; $g = \infty$ means never \\
+\addlinespace
+\multicolumn{2}{@{}l}{\textit{Estimands}} \\
+$\ATE$, $\ATT$, $\ATU$ & average effect overall, among the treated, among the untreated \\
+$\tau(x) = \E[\tau_i \mid X_i = x]$ & conditional average treatment effect (CATE) \\
+$\text{GATE}_k$ & average effect in group $k$ \\
+$V(\pi)$, $G(\pi)$ & value of policy $\pi$; its gain over treating no one \\
+$\text{ITT}$, $\text{LATE}$ & intention-to-treat effect; local average treatment effect for compliers \\
+$\ATT(g,t)$ & effect in period $t$ for units first treated in period $g$ \\
+\addlinespace
+\multicolumn{2}{@{}l}{\textit{Nuisance functions}} \\
+$e(x) = \Pr(D=1 \mid X=x)$ & propensity score (known in an experiment) \\
+$\mu_d(x) = \E[Y \mid D=d, X=x]$ & outcome regression in arm $d$ \\
+$\ell(x) = \E[Y \mid X=x]$ & outcome regression ignoring treatment \\
+$r(x) = \E[D \mid X=x]$ & treatment regression (equals $e(x)$ for binary $D$) \\
+$\phi_i$ & doubly robust (AIPW) score for unit $i$ \\
+$F_d(y \mid x)$ & $\Pr(Y(d) \le y \mid X = x)$, conditional distribution of a potential outcome \\
+\addlinespace
+\multicolumn{2}{@{}l}{\textit{Economics of the decision}} \\
+$m$ & margin earned per unit of outcome (per purchase, per renewal) \\
+$c$ & cost of the treatment; whether it is paid per unit treated or per redemption is always stated \\
+$\tau^{\ast}$ & break-even effect: the smallest effect at which treating pays \\
+$v_i$, $c_i$ & incremental value and cost of treating unit $i$ (allocation) \\
+$\lambda$ & shadow price of a budget \\
+$\Gamma_i$ & doubly robust score of unit $i$'s net value (policy learning) \\
+$c_u$, $c_o$, $\kappa$ & cost per unit short and per unit over a capacity; critical fractile $c_u/(c_u + c_o)$ \\
+\addlinespace
+\multicolumn{2}{@{}l}{\textit{Estimation and inference}} \\
+$\hat\theta$, $\hatt$ & estimates (hats always mean ``computed from data'') \\
+$\SE$, $\widehat{\SE}$ & standard error; its estimate \\
+$n_1, n_0$ & numbers treated and untreated \\
+$s_d^2$ & sample variance of the outcome in arm $d$ \\
+$\indep$ & statistically independent \\
+$\ind{A}$ & indicator: 1 if $A$ is true, 0 otherwise \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Conventions.} Estimand first, then identification, then estimation. Results are numbered within
+each set of notes (Result 1.3 is the third numbered item in Section 1). Proofs are short and give the idea
+first. Money is in yuan (¥) unless a case says otherwise.
+\end{document}

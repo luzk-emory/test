@@ -1,0 +1,362 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\begin{document}
+\notesheader{2}{Experiments}{Uncertainty from the design, decisions under it, and designing the next test}
+
+\begin{decision}
+An A/B test has run. The business needs to know whether the treatment pays for the population it will be
+rolled out to, which is a different question from whether the effect is zero. Answering it takes an interval
+on the right quantity, a test against the break-even, and a clear account of what randomisation does and
+does not guarantee.
+\end{decision}
+
+\begin{goals}
+  \item test the sharp null by randomisation and compute Neyman's standard error, and say why the usual SE
+  is conservative;
+  \item put an interval on net value and test against the break-even rather than zero;
+  \item reduce variance with a pre-treatment covariate (CUPED) and size an experiment for a decision;
+  \item choose the unit of randomisation, compute a design effect, and cluster standard errors correctly;
+  \item recognise the threats that no formula repairs: post-assignment exclusions, sample-ratio mismatch,
+  peeking, many metrics, interference.
+\end{goals}
+
+%=====================================================================================
+\sectionone
+
+\subsection{Setup and the estimand}
+
+A completely randomised experiment draws $n_1$ of $n$ units for treatment and leaves $n_0 = n - n_1$ as
+controls; $\hatt = \bar Y_1 - \bar Y_0$. In the \emph{design-based} frame the units and their potential
+outcomes are fixed and the only randomness is the draw. The estimand is
+$\tau_S = \frac1n\sum_i \{Y_i(1) - Y_i(0)\}$. Write
+$S_d^2 = \frac{1}{n-1}\sum_i (Y_i(d) - \bar Y(d))^2$ for the spread of $Y(d)$ across units and $S_\tau^2$ for
+the spread of $\tau_i$. In the \emph{superpopulation} frame units are an i.i.d.\ sample with
+$\sigma_d^2 = \Var(Y(d))$, and the estimand is the population ATE.
+
+\subsection{Identification after the draw}
+
+Meeting~1 showed $\E_D[\hatt] = \tau_S$. Two conditions keep that true after the coin has been tossed.
+
+\paragraph{Analyse as drawn.} Compare the arms the coin produced. Dropping units on anything measured
+after assignment (``opened the app'', ``redeemed'', ``stayed to the end'') compares different kinds of unit
+whenever treatment affects that variable. The difference in means over all assigned units identifies the
+effect of \emph{assignment}, the intention-to-treat (ITT) effect, which is what a decision to send an offer
+needs. When uptake is partial, the first stage $\E[D \mid Z=1] - \E[D \mid Z=0]$ is also identified, and
+their ratio is an effect among compliers under further assumptions (Handout H1).
+
+\paragraph{The unit of assignment.} If unit $i$'s outcome depends on unit $j$'s treatment, the difference
+in means compares two mixtures of spillover conditions, not ``everyone treated'' with ``no one treated''.
+This is a failure of identification; no variance formula repairs it. The remedy is a unit of assignment
+large enough to contain the spillover (Section~1.7 and Handout H4).
+
+\paragraph{Sample-ratio mismatch.} Check the realised arm sizes against the planned allocation with a
+chi-squared test, $\chi^2 = \sum_d (n_d - \E n_d)^2/\E n_d$ with one degree of freedom. A tiny $p$-value (in
+practice below about $0.001$) means the draw or the logging is broken, for example a bot filter that removed
+more users in one arm. Then the arms are no longer a random split, and no outcome analysis should proceed
+until the cause is found.
+
+\subsection{Uncertainty from the design}
+
+\paragraph{Fisher: could the draw alone explain the result?} Fisher's approach holds the units fixed and asks
+whether the draw alone could have produced the observed gap.
+\begin{prop}{Randomisation test of the sharp null}{fisher}
+Under the sharp null $Y_i(1) = Y_i(0)$ for every $i$, the observed outcomes are both potential outcomes,
+so the distribution of any statistic over the $\binom{n}{n_1}$ equally likely draws is known exactly. The
+$p$-value is the share of draws giving a statistic at least as extreme as the observed one.
+\end{prop}
+\begin{proof}
+Under the null the outcome vector does not depend on the assignment; each draw maps to a known statistic
+and has probability $1/\binom{n}{n_1}$.
+\end{proof}
+The test needs no model and no sampling assumption, and it respects the design automatically (clusters and
+strata are re-drawn as they were drawn). Its limitation is its null: ``no effect for anyone'', not ``zero
+average effect'' or ``net value below zero''.
+
+\paragraph{Neyman: how far does one draw land?} Neyman's approach targets the average effect $\tau_S$ and asks
+how far one draw's estimate can land from it.
+\begin{prop}{Neyman's variance}{neyman}
+Holding the potential outcomes fixed,
+\[
+  \Var_D(\hatt) = \frac{S_1^2}{n_1} + \frac{S_0^2}{n_0} - \frac{S_\tau^2}{n}.
+\]
+\end{prop}
+\begin{proof}
+Idea: each arm mean is a sample drawn without replacement, and the two arms partition the units, so their
+means are negatively correlated. Without replacement, $\Var_D(\bar Y_d) = S_d^2/n_d - S_d^2/n$, and
+$\Cov_D(\bar Y_1, \bar Y_0) = -S_{10}/n$ with $S_{10}$ the covariance of $Y(1)$ and $Y(0)$ across units.
+Combining, the terms over $n$ sum to $(S_1^2 + S_0^2 - 2S_{10})/n = S_\tau^2/n$.
+\end{proof}
+
+\begin{prop}{The usual variance estimator is conservative}{conservative}
+With $s_d^2$ the sample variance in arm $d$, $\widehat\Var = s_1^2/n_1 + s_0^2/n_0$ satisfies
+$\E_D[\widehat\Var] = S_1^2/n_1 + S_0^2/n_0 \ge \Var_D(\hatt)$, with equality if and only if every unit has
+the same effect.
+\end{prop}
+\begin{proof}
+Within an arm the units are a simple random sample of the $n$ values of $Y(d)$, so $s_d^2$ is unbiased for
+$S_d^2$. The gap is $S_\tau^2/n \ge 0$.
+\end{proof}
+
+The dropped term involves the joint distribution of $Y(1)$ and $Y(0)$, which no experiment reveals:
+conservatism is the price of not knowing individual effects. Example: 1{,}000 customers made of 300 sure
+things, 200 persuadables, 100 do-not-disturbs and 400 lost causes, split 500/500, have $\tau_S = 0.10$,
+$S_1^2 = 250/999$, $S_0^2 = 240/999$ and $S_\tau^2 = 290/999$. The true standard deviation over draws is
+$0.026$; the usual SE is $0.031$ (Figure~1).
+
+\begin{prop}{Superpopulation variance}{superpop}
+If units are i.i.d.\ draws and assignment is independent of potential outcomes,
+$\Var(\hatt) = \sigma_1^2/n_1 + \sigma_0^2/n_0$, estimated by the same $\widehat\Var$.
+\end{prop}
+\begin{proof}
+Given the assignment, $\bar Y_1$ and $\bar Y_0$ are means of independent draws from disjoint units, so their
+variances add.
+\end{proof}
+
+The same formula has two readings: a conservative estimate of the design variance for the units in the test, and
+the exact variance for a population they were sampled from. The second needs a sampling assumption; the
+first needs only the draw log. The same SE is what OLS on a dummy reports when heteroskedasticity-robust
+(HC2) standard errors are requested; the default homoskedastic SE is wrong when arms differ in size and
+variance.
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=0.78\linewidth, height=5.2cm, domain=0:0.2, samples=120, xlabel={$\hat\tau$ over draws},
+  ylabel={density}, ytick=\empty, axis lines=left, legend style={draw=none, font=\footnotesize, at={(0.98,0.95)}, anchor=north east},
+  xtick={0,0.05,0.10,0.15,0.20}, xticklabel style={/pgf/number format/fixed}]
+\addplot[thick, sbgreen] {exp(-(x-0.10)^2/(2*0.026^2))/(0.026*sqrt(2*pi))};
+\addplot[thick, dashed, noteblue] {exp(-(x-0.10)^2/(2*0.031^2))/(0.031*sqrt(2*pi))};
+\legend{true randomisation distribution (SD $0.026$), normal with the usual SE ($0.031$)}
+\end{axis}
+\end{tikzpicture}
+
+\small Figure 1. The usual SE describes a wider distribution than the one the draw actually produces.
+\end{center}
+
+\paragraph{Tests and intervals.} By a central limit theorem over draws, $(\hatt - \tau)/\widehat\SE$ is
+approximately standard normal (conservatively so in the design-based frame). The interval
+$\hatt \pm 1.96\,\widehat\SE$ covers the estimand in at least about 95\% of draws. It is the set of values the
+test does not reject; zero is one point in it, with nothing special about it unless the decision is about
+zero.
+
+\subsection{Testing the decision rather than the effect}
+
+Let a treated unit yield margin $m$ per purchase and cost $c$ per purchase (a coupon paid on redemption).
+The net value per unit treated is $V = m\tau - c\,\mu_1 = (m-c)\mu_1 - m\mu_0$ (Meeting~1).
+
+\begin{prop}{Inference on net value}{net}
+$\hat V = (m-c)\bar Y_1 - m\bar Y_0$ is unbiased for $V$ over the draw, with (conservative) variance
+estimate $(m-c)^2 s_1^2/n_1 + m^2 s_0^2/n_0$.
+\end{prop}
+\begin{proof}
+$\hat V$ is a difference in means of the outcomes $(m-c)Y$ among treated and $mY$ among controls, so
+Results~\ref{prop:conservative} and \ref{prop:superpop} apply to those outcomes.
+\end{proof}
+
+Testing $\hatt$ against a plug-in break-even $c\hat p_1/m$ treats an estimate as known; writing the decision
+variable as a linear function of the arm means avoids this. When the cost is per unit treated, the net value
+is $m\tau - c$ and the one-sided test is $H_0: \tau \le c/m$ with $z = (\hatt - c/m)/\widehat\SE$. In general,
+\textbf{put the interval on the quantity the decision is made on.}
+
+\subsection{Transport to another population}
+
+An experiment on population $S$ identifies $\tau_S(x)$ for each $x$ in its support. A decision about a
+population $T$ needs $\tau_T$, a different estimand.
+
+\begin{assum}{Conditional effect invariance}{transport}
+$\tau_T(x) = \tau_S(x)$ for every $x$ in $T$'s support, and that support is contained in $S$'s.
+\end{assum}
+\begin{prop}{Transport by reweighting}{transport}
+Under Assumption~\ref{asm:transport}, $\tau_T = \sum_x \Pr_T(X=x)\,\tau_S(x)$.
+\end{prop}
+\begin{proof}
+Iterated expectations in $T$, then the assumption; $\Pr_S(x) > 0$ wherever $\Pr_T(x) > 0$ by the support
+condition, so every term is estimable.
+\end{proof}
+The assumption fails when the effect depends on something not in $X$ that differs between populations: the
+season, the channel, the price level. A transported effect must also be held against the \emph{target's}
+break-even, which moves with its composition. Types absent from the experiment cannot be reweighted into it.
+
+\subsection{Designing the next experiment}
+
+\paragraph{Fix it in writing first.} Unit of assignment and allocation; the outcome and its window,
+measured for every assigned unit; the decision threshold; the sample size and stopping rule; logged exposure
+and guardrail metrics. Then check the arm sizes on day one.
+
+\begin{prop}{Sample size}{n}
+With $n$ units per arm, a level-$\alpha$ two-sided test has approximate power $1-\beta$ against an effect
+$\delta$ away from the null value when
+\[
+  n = \frac{(z_{1-\alpha/2} + z_{1-\beta})^2(\sigma_1^2 + \sigma_0^2)}{\delta^2}, \quad\text{rounded up.}
+\]
+For a one-sided test replace $z_{1-\alpha/2}$ by $z_{1-\alpha}$.
+\end{prop}
+\begin{proof}
+With $\SE = \sqrt{(\sigma_1^2+\sigma_0^2)/n}$, the test rejects when $\hatt$ exceeds the null by
+$z_{1-\alpha/2}\SE$; under the alternative this has probability $\Pr(Z > z_{1-\alpha/2} - \delta/\SE)$.
+Setting it to $1-\beta$ gives $\delta = (z_{1-\alpha/2} + z_{1-\beta})\SE$; solve for $n$.
+\end{proof}
+
+Inverted, $\text{MDE} = (z_{1-\alpha/2} + z_{1-\beta})\SE$, about $2.8$ SEs at $\alpha = 0.05$ and 80\% power.
+For a decision the null value is the break-even, so $\delta$ is the margin above break-even you would regret
+missing; a test powered for ``is it zero?'' can be badly underpowered for ``does it pay?''. Halving the MDE
+needs four times the sample.
+
+\paragraph{Variance reduction with a pre-treatment covariate.} Let $X$ be fixed before assignment (last
+month's spend, say) and define $Y^{\text{cv}} = Y - \theta(X - \bar X)$.
+
+\begin{prop}{CUPED}{cuped}
+For any fixed $\theta$, $\hatt^{\text{cv}} = \hatt - \theta(\bar X_1 - \bar X_0)$ is unbiased over the draw.
+Within an arm, $\Var(Y - \theta X)$ is minimised at $\theta^\ast = \Cov(Y,X)/\Var(X)$, where it equals
+$\Var(Y)(1-\rho^2)$, $\rho = \mathrm{Corr}(Y, X)$.
+\end{prop}
+\begin{proof}
+$X$ is fixed before a random assignment, so $\E_D[\bar X_1 - \bar X_0] = 0$. The variance
+$\Var(Y) - 2\theta\Cov(Y,X) + \theta^2\Var(X)$ is a quadratic minimised at $\theta^\ast$; substitute.
+\end{proof}
+
+In any one draw $\bar X_1 \ne \bar X_0$, so the adjusted estimate moves; that shift corrects chance imbalance.
+Estimating $\theta$ from the pooled data costs nothing asymptotically. CUPED is regression adjustment; adding
+the interaction $D \times (X - \bar X)$ (Lin's estimator) guarantees adjustment never hurts in large samples.
+The required sample size scales by $1 - \rho^2$. If $X$ were affected by treatment, the correction would
+subtract part of the effect.
+
+\subsection{Clustered assignment}
+
+When groups (stores, delivery zones, companies) are randomised, the design was randomised $J$ times, not once
+per unit, and outcomes within a group are correlated.
+
+\begin{prop}{Design effect}{deff}
+For a cluster of $m$ units with common variance $\sigma^2$ and pairwise correlation $\rho_c$,
+$\Var(\text{cluster mean}) = \tfrac{\sigma^2}{m}[1 + (m-1)\rho_c]$: the variance is inflated by
+$\text{DEFF} = 1 + (m-1)\rho_c$ relative to $m$ independent units.
+\end{prop}
+\begin{proof}
+$\Var(\tfrac1m\sum_j Y_j) = \tfrac{1}{m^2}[m\sigma^2 + m(m-1)\rho_c\sigma^2]$.
+\end{proof}
+
+With $J$ clusters of size $m$ the effective sample is $Jm/\text{DEFF}$; $\rho_c = 0.01$ and $m = 400$ give
+$\text{DEFF} = 4.99$. Either compare cluster means ($J$ observations) or cluster standard errors at the level
+of assignment. With fewer than about 40 clusters use small-sample corrections or randomisation inference over
+cluster assignments. Choose the smallest unit that contains the spillover: the household for shared codes,
+the store for staff behaviour, catchment clusters for customers who use nearby stores, time blocks with
+washouts for offers that carry over.
+
+\subsection{Peeking and many metrics}
+
+The 5\% error rate of a test holds for one look at a sample size fixed in advance. Stopping at the first
+$p < 0.05$ over ten equally spaced looks raises the false-positive rate under no effect to about 19\%.
+Either look once, or use a method built for monitoring (group-sequential boundaries or always-valid tests,
+Section~3). Likewise twenty metrics at 5\% yield about one false positive when nothing works. Declare one
+primary metric tied to the decision; treat others as guardrails or exploration; when several tests drive the
+decision, control the family-wise error (Holm's step-down procedure: order the $p$-values and compare the
+$k$-th smallest with $\alpha/(K - k + 1)$, stopping at the first failure).
+
+\begin{pitfall}[what no standard error can fix]
+Excluding units on post-assignment behaviour; reading a test with a sample-ratio mismatch; analysing a
+store-randomised test with customer-level SEs; stopping when the dashboard turns green; reporting whichever
+of twenty metrics moved.
+\end{pitfall}
+
+\checkpoint{A checkout test reports a 0.8-point lift with $p = 0.003$, using 30 metrics, peeked at daily, with
+users randomised but the page cached by region. List every reason to doubt the decision, in order of how much
+it matters.}
+
+%=====================================================================================
+\sectiontwo
+
+\paragraph{Setting.} QuickBite, a food-delivery platform, tests a ¥10 discount on a customer's second order.
+The outcome $Y$ is the customer's gross margin over the next 30 days, before the discount cost. The discount
+costs ¥1.50 per customer offered on average (most do not redeem), so the break-even is $\tau^\ast = $ ¥1.50.
+Customers are randomised 50/50, $n_1 = n_0 = 4{,}000$.
+
+\paragraph{Step 1: checks.} Arm sizes match the plan. (In an earlier QuickBite test that planned a 50/50 split
+of 20{,}000 and logged 10{,}240 and 9{,}760, $\chi^2 = 2 \times 240^2/10{,}000 = 11.52$, $p = 0.0007$: that test
+was not read until a logging fault was fixed.)
+
+\paragraph{Step 2: the raw estimate.} $\bar Y_1 = 21.80$, $\bar Y_0 = 19.90$, $s_1 = s_0 = 18$:
+\[
+  \hatt = 1.90, \qquad \widehat\SE = 18\sqrt{2/4{,}000} = 0.402, \qquad \text{95\% CI } [1.11, 2.69].
+\]
+Against zero $z = 4.72$; against the break-even, $z = (1.90 - 1.50)/0.402 = 0.99$, one-sided $p = 0.16$. The
+discount certainly does something; whether it pays is unclear.
+
+\paragraph{Step 3: CUPED.} Pre-period 30-day margin has $\rho = 0.7$ with $Y$ and $\hat\theta = 0.75$; by chance
+$\bar X_1 - \bar X_0 = 0.08$. So $\hatt^{\text{cv}} = 1.90 - 0.75 \times 0.08 = 1.84$ and
+$\widehat\SE \approx 0.402\sqrt{1 - 0.49} = 0.287$. The interval is $[1.28, 2.40]$ and $z = (1.84 - 1.50)/0.287 = 1.18$,
+$p = 0.12$: narrower by 29\%, still not clear of the break-even.
+
+\paragraph{Step 4: the follow-up's size.} To detect an effect ¥0.50 above break-even, one-sided at 5\% with
+80\% power and CUPED variance $18^2 \times 0.51 = 165.2$ per arm:
+$n = (1.645 + 0.842)^2 \times 2 \times 165.2/0.50^2 = 8{,}174.3$, so $8{,}175$ per arm. The current test's one-sided MDE above
+break-even is $2.486 \times 0.287 = $ ¥0.71.
+
+\paragraph{Step 5: had it been randomised by delivery zone.} With 500 customers per zone and $\rho_c = 0.01$,
+$\text{DEFF} = 1 + 499 \times 0.01 = 5.99$: twenty zones (10{,}000 customers) carry the information of about
+$1{,}670$ independent customers, and the SE must be clustered by zone.
+
+\paragraph{Step 6: assignment versus receipt.} Forty per cent of offered customers redeemed. The ITT of ¥1.84
+is the effect of \emph{offering}, the number the offer decision needs. The ratio $1.84/0.40 = $ ¥4.60 estimates
+the effect among customers who redeem because they were offered (Handout H1), useful for understanding the
+mechanism but not to be held against a per-offer cost.
+
+\paragraph{Recommendation.} Do not roll out yet: the effect is real but not shown to exceed break-even. Run the
+follow-up at about 8{,}200 per arm with CUPED and 30-day margin declared as the primary metric.
+
+\begin{exercise}[computation]
+QuickBite plans the follow-up by zone instead: zones of 400 customers, $\rho_c = 0.005$, CUPED variance as
+above. How many zones per arm give the same power for a ¥0.50 margin above break-even?
+\end{exercise}
+\answer{$\text{DEFF} = 1 + 399 \times 0.005 = 2.995$. Customers needed per arm: $8{,}175 \times 2.995 \approx 24{,}480$, so
+$24{,}480/400 \approx 61.2$, i.e.\ 62 zones per arm. (With so many zones the cluster-robust SE is reliable.)}
+
+\begin{exercise}[judgement]
+Marketing proposes to report the effect only among customers who opened the discount notification, ``because
+the others never saw it''. Explain what this compares and when, if ever, it would equal an effect of the
+discount.
+\end{exercise}
+\answer{Opening is measured after assignment and the notification itself changes who opens, so treated
+openers are compared with control customers who opened something different (or are a different mix of
+people). The comparison carries selection bias. It equals an effect only if opening were unaffected by
+assignment and unrelated to potential outcomes, which is implausible. Report the ITT; for the effect among
+those who engage, use assignment as an instrument (Handout H1).}
+
+%=====================================================================================
+\sectionthree
+
+\begin{extension}[More on randomisation inference]
+Fisher tests extend to any statistic (rank sums, trimmed means) and to sharp nulls of a constant effect
+$\tau_0$; inverting them over $\tau_0$ gives a confidence set. Under complete randomisation Neyman's
+variance can be tightened using bounds on $S_\tau^2$ (Aronow, Green and Lee, 2014).
+\end{extension}
+
+\begin{extension}[Stratified designs and ratio metrics]
+Randomising within strata of a strong predictor removes chance imbalance by design; the estimator is the
+stratum-weighted difference and its variance sums the within-stratum variances. Ratio metrics (revenue per
+session) have numerator and denominator in both arms; their standard error needs the delta method, and
+randomising users while analysing sessions needs clustering by user.
+\end{extension}
+
+\begin{extension}[Sequential testing]
+Group-sequential designs spend the error rate over planned looks (O'Brien--Fleming, Pocock). The mixture
+sequential probability ratio test gives always-valid $p$-values that may be checked at any time.
+\end{extension}
+
+\subsection*{Annotated reading}
+\begin{readinglist}
+\reading{Imbens and Rubin (2015), \emph{Causal Inference for Statistics, Social, and Biomedical
+Sciences}}{Fisher and Neyman inference in the design-based frame, with proofs}{Ch.\ 5--6, 9}{2}
+\reading{Kohavi, Tang and Xu (2020), \emph{Trustworthy Online Controlled Experiments}}{The practitioner's
+checklist: SRM, guardrails, peeking, ratio metrics}{Ch.\ 3, 17, 21}{1}
+\reading{Deng, Xu, Kohavi and Walker (2013), ``Improving the sensitivity of online controlled experiments'',
+\emph{WSDM}}{The original CUPED paper}{All}{1}
+\reading{Lin (2013), ``Agnostic notes on regression adjustments to experimental data'', \emph{Annals of
+Applied Statistics}}{Why the interacted adjustment never hurts asymptotically}{Sections 1--3}{3}
+\reading{Abadie, Athey, Imbens and Wooldridge (2023), ``When should you adjust standard errors for
+clustering?'', \emph{QJE}}{Cluster at the level of assignment, and why}{Sections 1--3}{2}
+\reading{Johari, Koomen, Pekelis and Walsh (2022), ``Always valid inference'', \emph{Operations
+Research}}{Continuous monitoring without inflating errors}{Sections 1--4}{3}
+\reading{Handout H4, \emph{Interference and marketplace experiments}}{What to do when units affect each
+other}{All}{2}
+\end{readinglist}
+
+\end{document}

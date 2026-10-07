@@ -1,0 +1,20 @@
+# build output
+build/
+*.aux
+*.log
+*.out
+*.toc
+*.nav
+*.snm
+*.vrb
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.console
+# generated PDFs (rebuild with shared/build_all.sh); slide figures in meetings/m08 are tracked
+pdf/
+syllabus/*.pdf
+# system and Python
+.DS_Store
+__pycache__/
+*.npy

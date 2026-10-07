@@ -1,0 +1,244 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\begin{document}
+\notesheader{11}{Synthetic Control}{One treated unit, and a comparison built from many}
+
+\begin{decision}
+A change was made in one city, one region or one flagship store. No single untreated unit looks like it, and picking comparison
+units by hand invites picking the ones that flatter the result. Synthetic control builds the comparison by a rule fixed in advance:
+a weighted combination of untreated units that tracks the treated unit before the change.
+\end{decision}
+
+\begin{goals}
+  \item state the synthetic control estimator and explain its constraints;
+  \item justify it with a factor model and say why a long, close pre-period fit matters;
+  \item design before the post-period: donor pool, fitting window, held-out check;
+  \item use in-space and in-time placebos and leave-one-out, and say when a placebo rank is a $p$-value;
+  \item recognise its limits (extreme units, spillovers, anticipation) and relate it to DiD, synthetic DiD and matrix completion.
+\end{goals}
+
+%=====================================================================================
+\sectionone
+
+\subsection{Setup}
+
+Unit $1$ is treated after period $T_0$; units $j = 2, \dots, J+1$ form the \emph{donor pool} and are never treated in the window. Outcomes
+$Y_{jt}$ are observed for $t = 1, \dots, T$. In adoption-date notation the target is
+$\tau_t = Y_{1t}(T_0 + 1) - Y_{1t}(\infty)$ for $t > T_0$, where $Y_{1t}(T_0 + 1) = Y_{1t}$ is observed and $Y_{1t}(\infty)$ must be constructed.
+
+DiD would compare the treated unit's change with the average donor's. With one treated unit that is often unlike any donor (bigger,
+faster-growing, more seasonal), the average donor is a poor counterfactual, and choosing donors by hand is easy to manipulate.
+
+\subsection{The estimator}
+
+\begin{defn}{Synthetic control}{sc}
+Choose weights $w = (w_2, \dots, w_{J+1})$ to minimise $\sum_{t=1}^{T_0}\big(Y_{1t} - \sum_j w_jY_{jt}\big)^2$ subject to $w_j \ge 0$ and
+$\sum_j w_j = 1$. The synthetic control is $\hat Y_{1t}(\infty) = \sum_j w_jY_{jt}$, and $\hatt_t = Y_{1t} - \hat Y_{1t}(\infty)$ for $t > T_0$.
+\end{defn}
+
+Pre-treatment covariates (population, income) can be matched along with pre-period outcomes. Non-negative weights summing to one make the
+synthetic unit an \emph{interpolation}: a point inside the donors' range. Unconstrained weights, as in a regression, can fit the pre-period
+exactly with combinations that have no real-world analogue and behave wildly afterwards. The constraints also make the solution sparse
+and explainable: ``the synthetic city is 51\% city F, 26\% city E and 22\% city D''.
+
+\subsection{Why a close pre-period fit is evidence}
+
+\begin{prop}{The factor-model rationale}{factor}
+Suppose $Y_{jt}(\infty) = \delta_t + \lambda_t^\top\mu_j + \varepsilon_{jt}$ with common time effects $\delta_t$, unit characteristics $\mu_j$ whose influence
+$\lambda_t$ varies over time, and mean-zero noise. If weights match the unit characteristics, $\sum_j w_j\mu_j = \mu_1$, then
+$\E[\hat Y_{1t}(\infty)] = \E[Y_{1t}(\infty)]$ for every $t$, including $t > T_0$.
+\end{prop}
+\begin{proof}
+$\sum_j w_jY_{jt}(\infty) = \delta_t + \lambda_t^\top\sum_j w_j\mu_j + \sum_j w_j\varepsilon_{jt}$, using $\sum_j w_j = 1$; with matched characteristics this is
+$\delta_t + \lambda_t^\top\mu_1$ plus mean-zero noise.
+\end{proof}
+
+The characteristics $\mu_j$ are unobserved, so weights are chosen to match outcomes instead. If a weighted donor combination tracks the treated
+unit over a \emph{long} pre-period, during which $\lambda_t$ moves, it must nearly match $\mu_1$, and so keeps tracking it afterwards. DiD is the
+special case $\lambda_t$ constant. A close fit over a few periods is easy and uninformative: weights can fit noise.
+
+\subsection{Design before the post-period}
+
+As in Meeting~7, the choices that shape the estimate can be fixed before post-period outcomes are seen.
+\begin{enumerate}
+  \item \textbf{Donor pool.} Include units similar in the drivers of the outcome; exclude units affected by the treatment (spillovers) or hit by
+  their own large shocks.
+  \item \textbf{Fitting window and predictors.} Fix them in writing.
+  \item \textbf{Held-out check.} Fit on the early pre-period and check that the synthetic unit predicts the late pre-period.
+  \item Only then open the post-period.
+\end{enumerate}
+Weights tuned after seeing the post-period gap are fitted to it.
+
+\subsection{Inference by placebo}
+
+There is no standard error in the usual sense.
+
+\begin{prop}{When a placebo rank is a $p$-value}{placebo}
+Apply the method to every unit in turn as if it were treated (\emph{in-space placebos}) and compute each unit's ratio
+$r_j = \text{RMSPE}^{\text{post}}_j/\text{RMSPE}^{\text{pre}}_j$ of root mean squared gaps after and before $T_0$. If the treated unit was chosen at
+random among the $J+1$ units, and there is no effect, then the probability that its ratio ranks first is $1/(J+1)$, so rank $k$ gives an exact
+$p$-value of $k/(J+1)$.
+\end{prop}
+\begin{proof}
+Under no effect and random choice of the treated unit, the $J+1$ ratios are exchangeable with respect to which unit is labelled treated, so each rank
+is equally likely for the treated unit.
+\end{proof}
+
+When the treated unit was chosen for a reason (expected to do well, the largest market), the exchangeability fails and the rank is a
+\emph{descriptive} measure of how unusual its gap is, not a $p$-value. The ratio discounts placebo units whose pre-period fit was poor; with a
+near-perfect pre-period fit the ratio becomes very large or undefined, another reason to read it descriptively. With $J$ donors the smallest
+attainable rank-based $p$-value is $1/(J+1)$. \emph{In-time placebos} move the adoption date earlier and check that no gap opens before the true
+date. \emph{Leave-one-out} refits without each positive-weight donor; if the estimate depends on one donor, argue for that donor directly.
+
+\subsection{Limits}
+
+\begin{itemize}
+  \item \textbf{Extreme treated units.} If the treated unit is the largest or fastest-growing, no convex combination reaches it; the pre-period gap is
+  large and the method should not be used as is. Flagship units are exactly this case.
+  \item \textbf{Spillovers} to donors (lost orders to the treated city) bias the gap upwards.
+  \item \textbf{Anticipation}: date $T_0$ to the announcement if behaviour changed then.
+  \item \textbf{Local shocks} coinciding with treatment look like effects. Where untreated units share the area but not the treatment, check them
+  for a gap at the same date.
+\end{itemize}
+
+\subsection{Synthetic control, DiD, and in between}
+
+DiD gives every donor equal weight and allows a constant level difference; synthetic control chooses unequal weights and matches levels. When
+the treated unit's path is parallel to the average donor's they agree; when it is not, DiD carries the difference into the estimate and synthetic
+control corrects it. Synthetic DiD and matrix completion (Section~3) sit between the two and handle several treated units.
+
+\begin{pitfall}[synthetic-control errors]
+Choosing donors after seeing the post-period; a short pre-period; a flagship outside the donors' range; donors that receive spillovers; calling a
+placebo rank a $p$-value when the treated unit was chosen for a reason.
+\end{pitfall}
+
+%=====================================================================================
+\sectiontwo
+
+\paragraph{Setting.} QuickBite launched same-day grocery delivery in one city (A) at the start of quarter 9. Nine other cities (B to J) did not get it in
+the study window. The outcome is monthly orders per 100 residents, averaged over the quarter. The launch is justified if it raises orders by at least
+$1.5$ per 100 residents a month within a year. City A was chosen at random among ten candidate cities by a draw recorded before launch. (Data are
+from a simulation with a factor structure, \texttt{checks/m11\_sim.py}; the planted effect grows from $1.0$ to $2.2$.)
+
+\paragraph{Step 1: design.} Donor pool: the nine cities, none adjacent to A. Fitting window: quarters 1--8. Held-out check: fitting on quarters 1--6
+gives a synthetic city that misses quarters 7--8 by $0.11$ and $0.12$, against pre-period RMSPE $0.036$: acceptable.
+
+\paragraph{Step 2: weights and effect.} Fitting on quarters 1--8 gives weights $0.513$ on F, $0.264$ on E and $0.223$ on D.
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccccccc|cccc}
+\toprule
+Quarter & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
+\midrule
+A (treated) & 14.0 & 16.4 & 16.2 & 16.0 & 18.4 & 20.7 & 20.7 & 20.8 & 23.9 & 26.8 & 27.3 & 27.4 \\
+D & 9.0 & 10.4 & 10.4 & 10.6 & 11.9 & 13.1 & 13.1 & 13.6 & 15.0 & 15.7 & 16.3 & 16.4 \\
+E & 21.9 & 26.1 & 25.6 & 25.1 & 29.1 & 32.9 & 32.5 & 32.4 & 36.1 & 39.9 & 39.8 & 39.3 \\
+F & 12.0 & 13.9 & 13.9 & 13.7 & 15.8 & 17.8 & 17.9 & 17.9 & 19.5 & 21.5 & 21.7 & 21.3 \\
+\midrule
+Synthetic A & 13.95 & 16.34 & 16.21 & 16.02 & 18.45 & 20.74 & 20.69 & 20.78 & 22.89 & 25.07 & 25.28 & 24.97 \\
+Gap & 0.05 & 0.06 & $-0.01$ & $-0.02$ & $-0.05$ & $-0.04$ & 0.01 & 0.02 & 1.01 & 1.73 & 2.02 & 2.43 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Check quarter 1: $0.223 \times 9.0 + 0.264 \times 21.9 + 0.513 \times 12.0 = 13.94$ (13.95 with unrounded weights). The gap averages $1.80$ after launch, above $1.5$.
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=0.7\linewidth, height=5cm, xlabel={quarter}, ylabel={orders per 100 residents}, axis lines=left, xmin=1, xmax=12,
+  legend style={draw=none, font=\footnotesize, at={(0.02,0.98)}, anchor=north west}]
+\addplot[thick, sbgreen] coordinates {(1,14.0) (2,16.4) (3,16.2) (4,16.0) (5,18.4) (6,20.7) (7,20.7) (8,20.8) (9,23.9) (10,26.8) (11,27.3) (12,27.4)};
+\addplot[thick, dashed, noteblue] coordinates {(1,13.95) (2,16.34) (3,16.21) (4,16.02) (5,18.45) (6,20.74) (7,20.69) (8,20.78) (9,22.89) (10,25.07) (11,25.28) (12,24.97)};
+\draw[extgrey] (axis cs:8.5,12) -- (axis cs:8.5,28);
+\legend{city A, synthetic A}
+\end{axis}
+\end{tikzpicture}
+
+\small Figure 1. City A and its synthetic control; launch after quarter 8.
+\end{center}
+
+\paragraph{Step 3: placebos.} Ratios of post- to pre-period RMSPE for every city treated in turn:
+\begin{center}
+\small
+\begin{tabular}{lcccccccccc}
+\toprule
+City & A & F & G & B & D & E & I & H & J & C \\
+\midrule
+Pre RMSPE & 0.04 & 0.09 & 0.04 & 0.13 & 1.20 & 2.75 & 0.56 & 0.12 & 0.38 & 0.16 \\
+Post RMSPE & 1.87 & 0.74 & 0.09 & 0.22 & 1.67 & 3.66 & 0.58 & 0.11 & 0.29 & 0.12 \\
+Ratio & 50.0 & 8.5 & 2.1 & 1.6 & 1.4 & 1.3 & 1.0 & 0.9 & 0.8 & 0.7 \\
+\bottomrule
+\end{tabular}
+\end{center}
+A ranks first of ten. Because A was drawn at random among the ten, Result~\ref{prop:placebo} applies: $p = 1/10$, the smallest possible with nine donors.
+Had A been picked as the most promising city, the same rank would be descriptive only. Cities E and D, the largest and smallest, cannot be fitted by
+the others (pre-RMSPE $2.75$ and $1.20$): their large post-period gaps mean nothing, and the ratio discounts them. A's ratio is inflated by its very
+close pre-fit ($0.04$); read it as ``unusual'', not as a measure of size.
+
+\paragraph{Step 4: robustness.} Dropping F, the largest donor, gives weights on J, D, I and E, pre-RMSPE $0.067$, and post-period gaps averaging $1.69$.
+An in-time placebo at quarter 6 (fitting on quarters 1--5) gives gaps of $-0.19$, $0.06$ and $0.30$ in quarters 6--8, small next to the post-launch gaps.
+
+\paragraph{Step 5: compared with DiD.} An equal-weighted DiD against all nine cities gives $1.46$, below the threshold. A grows faster and swings more
+seasonally than the average city, so the average is not a parallel comparison. Here the method changes the decision.
+
+\begin{exercise}[computation]
+Verify the synthetic value for quarter 12 from the weights, and the quarter-12 gap.
+\end{exercise}
+\answer{$0.223 \times 16.4 + 0.264 \times 39.3 + 0.513 \times 21.3 = 3.66 + 10.38 + 10.93 = 24.96$ with the rounded weights ($24.97$ with
+unrounded ones); gap $27.4 - 24.97 = 2.43$.}
+
+\begin{exercise}[judgement]
+QuickBite's next launch will be in its largest city, which has twice the order rate of any other. Can synthetic control evaluate it? What would you
+propose?
+\end{exercise}
+\answer{Probably not: no convex combination of smaller cities reaches it, so the pre-period fit will be poor and the gap will mix the effect with the
+misfit. Options: match on log outcomes or per-capita rates if the shape, not the level, is what matters; use synthetic DiD (which allows a level shift)
+or augmented synthetic control; or randomise the launch within the city (by district, with staggered dates) so the comparison is designed rather
+than constructed.}
+
+%=====================================================================================
+\sectionthree
+
+\subsection*{Synthetic difference-in-differences}
+
+Synthetic DiD (Arkhangelsky et al., 2021) chooses \emph{unit weights} $\omega_j$ (non-negative, summing to one, with a small ridge penalty) so that the
+weighted donors' pre-period \emph{trend} matches the treated units' up to a constant, and \emph{time weights} $\lambda_t$ on pre-periods so that the weighted
+pre-period resembles the post-period for donors. It then solves the weighted two-way fixed-effects regression
+\[
+  (\hat\tau, \hat\mu, \hat\alpha, \hat\beta) = \arg\min \sum_{i,t}\big(Y_{it} - \mu - \alpha_i - \beta_t - \tau D_{it}\big)^2\,\hat\omega_i\hat\lambda_t .
+\]
+Allowing $\alpha_i$ (a level shift) is what synthetic control lacks; using unequal $\omega_i$ is what DiD lacks. It handles several treated units adopting
+together, and it remains reliable when either parallel trends or the synthetic-control fit is approximately right. Placebo or jackknife variance
+estimators are available.
+
+\subsection*{Matrix completion}
+
+Arrange untreated outcomes in a units-by-periods matrix $\mathbf Y(\infty)$ whose treated cells are missing. Matrix completion (Athey et al., 2021) assumes
+$\mathbf Y(\infty) = \mathbf L + \boldsymbol\varepsilon$ with $\mathbf L$ of low rank (a factor model with few factors) and estimates
+\[
+  \hat{\mathbf L} = \arg\min_{\mathbf L} \sum_{(i,t)\ \text{untreated}} (Y_{it} - L_{it})^2 + \lambda\,\|\mathbf L\|_\ast ,
+\]
+where $\|\cdot\|_\ast$, the sum of singular values, favours low rank. Treated cells' counterfactuals are read from $\hat{\mathbf L}$. Unit and time fixed effects are a
+rank-two special case (DiD); synthetic control and horizontal regressions are other special patterns. It uses all the untreated cells, including
+treated units' pre-periods and donors' whole histories, and suits staggered adoption.
+
+\begin{extension}[Augmented synthetic control and conformal inference]
+When the pre-period fit is imperfect, augmented synthetic control adds an outcome-model correction for the remaining imbalance (Ben-Michael, Feller and
+Rothstein, 2021). Conformal methods give prediction intervals for the post-period counterfactual under exchangeability of residuals over time.
+\end{extension}
+
+\subsection*{Annotated reading}
+\begin{readinglist}
+\reading{Abadie, Diamond and Hainmueller (2010), ``Synthetic control methods for comparative case studies'', \emph{JASA}}{The method and the
+factor-model argument, with the Proposition 99 example}{Sections 1--3}{2}
+\reading{Abadie (2021), ``Using synthetic controls: feasibility, data requirements, and methodological aspects'', \emph{Journal of Economic
+Literature}}{When synthetic control is and is not appropriate}{All}{1}
+\reading{Arkhangelsky, Athey, Hirshberg, Imbens and Wager (2021), ``Synthetic difference-in-differences'', \emph{AER}}{The SDID estimator and its
+properties}{Sections I--III}{3}
+\reading{Athey, Bayati, Doudchenko, Imbens and Khosravi (2021), ``Matrix completion methods for causal panel data models'', \emph{JASA}}{Low-rank
+counterfactuals as a unifying view}{Sections 1--4}{3}
+\reading{Ben-Michael, Feller and Rothstein (2021), ``The augmented synthetic control method'', \emph{JASA}}{Correcting imperfect fit}{Sections
+1--3}{3}
+\end{readinglist}
+
+\end{document}

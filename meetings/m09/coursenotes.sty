@@ -1,0 +1,131 @@
+% coursenotes.sty: shared style for SHBI-GB 7342 technical notes and handouts
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{v4notes}
+
+\RequirePackage[margin=1in]{geometry}
+\RequirePackage{amsmath,amssymb,amsthm,mathtools,bm}
+\RequirePackage{booktabs,tabularx,array,multirow}
+\RequirePackage{xcolor}
+\RequirePackage{enumitem}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[sc]{mathpazo}
+\renewcommand{\ttdefault}{pcr}
+\RequirePackage{microtype}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes.geometric}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage[colorlinks=true, linkcolor=noteblue, urlcolor=noteblue, citecolor=noteblue]{hyperref}
+
+\definecolor{sbgreen}{HTML}{00704A}
+\definecolor{noteblue}{HTML}{2060A0}
+\definecolor{warnred}{HTML}{B42318}
+\definecolor{boxgrey}{HTML}{F3F5F8}
+\definecolor{bluetint}{HTML}{EEF3FA}
+\definecolor{greentint}{HTML}{EEF6F2}
+\definecolor{redtint}{HTML}{FCF1F0}
+\definecolor{extgrey}{HTML}{6B7280}
+
+\setlist{itemsep=0.2em, topsep=0.3em}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+% ---- Notation (shared across all notes; see the notation sheet) ----------------------------
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\indep}{\perp\!\!\!\perp}
+\newcommand{\ind}[1]{\mathbf{1}\{#1\}}
+\newcommand{\hatt}{\hat{\tau}}
+\newcommand{\SE}{\operatorname{SE}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\ATE}{\text{ATE}}
+\newcommand{\ATT}{\text{ATT}}
+\newcommand{\ATU}{\text{ATU}}
+
+% ---- Answer-key toggle -----------------------------------------------------------------------
+% Compile the key with:  pdflatex -jobname notesXX-key "\def\KEY{}\input{notesXX}"
+\newif\ifkey
+\ifdefined\KEY \keytrue \else \keyfalse \fi
+\newcounter{exercise}
+\newenvironment{exercise}[1][]{\refstepcounter{exercise}\par\medskip\noindent
+  \textbf{Exercise \theexercise}\ifx&#1&\else\ (\emph{#1})\fi.\ }{\par}
+\newcommand{\answer}[1]{\ifkey\par\noindent
+  \begin{tcolorbox}[colback=greentint, colframe=sbgreen, boxrule=0.4pt, arc=1pt, left=6pt, right=6pt,
+  top=3pt, bottom=3pt, title={Answer}, fonttitle=\bfseries\small, coltitle=white, colbacktitle=sbgreen]
+  \small #1\end{tcolorbox}\fi}
+
+% ---- Headings ----------------------------------------------------------------------------------
+% \notesheader{number}{title}{subtitle}
+\newcommand{\notesheader}[3]{%
+  \begin{center}
+  {\small\textcolor{extgrey}{SHBI-GB 7342 \quad Applied Causal Inference for Business \quad Technical notes, version 4\ifkey\quad\textbf{ANSWER KEY}\fi}}\\[0.6em]
+  {\LARGE\bfseries Meeting #1: #2}\\[0.4em]
+  {\normalsize #3}
+  \end{center}
+  \vspace{0.2em}
+  \noindent\fcolorbox{extgrey}{boxgrey}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+  \textbf{How to use these notes.} The notes are self-contained. \textbf{Section 1} develops the general
+  results, with short proofs. \textbf{Section 2} works through one example in full and ends with exercises.
+  \textbf{Section 3} points to extensions and further reading. For students in the course, Sections 1 and 2
+  are examinable and Section 3 is not.}}
+  \vspace{0.4em}
+}
+% \handoutheader{code}{title}{subtitle}{companion meeting}
+\newcommand{\handoutheader}[4]{%
+  \begin{center}
+  {\small\textcolor{extgrey}{SHBI-GB 7342 \quad Applied Causal Inference for Business \quad Handout #1, version 4\ifkey\quad\textbf{ANSWER KEY}\fi}}\\[0.6em]
+  {\LARGE\bfseries #2}\\[0.4em]
+  {\normalsize #3}
+  \end{center}
+  \vspace{0.2em}
+  \noindent\fcolorbox{extgrey}{boxgrey}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+  \textbf{About this handout.} It accompanies #4 and takes the topic further, for readers who want
+  the details and for projects that need them. It is self-contained and has the same three sections as
+  the meeting notes. It is not examined.}}
+  \vspace{0.4em}
+}
+
+% The decision box and goals on page 1
+\newtcolorbox{decision}{colback=bluetint, colframe=noteblue, boxrule=0.6pt, arc=1pt, left=6pt,
+  right=6pt, top=4pt, bottom=4pt, title={The decision}, fonttitle=\bfseries\small, coltitle=white,
+  colbacktitle=noteblue}
+\newenvironment{goals}{\par\noindent\textbf{After reading this, you should be able to:}\begin{itemize}}{\end{itemize}}
+
+\newcommand{\sectionone}{\section{The general result}}
+\newcommand{\sectiontwo}{\section{Worked example}}
+\newcommand{\sectionthree}{\section{Extensions and further reading}}
+
+% ---- Result, assumption and definition boxes (numbered within section, one shared counter) ---
+\tcbuselibrary{theorems}
+\newtcbtheorem[number within=section]{prop}{Result}{colback=greentint, colframe=sbgreen,
+  boxrule=0.6pt, arc=1pt, left=6pt, right=6pt, top=4pt, bottom=4pt, fonttitle=\bfseries\small,
+  coltitle=white, colbacktitle=sbgreen, separator sign={.}, description delimiters={(}{)}}{prop}
+\newtcbtheorem[use counter from=prop]{assum}{Assumption}{colback=bluetint, colframe=noteblue,
+  boxrule=0.6pt, arc=1pt, left=6pt, right=6pt, top=4pt, bottom=4pt, fonttitle=\bfseries\small,
+  coltitle=white, colbacktitle=noteblue, separator sign={.}, description delimiters={(}{)}}{asm}
+\newtcbtheorem[use counter from=prop]{defn}{Definition}{colback=boxgrey, colframe=extgrey,
+  boxrule=0.5pt, arc=1pt, left=6pt, right=6pt, top=4pt, bottom=4pt, fonttitle=\bfseries\small,
+  coltitle=white, colbacktitle=extgrey, separator sign={.}, description delimiters={(}{)}}{def}
+
+% Proofs: small type, outside the box, idea first.
+\renewenvironment{proof}[1][Proof]{\par\vspace{-0.3em}\small\noindent\textit{#1.}\ }{\hfill$\square$\par\normalsize\medskip}
+
+% Pitfall and extension boxes
+\newtcolorbox{pitfall}[1][]{colback=redtint, colframe=warnred, boxrule=0.6pt, arc=1pt, left=6pt,
+  right=6pt, top=4pt, bottom=4pt, fonttitle=\bfseries\small, coltitle=white, colbacktitle=warnred,
+  title={Pitfall\ifx&#1&\else: #1\fi}}
+\newtcolorbox{extension}[1][]{colback=white, colframe=extgrey, boxrule=0.4pt, arc=1pt, left=6pt,
+  right=6pt, top=4pt, bottom=4pt, fonttitle=\bfseries\small, coltitle=white, colbacktitle=extgrey,
+  title={\ifx&#1&Extension\else #1\fi}}
+
+% Annotated reading list: \reading{reference}{what it gives you}{what to read}{difficulty 1-3}
+\newcommand{\stars}[1]{\ifcase#1\or$\star$\or$\star\star$\or$\star\star\star$\fi}
+\newenvironment{readinglist}{\par\small\noindent
+  \tabularx{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.34\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.16\linewidth}c@{}}
+  \toprule \textbf{Reference} & \textbf{What it gives you} & \textbf{Read} & \textbf{Level}\\ \midrule}
+  {\bottomrule\endtabularx\par\normalsize}
+\newcommand{\reading}[4]{#1 & #2 & #3 & \stars{#4}\\[0.3em]}
+
+\newcommand{\checkpoint}[1]{\par\smallskip\noindent\textbf{Check yourself.} #1\par}

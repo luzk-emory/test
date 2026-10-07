@@ -1,0 +1,344 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\begin{document}
+\notesheader{3}{Conditional Effects}{Who responds, how to estimate it, and why outcome accuracy is the wrong test}
+
+\begin{decision}
+An offer works on average. Whom should it go to? The answer depends on how the effect varies with customer
+characteristics, the conditional average treatment effect, held against a break-even that may itself vary
+by customer. Models that predict outcomes well can still target badly.
+\end{decision}
+
+\begin{goals}
+  \item define the CATE, identify it in an experiment, and state where it is not identified;
+  \item turn a CATE into a targeting rule under per-unit and per-redemption costs;
+  \item read an interaction model and test whether two segments really differ;
+  \item explain how S-, T-, X-, DR- and R-learners estimate the CATE, and what each one risks;
+  \item show why outcome prediction error cannot choose a targeting model, and name losses that can.
+\end{goals}
+
+%=====================================================================================
+\sectionone
+
+\subsection{The estimand}
+
+With treatment $D$, outcome $Y$ and pre-treatment covariates $X$, write $\mu_d(x) = \E[Y \mid D=d, X=x]$ and
+\[
+  \tau(x) = \E[Y(1) - Y(0) \mid X = x],
+\]
+the \emph{conditional average treatment effect} (CATE). It is a function; the ATE is its average. Once
+identified, every outcome regression splits into a \emph{baseline} and an \emph{effect}:
+\begin{equation}\label{eq:decomp}
+  \mu_d(x) = \mu_0(x) + d\,\tau(x).
+\end{equation}
+A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum_x \Pr_T(X=x)\,\tau(x)$:
+standardisation with $T$'s weights.
+
+A variable is \emph{prognostic} if $\mu_0(x)$ varies with it and an \emph{effect modifier} if $\tau(x)$ does.
+The two are independent properties: a variable can be either, both or neither. In most business data
+$\Var(\mu_0(X))$ is far larger than $\Var(\tau(X))$, which is why learners tuned to outcomes favour
+prognostic variables.
+
+\subsection{Identification}
+
+\begin{assum}{Conditional independence}{ci}
+$\{Y(0), Y(1)\} \indep D \mid X$.
+\end{assum}
+\begin{assum}{Overlap on the decision population}{ov}
+$0 < \Pr(D=1 \mid X=x) < 1$ for every $x$ at which a decision will be made.
+\end{assum}
+\begin{prop}{Identification of the CATE}{id}
+Under consistency and Assumptions~\ref{asm:ci}--\ref{asm:ov}, $\tau(x) = \mu_1(x) - \mu_0(x)$.
+\end{prop}
+\begin{proof}
+$\mu_d(x) = \E[Y(d) \mid D=d, X=x]$ by consistency (well defined by overlap) $= \E[Y(d) \mid X=x]$ by
+conditional independence. Subtract.
+\end{proof}
+
+An experiment satisfies conditional independence by design, and overlap for every $x$ \emph{in the
+experiment}. A decision population with values of $x$ the experiment never saw (new customers, a new
+region) has no identified CATE there; any estimate is the model's extrapolation. Keep the two failures
+apart: if treatment is a deterministic function of $X$, conditional independence holds trivially but overlap
+fails everywhere (a support problem); if treatment depends on something outside $X$, overlap may hold while
+conditional independence fails (a confounding problem).
+
+\subsection{From the CATE to a targeting rule}
+
+Let a treated unit generate margin $m$ per purchase, cost $c$ per purchase made while treated (a redeemed
+coupon) and $k$ per unit treated regardless (a phone call).
+
+\begin{prop}{Individual targeting rule}{rule}
+The expected net value of treating a unit with covariates $x$ is $V(x) = m\,\tau(x) - c\,\mu_1(x) - k$.
+Without a budget, the value-maximising rule treats $x$ if and only if $V(x) > 0$, and its value per unit is
+\[
+  \E\big[\max\{V(X), 0\}\big] \;\ge\; \max\{\E[V(X)],\, 0\},
+\]
+the value of the best blanket rule. With a budget of $B$ treatments, treat the $B$ units with the largest
+positive $V(x)$.
+\end{prop}
+\begin{proof}
+Treating minus not treating is $\E[(m-c)Y(1) - k \mid x] - \E[mY(0) \mid x]$, which is $V(x)$ by
+\eqref{eq:decomp}. Total value is a sum over units, so each is treated iff its term is positive. The inequality
+holds because $\max\{V,0\} \ge V$ and $\max\{V,0\} \ge 0$ pointwise; take expectations.
+\end{proof}
+
+The gap in the inequality is the \emph{value of targeting}. It is large when effects straddle the break-even:
+an average below break-even can hide a profitable segment. With per-unit costs ($c=0$) the rule ranks by
+$\tau(x)$ against a common threshold $k/m$. With per-redemption costs ($k=0$) the threshold $c\,\mu_1(x)/m$
+rises with purchase rates, so likely buyers must clear a higher bar. Either way, ranking by ``most likely to
+buy'' is not the rule and can be its opposite: in the four response types of Meeting~1, a response model ranks
+sure things first, while the rule wants persuadables.
+
+\subsection{The interaction model and inference on heterogeneity}
+
+With low-dimensional $X$, the model $Y = \alpha + \tau D + \beta^\top X + \gamma^\top (D \cdot X) + \varepsilon$ gives
+$\mu_0(x) = \alpha + \beta^\top x$ and $\tau(x) = \tau + \gamma^\top x$. With one binary $X$ it reproduces the four
+cell means exactly. Its fitted values give every row both $\hat\mu_0(X_i)$ and $\hat\mu_1(X_i)$, whichever arm it
+was in. Two cautions: $\tau$ is the effect at the reference group $x=0$ and recoding the reference changes its
+value and the sign of $\gamma$, but not the fitted effects; and the average effect for $T$ is
+$\tau + \gamma^\top\E_T[X]$, not $\tau$.
+
+\begin{prop}{Standard error of a difference between segments}{gap}
+For segment effects estimated on disjoint randomised samples,
+$\SE(\hatt_a - \hatt_b) = \sqrt{\SE(\hatt_a)^2 + \SE(\hatt_b)^2}$.
+\end{prop}
+\begin{proof}
+Disjoint samples make the two estimates independent, and variances of independent terms add.
+\end{proof}
+
+Heterogeneity is shown by an interval for the \emph{difference} that excludes zero, not by one segment being
+``significant'' and another not. With $K$ pre-specified segments each tested at level $\alpha$, the chance of a
+false positive somewhere approaches $1 - (1-\alpha)^K$; report all segments and, if the decision rests on
+several, use Bonferroni ($\alpha/K$) or Holm. Segments found by searching need fresh data (Meeting~4). The
+segment-level effects $\text{GATE}_k = \E[\tau(X) \mid G=k]$ for a grouping $G$ are estimated by within-group
+differences in means.
+
+\subsection{Meta-learners}
+
+Meta-learners turn any prediction model into a CATE estimator.
+
+\paragraph{S-learner.} One model $\hat f(x, d)$ with $D$ as a feature; $\hatt(x) = \hat f(x,1) - \hat f(x,0)$.
+
+\paragraph{T-learner.} $\hat\mu_1$ fitted on treated rows, $\hat\mu_0$ on control rows;
+$\hatt(x) = \hat\mu_1(x) - \hat\mu_0(x)$.
+
+Both minimise a loss in $Y$ and get $\hatt$ as a by-product. The next two results say what that costs.
+
+\begin{prop}{Regularisation shrinks heterogeneity in the S-learner}{shrink}
+In a balanced design with centred, orthogonal regressors $\tilde X$, $\tilde D = D - \tfrac12$ and
+$\tilde D\tilde X$, penalising only the interaction by $\lambda\gamma^2$ gives
+$\hat\gamma_\lambda = \hat\gamma_{\text{OLS}} \cdot s/(s + \lambda)$ with $s = \sum_i (\tilde D_i \tilde X_i)^2$; the other
+coefficients are unchanged.
+\end{prop}
+\begin{proof}
+Orthogonality separates the objective by coefficient; the $\gamma$ part, $\sum_i (Y_i - \gamma W_i)^2 + \lambda\gamma^2$
+with $W_i = \tilde D_i\tilde X_i$, is minimised at $\sum_i W_iY_i/(s+\lambda)$.
+\end{proof}
+Since $\tilde D = \pm\tfrac12$, $s = \tfrac14\sum_i \tilde X_i^2$: the interaction column has a quarter of $X$'s
+variation, so a penalty that barely moves $\beta$ can erase $\gamma$. A lasso sets a small $\gamma$ exactly to zero,
+and the model then reports the same effect for everyone. Trees do the same implicitly: a split on $D$ competes
+with prognostic splits and loses when the effect is small.
+
+\begin{prop}{Variances add in the T-learner}{tlearner}
+If $\hat\mu_1$ and $\hat\mu_0$ are fitted on disjoint samples,
+$\Var(\hatt(x)) = \Var(\hat\mu_1(x)) + \Var(\hat\mu_0(x))$ and
+$\text{bias}(\hatt(x)) = \text{bias}(\hat\mu_1(x)) - \text{bias}(\hat\mu_0(x))$.
+\end{prop}
+\begin{proof}
+The estimates are independent, so their variances add; expectation is linear, so their biases subtract.
+\end{proof}
+Variances always add; biases can cancel or reinforce. By \eqref{eq:decomp} each arm must learn the whole
+baseline, usually most of the signal. Fitted on different halves with different regularisation, the two arms
+smooth the baseline differently, and the difference lands in $\hatt$. With truth $\mu_1 = 0.30$, $\mu_0 = 0.10$,
+fits $0.34$ and $0.14$ miss each outcome by $0.04$ but get $\tau = 0.20$ exactly; fits $0.32$ and $0.08$ miss by
+only $0.02$ but give $0.24$. For the effect, what matters is whether the two errors move together, not how
+large each one is.
+
+\paragraph{X-learner.} Fit $\hat\mu_0, \hat\mu_1$; impute $\tilde\tau_i = Y_i - \hat\mu_0(X_i)$ for treated units and
+$\tilde\tau_i = \hat\mu_1(X_i) - Y_i$ for controls; fit $\hatt_1$ and $\hatt_0$ to the two sets of imputations; combine
+$\hatt(x) = e(x)\,\hatt_0(x) + (1 - e(x))\,\hatt_1(x)$. Each imputation uses the \emph{other} arm's model, so the
+larger arm's model does most of the work; it helps when arms are unbalanced.
+
+\paragraph{Learners that target the effect.} The next three learners regress something whose conditional
+mean \emph{is} $\tau(x)$, so their loss is about the effect rather than the outcome.
+
+\begin{prop}{The transformed outcome}{tro}
+With known propensity $e(x)$, let $Y^\ast = Y\,\dfrac{D - e(X)}{e(X)(1-e(X))}$. Under Assumptions~\ref{asm:ci}
+and \ref{asm:ov}, $\E[Y^\ast \mid X] = \tau(X)$.
+\end{prop}
+\begin{proof}
+$Y^\ast = DY/e(X) - (1-D)Y/(1-e(X))$. Given $X$, $\E[DY \mid X] = e(X)\mu_1(X)$ and
+$\E[(1-D)Y \mid X] = (1-e(X))\mu_0(X)$; divide and use Result~\ref{prop:id}.
+\end{proof}
+Any regression of $Y^\ast$ on $X$ estimates the CATE, but each $Y^\ast_i$ is one outcome scaled up, so it is very
+noisy.
+
+\begin{prop}{The doubly robust pseudo-outcome}{dr}
+Let
+\[
+  \phi = \hat\mu_1(X) - \hat\mu_0(X) + \frac{D\,(Y - \hat\mu_1(X))}{\hat e(X)} - \frac{(1-D)(Y - \hat\mu_0(X))}{1 - \hat e(X)},
+\]
+with $\hat\mu_d$ and $\hat e$ fitted on other data. Then $\E[\phi \mid X] = \tau(X)$ if \emph{either} $\hat\mu_0 = \mu_0$
+and $\hat\mu_1 = \mu_1$, \emph{or} $\hat e = e$.
+\end{prop}
+\begin{proof}
+Given $X$, $\E[D(Y - \hat\mu_1)/\hat e \mid X] = e(\mu_1 - \hat\mu_1)/\hat e$, and similarly for the control term.
+So $\E[\phi \mid X] - \tau = (\mu_1 - \hat\mu_1)(e/\hat e - 1) - (\mu_0 - \hat\mu_0)\big((1-e)/(1-\hat e) - 1\big)$,
+which is zero if the outcome models are right or the propensity is right.
+\end{proof}
+The \emph{DR-learner} regresses $\phi$ on $X$ (with cross-fitting). The outcome models remove most of the noise in
+$Y^\ast$; the weighted residuals correct their bias. In an experiment $e$ is known, so $\phi$ is unbiased even with
+poor outcome models.
+
+\begin{prop}{The R-learner's target}{rlearner}
+Let $\ell(x) = \E[Y \mid X=x]$. Under Assumption~\ref{asm:ci}, $Y - \ell(X) = (D - e(X))\,\tau(X) + \varepsilon$ with
+$\E[\varepsilon \mid D, X] = 0$, so $\tau$ minimises $\E\big[\{(Y - \ell(X)) - (D - e(X))\,t(X)\}^2\big]$ over functions $t$.
+\end{prop}
+\begin{proof}
+Write $Y = \mu_0(X) + D\tau(X) + \varepsilon$ with $\E[\varepsilon \mid D, X] = 0$. Then
+$\ell(X) = \mu_0(X) + e(X)\tau(X)$; subtract. The squared loss is minimised by the conditional mean, and
+the residual is orthogonal to any function of $(D, X)$.
+\end{proof}
+The \emph{R-learner} minimises the sample version, the \emph{R-loss}, with $\hat\ell$ and $\hat e$ fitted on other
+folds and a penalty on $t$. It regresses the outcome residual on the treatment residual, locally in $x$: the same
+idea as causal forests (Meeting~4) and double machine learning (Meeting~8).
+
+\paragraph{A shared representation.} Neural networks offer a middle ground between sharing everything
+(S-learner) and nothing (T-learner): TARNet passes $x$ through shared layers to a representation $\Phi(x)$ and
+then through two heads, $\hat\mu_d(x) = h_d(\Phi(x))$, training each unit only on its own arm's head. Variants
+that force $\Phi(X)$ to look alike in both arms can hide an overlap failure rather than fix it. Handout H6 covers
+these architectures.
+
+\subsection{Why outcome accuracy cannot choose a targeting model}
+
+\begin{prop}{The cost of ignoring all heterogeneity}{blind}
+Under a 50/50 design, the best predictor of $Y$ that imposes a constant effect, $g(x) + \bar\tau d$, has mean
+squared error exceeding that of the correct model $\mu_D(X)$ by exactly $\tfrac14\Var(\tau(X))$.
+\end{prop}
+\begin{proof}
+For fixed $\bar\tau$ the best $g$ at each $x$ is $\mu_0(x) + \tfrac12(\tau(x) - \bar\tau)$, leaving errors
+$\pm\tfrac12(\tau(x) - \bar\tau)$ in the two arms. Their average square is minimised at $\bar\tau = \E[\tau(X)]$,
+giving $\tfrac14\Var(\tau(X))$; the irreducible noise is common to both models.
+\end{proof}
+
+A quarter of the effect's variance is tiny next to an outcome's own variance (about $p(1-p)$ for a purchase).
+A model can be nearly optimal by outcome loss while discarding all the heterogeneity a targeting decision
+needs. Since $\tau_i$ is never observed, the error we want, $\E[(\hatt(X) - \tau(X))^2]$, is computable only in
+simulations. On a held-out randomised fold, compare candidates by (i) the value of the policy each implies
+(Meeting~5); (ii) the R-loss; or (iii) the mean squared gap between $\hatt(X)$ and the DR pseudo-outcome $\phi$.
+When nuisance models are accurate, (ii) and (iii) rank candidates as their true CATE error would. Assign
+\emph{units}, not rows, to the samples used for fitting, choosing and assessing, so that no customer appears in two.
+
+\begin{pitfall}[targeting errors]
+Ranking by predicted purchase; declaring heterogeneity because one segment is significant; choosing a CATE
+model by outcome RMSE; reporting the effect at the reference group as ``the'' effect.
+\end{pitfall}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=0.72\linewidth, height=5cm, domain=0:10, samples=60, xlabel={tenure (months)},
+  ylabel={renewal probability}, ymin=0.3, ymax=1, axis lines=left,
+  legend style={draw=none, font=\footnotesize, at={(0.02,0.98)}, anchor=north west}]
+\addplot[thick, extgrey] {0.45 + 0.045*x};
+\addplot[thick, sbgreen] {0.45 + 0.045*x + 0.22 - 0.02*x};
+\legend{$\mu_0(x)$: without offer, $\mu_1(x)$: with offer}
+\end{axis}
+\end{tikzpicture}
+
+\small Figure 1. Tenure is strongly prognostic (both curves rise) and also an effect modifier (the gap shrinks).
+A response model sees the rise; targeting needs the gap.
+\end{center}
+
+%=====================================================================================
+\sectiontwo
+
+\paragraph{Setting.} FitLife tests a retention offer (a free month, costing ¥80 per member offered) on members
+near the end of their contracts. The outcome is renewal; a renewal is worth ¥600 of margin, so the break-even is
+$\tau^\ast = 80/600 = 0.133$. Members are split by tenure (short: under a year; long) and usage (low; high) into
+four segments of 1{,}000, each randomised 50/50.
+
+\paragraph{Step 1: segment effects.}
+\begin{center}
+\begin{tabular}{lcccccc}
+\toprule
+Segment & Offered & Not offered & $\hatt_k$ & SE & 95\% CI & $z$ vs $\tau^\ast$ \\
+\midrule
+Short, low  & 0.62 & 0.50 & 0.12 & 0.031 & $[0.059, 0.181]$ & $-0.43$ \\
+Short, high & 0.70 & 0.48 & 0.22 & 0.030 & $[0.161, 0.279]$ & $2.86$ \\
+Long, low   & 0.84 & 0.80 & 0.04 & 0.024 & $[-0.008, 0.088]$ & $-3.85$ \\
+Long, high  & 0.93 & 0.90 & 0.03 & 0.018 & $[-0.005, 0.065]$ & $-5.87$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Each SE is $\sqrt{p_1(1-p_1)/500 + p_0(1-p_0)/500}$. The ATE is $0.1025$: offering it to everyone nets
+$600 \times 0.1025 - 80 = -$¥18.50 per member. Net values by segment are $-8$, $+52$, $-56$ and $-62$, so the
+targeted rule (short, high usage only) earns $52/4 = $ ¥13 per member in the base against $0$ for the best
+blanket rule (offer to nobody): the value of targeting in Result~\ref{prop:rule}. With four segments, Bonferroni
+at $0.0125$ still accepts the short, high-usage segment ($p = 0.002$).
+
+\paragraph{Step 2: prognostic versus modifier.} Tenure is strongly prognostic (control renewal $0.49$ for short,
+$0.85$ for long) and a modifier. Usage barely predicts renewal among short-tenure members ($0.50$ vs $0.48$) but
+modifies the effect ($0.12$ vs $0.22$). A churn model ranking by low predicted renewal treats the two short-tenure
+segments alike and so includes one that loses ¥8 per offer.
+
+\paragraph{Step 3: an S-learner without interactions.} $Y = \alpha + \beta D + \gamma_1\,\text{long} + \gamma_2\,\text{high}$
+gives $\hat\beta = 0.1025$ and hence the same $\hatt(x)$ for every member: it recommends offering to nobody.
+
+\paragraph{Step 4: a T-learner with additive arms.} Fitting $Y = a_d + b_d\,\text{long} + c_d\,\text{high}$ in each arm
+gives $(0.6175, 0.225, 0.085)$ for offered and $(0.47, 0.36, 0.04)$ for not offered, and implied effects
+$0.148$, $0.193$, $0.013$, $0.058$ against true $0.12$, $0.22$, $0.04$, $0.03$. It places short, low-usage members above
+break-even ($0.148 > 0.133$) because an additive model in each arm cannot represent the tenure $\times$ usage
+interaction in the effect. (A T-learner and an S-learner that interacts $D$ with every feature are the same
+model.)
+
+\paragraph{Step 5: the transformed outcome.} With $e = 0.5$, $Y^\ast = 2Y$ for offered and $-2Y$ for others. Every
+value is $-2$, $0$ or $2$, yet its segment mean is the segment effect: for short, high usage,
+$0.5 \times 2 \times 0.70 - 0.5 \times 2 \times 0.48 = 0.22$ (Result~\ref{prop:tro}).
+
+\begin{exercise}[computation]
+Is the difference between the two short-tenure segments ($0.22$ vs $0.12$) statistically clear? Compute its SE
+and $z$.
+\end{exercise}
+\answer{$\SE = \sqrt{0.0303^2 + 0.0312^2} = 0.0435$; $z = 0.10/0.0435 = 2.30$, two-sided $p \approx 0.02$. The two
+segments differ; it is this test, not the two separate significance levels, that shows heterogeneity.}
+
+\begin{exercise}[judgement]
+FitLife's data team reports that its gradient-boosted churn model has the lowest validation log-loss of all
+candidates and proposes to send the offer to the 25\% of members it rates most likely to leave. Give two
+reasons this could lose money, and the comparison you would ask for instead.
+\end{exercise}
+\answer{(i) Log-loss rewards predicting renewal, dominated by prognostic variables (Result~\ref{prop:blind}); it
+says almost nothing about who \emph{responds}. (ii) The members most likely to leave include lost causes and the
+short, low-usage segment, whose effect is below break-even. Ask for each candidate's policy value on a held-out
+randomised fold (net of the ¥80 cost), or its R-loss or DR-pseudo-outcome loss on that fold.}
+
+%=====================================================================================
+\sectionthree
+
+\begin{extension}[Theory of meta-learners]
+K\"unzel et al.\ (2019) show when the X-learner beats the T-learner (notably with unbalanced arms). Nie and Wager
+(2021) prove that the R-learner attains the rate of an oracle that knew $\ell$ and $e$, provided those are learned
+fast enough: the property called Neyman orthogonality. Kennedy (2023) gives the analogous result for the
+DR-learner.
+\end{extension}
+
+\begin{extension}[Lasso for heterogeneity]
+With many candidate modifiers, the modified-outcome or R-loss lasso selects a sparse $\tau(x)$. Selection makes
+naive standard errors invalid; use sample splitting or the best-linear-projection test of Meeting~4.
+\end{extension}
+
+\subsection*{Annotated reading}
+\begin{readinglist}
+\reading{K\"unzel, Sekhon, Bickel and Yu (2019), ``Metalearners for estimating heterogeneous treatment
+effects'', \emph{PNAS}}{The S-, T- and X-learners compared, with simulations}{Sections 1--4}{2}
+\reading{Nie and Wager (2021), ``Quasi-oracle estimation of heterogeneous treatment effects'',
+\emph{Biometrika}}{The R-learner and why residualising first protects the effect}{Sections 1--3}{3}
+\reading{Kennedy (2023), ``Towards optimal doubly robust estimation of heterogeneous causal effects'',
+\emph{Electronic Journal of Statistics}}{The DR-learner and its error bound}{Sections 1--3}{3}
+\reading{Gelman and Stern (2006), ``The difference between significant and not significant is not itself
+statistically significant'', \emph{American Statistician}}{The segment-comparison error in four pages}{All}{1}
+\reading{Handout H6, \emph{Neural and foundation-model estimators}}{TARNet, DragonNet, CEVAE and in-context
+estimators, with what each assumes}{All}{2}
+\end{readinglist}
+
+\end{document}

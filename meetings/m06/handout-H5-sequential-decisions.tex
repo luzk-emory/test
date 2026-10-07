@@ -1,0 +1,193 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\begin{document}
+\handoutheader{H5}{Sequential Decisions}{Dynamic treatment regimes, Q-learning, G-estimation and learning from bandit logs}{Meeting 6 (Allocation and policy learning)}
+
+\begin{decision}
+A platform sends a coupon in week 1 and decides in week 2 whether to send another, depending on whether the
+customer ordered. The question is which \emph{rule} for the two weeks earns the most, not simply whether a coupon works.
+The week-1 response is both a result of the first coupon and a reason for the second, which breaks ordinary regression
+adjustment.
+\end{decision}
+
+\begin{goals}
+  \item define a dynamic treatment regime and its value;
+  \item state sequential exchangeability and identify a regime's value with the sequential g-formula;
+  \item explain why adjusting for an intermediate response biases the effect of the first decision;
+  \item find the optimal regime by Q-learning (backward induction) and describe G-estimation of blip functions;
+  \item evaluate a policy from bandit logs with inverse-probability and doubly robust estimators.
+\end{goals}
+
+%=====================================================================================
+\sectionone
+
+\subsection{Regimes and their value}
+
+At decision times $t = 1, 2$ a unit has history $H_1 = X_1$ and $H_2 = (X_1, A_1, X_2)$, where $A_t$ is the action and
+$X_2$ is information revealed after the first action (did the customer order?). The outcome $Y$ comes at the end. A
+\emph{dynamic treatment regime} is a pair of rules $\mathbf d = (d_1, d_2)$ with $A_1 = d_1(H_1)$ and $A_2 = d_2(H_2)$: the
+second action may depend on the response to the first. Its value is $V(\mathbf d) = \E[Y(\mathbf d)]$, where $Y(\mathbf d)$ is the
+outcome if the unit were treated according to $\mathbf d$. Static regimes (``coupon both weeks'') are special cases.
+
+\subsection{Identification}
+
+\begin{assum}{Sequential exchangeability and positivity}{seqex}
+For every regime, $\{Y(\mathbf d)\} \indep A_1 \mid H_1$ and $\{Y(\mathbf d)\} \indep A_2 \mid H_2$; and every action a regime prescribes
+has positive probability given the history at which it is prescribed.
+\end{assum}
+
+A \emph{sequential multiple-assignment randomised trial} (SMART), which re-randomises at each decision point, satisfies the
+assumption by design. In logs, it requires that every input to each decision be recorded.
+
+\begin{prop}{The sequential g-formula}{gformula}
+Under consistency and Assumption~\ref{asm:seqex}, with $a_1 = d_1(x_1)$ and $a_2 = d_2(x_1, a_1, x_2)$,
+\[
+  V(\mathbf d) = \sum_{x_1}\sum_{x_2} \E[Y \mid x_1, a_1, x_2, a_2]\;\Pr(x_2 \mid x_1, a_1)\;\Pr(x_1).
+\]
+\end{prop}
+\begin{proof}
+Work backwards. By exchangeability at $t = 2$ and consistency,
+$\E[Y(\mathbf d) \mid x_1, a_1, x_2] = \E[Y \mid x_1, a_1, x_2, a_2]$. Average over $x_2$ given $(x_1, a_1)$: by exchangeability at
+$t = 1$, the distribution of $X_2$ among units that received $a_1$ is the distribution it would have under $a_1$. Average
+over $x_1$.
+\end{proof}
+
+\begin{prop}{Adjusting for the intermediate response is wrong}{mediator}
+In a regression of $Y$ on $A_1$, $X_2$ and $A_2$, the coefficient on $A_1$ is not the effect of $A_1$ on $Y$ whenever $A_1$
+affects $X_2$ and $X_2$ affects $Y$.
+\end{prop}
+\begin{proof}
+$X_2$ lies on a causal path $A_1 \to X_2 \to Y$; conditioning on it removes that part of the effect (Meeting~1) and, if
+anything unrecorded affects both $X_2$ and $Y$, opens a collider path. Omitting $X_2$ instead leaves $A_2$ confounded,
+since $A_2$ depends on $X_2$. Neither regression is right; the g-formula averages over $X_2$ instead of conditioning on it.
+\end{proof}
+
+\subsection{Finding the best regime: Q-learning}
+
+Define the stage-2 \emph{Q-function} $Q_2(h_2, a_2) = \E[Y \mid H_2 = h_2, A_2 = a_2]$, the best stage-2 rule
+$d_2^{\text{opt}}(h_2) = \arg\max_{a_2} Q_2(h_2, a_2)$, and its value $V_2(h_2) = \max_{a_2} Q_2(h_2, a_2)$. Then
+$Q_1(h_1, a_1) = \E[V_2(H_2) \mid H_1 = h_1, A_1 = a_1]$ and $d_1^{\text{opt}}(h_1) = \arg\max_{a_1} Q_1(h_1, a_1)$.
+
+\begin{prop}{Q-learning finds the optimal regime}{qlearn}
+Under consistency and Assumption~\ref{asm:seqex}, the regime $(d_1^{\text{opt}}, d_2^{\text{opt}})$ maximises $V(\mathbf d)$ over all
+regimes.
+\end{prop}
+\begin{proof}
+Dynamic programming. By Result~\ref{prop:gformula}, $V(\mathbf d)$ averages $Q_2$ evaluated at $d_2$'s choice; choosing the maximum at
+every $h_2$ can only raise it, whatever $d_1$ is. Given that stage-2 choice, $V(\mathbf d)$ averages $Q_1$ at $d_1$'s choice;
+choosing the maximum at every $h_1$ again can only raise it.
+\end{proof}
+
+Q-learning fits regression models for $Q_2$ and $Q_1$ backwards. Its weakness is that each Q-function models the whole
+outcome, including baseline variation unrelated to the decision, so misspecification can distort the comparison between
+actions.
+
+\subsection{G-estimation and structural nested mean models}
+
+A \emph{structural nested mean model} models only the effect of each action, holding later actions at a reference value. The
+stage-$t$ \emph{blip} is $\gamma_t(h_t, a_t) = \E[Y(\bar a_{t-1}, a_t, \underline 0) - Y(\bar a_{t-1}, 0, \underline 0) \mid H_t = h_t, A_t = a_t]$, the
+effect of $a_t$ followed by the reference action thereafter. \emph{G-estimation} chooses the blip parameters $\psi$ so that the
+blipped-down outcome $Y - \sum_{s \ge t}\gamma_s(H_s, A_s; \psi)$, which estimates what $Y$ would have been with the reference
+action from $t$ on, is uncorrelated with $A_t - \Pr(A_t = 1 \mid H_t)$ given $H_t$. Under sequential exchangeability this
+estimating equation is unbiased if \emph{either} the propensity model \emph{or} a model for the blipped-down outcome's mean is
+correct: the dynamic analogue of double robustness. The optimal rule treats when the blip is positive (net of cost), and
+models only what matters for the decision.
+
+\subsection{Learning from bandit logs}
+
+A contextual bandit chooses an action $A_i$ for each unit with a logged probability $p_i = \Pr(A_i \mid X_i)$ and records the
+reward $R_i$. To evaluate a different policy $\pi$ from these logs:
+
+\begin{prop}{Off-policy evaluation}{ope}
+If every action $\pi$ would take has $p_i > 0$, then $\hat V_{\text{IPW}}(\pi) = \frac1n\sum_i \ind{A_i = \pi(X_i)}R_i/p_i$ is unbiased for
+$V(\pi)$. The doubly robust estimator
+$\hat V_{\text{DR}}(\pi) = \frac1n\sum_i\big[\hat\mu(X_i, \pi(X_i)) + \ind{A_i = \pi(X_i)}(R_i - \hat\mu(X_i, A_i))/p_i\big]$ is unbiased if the logged
+probabilities are correct, whatever the reward model $\hat\mu$, and usually far less variable.
+\end{prop}
+\begin{proof}
+Given $X_i$, $\E[\ind{A_i = \pi(X_i)}R_i/p_i \mid X_i] = \E[R(\pi(X_i)) \mid X_i]$ because the action was randomised with probability
+$p_i$ (Meeting~5). For the DR estimator, the correction term has conditional mean $\E[R(\pi(X_i)) \mid X_i] - \hat\mu(X_i, \pi(X_i))$.
+\end{proof}
+
+Two operational rules follow. Never let an exploring policy drive any action's probability to zero where you may later want
+to evaluate it, and log the probabilities, not just the actions. When data are sequential (each customer's later context
+depends on earlier actions), these estimators extend with products of probabilities over time, whose variance grows quickly
+with the horizon.
+
+\begin{pitfall}[sequential decisions]
+Evaluating a two-stage rule with a regression that controls for the week-1 response; learning from logs that recorded
+actions but not their probabilities; letting a bandit stop exploring an arm that a later policy will need.
+\end{pitfall}
+
+%=====================================================================================
+\sectiontwo
+
+\paragraph{Setting.} QuickBite runs a SMART on lapsed customers. In week 1 a coupon is sent at random to half ($A_1$). Customers
+who order in week 1 ($X_2 = 1$) get nothing further; among those who do not, a second coupon is sent at random to half ($A_2$).
+The outcome $Y$ is orders in weeks 2--4. Each order earns ¥10; each coupon sent costs ¥5 in expectation. Results:
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+& Ordered in & Responders: & \multicolumn{2}{c}{Non-responders: $\E[Y]$} \\
+\cmidrule(lr){4-5}
+& week 1 & $\E[Y]$ & 2nd coupon & no 2nd coupon \\
+\midrule
+Week-1 coupon ($A_1 = 1$) & 0.40 & 1.5 & 0.9 & 0.5 \\
+No week-1 coupon ($A_1 = 0$) & 0.25 & 1.6 & 0.9 & 0.3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Step 1: stage 2.} For non-responders, a second coupon adds $0.4$ orders after a week-1 coupon (worth
+$10 \times 0.4 - 5 = -$¥1) and $0.6$ orders after none ($+$¥1). So $d_2^{\text{opt}}$: send the week-2 coupon only to non-responders who
+did not get one in week 1. The best stage-2 action depends on the history.
+
+\paragraph{Step 2: stage 1.} With week-2 behaviour set optimally, value per customer (week-1 order counts as one order):
+\begin{align*}
+  Q_1(A_1 = 1) &= 0.40 \times 10(1 + 1.5) + 0.60 \times 10 \times 0.5 - 5 = 10 + 3 - 5 = 8.0, \\
+  Q_1(A_1 = 0) &= 0.25 \times 10(1 + 1.6) + 0.75 \times (10 \times 0.9 - 5) = 6.5 + 3 = 9.5 .
+\end{align*}
+The optimal regime: no coupon in week 1; a coupon in week 2 if the customer has not ordered. Value ¥9.50 per customer.
+
+\paragraph{Step 3: compared with static rules.} By Result~\ref{prop:gformula}, ``coupon both weeks'' earns ¥7.40, ``week 1 only'' ¥8.00,
+``never'' ¥8.75, and the optimal regime ¥9.50. ``Coupon both weeks'' generates the most orders ($1.54$ per customer) and the least
+profit. Against ``never'', the week-1 coupon adds $1.30 - 0.875 = 0.425$ orders per customer, worth ¥4.25, for a coupon that costs
+¥5; and a second coupon after a first one adds less than it costs (Step 1). Responders who got the week-1 coupon do order less
+afterwards ($1.5$ versus $1.6$), but that comparison conditions on responding, which the coupon itself changes
+(Result~\ref{prop:mediator}).
+
+\begin{exercise}[computation]
+Verify the value of ``coupon both weeks'' (¥7.40) with the g-formula, and the number of orders per customer ($1.54$).
+\end{exercise}
+\answer{Value: $0.40 \times 10 \times 2.5 + 0.60 \times (10 \times 0.9 - 5) - 5 = 10 + 2.4 - 5 = 7.4$. Orders:
+$0.40 \times 2.5 + 0.60 \times 0.9 = 1.0 + 0.54 = 1.54$.}
+
+\begin{exercise}[judgement]
+An analyst estimates the week-1 coupon's effect by regressing weeks 2--4 orders on $A_1$, $A_2$ and the week-1 order indicator,
+Explain what the coefficient on $A_1$ measures and why it should not be read as the coupon's effect.
+\end{exercise}
+\answer{Conditioning on the week-1 order (a result of $A_1$) compares customers with the same response, removing the coupon's
+effect through its main channel (inducing a week-1 order) and leaving a weighted mix of within-group gaps ($-0.1$ among
+responders, $+0.2$ and $0.0$ among non-responders without and with a second coupon), which can take either sign. By Result~\ref{prop:mediator} neither including nor excluding $X_2$ gives the effect; use the g-formula
+(Result~\ref{prop:gformula}) to compare regimes.}
+
+%=====================================================================================
+\sectionthree
+
+\subsection*{Annotated reading}
+\begin{readinglist}
+\reading{Murphy (2003), ``Optimal dynamic treatment regimes'', \emph{JRSS B}}{The framework, sequential exchangeability and
+backward induction}{Sections 1--4}{3}
+\reading{Robins (2004), ``Optimal structural nested models for optimal sequential decisions'', \emph{Proceedings of the Second
+Seattle Symposium in Biostatistics}}{SNMMs and G-estimation for optimal regimes}{Sections 1--3}{3}
+\reading{Chakraborty and Moodie (2013), \emph{Statistical Methods for Dynamic Treatment Regimes}, Springer}{Q-learning,
+G-estimation and SMARTs at textbook pace}{Ch.\ 2--5}{2}
+\reading{Hern\'an and Robins, \emph{Causal Inference: What If}}{The g-formula and time-varying confounding in the course's
+notation}{Ch.\ 19--21}{2}
+\reading{Dud\'ik, Langford and Li (2011), ``Doubly robust policy evaluation and learning'', \emph{ICML}}{Off-policy evaluation
+from bandit logs}{Sections 1--4}{2}
+\reading{Murphy (2005), ``An experimental design for the development of adaptive treatment strategies'', \emph{Statistics in
+Medicine}}{How to design a SMART}{All}{2}
+\end{readinglist}
+
+\end{document}

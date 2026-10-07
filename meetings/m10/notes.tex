@@ -1,0 +1,276 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\begin{document}
+\notesheader{10}{Panel Data and Difference-in-Differences}{Untreated units over time as the comparison}
+
+\begin{decision}
+A change was rolled out to some stores, clubs or cities and not others, on one date, and nobody randomised which. The firm wants
+to know what it did before extending it. The comparison now comes from untreated units' changes over time. That requires an
+assumption about what treated units would have done without the change, which no data can verify, so the analysis must also say
+how far that assumption could fail before the decision changes.
+\end{decision}
+
+\begin{goals}
+  \item explain why before--after comparisons fail, including regression to the mean;
+  \item use fixed effects and the within transformation, and say what they cannot remove;
+  \item identify the ATT by difference-in-differences under parallel trends, with a proof;
+  \item show that TWFE with one adoption date equals the DiD, and read an event study;
+  \item compute a breakdown drift for trend sensitivity, and cluster standard errors correctly;
+  \item recognise why staggered adoption breaks the simple TWFE regression.
+\end{goals}
+
+%=====================================================================================
+\sectionone
+
+\subsection{Setup and notation}
+
+Units $i$ are observed in periods $t$. Index potential outcomes by \emph{adoption date}: $Y_{it}(g)$ is unit $i$'s outcome in period $t$
+if it first adopts in period $g$, and $g = \infty$ means never. With one adoption date $t_0$, treated units ($T_i = 1$) have
+$Y_{it}(t_0)$ observed and comparison units ($T_i = 0$) have $Y_{it}(\infty)$. Write $Y_{it}(1) \equiv Y_{it}(t_0)$ and
+$Y_{it}(0) \equiv Y_{it}(\infty)$ for short. The target is the effect on the treated after adoption,
+$\ATT = \E[Y_{\text{post}}(1) - Y_{\text{post}}(0) \mid T = 1]$, whose difficulty is $\E[Y_{\text{post}}(0) \mid T = 1]$.
+
+Nothing in the design made adoption random. The assumptions below replace the coin of Meetings 1--6 and the recorded rule of
+Meetings 7--8: they are claims about untreated outcomes, supported by facts about \emph{why} units adopted when they did, and
+checkable only in part. Identification here is assumption-based, and should be said so.
+
+\subsection{Why before--after fails}
+
+A treated unit's before--after change attributes to the treatment everything else that changed: trends, seasons, other events,
+and regression to the mean.
+
+\begin{prop}{Before--after with selection on a bad period}{rtm}
+Let $Y_{it}(0) = a_i + \lambda_t + u_{it}$ with transitory shocks $u_{it}$ independent over time with mean zero. If units are treated
+because their pre-period outcome was low, the before--after change among treated units is
+\[
+  \E[Y_{\text{post}} - Y_{\text{pre}} \mid T = 1] = \ATT + (\lambda_{\text{post}} - \lambda_{\text{pre}}) - \E[u_{\text{pre}} \mid T = 1],
+\]
+and the last term is positive.
+\end{prop}
+\begin{proof}
+Substitute the model: the change is $\ATT + \lambda_{\text{post}} - \lambda_{\text{pre}} + \E[u_{\text{post}} - u_{\text{pre}} \mid T=1]$. Selection uses
+$Y_{\text{pre}}$ only, so $\E[u_{\text{post}} \mid T=1] = 0$, while selecting low $Y_{\text{pre}}$ makes $\E[u_{\text{pre}} \mid T=1] < 0$.
+\end{proof}
+
+``Fix the worst-performing stores'' builds regression to the mean into the rollout. A comparison group fixes the trend term but not this
+one unless it was selected the same way.
+
+\subsection{Fixed effects}
+
+The two-way fixed-effects (TWFE) model $Y_{it} = \alpha_i + \lambda_t + \beta D_{it} + \varepsilon_{it}$ gives each unit a level $\alpha_i$ (absorbing every
+stable characteristic, measured or not) and each period a shock $\lambda_t$ common to all units. Confounders that change over time
+\emph{differently} across units (a neighbourhood gentrifying, a manager who adopts and works harder) are not removed.
+
+\begin{prop}{TWFE by the within transformation}{within}
+In a balanced panel, with $\ddot W_{it} = W_{it} - \bar W_{i\cdot} - \bar W_{\cdot t} + \bar W_{\cdot\cdot}$, the least-squares coefficient on $D$ is
+$\hat\beta = \sum_{i,t}\ddot D_{it}Y_{it}/\sum_{i,t}\ddot D_{it}^2$.
+\end{prop}
+\begin{proof}
+Unit and period indicators span the additive functions $a_i + b_t$; in a balanced panel the residual from projecting on them is the
+two-way demeaned variable. Frisch--Waugh--Lovell (Meeting~8) finishes it. In an unbalanced panel the one-pass demeaning is not the
+projection, and the regression with both sets of indicators must be run directly.
+\end{proof}
+
+Only variation within units over time identifies $\beta$; variables that never change within a unit drop out.
+
+\subsection{Difference-in-differences}
+
+\begin{assum}{Parallel trends}{pt}
+$\E[Y_{\text{post}}(0) - Y_{\text{pre}}(0) \mid T=1] = \E[Y_{\text{post}}(0) - Y_{\text{pre}}(0) \mid T=0]$.
+\end{assum}
+\begin{assum}{No anticipation and no spillovers}{noant}
+$Y_{\text{pre}}(1) = Y_{\text{pre}}(0)$ for treated units, and comparison units' outcomes do not depend on whether treated units are treated.
+\end{assum}
+
+Parallel trends restricts \emph{changes}, not levels: the groups may differ by any amount provided the difference would have stayed constant.
+It is untestable, because the treated group's post-period $Y(0)$ is never seen. No anticipation fixes what ``pre'' means: if behaviour changed
+when adoption was announced, the pre-period must end before that.
+
+\begin{prop}{DiD identifies the ATT}{did}
+Under Assumptions~\ref{asm:pt}--\ref{asm:noant},
+\[
+  \ATT = \{\E[Y_{\text{post}} \mid T=1] - \E[Y_{\text{pre}} \mid T=1]\} - \{\E[Y_{\text{post}} \mid T=0] - \E[Y_{\text{pre}} \mid T=0]\}.
+\]
+\end{prop}
+\begin{proof}
+For treated units the observed means are $\E[Y_{\text{post}}(1) \mid T=1]$ and, by no anticipation, $\E[Y_{\text{pre}}(0) \mid T=1]$; for comparison units
+both are of $Y(0)$, free of spillovers. Replace the comparison group's change by the treated group's counterfactual change (parallel trends);
+the $Y_{\text{pre}}(0)$ terms cancel.
+\end{proof}
+
+The before--after change keeps the common \emph{trend}; the post-period cross-section keeps the \emph{level gap} (Meeting~1's selection bias,
+measured before treatment). The DiD removes both.
+
+\begin{prop}{Parallel trends depends on the scale}{scale}
+If parallel trends holds in levels with a common counterfactual change $\Delta \ne 0$ and the groups' pre-period means differ, it fails in
+logs (approximately, in percentage changes).
+\end{prop}
+\begin{proof}
+The implied counterfactual percentage changes are $\Delta/\mu_1$ and $\Delta/\mu_0$, unequal when $\mu_1 \ne \mu_0$.
+\end{proof}
+Choose the scale on which common shocks plausibly act (multiplicative shocks suggest logs), and report the other if the decision is close.
+
+\subsection{TWFE, event studies and pre-trends}
+
+\begin{prop}{With one adoption date, TWFE is the DiD}{twfedid}
+In a balanced panel with $n_1$ treated and $n_0$ comparison units, $\mathcal T_0$ pre- and $\mathcal T_1$ post-periods, and
+$\Delta_i = \bar Y_{i,\text{post}} - \bar Y_{i,\text{pre}}$, the TWFE coefficient is $\hat\beta = \bar\Delta_{T=1} - \bar\Delta_{T=0}$.
+\end{prop}
+\begin{proof}
+Here $\ddot D_{it} = (T_i - \bar T)(P_t - \bar P)$ with $P_t$ the post indicator. Then $\sum_t(P_t - \bar P)Y_{it} = (\mathcal T_0\mathcal T_1/\mathcal T)\Delta_i$ and
+$\sum_i(T_i - \bar T)\Delta_i = (n_1n_0/N)(\bar\Delta_{T=1} - \bar\Delta_{T=0})$; the denominator factors the same way.
+\end{proof}
+
+The regression adds convenience (many periods, standard errors), not identification. An \emph{event study} replaces $D_{it}$ by indicators
+$T_i\ind{t - t_0 = k}$ for each period relative to adoption except a base $k = -1$. In a balanced panel each coefficient is
+$\hat\beta_k = (\bar Y_{1k} - \bar Y_{0k}) - (\bar Y_{1,-1} - \bar Y_{0,-1})$: post-period coefficients trace the effect over time; pre-period
+coefficients are placebo checks, near zero under parallel trends and no anticipation. The base period's coefficient is zero by definition and
+has no error bar.
+
+Flat pre-period coefficients are weak evidence: with few, noisy pre-periods a test can miss a drift large enough to explain the whole
+``effect''; reporting only analyses that pass the test biases what gets reported; and a shock that coincides with adoption (a local campaign)
+leaves pre-trends untouched.
+
+\begin{prop}{Linear differential trend and the breakdown drift}{drift}
+If the counterfactual gap drifts linearly, $\E[Y_t(0) \mid T=1] - \E[Y_t(0) \mid T=0] = a + \delta t$, a DiD comparing post periods with mean
+$\bar t_{\text{post}}$ to pre periods with mean $\bar t_{\text{pre}}$ converges to $\ATT + \delta(\bar t_{\text{post}} - \bar t_{\text{pre}})$. Against a break-even $c$,
+the decision changes at the \emph{breakdown drift} $\delta^\ast = (\text{DiD} - c)/(\bar t_{\text{post}} - \bar t_{\text{pre}})$.
+\end{prop}
+\begin{proof}
+The DiD is the post-period average gap minus the pre-period average gap; the counterfactual part of the difference is
+$\delta(\bar t_{\text{post}} - \bar t_{\text{pre}})$.
+\end{proof}
+
+Report $\delta^\ast$ in the decision's units, compare it with the drift the pre-period coefficients can rule out, and argue from the institution
+whether a drift that large is plausible. Later event-time coefficients and distant bases are more exposed.
+
+\subsection{Inference}
+
+A unit's outcomes are correlated over time and treatment is constant within long blocks, so unit-period standard errors are too small, often
+by a large factor.
+
+\begin{prop}{Collapsing to one change per unit}{collapse}
+If units are independent, $\bar\Delta_{T=1} - \bar\Delta_{T=0}$ has $\SE = \sqrt{s_1^2/n_1 + s_0^2/n_0}$ with $s_d$ the standard deviation of $\Delta_i$ in
+group $d$, whatever the correlation of a unit's outcomes over time.
+\end{prop}
+\begin{proof}
+Each unit contributes one $\Delta_i$; within-unit correlation affects $\Var(\Delta_i)$, not the independence of $\Delta_i$ across units.
+\end{proof}
+
+With one adoption date this is asymptotically the TWFE SE clustered by unit. Cluster at the level at which treatment was assigned and shocks are
+shared (by region if regions adopted). With few clusters use $t$ critical values with cluster-based degrees of freedom or the wild cluster
+bootstrap.
+
+\subsection{A warning about staggered adoption}
+
+When units adopt at different dates, TWFE with a single $D_{it}$ still runs but averages many two-by-two comparisons, some using
+\emph{already-treated} units as controls for later adopters. If effects grow over time, those comparisons subtract part of the effect, some get
+negative weight, and the estimate can be badly biased, even of the wrong sign. Use estimators that compare only with not-yet-treated or
+never-treated units, and report effects by cohort (Handout H3).
+
+\begin{pitfall}[DiD errors]
+Before--after on units chosen for a bad period; controls changed by the treatment; unit-period SEs; a base period inside an anticipation window;
+reading flat pre-trends as proof; TWFE with staggered adoption.
+\end{pitfall}
+
+%=====================================================================================
+\sectiontwo
+
+\paragraph{Setting.} FitLife introduced app-based class booking in 20 of its 50 clubs at the start of July; the other 30 kept phone and desk
+booking. The outcome is average monthly visits per member. The system costs ¥30{,}000 per club a year; management will extend it if it raises
+visits by at least $0.3$ per member per month.
+
+\paragraph{Step 1: before--after.} App clubs: $8.0$ visits (January--June) and $8.9$ (July--December), a change of $0.9$, which includes the autumn
+rise every club sees.
+
+\paragraph{Step 2: the two-by-two DiD.}
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+ & Jan--Jun & Jul--Dec & Change \\
+\midrule
+App clubs (20) & 8.0 & 8.9 & $+0.9$ \\
+Other clubs (30) & 7.5 & 7.9 & $+0.4$ \\
+\midrule
+Difference & 0.5 & 1.0 & DiD $= +0.5$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+The other clubs' rise of $0.4$ stands in for the seasonal rise app clubs would have had. The effect is $0.5$ visits per member per month (about 6\% of
+the counterfactual $8.4$), above $0.3$. App clubs were busier to begin with; parallel trends does not need equal levels.
+
+\paragraph{Step 3: levels or logs.} In logs, $\ln(8.9/8.0) - \ln(7.9/7.5) = 0.055$; parallel trends in logs implies a counterfactual of
+$8.0 \times 7.9/7.5 = 8.43$ and an effect of $0.47$ visits. The two scales give $0.50$ and $0.47$: the decision is the same.
+
+\paragraph{Step 4: event study.} Monthly TWFE with June as the base, SEs clustered by club (50 clusters):
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=0.66\linewidth, height=5cm, xlabel={months relative to adoption}, ylabel={$\hat\beta_k$}, axis lines=left,
+  xmin=-3.6, xmax=2.6, ymin=-0.25, ymax=0.8, xtick={-3,-2,-1,0,1,2}]
+\addplot[only marks, mark=*, sbgreen, error bars/.cd, y dir=both, y explicit]
+  coordinates {(-3,0.02) +- (0,0.118) (-2,-0.03) +- (0,0.118) (0,0.35) +- (0,0.118) (1,0.52) +- (0,0.118) (2,0.60) +- (0,0.118)};
+\addplot[only marks, mark=o, extgrey] coordinates {(-1,0)};
+\draw[dashed, extgrey] (axis cs:-3.6,0) -- (axis cs:2.6,0);
+\draw[thick, dashed, warnred] (axis cs:-3.6,0.3) -- (axis cs:2.6,0.3);
+\end{axis}
+\end{tikzpicture}
+
+\small Figure 1. Event-study coefficients for months $-3$ to $+2$ with 95\% intervals (SE $0.06$); base month $-1$ has none. Red: the $0.3$ break-even.
+\end{center}
+Pre-period coefficients ($0.02$ and $-0.03$) are small; the effect builds over three months as members learn the app.
+
+\paragraph{Step 5: trend sensitivity.} Under a linear drift $\delta$, the pre-period coefficients would be $\beta_{-2} = -\delta$ and $\beta_{-3} = -2\delta$.
+Fitting $\delta$ to them by least squares gives $\hat\delta = -(1 \times (-0.03) + 2 \times 0.02)/5 = -0.002$ with SE $0.06/\sqrt5 = 0.027$, so the 95\% interval for the drift is
+$[-0.055, 0.051]$: a drift of about $0.05$ a month in either direction cannot be ruled out. The breakdown drift for the month-$+2$ coefficient (three months from the base) is
+$\delta^\ast = (0.60 - 0.30)/3 = 0.10$, nearly twice what the pre-period allows. Even a drift of $0.055$ leaves $0.60 - 3 \times 0.055 = 0.435 > 0.3$.
+
+\paragraph{Step 6: how clubs were chosen.} The 20 clubs had the most complaints about phone booking; their visits had been stable, which argues
+against regression to the mean. Had they been chosen after a slump, the event study would show a dip before adoption.
+
+\paragraph{Recommendation.} Extend the app. The remaining 30 clubs will adopt at different times, so evaluate the extension with a staggered-adoption
+estimator, ideally with adoption dates randomised across clubs (Handout H3).
+
+\begin{exercise}[computation]
+Collapsing to one change per club, the 20 app clubs' changes $\Delta_i$ have SD $0.20$ and the 30 other clubs' SD $0.18$. Compute the SE of the DiD and a
+95\% interval. Clubs belong to 6 regions with shared marketing; what would you do about that?
+\end{exercise}
+\answer{$\SE = \sqrt{0.20^2/20 + 0.18^2/30} = \sqrt{0.0020 + 0.0011} = 0.055$; interval $0.5 \pm 1.96 \times 0.055 = [0.39, 0.61]$, clear of the
+break-even of $0.3$. But if regions share shocks, the clubs are not independent: cluster by region. With only 6 clusters, use a $t$ distribution with about
+5 degrees of freedom or the wild cluster bootstrap, and expect a much wider interval that may reach the break-even.}
+
+\begin{exercise}[judgement]
+A regional manager wants to report the app's effect as the before--after change in the 20 clubs, ``because the other clubs are in different cities and not
+comparable''. Respond.
+\end{exercise}
+\answer{Before--after includes the seasonal rise ($0.4$ here) and anything else that changed. DiD does not need comparable levels, only comparable changes
+(parallel trends), which the event study's flat pre-period supports. If cities differ in seasonality, restrict the comparison to clubs in similar markets
+or use conditional parallel trends, rather than dropping the comparison group.}
+
+%=====================================================================================
+\sectionthree
+
+\begin{extension}[Conditional parallel trends, few clusters, changes-in-changes]
+If parallel trends is plausible only within covariate groups, outcome-regression, IPW and doubly robust DiD estimators compare changes within groups
+(Sant'Anna and Zhao, 2020). With few clusters, the wild cluster bootstrap gives better-sized tests. Changes-in-changes (Athey and Imbens, 2006) replaces
+parallel means with a stable mapping between quantiles.
+\end{extension}
+
+\begin{extension}[Triple differences and randomised adoption]
+A triple difference adds a within-unit comparison group that should be unaffected (members of a class type not bookable by app). Randomising adoption
+dates turns DiD into a design-based comparison (Handout H3).
+\end{extension}
+
+\subsection*{Annotated reading}
+\begin{readinglist}
+\reading{Angrist and Pischke (2009), \emph{Mostly Harmless Econometrics}, Princeton}{DiD and fixed effects at textbook pace}{Ch.\ 5}{2}
+\reading{Bertrand, Duflo and Mullainathan (2004), ``How much should we trust differences-in-differences estimates?'', \emph{QJE}}{Why unit-period SEs
+mislead}{All}{1}
+\reading{Roth (2022), ``Pretest with caution: event-study estimates after testing for parallel trends'', \emph{AER: Insights}}{What a passed pre-trend test
+does to the estimate}{All}{2}
+\reading{Rambachan and Roth (2023), ``A more credible approach to parallel trends'', \emph{Review of Economic Studies}}{Sensitivity beyond linear drift}{Sections
+1--3}{3}
+\reading{Roth, Sant'Anna, Bilinski and Poe (2023), ``What's trending in difference-in-differences?'', \emph{Journal of Econometrics}}{A survey of modern DiD}{All}{2}
+\reading{Handout H3, \emph{Staggered adoption}}{Cohorts, clean comparisons, and the TWFE decomposition}{All}{2}
+\end{readinglist}
+
+\end{document}

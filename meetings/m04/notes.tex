@@ -1,0 +1,301 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\begin{document}
+\notesheader{4}{Causal Trees and Forests}{Searching for heterogeneity without fooling yourself}
+
+\begin{decision}
+A search through customer fields finds a segment that responds three times as much as average. Should the
+firm build a campaign on it? Only if the segment's effect is measured on data that did not choose it. These
+notes show why the search inflates what it finds, how honesty removes the inflation, and how forests turn the
+same idea into an estimate for every customer.
+\end{decision}
+
+\begin{goals}
+  \item explain why a causal splitting criterion ignores prognostic splits while an outcome tree favours them;
+  \item quantify the winner's curse and show that honest estimation removes it;
+  \item run the discover--estimate--recommend protocol;
+  \item describe a causal forest as adaptive neighbour weights with local centering, and state what its
+  intervals require;
+  \item test whether a CATE model has found real heterogeneity (calibration test and GATES).
+\end{goals}
+
+%=====================================================================================
+\sectionone
+
+\subsection{An estimand chosen by the data}
+
+Units have covariates $X$, a randomised treatment $D$ with known $\Pr(D=1) = e$, and outcome $Y$. A
+\emph{partition} $\Pi = \{\ell_1, \dots, \ell_L\}$ divides covariate space into \emph{leaves}, and the
+\emph{leaf CATE} is $\tau_\ell = \E[Y(1) - Y(0) \mid X \in \ell]$. When the leaves are the output of a search, the
+estimand itself depends on the data that found it. Estimand, identification and estimation still apply, but
+only in order: the partition must be fixed before the data used to estimate it are consulted. The leaf
+estimate on a sample $S$ is $\hatt_\ell(S) = \bar Y_{1,\ell}(S) - \bar Y_{0,\ell}(S)$.
+
+\subsection{Splitting on the effect}
+
+A regression tree (CART) splits a parent $P$ into children $L, R$ to maximise
+$\tfrac{n_L}{n_P}(\bar Y_L - \bar Y_P)^2 + \tfrac{n_R}{n_P}(\bar Y_R - \bar Y_P)^2$. A \emph{causal tree} replaces outcome
+means with effect estimates:
+\[
+  \Delta = \tfrac{n_L}{n_P}(\hatt_L - \hatt_P)^2 + \tfrac{n_R}{n_P}(\hatt_R - \hatt_P)^2
+  = \frac{n_L n_R}{n_P^2}(\hatt_L - \hatt_R)^2 ,
+\]
+the second form holding when $\hatt_P$ is the size-weighted average of the children. Each leaf needs both
+treated and control units.
+
+\begin{prop}{A causal criterion ignores prognostic splits}{prognostic}
+If a split leaves the CATE unchanged ($\tau_L = \tau_R$), its population $\Delta$ is zero whatever it does to
+outcomes. Under randomisation with $e = \tfrac12$, the outcome gap between the two sides of a split on $V$ is
+\[
+  \E[Y \mid V=1] - \E[Y \mid V=0] = \{\mu_0(1) - \mu_0(0)\} + \tfrac12\{\tau(1) - \tau(0)\}.
+\]
+\end{prop}
+\begin{proof}
+With $\tau_L = \tau_R$ both squared terms vanish. For the outcome gap,
+$\E[Y \mid V=v] = \tfrac12\E[Y(1) \mid v] + \tfrac12\E[Y(0) \mid v] = \mu_0(v) + \tfrac12\tau(v)$; subtract.
+\end{proof}
+
+Effect heterogeneity enters an outcome split at half weight, on top of whatever baseline difference the variable
+carries. Outcome trees therefore spend their depth on prognostic variables (spend, tenure) before they reach
+effect modifiers.
+
+\subsection{The winner's curse}
+
+\begin{prop}{Selection inflates the winner}{curse}
+Let $\hat T_1, \dots, \hat T_k$ be unbiased for $\tau_1, \dots, \tau_k$ and $j^\ast = \arg\max_j \hat T_j$. Then
+$\E[\hat T_{j^\ast} - \tau_{j^\ast}] \ge 0$. If the estimates are independent $N(\tau, s^2)$ with a common $\tau$,
+$\E[\hat T_{j^\ast}] = \tau + s\,\E[\max(Z_1, \dots, Z_k)]$ with $Z_j$ standard normal.
+\end{prop}
+\begin{proof}
+$\max_j \hat T_j \ge \hat T_m$ for every $m$, so $\E[\hat T_{j^\ast}] \ge \max_m \tau_m \ge \E[\tau_{j^\ast}]$. With a common
+$\tau$, $\hat T_j = \tau + sZ_j$.
+\end{proof}
+
+$\E[\max Z_j]$ is $1.03$ for $k = 4$, $1.54$ for $k = 10$, $1.87$ for $k = 20$ and $2.25$ for $k = 50$; for large
+$k$ it grows like $\sqrt{2\ln k}$. A tree search over fields and cut points compares hundreds of candidates. The winner's
+effect, reported on the data that chose it, is too high, and its standard error is too small because it ignores
+the search.
+
+\subsection{Honesty}
+
+\begin{prop}{Honest leaf estimates are unbiased}{honest}
+Split the data at random into $A$ and $B$, let the partition be any function of $A$ alone, and let $B$ contain its
+own randomised assignment. Then for every leaf with both arms present in $B$,
+$\E[\hatt_\ell(B) \mid \Pi] = \tau_\ell$, and the difference-in-means standard error computed on $B$ is valid given
+$\Pi$.
+\end{prop}
+\begin{proof}
+$B$ is independent of $A$ and hence of $\Pi$, so conditioning on $\Pi$ leaves $B$ unchanged: within a leaf, $B$'s
+units are a random sample from that leaf with randomised treatment, and the experiment results of Meetings 1
+and 2 apply.
+\end{proof}
+
+The proof uses one fact: the partition does not depend on $B$. Consulting $B$ while tuning the tree, even
+informally, turns it into discovery data. The cost is variance, because each half does only one job. If a leaf's full-sample
+SE is $s$, honesty raises its variance from $s^2$ to $2s^2$; reporting the winner from the search instead adds a
+squared bias of about $(s\,\E[\max Z_j])^2$, which exceeds $s^2$ once four or more equal candidates are compared.
+Splitting also spends sample size: a leaf with 100 per arm and rates $0.30$ vs $0.10$ has SE $0.055$; each half of it
+has SE $0.077$.
+
+\paragraph{The protocol.} \textbf{H1 Discover} on $A$ by any method and \emph{commit}: write the leaves and
+the intended decision per leaf. \textbf{H2 Estimate} each committed leaf's effect and SE on $B$, with what the
+decision needs (the treated-arm rate, for a per-redemption break-even). \textbf{H3 Recommend} by placing each
+interval against the leaf's own threshold: above (act), straddling (undecided), below (do not act). With $L$
+leaves, a Bonferroni level $1 - 0.05/L$ controls the chance that any line on the card is wrong.
+
+\subsection{From trees to forests}
+
+A single tree is unstable. A \emph{causal forest} grows many honest trees, each on a random subsample drawn
+without replacement with a random subset of candidate variables at each split. It is best read as a way of
+choosing, for each target $x$, which training units are its neighbours.
+
+\begin{prop}{The forest estimate as a weighted residual regression}{forest}
+For a target $x$, tree $b$ places $x$ in leaf $L_b(x)$. Define
+\[
+  \alpha_i(x) = \frac1B\sum_{b=1}^B \frac{\ind{X_i \in L_b(x)}}{|L_b(x)|}, \qquad \textstyle\sum_i \alpha_i(x) = 1 .
+\]
+The forest solves $\sum_i \alpha_i(x)\big[(Y_i - \hat\ell(X_i)) - (D_i - \hat e(X_i))\,\theta\big](D_i - \hat e(X_i)) = 0$:
+\[
+  \hatt(x) = \frac{\sum_i \alpha_i(x)\,(Y_i - \hat\ell(X_i))(D_i - \hat e(X_i))}{\sum_i \alpha_i(x)\,(D_i - \hat e(X_i))^2},
+\]
+with $\hat\ell$ and $\hat e$ estimated out of bag.
+\end{prop}
+\begin{proof}
+The estimating equation is the first-order condition of a weighted least-squares fit of the outcome residual on the
+treatment residual, the R-learner's loss (Meeting~3) localised by $\alpha_i(x)$; solve the linear equation for
+$\theta$.
+\end{proof}
+
+Subtracting $\hat\ell$ and $\hat e$ first is \emph{local centering}: it removes what prognostic variables explain, so
+splits concentrate on effect modifiers, and it protects the estimate when treatment probabilities vary with $x$.
+The neighbours are adaptive: the trees decide which directions in $x$ matter for the effect.
+
+\paragraph{Intervals.} Under conditions (a Lipschitz $\tau$, covariates with a density bounded away from zero on
+bounded support, overlap, honest trees whose leaves shrink in every direction, and subsamples of size $s$ with
+$s \to \infty$, $s/n \to 0$), Wager and Athey (2018) show $\hatt(x)$ is asymptotically normal with a variance the
+infinitesimal jackknife estimates. Three cautions: the result is pointwise, not a band over all customers;
+intervals are usually wide relative to the spread of $\hatt(X_i)$; and that spread overstates the spread of
+true effects because it includes noise. Averaging does not make trees independent: with per-tree variance
+$\sigma^2$ and pairwise correlation $\rho$, the forest's variance is $\sigma^2[\rho + (1-\rho)/B]$, so more trees
+remove simulation noise but not the uncertainty the trees share.
+
+\paragraph{Variable importance is not a test.} Split counts describe the algorithm. Correlated variables share
+splits arbitrarily, high-cardinality variables get more chances, and a field can rank high because it proxies
+for the real modifier. Treat a high importance as a hypothesis for fresh data.
+
+\subsection{Has the model found real heterogeneity?}
+
+On held-out data, compute each unit's doubly robust score $\phi_i$ (Meeting~3), which satisfies
+$\E[\phi_i \mid X_i] = \tau(X_i)$, and the model's prediction $\hatt(X_i)$ fitted on other data.
+
+\begin{prop}{Best linear predictor (calibration) test}{blp}
+In the population regression $\phi = \beta_1 + \beta_2(\hatt(X) - \E[\hatt(X)]) + u$,
+\[
+  \beta_1 = \E[\tau(X)] = \ATE, \qquad \beta_2 = \frac{\Cov(\tau(X), \hatt(X))}{\Var(\hatt(X))}.
+\]
+\end{prop}
+\begin{proof}
+With a centred regressor, $\beta_1 = \E[\phi] = \E[\tau(X)]$ and $\beta_2 = \Cov(\phi, \hatt)/\Var(\hatt)$. Since
+$\hatt(X)$ is fixed given $X$ and $\E[\phi \mid X] = \tau(X)$, $\Cov(\phi, \hatt) = \Cov(\tau(X), \hatt(X))$.
+\end{proof}
+
+So $\beta_2 = 0$ means the score carries no information about effects; $\beta_2 > 0$ means it detects real
+heterogeneity; $\beta_2 = 1$ means its predictions are calibrated; $0 < \beta_2 < 1$ means they are right in
+direction but too spread out. The test is about \emph{this} score: a non-rejection does not show heterogeneity
+is absent.
+
+\paragraph{Sorted group effects (GATES).} Sort held-out units by $\hatt$ into $K$ groups using cut-points fixed in
+advance and estimate each group's effect by difference in means (unbiased by Result~\ref{prop:honest}, since the
+grouping was fixed on other data). Real heterogeneity shows as effects rising from bottom to top. These are the
+numbers a manager can act on.
+
+\begin{pitfall}[searching and reporting]
+Reporting a searched segment's effect from the search data; re-drawing leaves after looking at the estimation
+half; reading the spread of predicted effects, or variable importance, as evidence of heterogeneity.
+\end{pitfall}
+
+\checkpoint{An analyst searches 20 candidate segments, finds one with lift $0.12$ (SE $0.03$) against an overall
+lift of $0.06$, and proposes a campaign. What lift would you expect on fresh data if every segment's true effect
+were $0.06$, and what should be done before the campaign?}
+
+%=====================================================================================
+\sectiontwo
+
+\paragraph{Setting.} QuickBite tests free delivery on a shopper's next order for 4{,}000 shoppers (50/50), split at random into a discovery half and an estimation half of 2{,}000 each. The
+outcome is whether the shopper orders within a week. Overall the offer raises ordering by $0.054$.
+
+\paragraph{Step 1: choosing the first split (discovery half).}
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Candidate & Left ($n$, $\hatt$) & Right ($n$, $\hatt$) & $\tfrac{n_Ln_R}{n_P}(\hatt_L - \hatt_R)^2$ \\
+\midrule
+A: basket $\ge$ ¥80 & (1{,}200, 0.03) & (800, 0.09) & $1.73$ \\
+B: first-time customer & (600, 0.11) & (1{,}400, 0.03) & $2.69$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+(Scores use the unnormalised form $n_Ln_R/n_P \cdot (\hatt_L - \hatt_R)^2$, which ranks splits identically.) The tree
+splits on first-time customers. Both are consistent with the overall effect: $(600 \times 0.11 + 1{,}400 \times 0.03)/2{,}000 = 0.054$.
+
+\paragraph{Step 2: the curse in numbers.} If the search ends up comparing 10 leaves, all with true effect $0.05$
+and SE $0.02$, the reported winner averages $0.05 + 0.02 \times 1.54 = 0.081$, a 62\% overstatement. Re-estimated on
+the estimation half, it averages $0.05$.
+
+\paragraph{Step 3: a forest estimate by hand.} Two honest trees put a target shopper $x$ in leaves $\{1,2,3,4\}$ and
+$\{1,2,5,6\}$. Units 1 and 2 are in both, with weight $\tfrac12(\tfrac14 + \tfrac14) = 0.25$; units 3--6 get $0.125$.
+With $\hat e = 0.5$:
+\begin{center}
+\begin{tabular}{ccccccc}
+\toprule
+Unit & $D$ & $Y$ & $\hat\ell$ & $\alpha$ & $(Y - \hat\ell)(D - 0.5)$ & $\alpha \times$ previous \\
+\midrule
+1 & 1 & 1 & 0.6 & 0.250 & $0.20$ & $0.0500$ \\
+2 & 0 & 0 & 0.5 & 0.250 & $0.25$ & $0.0625$ \\
+3 & 1 & 1 & 0.4 & 0.125 & $0.30$ & $0.0375$ \\
+4 & 0 & 1 & 0.6 & 0.125 & $-0.20$ & $-0.0250$ \\
+5 & 1 & 0 & 0.3 & 0.125 & $-0.15$ & $-0.01875$ \\
+6 & 0 & 0 & 0.4 & 0.125 & $0.20$ & $0.0250$ \\
+\midrule
+Sum & & & & 1.000 & & $0.13125$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+The denominator is $\sum_i \alpha_i(D_i - 0.5)^2 = 0.25$, so $\hatt(x) = 0.13125/0.25 = 0.525$ (Result~\ref{prop:forest}).
+With six units this only illustrates the arithmetic.
+
+\paragraph{Step 4: is the heterogeneity real?} On a held-out set the calibration regression gives $\hat\beta_1 = 0.052$
+(SE $0.010$) and $\hat\beta_2 = 0.64$ (SE $0.21$): heterogeneity detected ($z = 3.05$), predictions somewhat too spread
+out but not significantly so ($z = (1 - 0.64)/0.21 = 1.71$). GATES by quintile of predicted effect, each with SE
+about $0.02$:
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[ybar, width=0.62\linewidth, height=4.6cm, bar width=16pt, symbolic x coords={Bottom,2,3,4,Top},
+  xtick=data, ylabel={group effect}, ymin=-0.03, ymax=0.15, axis lines=left, enlarge x limits=0.15,
+  yticklabel style={/pgf/number format/fixed}, nodes near coords, nodes near coords style={font=\scriptsize, yshift=6pt},
+  every node near coord/.append style={/pgf/number format/fixed, /pgf/number format/precision=3}]
+\addplot[fill=greentint, draw=sbgreen, error bars/.cd, y dir=both, y explicit]
+  coordinates {(Bottom,0.010) +- (0,0.039) (2,0.030) +- (0,0.039) (3,0.045) +- (0,0.039) (4,0.068) +- (0,0.039) (Top,0.107) +- (0,0.039)};
+\draw[dashed, warnred] (axis cs:Bottom,0.06) -- (axis cs:Top,0.06);
+\end{axis}
+\end{tikzpicture}
+
+\small Figure 1. Group effects with 95\% intervals; the dashed line is a break-even of $0.06$.
+\end{center}
+
+The group effects average $0.052$, matching $\hat\beta_1$. Against a break-even of $0.06$, only the top quintile's
+interval lies wholly above it; the bottom quintile's lies wholly below, and quintiles 2 to 4 straddle it. Individual predictions are not precise enough to go
+further.
+
+\begin{exercise}[computation]
+The analyst wants to split the first-time-customer leaf (300 per arm, ordering rates $0.31$ and $0.20$) again, into two
+equal halves. (a) What is the leaf's SE now, and each half's SE if both halves had the same rates? (b) How far apart
+would the halves' true effects have to be for the gap to be detected at 5\% with 80\% power?
+\end{exercise}
+\answer{(a) Now: $\sqrt{0.31 \times 0.69/300 + 0.20 \times 0.80/300} = 0.0353$. Halves: $\sqrt{0.2139/150 + 0.16/150} = 0.0499$.
+(b) The gap's SE is $\sqrt{2} \times 0.0499 = 0.0706$, so the detectable gap is $2.8 \times 0.0706 \approx 0.20$, nearly
+twice the leaf's whole effect of $0.11$. The split is not worth making.}
+
+\begin{exercise}[judgement]
+The forest's variable-importance chart ranks ``app version'' first. A product manager concludes that the app
+version drives the response to free delivery. What two analyses would you run before agreeing, and on which data?
+\end{exercise}
+\answer{(1) GATEs by app version estimated on held-out data that played no part in growing the forest, with the SE
+of the difference between versions. (2) Check what app version proxies for (new users are on the newest version):
+compare effects by app version within first-time and repeat customers. Importance counts splits; it is not a test,
+and correlated or high-cardinality fields absorb splits arbitrarily.}
+
+%=====================================================================================
+\sectionthree
+
+\begin{extension}[Generalised random forests]
+Any parameter defined by a local moment condition $\E[\psi(O;\theta) \mid X = x] = 0$ (a quantile, a local IV effect)
+can be estimated with forest weights by solving $\sum_i \alpha_i(x)\psi(O_i;\theta) = 0$. A gradient trick turns split
+selection into ordinary CART on pseudo-outcomes. The \texttt{grf} package implements causal, quantile, IV and survival
+forests, the calibration test and doubly robust GATEs (Athey, Tibshirani and Wager, 2019).
+\end{extension}
+
+\begin{extension}[Honest criteria, inference on winners, shrinkage]
+Athey and Imbens's criterion subtracts the estimation variance a split will create, discouraging small leaves
+directly. When a winner must be reported from the data that chose it, conditional intervals (Andrews, Kitagawa
+and McCloskey, 2024) are valid given the selection; empirical Bayes shrinkage pulls noisy segments towards the
+mean and tempers the winner automatically.
+\end{extension}
+
+\subsection*{Annotated reading}
+\begin{readinglist}
+\reading{Athey and Imbens (2016), ``Recursive partitioning for heterogeneous causal effects'',
+\emph{PNAS}}{Causal trees and honesty, with the splitting criterion}{Sections 1--4}{2}
+\reading{Wager and Athey (2018), ``Estimation and inference of heterogeneous treatment effects using random
+forests'', \emph{JASA}}{The asymptotic normality result and its conditions}{Sections 1--3}{3}
+\reading{Athey, Tibshirani and Wager (2019), ``Generalized random forests'', \emph{Annals of Statistics}}{Forests
+as weights for any moment condition}{Sections 1--2, 6}{3}
+\reading{Chernozhukov, Demirer, Duflo and Fern\'andez-Val (2025), ``Fisher--Schultz Lecture: Generic machine learning inference on
+heterogeneous treatment effects in randomized experiments'', \emph{Econometrica}}{The calibration test and GATES with repeated
+splitting}{Sections 1--3}{2}
+\reading{Andrews, Kitagawa and McCloskey (2024), ``Inference on winners'', \emph{QJE}}{Valid intervals for the
+best-looking segment}{Sections 1--2}{3}
+\end{readinglist}
+
+\end{document}

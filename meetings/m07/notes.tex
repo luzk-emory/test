@@ -1,0 +1,294 @@
+\documentclass[11pt]{article}
+\usepackage{coursenotes}
+\begin{document}
+\notesheader{7}{Observational Data}{When the logs must answer: adjustment, propensity scores and double robustness}
+
+\begin{decision}
+No experiment was run. Treatment was assigned by a business process (a targeting rule, an account manager, an automated
+system), and the logs record who got it and what happened. Can the logs say what the treatment did? Only if everything
+that drove the assignment and also affects the outcome was recorded, and only for the kinds of unit that were sometimes
+treated and sometimes not.
+\end{decision}
+
+\begin{goals}
+  \item state the three identifying assumptions and read the assignment rule as the assignment mechanism;
+  \item identify the ATE and ATT by standardisation and by inverse-probability weighting, with proofs;
+  \item show why a scalar propensity score suffices, and why predicting treatment well is a warning;
+  \item choose controls with the backdoor logic, recognising mediators, colliders and M-bias;
+  \item run the outcome-free design stage, diagnose overlap, and say how trimming changes the estimand;
+  \item use the doubly robust (AIPW) estimator and say what double robustness does and does not protect against.
+\end{goals}
+
+%=====================================================================================
+\sectionone
+
+\subsection{Setup and estimands}
+
+Treatment $D$, outcome $Y$, pre-treatment covariates $X$; $\mu_d(x) = \E[Y \mid D=d, X=x]$ and $e(x) = \Pr(D=1 \mid X=x)$. When a
+recorded rule assigned treatment, $e$ is that rule viewed as a function of its inputs. This includes rules written by an
+automated system: its decisions are the assignment mechanism, and the data it leaves are observational however sophisticated
+it was. The ATE, ATT and ATU differ whenever effects vary with $X$ and the rule's targeting depends on $X$; which one is
+needed is a question about the decision.
+
+\subsection{Identification}
+
+\begin{assum}{Conditional exchangeability}{exch}
+$\{Y(0), Y(1)\} \indep D \mid X$.
+\end{assum}
+\begin{assum}{Overlap}{overlap}
+$0 < e(x) < 1$ for every $x$ in the population the estimand refers to.
+\end{assum}
+\begin{assum}{Consistency}{cons}
+$Y = Y(D)$: one version of treatment, no interference.
+\end{assum}
+
+Exchangeability cannot be tested from the data it concerns. When a rule assigned treatment it has a concrete reading: the
+rule's inputs are all in $X$, and whatever the rule left to chance was unrelated to outcomes. Defend it by finding out how
+decisions were actually made, not by inspecting the data. Overlap is checkable and is where a decisive rule fails. For the ATT a weaker
+pair suffices: $Y(0) \indep D \mid X$ and $e(x) < 1$.
+
+\subsection{Standardisation and weighting}
+
+\begin{prop}{Standardisation (the g-formula)}{std}
+Under Assumptions~\ref{asm:exch}--\ref{asm:cons}, $\E[Y(d)] = \E_X[\mu_d(X)]$, so $\ATE = \E_X[\mu_1(X) - \mu_0(X)]$ and
+$\ATT = \E[Y - \mu_0(X) \mid D = 1]$.
+\end{prop}
+\begin{proof}
+$\E[Y(d)] = \E_X[\E[Y(d) \mid X]]$; exchangeability gives $\E[Y(d) \mid X] = \E[Y(d) \mid D=d, X]$ (defined by overlap), and
+consistency replaces $Y(d)$ by $Y$. For the ATT, average over the treated, where $Y = Y(1)$.
+\end{proof}
+
+The ATT form needs only $\mu_0$, evaluated at the treated units' $x$, which is exactly where untreated units may be scarce.
+With discrete $X$ the estimator is a weighted average of within-cell differences; with many covariates $\mu_d$ must be
+modelled (``g-computation''), and the model will not report where it is extrapolating.
+
+\begin{prop}{The IPW identity}{ipw}
+Under Assumptions~\ref{asm:exch}--\ref{asm:cons}, $\E[DY/e(X)] = \E[Y(1)]$ and $\E[(1-D)Y/(1-e(X))] = \E[Y(0)]$. Under the
+weaker ATT conditions,
+\[
+  \ATT = \frac{\E[DY] - \E\big[\tfrac{e(X)}{1-e(X)}(1-D)Y\big]}{\Pr(D=1)} .
+\]
+\end{prop}
+\begin{proof}
+$\E[DY(1) \mid X] = e(X)\E[Y(1) \mid X]$ by exchangeability; divide and average. For the ATT,
+$\E[\tfrac{e}{1-e}(1-D)Y \mid X] = e(X)\E[Y(0) \mid X] = \E[DY(0) \mid X]$, so the numerator is $\E[D\{Y(1) - Y(0)\}]$.
+\end{proof}
+
+Weighting creates a pseudo-population in which $X$ no longer predicts $D$. Normalising weights within each arm (the
+\emph{H\'ajek} form) is preferred: it is invariant to shifting $Y$ and usually less variable. For the ATT, treated units keep
+weight one and untreated units are weighted by the odds of treatment. The \emph{effective sample size} of an arm's weights,
+$(\sum_i w_i)^2/\sum_i w_i^2$, says how many units the comparison really rests on.
+
+\subsection{Why one number can replace all of \texorpdfstring{$X$}{X}}
+
+\begin{prop}{The balancing property (Rosenbaum and Rubin)}{balance}
+$D \indep X \mid e(X)$; hence if exchangeability holds given $X$, it holds given $e(X)$ alone.
+\end{prop}
+\begin{proof}
+$\Pr(D=1 \mid X, e(X)) = e(X)$ and $\Pr(D=1 \mid e(X)) = \E[e(X) \mid e(X)] = e(X)$; they agree, so $D \indep X \mid e(X)$. Similarly
+$\Pr(D=1 \mid Y(0), Y(1), e(X)) = \E[\Pr(D=1 \mid Y(0), Y(1), X) \mid Y(0), Y(1), e(X)] = e(X)$, using exchangeability given $X$.
+\end{proof}
+
+Adjusting for the scalar $e(X)$, by weighting, stratifying or matching, does the work of the full vector. The propensity model
+is not a prediction task: its job is to reproduce the assignment mechanism and balance $X$. A model that predicts $D$ almost
+perfectly is reporting that the mechanism was nearly deterministic, which is a failure of overlap, not a success.
+
+\subsection{What regression adjustment estimates}
+
+$Y = \alpha + \tau D + X^\top\beta + \varepsilon$ is standardisation with two restrictions: $\mu_0$ linear in $X$, and a constant
+effect. If the first fails, residual confounding is attributed to $D$; if the second fails, the coefficient is a weighted
+average of effects that matches none of the three estimands.
+
+\begin{prop}{Variance-weighted estimand}{olsw}
+If $\mu_0(X) = X^\top\beta$ exactly and effects vary, the OLS coefficient on $D$ converges to
+$\E[\tau(X)\,e(X)(1-e(X))]/\E[e(X)(1-e(X))]$.
+\end{prop}
+\begin{proof}
+Sketch, for $X$ saturated (so $e(X)$ is linear in $X$). Write $Y = X^\top\beta + D\tau(X) + \varepsilon$. By
+Frisch--Waugh--Lovell the coefficient is $\E[\tilde D Y]/\E[\tilde D^2]$ with $\tilde D = D - e(X)$, which is orthogonal to $X^\top\beta$.
+Given $X$, $\E[\tilde D D\tau(X) \mid X] = e(X)(1-e(X))\tau(X)$ and $\E[\tilde D^2 \mid X] = e(X)(1-e(X))$; average over $X$. Meeting~8 gives
+the general version.
+\end{proof}
+
+The weights are largest where the rule was least decided ($e$ near $0.5$). Interacting $D$ with centred $X$, or standardising
+with a flexible model, targets the ATE or ATT instead.
+
+\subsection{Good and bad controls}
+
+Exchangeability is a statement about a particular $X$, and enlarging $X$ can destroy it (Meeting~1's backdoor criterion).
+\begin{itemize}
+  \item \textbf{Confounders} affect both $D$ and $Y$; a recorded rule's inputs are confounders by construction.
+  \item \textbf{Mediators} lie on $D \to M \to Y$; adjusting removes the part of the effect through $M$.
+  \item \textbf{Colliders} are caused by $D$ (or a cause of $D$) and by a cause of $Y$; adjusting creates an association
+  (Meeting~1, collider result).
+  \item \textbf{Pure predictors of treatment} (instruments) add variance and can amplify the bias from any remaining
+  confounder.
+\end{itemize}
+Measure controls before the treatment decision. Timing is necessary but not sufficient: a pre-treatment variable can be a
+collider if two unrecorded causes, one of $D$ and one of $Y$, both drive it (\emph{M-bias}). Justify each control by its causes,
+not only its date. ``Everything in the warehouse'' almost always contains post-treatment variables.
+
+\subsection{Overlap, trimming and the estimand}
+
+Diagnose overlap with the distribution of $\hat e(X)$ in each arm (regions where one arm is empty have no comparison) and with
+the largest weights. \emph{Trimming} restricts to $\hat e(X) \in [a, 1-a]$, often with $a = 0.05$ or $0.10$. It stabilises the estimate
+but \emph{changes the estimand} to the average effect in the trimmed population, which must be reported as such (``accounts with fewer
+than ten users, all of which were called, are excluded''). Standardisation does not fail visibly in the same region: the outcome
+model extrapolates silently. Compute both; where they disagree, look first at the overlap diagnostics.
+
+\subsection{Design before analysis}
+
+Every choice so far can be made without looking at an outcome, and should be (Rubin, 2008).
+\begin{enumerate}
+  \item \textbf{Reconstruct the assignment mechanism}: estimate $e(x)$ from the rule's inputs, or write it down if the rule is
+  known.
+  \item \textbf{Check overlap} in each arm and fix the trimming rule.
+  \item \textbf{Fix the estimand} the trimmed population implies, and the estimator.
+  \item \textbf{Check balance} of $X$ after weighting or matching (standardised mean differences).
+  \item Record the design in writing, with a date. \textbf{Only then open the outcomes.}
+\end{enumerate}
+This is the observational counterpart of the frozen partition (Meeting~4) and the frozen list (Meeting~5).
+
+\subsection{Doubly robust estimation}
+
+\begin{prop}{AIPW and double robustness}{aipw}
+Let
+\[
+  \phi = \tilde\mu_1(X) - \tilde\mu_0(X) + \frac{D\,(Y - \tilde\mu_1(X))}{\tilde e(X)} - \frac{(1-D)(Y - \tilde\mu_0(X))}{1 - \tilde e(X)}
+\]
+for working models $\tilde\mu_d$ and $\tilde e$. Under Assumptions~\ref{asm:exch}--\ref{asm:cons}, $\E[\phi] = \ATE$ if \emph{either}
+$\tilde\mu_d = \mu_d$ for both $d$ \emph{or} $\tilde e = e$.
+\end{prop}
+\begin{proof}
+Given $X$, $\E[\phi \mid X] - \tau(X) = (\mu_1 - \tilde\mu_1)(e/\tilde e - 1) - (\mu_0 - \tilde\mu_0)\{(1-e)/(1-\tilde e) - 1\}$; each term is a
+product that vanishes if the outcome model or the propensity is correct.
+\end{proof}
+
+The first two terms are standardisation; the weighted residuals correct what the outcome model got wrong. When both nuisances
+are estimated flexibly, the product structure makes the estimator's error depend on the product of the two models' errors, and
+with cross-fitting (Meeting~8) it has a valid normal approximation where neither IPW nor standardisation alone does. Double
+robustness protects against \emph{modelling} errors, not against unmeasured confounding: if exchangeability fails, every
+estimator in these notes is biased.
+
+\paragraph{Inference.} Bootstrap over units, re-estimating $\hat e$ (and $\hat\mu_d$) in each replicate, with clusters resampled as
+blocks; or use the cross-fitted AIPW standard error of Meeting~8.
+
+\subsection{How well does adjustment work? The LaLonde lesson}
+
+LaLonde (1986) replaced a job-training experiment's control group with survey respondents and asked whether adjustment recovered
+the experimental answer. The regressions of the time missed badly, sometimes with the wrong sign. Later work found propensity
+methods do well when the comparison group overlaps the treated \emph{and} the covariates include prior values of the outcome,
+and badly otherwise. The covariates matter more than the estimator.
+
+\subsection{A first look at sensitivity}
+
+If an unmeasured $U$ shifts the outcome by $\gamma$ per unit and differs between treated and untreated units with the same $X$ by
+$\delta$, a linear adjustment is off by about $\gamma\delta$. Ask the reverse question: how large must $\gamma\delta$ be to move the
+estimate below the break-even? If that needs a confounder stronger than the strongest one measured, the conclusion is robust.
+Meeting~8 makes this precise.
+
+\begin{pitfall}[adjustment errors]
+Adjusting for post-treatment or collider variables; trimming without restating the estimand; choosing the specification after
+seeing the outcome; treating a near-perfect propensity model as good news; believing double robustness covers unmeasured
+confounders.
+\end{pitfall}
+
+%=====================================================================================
+\sectiontwo
+
+\paragraph{Setting.} FitLife's membership staff decide which members to call before their renewal date. A call costs ¥30 of staff
+time; a renewal is worth ¥500, so the break-even is $0.06$. Staff mostly call members with high recent attendance. Attendance in
+the prior quarter, recorded before the call list is made, is the only input staff use (an assumption checked by interviewing them).
+\begin{center}
+\begin{tabular}{lcccccc}
+\toprule
+Attendance & Members & Called & $\hat e$ & Renewal if called & Renewal if not & Effect \\
+\midrule
+High & 1{,}000 & 800 & 0.8 & 0.90 & 0.85 & 0.05 \\
+Low  & 1{,}000 & 100 & 0.1 & 0.60 & 0.50 & 0.10 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Step 1: design, before outcomes.} Both strata have called and uncalled members, so overlap holds; no trimming. ATE
+weights give an effective sample of $356$ of the 900 called and $655$ of the 1{,}100 uncalled; ATT weights on the uncalled
+($e/(1-e) = 4$ for high, $1/9$ for low) give $252$ of 1{,}100. The ATT rests mostly on the 200 uncalled high-attendance members.
+
+\paragraph{Step 2: naive.} Called members renew at $(800 \times 0.90 + 100 \times 0.60)/900 = 0.867$, uncalled at
+$(200 \times 0.85 + 900 \times 0.50)/1{,}100 = 0.564$: a difference of $0.303$, five times the break-even. It is the ATT ($0.056$) plus
+selection bias ($0.247$).
+
+\paragraph{Step 3: standardisation.} $\ATE = 0.5 \times 0.05 + 0.5 \times 0.10 = 0.075$;
+$\ATT = (800 \times 0.05 + 100 \times 0.10)/900 = 0.056$; $\ATU = (200 \times 0.05 + 900 \times 0.10)/1{,}100 = 0.091$.
+
+\paragraph{Step 4: IPW.} Weights $1/0.8 = 1.25$ (called, high), $1/0.1 = 10$ (called, low), $1/0.2 = 5$ (uncalled, high), $1/0.9$ (uncalled,
+low):
+\[
+  \widehat{\E[Y(1)]} = \frac{800 \times 1.25 \times 0.90 + 100 \times 10 \times 0.60}{2{,}000} = 0.750,
+\]
+\[
+  \widehat{\E[Y(0)]} = \frac{200 \times 5 \times 0.85 + 900 \times \tfrac{1}{0.9} \times 0.50}{2{,}000} = 0.675 .
+\]
+IPW ATE $= 0.075$, as it must be with a saturated propensity model.
+
+\paragraph{Step 5: regression.} OLS of renewal on a call dummy and a high-attendance dummy weights strata by
+$n_s\,e_s(1-e_s)$: $160$ for high, $90$ for low. So $\hat\tau_{\text{OLS}} = (160 \times 0.05 + 90 \times 0.10)/250 = 0.068$, neither the ATE nor
+the ATT (Result~\ref{prop:olsw}).
+
+\paragraph{Step 6: double robustness.} Suppose the analyst's outcome model ignores attendance and predicts the pooled rates
+($0.867$ called, $0.564$ uncalled), but the propensity is right. In each stratum the AIPW correction terms have means
+$\mu_{1s} - 0.867$ and $\mu_{0s} - 0.564$, which exactly undo the outcome model's error, so AIPW returns $0.075$. With the right outcome
+model and a wrong propensity (say $0.45$ for everyone), the residuals have mean zero and AIPW again returns $0.075$.
+
+\paragraph{The decision.} Calls as practised earn an ATT of $0.056$, below the break-even of $0.06$: they lose money. Calling
+low-attendance members (effect $0.10$) would pay; calling high-attendance ones ($0.05$) does not. The staff habit that inflated the
+naive number is also what makes the programme unprofitable.
+
+\begin{exercise}[computation]
+FitLife adds a third stratum: 500 ``elite'' members, all of whom were called, who renew at $0.97$. (a) What happens to overlap and to
+the ATE? (b) What estimand can still be reported, and what is it?
+\end{exercise}
+\answer{(a) $e = 1$ for elite members: no uncalled elite member exists, so the population ATE (and the ATT, which includes elite
+members) is not identified; IPW weights would be undefined. (b) Report the effect for the overlap population (high and low
+attendance): ATE $0.075$ and ATT $0.056$ as before, stating that elite members are excluded and that their effect is unknown.}
+
+\begin{exercise}[judgement]
+An analyst proposes adding ``number of classes booked in the two weeks after the call date'' as a control, since it ``predicts
+renewal very well''. What kind of variable is it, and what happens to the estimate?
+\end{exercise}
+\answer{It is measured after treatment and is likely affected by the call (calls prompt bookings): a mediator, and possibly a collider
+if unmeasured motivation drives both bookings and renewal. Adjusting removes the part of the effect that works through bookings and
+can open a non-causal path, biasing the estimate (usually towards zero). Strong prediction of the outcome is not a reason to adjust.}
+
+%=====================================================================================
+\sectionthree
+
+\begin{extension}[Matching and weighting refinements]
+Matching on $\hat e$ or on $X$ targets the ATT directly and discards unmatched controls. Overlap weights ($1 - e$ for treated, $e$ for
+controls) target the overlap population and never explode. Entropy balancing and covariate-balancing propensity scores choose weights
+that balance covariate moments exactly.
+\end{extension}
+
+\begin{extension}[Continuous dose]
+With a continuous treatment the average dose--response $\mu(d) = \E_X[\E[Y \mid D=d, X]]$ is identified under the same three assumptions,
+with overlap meaning that treatment varies within every region of $X$. If $\E[Y \mid D, X] = \theta D + g(X)$ the slope is the partially linear
+model of Meeting~8.
+\end{extension}
+
+\subsection*{Annotated reading}
+\begin{readinglist}
+\reading{Rosenbaum and Rubin (1983), ``The central role of the propensity score in observational studies'',
+\emph{Biometrika}}{The balancing property and its consequences}{Sections 1--3}{2}
+\reading{Rubin (2008), ``For objective causal inference, design trumps analysis'', \emph{Annals of Applied
+Statistics}}{The case for an outcome-free design stage}{All}{1}
+\reading{Crump, Hotz, Imbens and Mitnik (2009), ``Dealing with limited overlap'', \emph{Biometrika}}{How to choose a trimming
+rule, and what estimand results}{Sections 1--3}{3}
+\reading{LaLonde (1986), \emph{AER}; Dehejia and Wahba (1999), \emph{JASA}}{Can observational methods recover an experiment?}{Intro,
+results}{1}
+\reading{Imbens (2015), ``Matching methods in practice: three examples'', \emph{Journal of Human Resources}}{A worked tour of
+design-stage diagnostics}{All}{2}
+\reading{Handout H1, \emph{Instrumental variables}}{What to do when an unmeasured confounder makes exchangeability
+implausible}{All}{2}
+\end{readinglist}
+
+\end{document}
