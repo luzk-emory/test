@@ -1,4 +1,4 @@
-# Case A: Lin's Coupon Programme — Instructor Version
+# Case A: Lin's Coupon Programme: Instructor Version
 
 **Meetings 1–7. Instructor only: contains every answer and all future releases.** Distribute the student parts one at a time, on paper or as single-part files, never the full student file in advance.
 
@@ -26,13 +26,16 @@ All numbers match the current decks in `meetings/m01`–`m07`. Numbers marked **
 |---|---|
 | AI as a source of data | **M3-R6** (Lab 2 opener): a language model labels members from free text, and misclassification weakens the targeting field. |
 | AI as the decision-maker | **M5-R1/R4**: the automated campaign engine proposes lists and its own cut-off; the CFO's freeze rule is the check. **M7**: the engine's live rule is now the confounder, and its send probabilities are the propensity score. |
-| AI as a tool / intervention | Not in this case. See Lab 1 and critique C1 (M2), and Case C. |
+| AI as a tool / intervention | Not in this case. See Lab 1 and Case C. |
 
 Say the M5 → M7 link out loud: *the system that made the decisions in Q3 is exactly what we must adjust for in the Q3 logs.*
 
 ## 3. Release schedule
 
-Minutes are elapsed minutes in the meeting and approximate. In M2, M3, M5 and M7 the critique case takes about minutes 0–15 of block A, so the first release moves to about minute 15. The frames you move to the notes to make room are still your decision (schedule-v2).
+Minutes are elapsed minutes in the meeting and approximate. **Retime when each deck is rebuilt.** The times below come from the v2 calendar:
+- they leave minutes 0–15 of block A in M2, M3, M5 and M7 for a critique case, and reading-and-critique exercises are now dropped, so those meetings gain about 15 minutes;
+- they put Exam I in M6 block A, but it is now in M5 block A, so the M5 releases move to block B and M6 regains block A;
+- M1 and M2 are already retimed to the current schedule.
 
 | Part | Meeting, block | About | Hand out at the deck marker | Hold back until the attempt is written |
 |---|---|---|---|---|
@@ -43,24 +46,25 @@ Minutes are elapsed minutes in the meeting and approximate. In M2, M3, M5 and M7
 | M1-R5 | M1 B | 95–110 | `[RELEASE R5]` | "The Average Coupon Loses Money…"; "Data Roles" |
 | M2-R1 | M2 A | 15–25 | `[RELEASE R1]` | SE and interval frames |
 | M2-R2 | M2 A/B | 45–65 | `[RELEASE R2]` | "Transport the Effect — and the Break-Even" |
-| M2-R3 | M2 B | 65–90 | `[RELEASE R3]` | "The Lapsed Test Is Too Small"; CUPED frames |
-| M2-R4 | M2 B | 90–105 | `[RELEASE R4]` | "The Design Effect" |
-| M2-R5 | M2 B | 105–110 | "Lin's Test Plan" | — (the memo can finish at home) |
+| M2-R3 | M2 B | 65–85 | `[RELEASE R3]` | "The Lapsed Test Is Too Small"; CUPED frames |
+| M2-R4 | M2 B | 85–95 | `[RELEASE R4]` | "The Design Effect" |
+| M2-R6 | M2 B | 95–110 | `[RELEASE R6]` | the noncompliance and LATE frames that close the deck |
+| M2-R5 | take-home | | with "Lin's Test Plan" | (the memo is finished at home) |
 | M3-R1 | M3 A | 15–25 | `[RELEASE R1]` | the table on "The Number That Decides It" |
 | M3-R2 | M3 A | 40–50 | `[RELEASE R2]` | the `\pause` on the interaction frame |
 | M3-R2b | M3 B | 60–65 | after "From Two Segments to Fourteen Fields" | the new SE-of-the-gap frame |
 | M3-R3 | M3 B | 85–95 | `[RELEASE R3]` | the table on "Same RMSE, Opposite Decisions" |
 | M3-R4 | M3 B | 95–100 | `[RELEASE R4]` | "The Ladder" (`[RELEASE R5]` is a reveal, not a handout) |
 | M3-R6 | M3 C | 120–125 | Lab 2 opener | answers come out of the lab |
-| M4-R1 | M4 A | 0–5 | `[RELEASE R1]` | — |
+| M4-R1 | M4 A | 0–5 | `[RELEASE R1]` | |
 | M4-R2 | M4 A | 5–15 | `[RELEASE R2]` | "The Number That Decides It" |
 | M4-R3 | M4 A | ~45–50 | `[RELEASE R3]` | **half-B outcomes: nothing until every pair has submitted** |
 | M4-R4 | M4 B | 60–75 | `[RELEASE R4]` | winner's-curse frame |
-| M4-R5 | M4 B | 100–110 | `[RELEASE R5]` | — |
+| M4-R5 | M4 B | 100–110 | `[RELEASE R5]` | |
 | M5-R1 | M5 A | 15–25 | `[RELEASE R1]` | "The Number That Decides It" |
 | M5-R2 | M5 A | 40–50 | `[RELEASE R2]` | the count/rate split on "Denominators" |
 | M5-R3 | M5 B | 60–80 | `[RELEASE R3]` and the row-contribution worksheet | "The Contributions, Added Up" |
-| M5-R4 | M5 B | 90–105 | `[RELEASE R4]` | — |
+| M5-R4 | M5 B | 90–105 | `[RELEASE R4]` | |
 | M6-R1 | M6 B | 70–85 | `[RELEASE R1]`, after Exam I | Step 2 and cap frames |
 | M6-R2 | M6 B | 85–100 | `[RELEASE R2]` | "Why Costs Are Not Uniform" table |
 | M6-R3 | M6 B | 100–120 | `[RELEASE R3]` | "Knapsack", "Shadow Price", "The Q4 List" |
@@ -68,7 +72,7 @@ Minutes are elapsed minutes in the meeting and approximate. In M2, M3, M5 and M7
 | M7-R2 | M7 A | 25–40 | `[RELEASE R2]` | "Pooled, Then Within Segment" |
 | M7-R3 | M7 B | ~75–82 | `[RELEASE R3]` | "The App-Open Answer" |
 | M7-R4 | M7 B | 90–97 | `[RELEASE R4]` | "The Ladder" (`[RELEASE R5]` is a reveal) |
-| Rivergate | take-home | — | with the adjustment core | the key below; release it after Notebook 7 is due |
+| Rivergate | take-home | | with the adjustment core | the key below; release it after Notebook 7 is due |
 
 M7 must end by minute 110 because of the proposal presentations. M6-R1 to R3 fit block B only because the targeting core is done at home.
 
@@ -122,7 +126,7 @@ M7 must end by minute 110 because of the proposal presentations. M6-R1 to R3 fit
 - $\widehat{SE} = \sqrt{0.25/500 + 0.24/500} = 0.0313$; CI $[0.039, 0.161]$.
 - $z$ vs 0 $= 3.19$; $z$ vs 0.167 $= -2.13$. The interval excludes both 0 and the break-even: *works and does not pay.*
 - Net $= 20p_1 - 30p_0 = -¥2.00$. $\mathrm{Var} = 400(0.0005) + 900(0.00048) = 0.632$, SE 0.795, CI **[−¥3.56, −¥0.44]**. Both marketing and the CFO are right; they asked different questions.
-- Task 5: opening the app is post-treatment, partly caused by the coupon. Dropping non-openers compares selected groups; this previews M7's collider. The comparison of all members as drawn is the **ITT**: the effect of *sending* the coupon, which is the decision. Receipt effects wait for M9.
+- Task 5: opening the app is post-treatment, partly caused by the coupon. Dropping non-openers compares selected groups; this previews M7's collider. The comparison of all members as drawn is the **ITT**: the effect of *sending* the coupon, which is the decision. The effect of *seeing* it is M2-R6.
 - Task 6, **the design-based point**:
   - With the 1,000 members fixed, Neyman's variance is $S_1^2/n_1 + S_0^2/n_0 - S_\tau^2/n$.
   - The last term is unobservable, because it needs both potential outcomes of each member. The plug-in SE drops it, so **0.0313 is conservative**.
@@ -167,6 +171,20 @@ A model memo:
 3. Coupon-everyone does not pay.
 4. Next: a lapsed-only test with CUPED (175 per arm fits), and the BOGO randomised by store.
 
+### M2-R6
+This part closes M2 with noncompliance and the LATE, the experimental core of instrumental variables (Handout H1 goes further). The draw $Z$ is the instrument and seeing the coupon is $D$.
+1. Three comparisons:
+   - **as drawn (ITT):** $0.50 - 0.40 =$ **0.10**;
+   - **openers only:** $230/400 - 180/360 = 0.575 - 0.500 =$ **0.075**;
+   - **saw vs did not see (as treated):** $230/400 - (20 + 200)/600 = 0.575 - 0.367 =$ **0.208**.
+2. First stage $= 400/500 = 0.80$; Wald ratio $= 0.10/0.80 =$ **0.125**. It is the effect of seeing the coupon on **compliers**: members who see it if they are sent it. Nobody in the control arm can see one, so there are no always-takers and no defiers (one-sided noncompliance). Compliers are then exactly the members who saw it, and the ratio is also the effect on those who saw it.
+3. Coupon-arm non-openers are **never-takers**: $20/100 = 0.20$, an untreated rate, by exclusion. In the control arm $0.40 = 0.8\,\mu_{C0} + 0.2 \times 0.20$, so compliers' untreated rate $\mu_{C0} = 0.36/0.8 =$ **0.45**. Their treated rate is the coupon-arm openers' $0.575$, and $0.575 - 0.45 = 0.125$.
+4. Opening is partly caused by the draw: the notification brings in openers. The 360 control openers are members who open the app anyway, while the 400 coupon-arm openers are all compliers. Members who open anyway buy more without a coupon ($0.50$) than compliers as a whole ($0.45$), so openers-only is **too low** ($0.075$). "As treated" is too high ($0.208$): it compares compliers with a mix that includes never-takers, who buy at $0.20$. This is M1's selection bias, created by conditioning on a post-treatment variable (the M7 collider, previewed).
+5. Sentence 1: independence (the draw), plus no always-takers. Sentence 2: **exclusion**. The draw moves purchases only through seeing the coupon; a notification without the amount carries no offer. Sentence 3 is about cost, not identification. If the notification had shown "¥10 off", non-openers would be partly treated. The ITT would include that direct effect, and dividing by 0.80 inflates it: the ratio **moves up** (an upward bias of direct effect $\times\, 0.2/0.8$).
+6. For compliers, $\tau^\ast = 10 \times 0.575/30 = 0.192 > 0.125$: **it does not pay**. Net per seen coupon $= 0.125 \times 30 - 5.75 =$ **−¥2.00**. Never-takers cost $10 \times 0.20 = $ ¥2.00 each through the automatic discount, with no effect. Overall, $0.8(-2.00) + 0.2(-2.00) = -$¥2.00, which is M1's number, as it must be.
+   - **The text message:** the LATE describes compliers, not non-openers. Non-openers buy at 0.20 without a coupon, against 0.45 for compliers. Their effect is unknown, and they already cost ¥2 each through the automatic discount. Reaching them is a new treatment, so test it.
+   - **For the deck:** the closing message is that the decision (send or not) needs the ITT; the LATE answers a narrower question, for a population the data choose.
+
 ### M3-R1
 - Rule: coupon iff $\tau(x) > \mu_1(x)/3$.
 - Marketing (active): $0.05 < 0.267$, −¥6.50 per coupon, **−¥32,500** for 5,000. Lin (lapsed): $0.20 > 0.100$, +¥3.00, **+¥15,000**.
@@ -188,7 +206,6 @@ A model memo:
 - Active: $0.80 - 0.75 = 0.05$, $SE = \sqrt{0.16/200 + 0.1875/200} = 0.0417$. Lapsed: $0.30 - 0.10 = 0.20$, $SE = 0.0387$.
 - Gap 0.15, $SE = \sqrt{0.0417^2 + 0.0387^2} = 0.0569$, **2.64 SEs**: distinguishable from noise at 5%.
 - Task 3: "significant here, not there" is not a test of a difference. Active's 0.05 is 1.2 SEs, "not significant", but its interval [−0.03, 0.13] does not rule out a sizeable effect. The two labels say nothing about the difference; test the gap itself.
-  - This is the flaw family behind critique C3 (M5).
 
 ### M3-R3
 - Model I: 0.05 / 0.20. Model A: 0.125 for everyone. Model A is off by ±0.0375 in every cell; check it at one cell, e.g. active–coupon $0.1375 + 0.575 + 0.125 = 0.8375$ vs 0.80.
