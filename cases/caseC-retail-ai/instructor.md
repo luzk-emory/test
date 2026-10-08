@@ -1,10 +1,10 @@
-# Case C: Dana's AI Assistant Rollout — Instructor Version
+# Case C: Dana's AI Assistant Rollout: Instructor Version
 
-**Meetings 10–11. Instructor only: contains every answer and all future releases.** This case replaces the floor-lead staffing story.
+**Meetings 10–11. Instructor only: contains every answer and all future releases.** This case replaces the floor-lead staffing story. Meeting 11 was rewritten on 8 October for the synthetic-control meeting; its old staggered-adoption parts are kept at the end as a bonus (Parts B1–B3).
 
 ## 1. What the case does
 
-A retail chain has rolled a generative-AI assistant out to its stores in stages. Should it confirm the next cohort (M10), and extend it to everyone (M11)?
+A retail chain has rolled a generative-AI assistant out to its stores in stages. Should it confirm the next cohort (M10), and extend it to everyone, given what one early store shows (M11)?
 
 This is **AI as an intervention to evaluate**: the chain tests an AI product the way it would test any other change, and the vendor's own metric is the first thing to set aside.
 
@@ -13,7 +13,7 @@ Each meeting follows the course spine (`course-spine.md`): estimand → identifi
 | Meeting | Estimand (vs ¥10,000 sales per store-week) | Identification | Estimation and uncertainty | Destination |
 |---|---|---|---|---|
 | M10 | $ATT = E[Y_{it}(53) - Y_{it}(\infty) \mid G = 53]$, weeks 53–78 | parallel untreated trends, no anticipation, no spillovers; the threat is the sign-off order | 2 × 2 DiD; TWFE (= 2 × 2 with one date); SE clustered by store, then region; drift $\delta^*$ | 12.4 (SE 1.2); ramp 11.2 → 13.8: **confirm, keep the schedule** |
-| M11 | $ATT(g, t)$ and the event-time path; flagship: $Y_{F,t}(20) - Y_{F,t}(\infty)$ | parallel trends against **eligible** controls only, base week $g - 3$; flagship: a pre-fitted donor trajectory | group-time DiD; aggregation; synthetic control with donor and held-out pre-period checks | ATT(e): 7.4 → 13.6; flagship 15.9 = ceiling: **roll out; stagger at random** |
+| M11 | flagship: $Y_{F,t}(20) - Y_{F,t}(\infty)$, one store | a donor trajectory fitted before week 20, frozen before the post-period; the flagship's treatment differs (co-development) | synthetic control; leave-one-out; in-place and in-time placebos (descriptive); comparison with DiD | flagship 15.9 (sim) = a ceiling for a different treatment; M10's 12.4 is the forecast: **roll out; stagger at random** |
 
 The design-based alternative, randomising go-live dates (Athey and Imbens 2022), is in the M11 notes. It is what the memo's "two random halves" recommendation would make possible.
 
@@ -36,12 +36,12 @@ Each of these attaches to a concept already on the slides:
 3. **Region sign-off after a privacy review** (M10-R2): why the treated were chosen when they were.
 4. **Rotas re-planned around the assistant** (M10-R2, R5 #3): a post-treatment control.
 5. **Handset-locked licences** (M10-R2): no spillovers.
-6. **Version 2 on a calendar date** (M11-R1, R3 #3): the two clocks, and whether "the treatment" is one thing over time.
-7. **The flagship as co-development store** (M11-R4): a different version of the treatment, which is one more reason it is a ceiling.
+6. **Version 2 on a calendar date** (Bonus B1, B3 #4): the two clocks, and whether "the treatment" is one thing over time.
+7. **The flagship as co-development store** (M11-R1): a different version of the treatment, which is one more reason it is a ceiling.
 
 ## 2. Release schedule
 
-M10: Exam II takes 0–60; the case runs in block B (70–120); the panel core is done at home. M11: critique C6 takes about minutes 0–15. Controlled projection copies are required for both meetings. **Keep flagship and cohort evidence apart until "Dana's Table" in M11**, and release the full panel notes only after M11.
+M10 no longer has an exam (Exam II is now in M11, block A). The M10 times below were set when the case ran in block B only; **retime them when the M10 deck is rebuilt**. M11: block A is Exam II and the case runs in block B. Controlled projection copies are required for both meetings.
 
 | Part | Meeting, block | About | Hand out at | Hold back until the attempt |
 |---|---|---|---|---|
@@ -50,14 +50,14 @@ M10: Exam II takes 0–60; the case runs in block B (70–120); the panel core i
 | M10-R3 | M10 B | 92–105 | `[RELEASE R3]` | SE, drift and scale frames |
 | M10-R4 | M10 B | 108–112 | `[RELEASE R4]` | "The Ladder" |
 | M10-R5 | M10 B | 112–120 | `[RELEASE R5]` | "The Audit, Answered"; the memo can finish at home |
-| M11-R1 | M11 A | 15–22 | `[RELEASE R1]` | — |
-| M11-R2 | M11 A | 30–45 | `[RELEASE R2]` | "The Four Comparisons"; TWFE weights |
-| M11-R3 | M11 B | 60–75 | `[RELEASE R3]` | "The Cohort Evidence"; "Who Adopted First?" |
-| M11-R4 | M11 B | 75–82 | `[RELEASE R4]` | "Synthetic Control" |
-| M11-R5 | M11 B | 82–95 | `[RELEASE R5]` | "The Synthetic Flagship"; "Donor Sensitivity" |
-| M11-R6 | M11 B | 100–110 | "Dana's Table" | "The Cohort Recommendation" |
+| M11-R1 | M11 B | 60–67 | `[RELEASE R1]` | the flagship's treatment frame |
+| M11-R2 | M11 B | 67–82 | `[RELEASE R2]` | "The Synthetic Flagship"; "Donor Sensitivity" |
+| M11-R3 | M11 B | 82–95 | `[RELEASE R3]` | design-freeze, placebo and falsification frames |
+| M11-R4 | M11 B | 95–102 | `[RELEASE R4]` | the SC-vs-DiD frame |
+| M11-R5 | M11 B | 102–110 | "Dana's Table" | the recommendation (the memo can finish at home) |
+| B1–B3 | take-home | | with Handout H3 | the bonus key below |
 
-The synthetic-control segment is capped at about 20 minutes (R4 + R5).
+Synthetic control now has all of block B.
 
 ## 3. Key: Meeting 10
 
@@ -136,18 +136,56 @@ Four of the seven are about what was compared, one about the interval, one about
 ## 4. Key: Meeting 11
 
 ### M11-R1
-1. Neither yet. Before/after (14.3) keeps the trend. TWFE (6.1) is below break-even for a reason revealed in R2. The right answer is "it depends which comparisons each number uses".
+1. The other large-format store is in a different city: different local shocks and trend. The never-treated average is a different format with a different trend.
+2. The flagship's treatment was **the assistant plus a vendor engineer on site plus custom tuning** on its own data. That is a different version from what the 59 would get (consistency), and the store was chosen first, almost certainly because it was expected to do well. Both make the flagship an upper bound for a *different* treatment.
+
+### M11-R2
+1. $\tfrac12 A + \tfrac12 B = (100, 110, 120)$: an exact fit. Week 4: $\tfrac12(118) + \tfrac12(138) = 128$.
+2. Effect $141 - 128 = $ **13**.
+3. Without B: best convex fit $0.76A + 0.24C$ (weight $= 3{,}800/5{,}000$). Synthetic 97.2, 109.6, 122.0 | 129.3, gaps 2.8, 0.4, −2.0, so the effect is **11.7** with an acceptable fit. Without A: no mix of B and C gets below 110 in week 1. The best is B alone, with gaps of 10 every week and an effect of 3: **not reportable**.
+4. Report the leave-one-out range over refits whose fit is acceptable: **[11.7, 13.0]**. A refit that cannot match the pre-period is evidence about the donor pool, not about the effect.
+
+### M11-R3
+1. **Freeze the design first:** donor pool (never-treated, no spillovers), fitting weeks, predictors, and the fit criterion. Hold-out check: fit on weeks 1–14 and see whether the frozen synthetic store predicts weeks 15–19. If it does not, it has no claim on weeks 20 onwards. Never tune the weights after seeing the post-period gap.
+2. **No.** Rank 1 of 60 is a permutation p-value only if the flagship was as likely as any donor to be the treated store. The case says it was chosen first, as the co-development store. Report it as a descriptive ranking. (In the three-donor toy the pre-fit is exact, so the post/pre ratio is undefined: another reason it is not a test statistic there.)
+3. **Local-boom falsification.** Run a placebo DiD: the four same-city never-treated stores against the other never-treated stores, before vs after week 20.
+   - They share the local shock but not the treatment, so a positive gap there is a local boom, not the assistant. That would worry you.
+   - It needs no spillovers from the flagship to them; the case says no shared staff or customers.
+   - This changes the recommendation (investigate), not automatically the estimate.
+4. **In-time placebo.** Refit on weeks 1–9 with a fake go-live at week 10. Weeks 10–19 are before anything happened, so the synthetic store should track the flagship with gaps near zero. A clear gap there means the method finds "effects" where there are none (a poor donor pool, or a store-specific shock), and the week-20 gap cannot be trusted either.
+
+Real flagship (sim): weight on 4 donors, 15.9, leave-one-out [13.1, 17.4], in-place placebo rank 1 of 60. There is no standard error. In-time placebos move the go-live date earlier and check that no effect appears before week 20.
+
+### M11-R4
+1. Equal weights on A, B, C: pre-period means are flagship 110 and donors $(100 + 120 + 140)/3 = 120$; week 4 is 141 against $(118 + 138 + 165)/3 = 140.3$. DiD $= (141 - 110) - (140.3 - 120) = 31 - 20.3 = $ **10.7**, against synthetic control's **13**.
+2. Equal weights on A and B: donors' pre mean 110, week 4 is 128, so DiD $= 31 - 18 = $ **13**. Here $\tfrac12 A + \tfrac12 B$ tracks the flagship exactly, so the level shift DiD allows is zero and the two estimates coincide. Donor C grows twice as fast; giving it a third of the weight drags the equal-weight DiD down.
+3. Both are weighted comparisons:
+   - **DiD** fixes the weights in advance (here equal), and allows a constant level gap. It relies on parallel trends.
+   - **Synthetic control** chooses the weights to match the pre-period path, with no level gap, and relies on the fit.
+   - Synthetic DiD sits in between: it chooses weights and also allows a level shift (notes, Section 3).
+
+### M11-R5 (model memo)
+> Roll the assistant out to the remaining 59 stores. Meeting 10's comparison with never-treated stores puts the gain at ¥12,400 of sales a store-week (SE 1,200), about +¥600 of margin after the ¥2,500 cost, rising from +¥300 in the first quarter to +¥950 in the second. This assumes the 59 stores, whose regions signed off last, would see what cohort 1 saw. The flagship's ¥15,900 is one store, chosen first, with a vendor engineer on site and no interval: it bounds the upside of a different treatment and is not the forecast. Stagger the remaining rollout in two random halves six months apart, so the next review has a clean comparison.
+
+Margin arithmetic: $0.25 \times 12{,}400 - 2{,}500 = +$¥600; first quarter $0.25 \times 11{,}200 - 2{,}500 = +$¥300; second $0.25 \times 13{,}800 - 2{,}500 = +$¥950.
+
+## Bonus key (Parts B1–B3)
+
+These are the keys of the former Meeting 11 parts on staggered adoption, unchanged except for the part numbers. The former memo key (cohort event-time numbers) was dropped.
+
+### B1
+1. Neither yet. Before/after (14.3) keeps the trend. TWFE (6.1) is below break-even for a reason revealed in Part B2. The right answer is "it depends which comparisons each number uses".
 2. Two clocks:
    - **event time:** associates learning to phrase questions; the assistant's store index filling in; novelty wearing off;
    - **calendar time:** **version 2 in week 66**; seasons; chain-wide promotions.
 
-### M11-R2
+### B2
 - DiDs: 1 → **8**; 2 → **16**; 3 → **8**; 4 → **0**.
 - True effects: E week 2 = 8, E week 3 = 16, L week 3 = 8. Comparison 4 subtracts the *growth in E's own effect*: $\Delta Y_E = 4 + (16 - 8) = 12$, so $12 - 12 = 0$. Parallel trends holds exactly; the failure is what was called a control.
 - Growing effects bias an already-treated comparison **down**; fading effects bias it up.
 - TWFE on the nine cells $= \tfrac13(12) + \tfrac13(8) + \tfrac16(8) + \tfrac16(0) = $ **8**, against a true average of **10.7**. TWFE says no; the truth says yes once the effect has grown.
 
-### M11-R3
+### B3
 1. (sim) Static TWFE **6.1**, with 22% of its weight on already-treated comparisons. ATT(e) against never-treated: **7.4** at $e = 0$, 10.9 at $e = 4$, **13.6** at $e = 12$. The largest pre-period coefficient is 0.6. The effect crosses ¥10,000 within the first month and plateaus by month six.
 2. Rollout-file sentences:
    - region order → timing not a store's choice, but regions may differ in trend;
@@ -159,9 +197,9 @@ Four of the seven are about what was compared, one about the interval, one about
 
    | Target | Base week | Eligible comparison | Excluded |
    |---|---|---|---|
-   | Cohort 1, weeks 53–76 | 50 | never-treated **and** cohort 2 (not yet treated) | — |
+   | Cohort 1, weeks 53–76 | 50 | never-treated **and** cohort 2 (not yet treated) | |
    | Cohort 1, weeks 77–104 | 50 | never-treated | cohort 2: training from week 77, live from 79 |
-   | Cohort 2, weeks 79–104 | 76 | never-treated | cohort 1: already treated (M11-R2's contamination) |
+   | Cohort 2, weeks 79–104 | 76 | never-treated | cohort 1: already treated (Part B2's contamination) |
 
    - **Base week $g - 3$, not $g - 1$:** weeks $g - 2$ and $g - 1$ are training weeks with associates off the floor (anticipation, M10 audit #5).
    - Eligibility is necessary, not sufficient: each comparison still needs a parallel-trends argument.
@@ -174,30 +212,6 @@ Four of the seven are about what was compared, one about the interval, one about
    - Point out what version 2 does **not** break: the clean DiDs against never-treated stores. Those stores never had any version, so the upgrade is part of "the treatment", and the question becomes whether the treatment was one thing (M1's well-defined intervention).
    - **Simulation note.** The deck's cohort numbers describe effects that depend on event time only, so on the current simulation the honest answer is "no evidence of a version effect". To let students find one, add a step at calendar week 66 for treated stores to `staffing-panel`, then recompute the M11 `\NUM` values.
 
-### M11-R4
-1. The other large-format store is in a different city: different local shocks and trend. The never-treated average is a different format with a different trend.
-2. The flagship's treatment was **the assistant plus a vendor engineer on site plus custom tuning** on its own data. That is a different version from what the 59 would get (consistency), and the store was chosen first, almost certainly because it was expected to do well. Both make the flagship an upper bound for a *different* treatment.
-3. **Local-boom falsification.** Run a placebo DiD: the four same-city never-treated stores against the other never-treated stores, before vs after week 20.
-   - They share the local shock but not the treatment, so a positive gap there is a local boom, not the assistant. That would worry you.
-   - It needs no spillovers from the flagship to them; the case says no shared staff or customers.
-   - This changes the recommendation (investigate), not automatically the estimate.
-
-### M11-R5
-1. $\tfrac12 A + \tfrac12 B = (100, 110, 120)$: an exact fit. Week 4: $\tfrac12(118) + \tfrac12(138) = 128$.
-2. Effect $141 - 128 = $ **13**.
-3. Without B: best convex fit $0.76A + 0.24C$ (weight $= 3{,}800/5{,}000$). Synthetic 97.2, 109.6, 122.0 | 129.3, gaps 2.8, 0.4, −2.0, so the effect is **11.7** with an acceptable fit. Without A: no mix of B and C gets below 110 in week 1. The best is B alone, with gaps of 10 every week and an effect of 3: **not reportable**.
-4. Report the leave-one-out range over refits whose fit is acceptable: **[11.7, 13.0]**. A refit that cannot match the pre-period is evidence about the donor pool, not about the effect.
-5. **Freeze the design first:** donor pool (never-treated, no spillovers), fitting weeks, predictors, and the fit criterion. Hold-out check: fit on weeks 1–14 and see whether the frozen synthetic store predicts weeks 15–19. If it does not, it has no claim on weeks 20 onwards. Never tune the weights after seeing the post-period gap.
-6. **No.** Rank 1 of 60 is a permutation p-value only if the flagship was as likely as any donor to be the treated store. The case says it was chosen first, as the co-development store. Report it as a descriptive ranking. (In the three-donor toy the pre-fit is exact, so the post/pre ratio is undefined: another reason it is not a test statistic there.)
-
-Real flagship (sim): weight on 4 donors, 15.9, leave-one-out [13.1, 17.4], in-place placebo rank 1 of 60. There is no standard error. In-time placebos move the go-live date earlier and check that no effect appears before week 20.
-
-### M11-R6 (model memo)
-> Roll the assistant out to the remaining 59 stores. Against never-treated stores, it adds ¥7,400 of sales per store-week in the first week live and ¥13,600 by week 12. In margin, that is about −¥650 per store-week in the first month and +¥900 per store-week at steady state; it crosses break-even within a month. This assumes the never-treated stores track the cohorts' trends. The 59 remaining stores are in the regions that signed off last, so if sign-off tracked expected sales, the cohorts overstate what those stores will see. The flagship's ¥15,900 is one store, chosen first, with a vendor engineer on site and no interval: it bounds the upside and is not the forecast. Stagger the remaining rollout in two random halves six months apart, so the next review has a clean comparison.
-
-Margin arithmetic: $0.25 \times 7{,}400 - 2{,}500 = -¥650$; $0.25 \times 13{,}600 - 2{,}500 = +¥900$.
-
-**The deck's "Cohort Recommendation" frame has these in sales units, not margin.** It says "a loss of about ¥2,600 per store-week" and "a steady-state gain of ¥3,500–4,000". Those are sales gaps from the ¥10,000 break-even, not profit. The student task asks for margin on purpose; fix the frame (Section 5).
 
 ## 5. Deck edits needed for this case
 
@@ -222,4 +236,4 @@ The general corrections from the Codex review are also in `course-spine.md` §4:
 | M11 "Key Takeaways" | "final slides 48 hours before L12" → 24 hours (schedule v2) |
 | Both decks | `\NUM{…}{case04-staffing: …}` provenance notes → point to this case |
 
-Critique C6 (M11A) should be an AI-tool rollout readout, a before-and-after on selected stores with wrong-level standard errors. That way it echoes this case without giving away its numbers. It is not written yet.
+The M11 deck is replaced, not re-skinned: the M11 rows above apply only if frames are reused for the bonus parts.

@@ -119,9 +119,75 @@ Then write Dana's memo in five sentences: the number, its interval, the assumpti
 
 ---
 
-## Meeting 11: Staggered Rollouts and the Flagship Store
+## Meeting 11: The Flagship Store
 
-### Part M11-R1. Extend it to everyone?
+### Part M11-R1. One store, two years ahead
+
+It is now **week 104**. Meeting 10 confirmed cohort 1: against never-treated stores, the assistant added **¥12,400** a store-week (SE 1,200) in its first two quarters. On Dana's desk: extend it to the **59 stores** still without it, at ¥2,500 per store-week.
+
+There is one more piece of evidence. The **flagship** store went live in **week 20**, alone, thirty-three weeks before anyone else, and has 84 weeks live. It was the vendor's **co-development store**. For its first six months a vendor engineer worked on site, and the vendor tuned the assistant on the flagship's own catalogue and customers' questions.
+
+Its before/after difference is **+¥18,700** per week. Dana asks: *how much of that is the assistant?*
+
+A 2 × 2 needs a control. Which store?
+- the chain's other large-format store? It is in a different city;
+- the average of all 59 never-treated stores? A different format, with a different trend;
+- a weighted average of never-treated stores, weighted so that it tracked the flagship before week 20?
+
+**Tasks**
+1. What is wrong with each of the first two controls?
+2. What exactly was the "treatment" at the flagship? Is it the same treatment the 59 remaining stores would get?
+
+### Part M11-R2. Three donors, by hand
+
+The flagship goes live after week 3.
+
+| | Week 1 | Week 2 | Week 3 | Week 4 (live) |
+|---|---:|---:|---:|---:|
+| Flagship | 100 | 110 | 120 | **141** |
+| Donor A | 90 | 100 | 110 | 118 |
+| Donor B | 110 | 120 | 130 | 138 |
+| Donor C | 120 | 140 | 160 | 165 |
+
+**Tasks. In pairs**
+1. Find non-negative weights summing to one that reproduce the flagship's three pre-period values exactly.
+2. Use them to estimate the week-4 effect.
+3. Remove donor B from the pool. What is the best you can do, and what is the effect? Then remove donor A instead.
+4. Which of these estimates would you report, and what range?
+
+### Part M11-R3. Before the post-period, and after
+
+**Tasks**
+1. On the real flagship, the weights are fitted on weeks 1–19. Before anyone looks at weeks 20 onwards, what would you fix in writing? How could you use weeks 15–19 to test the synthetic store?
+2. Treated as if live in week 20, each of the 59 donors gets its own synthetic control. The flagship's post/pre gap ratio ranks 1st of 60. Is that a p-value of 1/60? What would have to be true for it to be one?
+3. The flagship's city also has four small never-treated stores that share no staff or customers with it. How would you use them to check whether a local demand boom, not the assistant, explains the flagship's rise? What result would worry you?
+4. Move the go-live date back to week 10 and refit on weeks 1–9. What should the synthetic store show in weeks 10–19, and what would it mean if it showed a gap?
+
+### Part M11-R4. Synthetic control or DiD?
+
+Dana's analyst prefers a plain difference-in-differences: the flagship against the **equal-weighted** average of the three donors in Part R2, with weeks 1–3 as the pre-period and week 4 as the post-period.
+
+**Tasks**
+1. Compute that DiD. Compare it with your synthetic-control estimate.
+2. Now compute the DiD against the equal-weighted average of donors A and B only. Why does it match the synthetic control here?
+3. Both methods compare the flagship with a weighted average of donors. What does each choose, and what does each allow for that the other does not?
+
+### Part M11-R5. The memo
+
+Two bodies of evidence are on Dana's desk: Meeting 10's cohort estimate and the flagship. Write the memo in five sentences or fewer:
+1. what to do about the 59 stores;
+2. what to budget per store-week, **in yuan of margin**, not sales (margin is 25% of sales);
+3. the assumption it rests on;
+4. what the flagship number is and is not;
+5. how the remaining rollout should be scheduled so that the next review has a clean comparison.
+
+---
+
+## Bonus (not examined): the staggered rollout
+
+These parts were Meeting 11's case when it taught staggered adoption. That topic is now Handout H3; Meeting 10 ends with a warning about it. The week-104 situation is the same as in Part M11-R1.
+
+### Part B1. Extend it to everyone?
 
 It is now **week 104**.
 - The **flagship** store went live in week 20, alone.
@@ -143,7 +209,7 @@ Her analyst has two numbers, and they disagree:
 1. One number is below the break-even and one is above. Before any calculation, commit: which do you trust more, and why?
 2. Every store-week has two clocks: the calendar week, and the week since that store went live. Give an example of a reason the assistant's effect could depend on each clock.
 
-### Part M11-R2. Three stores, three weeks
+### Part B2. Three stores, three weeks
 
 Store E goes live in week 2, store L in week 3, store N never. Bold cells are treated. A common trend of +4 per week runs through all three stores.
 
@@ -161,13 +227,13 @@ Store E goes live in week 2, store L in week 3, store N never. Bold cells are tr
 
 Then: what is the true effect in each treated store-week? Why does comparison 4 get it wrong, when there is no noise in these numbers?
 
-### Part M11-R3. The cohort panel
+### Part B3. The cohort panel
 
 | | Stores | Went live in week | Weeks live in the panel |
 |---|---:|---:|---:|
 | Cohort 1 | 30 | 53 | 52 |
 | Cohort 2 | 30 | 79 | 26 |
-| Never treated | 59 | — | — |
+| Never treated | 59 | never | 0 |
 
 The flagship is held out of this panel.
 
@@ -189,47 +255,3 @@ From the rollout file:
 
    Why should the base week not be the week just before going live?
 4. **Version 2.** Cohort 1 received version 2 at its event week 13. Cohort 2 had version 2 from event week 0. Suppose part of the growth in the effect comes from version 2, not from associates learning the tool. What pattern in the cohort-by-week effects would show it? Why can the two causes not be separated by averaging over cohorts at each event time?
-
-### Part M11-R4. One store, two years ahead
-
-The flagship went live in week 20, thirty-three weeks before anyone else, and has 84 weeks live. It was the vendor's **co-development store**. For its first six months a vendor engineer worked on site, and the vendor tuned the assistant on the flagship's own catalogue and customers' questions.
-
-Its before/after difference is **+¥18,700** per week. Dana asks: *how much of that is the assistant?*
-
-A 2 × 2 needs a control. Which store?
-- the chain's other large-format store? It is in a different city;
-- the average of all 59 never-treated stores? A different format, with a different trend;
-- a weighted average of never-treated stores, weighted so that it tracked the flagship before week 20?
-
-**Tasks**
-1. What is wrong with each of the first two controls?
-2. What exactly was the "treatment" at the flagship? Is it the same treatment the 59 remaining stores would get?
-3. The flagship's city also has four small never-treated stores that share no staff or customers with it. How would you use them to check whether a local demand boom, not the assistant, explains the flagship's rise? What result would worry you?
-
-### Part M11-R5. Three donors, by hand
-
-The flagship goes live after week 3.
-
-| | Week 1 | Week 2 | Week 3 | Week 4 (live) |
-|---|---:|---:|---:|---:|
-| Flagship | 100 | 110 | 120 | **141** |
-| Donor A | 90 | 100 | 110 | 118 |
-| Donor B | 110 | 120 | 130 | 138 |
-| Donor C | 120 | 140 | 160 | 165 |
-
-**Tasks. In pairs**
-1. Find non-negative weights summing to one that reproduce the flagship's three pre-period values exactly.
-2. Use them to estimate the week-4 effect.
-3. Remove donor B from the pool. What is the best you can do, and what is the effect? Then remove donor A instead.
-4. Which of these estimates would you report, and what range?
-5. On the real flagship, the weights are fitted on weeks 1–19. Before anyone looks at weeks 20 onwards, what would you fix in writing? How could you use weeks 15–19 to test the synthetic store?
-6. Treated as if live in week 20, each of the 59 donors gets its own synthetic control. The flagship's post/pre gap ratio ranks 1st of 60. Is that a p-value of 1/60? What would have to be true for it to be one?
-
-### Part M11-R6. The memo
-
-Two bodies of evidence are on Dana's desk: the cohorts and the flagship. Write the memo in five sentences or fewer:
-1. what to do about the 59 stores;
-2. what to budget for the first month and for the steady state, **in yuan of margin per store-week**, not sales;
-3. the assumption it rests on;
-4. what the flagship number is and is not;
-5. how the remaining rollout should be scheduled so that the next review has a clean comparison.
