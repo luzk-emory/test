@@ -44,11 +44,11 @@ Minutes are elapsed minutes in the meeting and approximate. **Retime when each d
 | M1-R3 | M1 A | 40–50 | `[RELEASE R3]` | "Who Got the Coupon Decides the Sign" |
 | M1-R4 | M1 B | 60–75 | `[RELEASE R4]` | "The Test Against the Break-Even" |
 | M1-R5 | M1 B | 95–110 | `[RELEASE R5]` | "The Average Coupon Loses Money…"; "Data Roles" |
-| M2-R1 | M2 A | 15–25 | `[RELEASE R1]` | SE and interval frames |
-| M2-R2 | M2 A/B | 45–65 | `[RELEASE R2]` | "Transport the Effect — and the Break-Even" |
-| M2-R3 | M2 B | 65–85 | `[RELEASE R3]` | "The Lapsed Test Is Too Small"; CUPED frames |
-| M2-R4 | M2 B | 85–95 | `[RELEASE R4]` | "The Design Effect" |
-| M2-R6 | M2 B | 95–110 | `[RELEASE R6]` | the noncompliance and LATE frames that close the deck |
+| M2-R1 | M2 A | 0–10 | `[RELEASE R1]` | SE and interval frames |
+| M2-R2 | M2 A | 40–50 | `[RELEASE R2]` | "Transport the Decision, Not Just the Effect" |
+| M2-R3 | M2 B | 60–80 | `[RELEASE R3]` | "The Lapsed Test Is Too Small"; CUPED frames |
+| M2-R4 | M2 B | 80–90 | `[RELEASE R4]` | "The Design Effect" |
+| M2-R6 | M2 B | 92–110 | `[RELEASE R6]` | "Assignment and Receipt" to "Which Number for Which Decision" |
 | M2-R5 | take-home | | with "Lin's Test Plan" | (the memo is finished at home) |
 | M3-R1 | M3 A | 15–25 | `[RELEASE R1]` | the table on "The Number That Decides It" |
 | M3-R2 | M3 A | 40–50 | `[RELEASE R2]` | the `\pause` on the interaction frame |

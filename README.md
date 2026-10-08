@@ -28,7 +28,7 @@ reviews/                pass-1 review report (2026-10-07)
 |---|---|---|
 | Technical notes, M1–M11 | v4.1 (git tag `v4.1`) | Current. Pass 1 (arithmetic, wording) done; pass 2 (independent proof check) not yet |
 | Handouts H1–H6 | v4.1 | Current, same review state as the notes |
-| Lecture slides | M1 rebuilt (lecture case kept); M2–M11 v2 content | M1 aligned with the v4 notes, under review. **M2–M11 not yet revised** |
+| Lecture slides | M1–M2 rebuilt (lecture case kept); M3–M11 v2 content | M1 and M2 aligned with the v4 notes, under review. **M3–M11 not yet revised** |
 | Schedule, labs, assignments, deadlines | `plan/schedule.xlsx` | Current source of truth |
 | Syllabus | Draft 3 (8 Oct) | Matches `schedule.xlsx`. Undecided items are marked `\tbd` (dates, weights, policies) |
 | Cases A–C (lecture cases) | draft | M2-R6 (Case A), M9 (Case B) and M11 (Case C) rewritten 8 Oct to the current schedule; other release times to be retimed with each deck. Numbers in the rewritten parts are checked by `shared/checks/case_check.py` |

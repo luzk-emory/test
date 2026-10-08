@@ -100,7 +100,7 @@ The full calendar is in the spreadsheet.
 | Technical notes M1–M11, handouts H1–H6 | **Done (v4.1).** Pass 1 review done |
 | Notation sheet, style, build and check scripts | Done |
 | Schedule, labs, assignments, deadlines, bonus reading | Planned in `schedule.xlsx`; judgement calls below still open |
-| Lecture slides | **M1 rebuilt, under review; it sets the pattern for the rest.** M2–M11 hold v2 content, built for the old calendar |
+| Lecture slides | **M1 and M2 rebuilt, under review; M1 sets the pattern.** M3–M11 hold v2 content, built for the old calendar |
 | Syllabus | Draft 3 (8 Oct), generated from `schedule.xlsx`; undecided items marked `\tbd` |
 | Lab notebooks 0–10 | Not built |
 | Assignments A1–A4, autograder, locked RCT set | Not built |
