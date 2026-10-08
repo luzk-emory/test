@@ -104,7 +104,7 @@ syllabus's weekly table follows it, with an "Out / due" column.
 | Handouts H1–H6 | **Done.** Renumbered in meeting order on 8 Oct (H1 interference, M2, to H6 staggered adoption, M10). H4 (IV) refocused on classical IV, with a new worked example, so it no longer repeats M2 Section 1.9 |
 | Notation sheet, style, build and check scripts | Done. `run_all.sh` runs the notes, handout, slide and case checks |
 | Schedule, labs, assignments, deadlines, bonus reading | Planned in `schedule.xlsx` (Release and Due columns since 8 Oct); judgement calls in Section 7 still open |
-| Lecture slides | **M1 (44 frames) and M2 (36 frames) rebuilt on the coffee-chain case, under review**, checked by `slides01_check.py` and `slides02_check.py`. M3–M11 hold v2 content, built for the old calendar |
+| Lecture slides | **M1 (44 frames) and M2 (37 frames) rebuilt on the coffee-chain case, under review**, checked by `slides01_check.py` and `slides02_check.py`. M3–M11 hold v2 content, built for the old calendar |
 | Syllabus | Draft 3 (8 Oct), matches `schedule.xlsx`, handouts H1–H6 in meeting order, no critique exercises. Undecided items marked `\tbd` (dates, weights, policies) |
 | Lab notebooks 0–10 | Not built |
 | Assignments A1–A4, autograder, locked RCT set | Not built |
@@ -118,8 +118,8 @@ syllabus's weekly table follows it, with an "Out / due" column.
 1. **Slides, M3 to M11** (M1 and M2 are done and under review). Rebuild each deck to match its v4.1 notes and its
    schedule row, one deck at a time, stopping for the instructor's review after each. Lecture slides carry the
    intuition and the lecture's own running case; proofs stay in the notes. Slides and notes share the method, not the
-   example (Section 6). M1 and M2 set the pattern: title, block A, block boundary, block B, summary; Results with the
-   notes' numbers and titles in the notes' order; a `slidesNN_check.py` for every number.
+   example (Section 6). M1 and M2 set the pattern: title, road map, block A, block boundary, block B, summary;
+   Results with the notes' numbers and titles in the notes' order; a `slidesNN_check.py` for every number.
    - Exam meetings (M5, M11) have only block B of lecture.
    - M9 needs a new deck. New material for other decks:
      - M3: TARNet slide;
@@ -152,6 +152,14 @@ syllabus's weekly table follows it, with an "Out / due" column.
    - Confirm three citations (listed in `README.md`).
 
 ## 6. Notes for the slide rebuild
+
+- **Deck structure (instructor, 8 Oct).** Slide 1 is the title. Slide 2 is a road map of the meeting's topics, by
+  block, in the order they are taught. The deck ends with a summary frame, and nothing follows it.
+- **Slides are self-contained.** No lab previews, assignment or project notices, case-handout instructions, exit
+  tickets, "in pairs" or other in-class activity prompts, and no reading pointers in the summary. A question on a slide
+  is answered on the slide or the next one. The running case is the lecture's example, so its story and numbers stay;
+  the `% [RELEASE ...]` comments in the source are for the instructor and do not print. Short references to another
+  meeting or a handout, where a topic continues, may stay in the text.
 
 - **Carried frames are a starting point.** The v2 decks for M3 to M6 still hold 50 frames taken from the old decks
   (M1 and M2 have been reworked), each marked in the source with a comment such as
