@@ -1,0 +1,688 @@
+% \documentclass[aspectratio=169, 11pt]{beamer}
+\documentclass[aspectratio=169, 11pt, handout]{beamer}
+% ── Theme ──
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{%
+  \leavevmode\hbox{%
+    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
+      \usebeamerfont{author in head/foot}\insertshortauthor
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
+      \usebeamerfont{title in head/foot}\insertshorttitle
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+      \usebeamerfont{date in head/foot}\insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+    \end{beamercolorbox}}}
+% ── Packages ──
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+\usetikzlibrary{calc}
+% ── Colors ──
+\definecolor{sbgreen}{HTML}{00704A}
+\definecolor{abnbred}{HTML}{FF5A5F}
+\definecolor{warnred}{HTML}{CC0000}
+\definecolor{noteblue}{HTML}{2060A0}
+% ── Commands ──
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\Prob}{\mathrm{Pr}}
+\newcommand{\indep}{\perp\!\!\!\perp}
+\DeclareMathOperator{\plim}{plim}
+% ── Reusable TikZ styles ──
+\tikzset{
+    tnode/.style={draw, rounded corners, fill=gray!10, minimum width=2.2cm, minimum height=0.65cm, font=\small, align=center},
+    tgreen/.style={tnode, fill=sbgreen!15, draw=sbgreen},
+    tblue/.style={tnode, fill=noteblue!12, draw=noteblue},
+    tred/.style={tnode, fill=abnbred!15, draw=abnbred},
+    twarn/.style={tnode, fill=red!8, draw=warnred},
+    tarrow/.style={-{Stealth}, thick}
+}
+% ── Title ──
+\title[Lecture 10]{Lecture 9: Pricing Strategies}
+\subtitle{Applied ML for Business Part II}
+\author{Zhikun Lu}
+\date{\today}
+\begin{document}
+
+\frame{\titlepage}
+
+% =====================================================================
+% OPENING
+% =====================================================================
+
+\begin{frame}{Where we are}
+\textbf{Part II, so far:}
+\begin{itemize}
+    \item Potential outcomes, selection bias, randomization, identification, ATE
+    \item CATE estimation: naive ML approach (S- and T-learners)
+    \item Causal forests \;$\Rightarrow$\; binary action
+    \item Double machine learning (DML) \;$\Rightarrow$\; clean estimates of $\hat\theta$ or $\hat\theta(x)$ 
+\end{itemize}
+
+\bigskip 
+
+\textbf{Today:} 
+
+\bigskip 
+
+We stop estimating and start \emph{deciding}: turn this $\hat\theta(x)$ into concrete business decisions.
+
+\end{frame}
+
+\begin{frame}{The question behind the lecture}
+Suppose you have $\hat\theta(x)$. What do you do with it?
+
+\bigskip
+
+The answer: \textbf{it depends.}
+
+\bigskip
+
+We consider three pricing problems:
+\begin{enumerate}
+    \item \textcolor{sbgreen}{\textbf{Differentiated pricing}} --- often referred as personalization
+    \item \textcolor{noteblue}{\textbf{Coupon design}} --- discrete action space, budget constraint
+    \item \textcolor{abnbred}{\textbf{Capacity \& uncertainty}} --- supply-side constraint + random demand
+\end{enumerate}
+
+\bigskip
+
+The latter two introduce \emph{qualitatively different} obstacles to pricing.
+\end{frame}
+
+% --- NEW SLIDE: what does x index? ---
+\begin{frame}{Before we start: what does $x$ index?}
+The features $x$ in $\hat\theta(x)$ can index two very different things:
+\vspace{0.4em}
+
+\begin{itemize}
+    \item \textcolor{sbgreen}{\textbf{Product attributes}} --- listing, SKU, route, room type. \\
+          Same price for every customer who looks at the product.
+    \item \textcolor{warnred}{\textbf{Customer attributes}} --- segment, history, browsing behavior. \\
+          Different prices for different customers viewing the \emph{same} product.
+\end{itemize}
+\vspace{0.6em}
+
+\textbf{The math is identical. The economics, ethics, and legality are not.}
+\vspace{0.4em}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+ & \textbf{$x$ = product} & \textbf{$x$ = customer} \\
+\midrule
+Context & Airbnb listings, hotel rooms,    & targeted coupons, B2B quotes,\\
+        & products with different features & student discounts\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Comment}: contextual features (e.g., local demand \& supply) may also cause ``price discrimination'' 
+
+\end{frame}
+
+
+
+% =====================================================================
+% PART 1: DIFFERENTIATED PRICING
+% =====================================================================
+
+\section{Part 1: Differentiated Pricing}
+
+\begin{frame}
+    \centering
+    \vfill
+    {\LARGE \textcolor{sbgreen}{\textbf{Part 1: Differentiated Pricing}}}\\[0.8em]
+    {\small \itshape When you can post any price}\\[0.4em]
+    \vfill
+\end{frame}
+
+\begin{frame}{Setup: Airbnb listings}
+Each listing $i$ has features $x_i$ (location, size, amenities, seasonality, \ldots).
+\vspace{0.4em}
+
+\textbf{Demand model:}
+\[
+Q_i(P_i) = A_i \cdot P_i^{-\theta(x_i)}
+\]
+where $\theta(x_i) > 1$ is the price elasticity for listing $i$, and $A_i$ is a scale factor.
+\vspace{0.6em}
+
+\textbf{Cost:} marginal cost $c_i$ per booking (cleaning, platform cost, host payout share, \ldots).
+\vspace{0.6em}
+
+\textbf{Host's problem:}
+\[
+\max_{P_i} \; \pi_i(P_i) = (P_i - c_i) \cdot A_i P_i^{-\theta(x_i)}
+\]
+\vspace{0.2em}
+
+One listing at a time. No constraints.  
+\end{frame}
+
+\begin{frame}{The inverse elasticity rule}
+First-order condition in $P_i$:
+\[
+\frac{\partial \pi_i}{\partial P_i} = A_i P_i^{-\theta} - \theta (P_i - c_i) A_i P_i^{-\theta - 1} = 0
+\]
+Solving:
+\[
+\boxed{\; P_i^* = \frac{\theta(x_i)}{\theta(x_i) - 1} \cdot c_i \;}
+\]
+\vspace{0.4em}
+
+\begin{itemize}
+    \item Low elasticity ($\theta \to 1$): huge markup. Customer is insensitive.
+    \item High elasticity ($\theta \to \infty$): vanishing markup. Approaches competitive price.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Plugging in $\hat\theta(x)$}
+\textbf{The DML output becomes the pricing rule:}
+\[
+\hat{P}_i^* \;=\; \frac{\hat\theta(x_i)}{\hat\theta(x_i) - 1} \cdot c_i
+\]
+\vspace{0.4em}
+
+Every listing gets its own price. No two listings need to face the same markup.
+\vspace{0.6em}
+
+\begin{block}{The clean picture}
+Training pipeline: features $x_i$ $\to$ DML $\to$ $\hat\theta(x_i)$ $\to$ pricing rule $\to$ $\hat{P}_i^*$.
+\end{block}
+\vspace{0.4em}
+
+This is the clean, frictionless version of \emph{product-level} differentiated pricing. 
+\end{frame}
+
+\begin{frame}{Numerical illustration: two listings}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+ & $\hat\theta(x_{\text{listing}})$ & $c$ & $\hat P^*$ \\
+\midrule
+Downtown loft (mostly business bookings) & 1.5 & \$80 & \$240 \\
+Suburban home (mostly family bookings) & 3.0 & \$80 & \$120 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{1em}
+
+\textbf{Same cost. Different listing-level elasticity. 2$\times$ price gap.}
+\vspace{0.6em}
+
+\begin{itemize}
+    \item Downtown loft's customer mix: business travelers, few weeknight substitutes $\Rightarrow$ low listing $\theta$ $\Rightarrow$ high markup.
+    \item Suburban home's customer mix: families comparing to hotels $\Rightarrow$ high listing $\theta$ $\Rightarrow$ thin markup.
+\end{itemize}
+\vspace{0.4em}
+
+\small\textcolor{noteblue}{\textbf{Note:}} Every customer viewing a given listing sees the \emph{same} price. The elasticity is a property of the listing's typical customer mix, not of any individual customer.
+\end{frame}
+
+% --- NEW SLIDE: self-selection insight ---
+\begin{frame}{Why this is not customer discrimination}
+
+The listing-level elasticity is a \emph{mixture}:
+\[
+\theta(x_{\text{listing}}) \;=\; \text{weighted average of } \theta(\text{customer type}) \text{ over types booking this listing}
+\]
+
+\bigskip
+
+\textbf{Customers self-sort across listings:} business travelers into downtown lofts, families into suburban homes. Product attributes do the sorting; the platform prices the \emph{listing}, not the customer.
+
+\bigskip
+
+\textbf{Feature engineering angle.} Asking ``purpose of trip?" at booking or check-in is not a step toward personalized pricing. But it is a useful feature that helps recover the type mix behind each listing, so the platform can anticipate how $\theta(x_{\text{listing}})$ shifts with seasons, events, or supply changes, and price the listing accordingly.
+
+\end{frame}
+
+
+\begin{frame}{Uniform vs.\ differentiated pricing}
+
+Suppose Airbnb is forced to pick a \emph{single} price $\bar P$ for all (similar) listings.
+\vspace{0.4em}
+
+\textbf{Uniform optimum:} $\bar P^* = \arg\max_{P} \sum_i (P - c_i) Q_i(P)$ --- solves for a weighted-average elasticity.
+\vspace{0.4em}
+
+\textbf{Differentiated optimum:} $P_i^* = \frac{\hat\theta(x_i)}{\hat\theta(x_i)-1} c_i$ --- each listing at its own optimum.
+\vspace{0.6em}
+
+\begin{alertblock}{Revenue gap}
+\[
+\underbrace{\sum_i \pi_i(P_i^*)}_{\text{differentiated}} \;-\; \underbrace{\sum_i \pi_i(\bar P^*)}_{\text{uniform}} \;\geq\; 0
+\]
+with equality only when $\theta(x_i)$ is constant across $i$.
+\end{alertblock}
+\vspace{0.4em}
+
+\textbf{The dollar value of differentiation grows with the dispersion of $\theta(x)$.}
+\end{frame}
+
+
+
+
+\begin{frame}{Why heterogeneity matters: intuition}
+\centering
+\begin{tikzpicture}[scale=0.95]
+    % uniform line
+    \draw[thick, gray, dashed] (0,2.5) -- (8,2.5) node[right] {\small uniform $\bar P^*$};
+    % differentiated points
+    \foreach \x/\y/\lab in {0.8/1.2/{\tiny family-leaning}, 2.2/1.8/, 3.6/2.3/, 5.0/2.9/, 6.5/3.6/{\tiny business-leaning}}{
+        \fill[sbgreen] (\x,\y) circle (3pt);
+        \node[above, font=\scriptsize] at (\x,\y) {\lab};
+    }
+    \draw[thick, sbgreen] plot[smooth] coordinates {(0.5,1.1) (2,1.7) (4,2.4) (6,3.3) (7.5,3.9)};
+    \node[right, sbgreen] at (7.5,3.9) {\small $P^*(x)$};
+    \draw[->, thick] (0,0) -- (8.5,0) node[right] {$\theta(x)^{-1}$ \scriptsize(higher = less elastic)};
+    \draw[->, thick] (0,0) -- (0,4.5) node[above] {$P^*$};
+\end{tikzpicture}
+\vspace{0.4em}
+
+The uniform price is a flat horizontal line. The differentiated price follows the curve.
+\vspace{0.4em}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{When does differentiation pay off?}
+Differentiation is worth the engineering effort when:
+\vspace{0.4em}
+
+\begin{enumerate}
+    \item \textbf{Elasticity dispersion is large} --- products differ meaningfully in price sensitivity (driven by who they attract).
+    \item \textbf{$\hat\theta(x)$ is accurate} --- otherwise you're just adding noise to a uniform price.
+    \item \textbf{Operational cost of varying prices is low} --- Airbnb yes, supermarket shelf labels no.
+\end{enumerate}
+
+\end{frame}
+
+% --- NEW SLIDE: where does this benchmark actually fit? (disclaimer / scorecard) ---
+\begin{frame}{Reality check: where does this benchmark fit?}
+This textbook model assumes (i) capacity isn't binding, (ii) unit/marginal cost is well-defined, (iii) demand is iso-elastic, (iv) full control of pricing
+
+\bigskip
+
+\textbf{Discussion.} Is this a good model for 
+
+\begin{itemize}
+    \item Airbnb (i--iii)
+    \item Amazon 3rd party seller (unique or shared listing)
+    \item Software as a service (SaaS); large language model API
+\end{itemize}
+
+\bigskip
+
+\textbf{Comment.} No universal pricing model fits all context. 
+
+\end{frame}
+
+
+
+% ─────────────────────────────────────────────────────────────────────
+% PART 2: COUPON DESIGN (slimmed)
+% ─────────────────────────────────────────────────────────────────────
+
+\begin{frame}
+    \centering
+    \vfill
+    {\LARGE \textcolor{noteblue}{\textbf{Part 2: Coupon Design}}}\\[0.8em]
+    {\small \itshape From continuous $\hat\theta(x)$ to a discrete coupon menu}
+    \vfill
+\end{frame}
+
+% --- Slide 1: keep ---
+\begin{frame}{Why coupons, not continuous prices?}
+In practice, firms rarely set a different list price for each customer. Instead:
+\vspace{0.4em}
+
+\begin{itemize}
+    \item Posted price $P_0$ is fixed (fairness, optics, regulation, IT systems, Price tracking softwares).
+    \item \textbf{Personalization happens through targeted discounts} --- coupons.
+    \item Coupon face values are chosen by marketing: typically $\{3, 5, 10, 20\}$, not $\{6.37, 11.42\}$.
+\end{itemize}
+\vspace{0.6em}
+
+\begin{exampleblock}{Running example: Starbucks}
+Starbucks has a posted price for a latte. They send app-based coupons of \$1, \$2, or \$3 off. Who gets what coupon? And is there even a budget for the campaign?
+\end{exampleblock}
+\end{frame}
+
+% --- Slide 2: keep ---
+\begin{frame}{The action space just got smaller}
+\textbf{Part 1:} $\Delta_i \in \mathbb{R}_+$ (continuous discount).
+\vspace{0.4em}
+
+\textbf{Part 2:} $\Delta_i \in \{0, 1, 2, 3\}$ (discrete menu, set by PM).
+\vspace{0.8em}
+
+And the decision now couples customers through a budget:
+\[
+\sum_{i=1}^{N} \Delta_i \cdot \mathbb{I}[\text{customer } i \text{ redeems}] \;\leq\; B
+\]
+\vspace{0.2em}
+
+\begin{alertblock}{Two new objects}
+\begin{enumerate}
+    \item \textbf{Discrete choice per customer:} pick one coupon from a small menu.
+    \item \textbf{Global coupling:} budget constraint spans all customers.
+\end{enumerate}
+\end{alertblock}
+\end{frame}
+
+% --- NEW Slide 3: the central mapping ---
+\begin{frame}{The central question: $\hat\theta(x_i) \;\longrightarrow\; \Delta_i^*$}
+We have $\hat\theta(x_i)$ for each customer. We have a menu $\{0, 1, 2, 3\}$. \textbf{Which coupon does customer $i$ get?}
+\vspace{0.6em}
+
+\textbf{Step 1.} For each customer, compute the profit contribution of each menu option:
+\[
+v_i(\Delta) \;=\; \big[(P_0 - \Delta - c) \cdot Q_i(P_0 - \Delta)\big] \;-\; \big[(P_0 - c) \cdot Q_i(P_0)\big]
+\]
+where $Q_i(P) = A_i P^{-\hat\theta(x_i)}$. Everything is driven by $\hat\theta(x_i)$.
+\vspace{0.6em}
+
+\textbf{Step 2.} Pick the coupon that maximizes per-customer profit:
+\[
+\Delta_i^* \;=\; \arg\max_{\Delta \in \{0, 1, 2, 3\}} v_i(\Delta)
+\]
+\vspace{0.4em}
+
+\textbf{Discussion:} How does this approach differ from directly estimating uplifts for each coupon?
+
+\end{frame}
+
+% --- NEW Slide 4: budget + ROI ---
+\begin{frame}{Adding the budget: targeting threshold}
+With budget $B$, we can't give everyone their unconstrained best coupon. Use a \emph{shadow price} $\lambda$:
+\[
+\Delta_i^* \;=\; \arg\max_{\Delta \in \{0, 1, 2, 3\}} \; \underbrace{v_i(\Delta)}_{\text{profit}} \;-\; \underbrace{\lambda \cdot \Delta \cdot \Prob_i(\Delta)}_{\text{budget cost}}
+\]
+\vspace{0.2em}
+
+Tune $\lambda$ until $\sum_i \Delta_i^* \cdot \Prob_i(\Delta_i^*) \approx B$.
+\vspace{0.6em}
+
+\textbf{Reading $\lambda^*$ as ROI:}
+\begin{itemize}
+    \item $\lambda^* > 1$: every extra \$1 of budget returns more than \$1. Ask for more.
+    \item $\lambda^* < 1$: budget is slack at the margin.
+    \item $\lambda^* \approx 1$: budget is right.
+\end{itemize}
+
+\end{frame}
+
+
+% --- NEW Slide 5: inverse problem ---
+\begin{frame}{The inverse problem: where does the menu come from?}
+So far the menu $\{0, 1, 2, 3\}$ was given. \textbf{Who chose it?} Usually a PM, eyeballing it.
+
+\bigskip
+
+\textbf{Inverse problem.} Given the distribution of $\hat\theta(x)$, pick the $K$ coupon values to offer:
+\[
+\max_{\{\Delta_1, \ldots, \Delta_K\}} \; \E_{x}\!\left[ \max_{k} v(x, \Delta_k) \right]
+\]
+
+\bigskip
+
+\textbf{Intuition.} Each customer has an unconstrained best coupon $\Delta^*(x)$ (Part 1 FOC). The menu approximates this continuous distribution by K discrete values, with minimal profit loss.
+
+\end{frame}
+
+% --- Slide 6: recap (slimmed) ---
+\begin{frame}{Part 2 recap}
+\begin{itemize}
+    \item Coupons replace continuous personalized prices for various practical reasons.
+    \item \textbf{The mapping:} $\hat\theta(x_i) \to v_i(\Delta) \to \Delta_i^*$ on a discrete menu.
+    \item With budget, we solve the optimal targeting problem under a constraint.
+    \item \textbf{Inverse problem:} the menu itself is a quantization of $\Delta^*(x)$; we can help PM to better design the coupons.
+\end{itemize}
+
+\end{frame}
+
+% =====================================================================
+% PART 3: CAPACITY & UNCERTAINTY
+% =====================================================================
+
+\section{Part 3: Capacity \& Uncertainty}
+
+\begin{frame}
+    \centering
+    \vfill
+    {\LARGE \textcolor{abnbred}{\textbf{Part 3: Capacity \& Uncertainty}}}\\[0.8em]
+    {\small \itshape Joint price-quantity optimization}
+    \vfill
+\end{frame}
+
+% \begin{frame}{Setup: hotel with capacity $K$}
+% One night. $K$ rooms. One posted price $P$. Demand is \emph{random}:
+% \[
+% D(P) \;=\; A \cdot P^{-\theta} \cdot \varepsilon, \qquad \varepsilon \sim \mathrm{LogNormal}(0, \sigma^2)
+% \]
+% \vspace{0.2em}
+
+% \textbf{Parameters (running example):} $\theta = 2$, $A$ chosen so $\E[D \mid P = \$200] = 100$, $\sigma = 0.3$, $K = 100$ rooms. Unit cost $c = \$40$, salvage $s = 0$.
+% \vspace{0.6em}
+
+% \textbf{Realized profit:}
+% \[
+% \pi(P, K) \;=\; P \cdot \min(D(P), K) \;-\; c \cdot K
+% \]
+% \vspace{0.2em}
+
+% \textbf{Two new forces compared to Parts 1--2:}
+% \begin{itemize}
+%     \item Supply is bounded: you cannot sell more than $K$ rooms even if demand is high.
+%     \item Demand is random: you pick $P$ before knowing $\varepsilon$.
+% \end{itemize}
+% \end{frame}
+
+\begin{frame}{The joint problem}
+\begin{block}{Joint price-quantity optimization}
+\[
+\max_{P, \,K} \; \E\left[ P \cdot \min(D(P), K) \right] \;-\; c \cdot K \;+\; s \cdot \E\left[(K - D(P))^+\right]
+\]
+\end{block}
+\vspace{0.4em}
+
+Two decision variables, one objective, demand uncertainty throughout.
+\vspace{0.6em}
+
+\textbf{Two natural decompositions:}
+\begin{enumerate}
+    \item Fix $P$, solve for $K$ $\Rightarrow$ newsvendor (familiar from Module 1 Hotel Booking).
+    \item Fix $K$, solve for $P$ $\Rightarrow$ pricing under capacity + uncertainty (new).
+\end{enumerate}
+\vspace{0.4em}
+
+Both FOCs must hold at the joint optimum.
+\end{frame}
+
+% --- NEW: setup ---
+\begin{frame}{Setup: hotel with capacity $K$}
+One night. $K$ rooms. One posted price $P$. Demand is \emph{random}:
+\[
+D(P) \;=\; A \cdot P^{-\hat\theta(x)} \cdot \varepsilon, \qquad \varepsilon \sim \mathrm{LogNormal}(0, \sigma^2)
+\]
+\vspace{0.2em}
+
+\textbf{Running example.} $\hat\theta = 2$, $A$ chosen so $\E[D \mid P = \$200] = 100$, $\sigma = 0.3$, $K = 100$ rooms, marginal cost $c = \$40$, salvage $s = 0$.
+\vspace{0.6em}
+
+\textbf{Realized profit:}
+\[
+\pi(P, K) \;=\; P \cdot \min(D(P), K) \;-\; c \cdot K
+\]
+\vspace{0.2em}
+
+\textbf{Two new forces compared to Parts 1--2:}
+\begin{itemize}
+    \item Supply is bounded: cannot sell more than $K$ rooms even if demand is high.
+    \item Demand is random: pick $P$ before knowing $\varepsilon$.
+\end{itemize}
+\end{frame}
+
+% --- NEW: newsvendor face ---
+\begin{frame}{Decomposition 1: fix $P$, choose $K$ (newsvendor)}
+Underage cost $c_u = P - c$ (lost margin per stockout). Overage cost $c_o = c - s$ (waste per leftover unit).
+\vspace{0.4em}
+
+\textbf{Critical fractile:}
+\[
+\Prob\big(D(P) \leq K^*\big) \;=\; \frac{c_u}{c_u + c_o} \;=\; \frac{P - c}{P - s}
+\]
+\vspace{0.2em}
+
+\textbf{Reading the formula.} The optimal capacity is the quantile of the demand distribution where the marginal stockout cost just balances the marginal overage cost.
+\vspace{0.4em}
+
+\begin{itemize}
+    \item Higher price $P$ $\Rightarrow$ stockout costlier $\Rightarrow$ build more capacity.
+    \item Higher demand variance $\sigma$ $\Rightarrow$ tail of $D(P)$ is fatter $\Rightarrow$ same fractile pushes $K^*$ up.
+\end{itemize}
+
+\end{frame}
+
+% --- NEW: pricing face ---
+\begin{frame}{Decomposition 2: fix $K$, choose $P$ (pricing under capacity)}
+The price FOC interpolates between two regimes:
+\vspace{0.4em}
+
+\begin{itemize}
+    \item \textbf{Slack capacity} ($\Prob(D > K)$ small): rationing rare, optimal price approaches Part 1's inverse elasticity rule
+    \[
+    P^* \approx \frac{\hat\theta}{\hat\theta - 1} \cdot c
+    \]
+    \item \textbf{Tight capacity} ($\Prob(D > K)$ large): rationing common, optimal price rises to \emph{clear} the capacity --- demand is shaved to fit supply.
+\end{itemize}
+\vspace{0.6em}
+
+\begin{block}{The interpolation}
+\[
+P^*(K) \;=\; \underbrace{\frac{\hat\theta}{\hat\theta - 1} \cdot c}_{\text{Part 1 markup}} \;+\; \underbrace{\mu(K) \cdot \text{shadow price of capacity}}_{\text{capacity term}}
+\]
+where $\mu(K) \to 0$ as $K \to \infty$ (capacity slack) and $\mu(K)$ grows as $K$ tightens.
+\end{block}
+\vspace{0.4em}
+
+\textbf{Same $\hat\theta$, different decision.} The role of elasticity shifts: in Part 1 it set the markup; here it also shapes the demand distribution that capacity must absorb.
+\end{frame}
+
+
+\begin{frame}{Part 3 recap}
+\begin{itemize}
+    \item Capacity + uncertainty = joint $(P, Inv)$ optimization, not a one-line formula.
+    \item Two FOCs, two intuitions:
+    \begin{itemize}
+        \item \emph{Newsvendor} (fix $P$, choose $K$): critical fractile in quantity space.
+        \item \emph{Pricing} (fix $K$, choose $P$): interpolation between inverse elasticity and capacity clearing.
+    \end{itemize}
+    \item Role of elasticity: Part 1 = markup; static capacity = level; joint + uncertainty = distribution-reshaping.
+    \item The newsvendor and pricing problems are dual faces of one joint problem.
+\end{itemize}
+\vspace{0.6em}
+
+\textbf{Hand to the full-time scientist:}
+\begin{itemize}
+    \item Dynamic pricing over the selling season
+    \item Network revenue management: $K$ shared across products (airlines)
+    \item Endogenous replenishment: $K$ chosen continuously
+\end{itemize}
+\end{frame}
+
+
+
+
+
+% =====================================================================
+% CLOSING THOUGHTS
+% =====================================================================
+ 
+\section{Two Closing Thoughts}
+ 
+\begin{frame}
+    \centering
+    \vfill
+    {\LARGE \textbf{Two Final Comments}}
+    \vfill
+\end{frame}
+
+
+
+ 
+% --- Closing 1: Beyond unconfoundedness ---
+\begin{frame}{Closing comment \#1: beyond unconfoundedness}
+
+Throughout this course, we assume either the treatment is random or as good as random
+\[
+\{Y(0), Y(1)\} \;\indep\; D \;\mid\; X
+\]
+which calls for domain knowledge and perfect data access. \textbf{When unconfoundedness fails} (usually it does) but still give you ``as good as random" causal estimates:
+ 
+\bigskip
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Setting} & \textbf{Identifying assumption} & \textbf{Method} \\
+\midrule
+Exogenous shifter of $D$ & exclusion restriction & \textbf{Instrument variable}\\
+Cutoff for treatment     & continuity at threshold & \textbf{Regression discontinuity} \\
+Pre/post + control group & parallel trends & \textbf{Diff-in-diff, Synthetic control}\\
+\bottomrule
+\end{tabular}
+
+\bigskip
+
+\textbf{The pattern.} Each method swaps unconfoundedness for a \emph{different} assumption that's defensible in a specific way. None is free; all need a story for why the assumption holds.
+ 
+\end{frame}
+ 
+
+
+
+ % --- Closing 2: Effects of causes vs. causes of effects ---
+\begin{frame}{Closing comment \#2: ``effects of causes'' vs ``causes of effects''}
+% \textit{A Conversation with DB Rubin (p 446), Stat. Sci. 2014} 
+
+{\small
+
+\textbf{Fan Li}: In the RCM, cause/intervention should always be defined before you start the
+analysis. In other words, the RCM is a framework to investigate the “effects of a
+cause,” but not the “causes of an effect." Some criticize this as a major limitation.
+Do you regard this as a limitation? Do you think it is ever possible to draw inference
+on the causes of effects from data, or is it, per se, an interesting question worth
+further investigation?
+
+\medskip
+
+\textbf{Rubin}: I regard “the cause" of an event topic as more of a cocktail conversation topic than a scientific inquiry, because it leads to an essentially infinite regress. Someone says, “He died of lung cancer because he smoked three packs a day"; then someone else counters, “Oh no, he died of lung cancer because both of his parents smoked three packs a day and, therefore, there was no hope of his doing anything other than smoking three packs a day"; then another one says, “No, no, his parents smoked because his grand parents smoked--they lived in North Carolina where, back then, everyone smoked three packs a day, so the cause is where the grandparents lived," and so on. How far back should you go? You can’t talk sensibly about the cause of an event; you can talk about “but for that cause (and there can be many ‘but for’s), what would have happened?" All these questions can be addressed hypothetically. But the cause? The notion is meaningless to me.
+}
+\end{frame}
+ 
+\begin{frame}
+    \centering
+    \vfill
+    {\LARGE \textbf{Thank you.}}\\[1.2em]
+    {\large Questions?}
+    \vfill
+\end{frame}
+
+
+\end{document}
