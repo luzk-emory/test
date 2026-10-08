@@ -108,7 +108,8 @@ The full calendar is in the spreadsheet.
 ## 5. Work remaining, in suggested order
 
 1. **Slides, all 11 meetings.** Rebuild each deck to match its v4.1 notes and its schedule row. Lecture slides carry
-   the intuition and the worked example; proofs stay in the notes.
+   the intuition and the lecture's own running case; proofs stay in the notes. Slides and notes share the method, not
+   the example (Section 6).
    - Exam meetings (M5, M11) have only block B of lecture.
    - M9 needs a new deck. New material for other decks:
      - M3: TARNet slide;
@@ -143,9 +144,17 @@ The full calendar is in the spreadsheet.
 - **M9 and M11 decks are replaced, not revised.** The current M9 deck teaches instrumental variables (hotel example) and
   the current M11 deck is mostly staggered DiD. Both topics are now handouts (H1, H3). Write new decks to the M9 and
   M11 notes. The old frames stay in git history (commit `5522695`, the v4.1 state), so no separate copy is needed.
-- **One business per meeting, as in the notes.** Coffee-chain examples remain in the M1, M3, M6 and M7 decks and hotel
-  examples in M7, M8 and M9. Move each to the business its meeting's notes use: FitLife for M1, M3, M7 and M10;
-  QuickBite for the rest.
+- **Lectures keep their own case; the notes use a different one on purpose.** Each lecture has its own running case
+  (the coffee chain in M1, the hotel in M8, and so on). The notes' Section 2 worked example uses a different business
+  (FitLife or QuickBite) so students see the method transfer. Do not move a slide example to the notes' business.
+  - *Shared between slides and notes:* the estimands, the assumptions, the notation (`shared/notation.tex`), the
+    statement of each Result (same number and title), and the order of topics.
+  - *Not shared:* the worked example and its numbers. Slide numbers are the lecture's own; they must be internally
+    consistent and checked by a script in `shared/checks/` (`slidesNN_check.py`), not matched to `notes.tex`.
+  - A slide may point to the notes ("a second worked example, on a fitness chain, is in the notes") but does not
+    reproduce it.
+  - New material (M9, and the additions in M3, M5, M6 and M11): before writing frames, propose which lecture case
+    carries it, consistent with the case that meeting's existing slides use, and get the instructor's agreement.
 - **Source decks.** `plan/old-decks/lecture01.tex` to `lecture09.tex` are reference material only: do not build or
   edit them.
 
