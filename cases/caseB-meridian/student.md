@@ -16,13 +16,13 @@ Throughout: the current midweek premium rate is **¥800** a night, and the varia
 
 A revenue management (RM) system sets the rate for every hotel-night. It uses forecast demand, competitor rates, booking pace and the event calendar. **No human sets these rates night by night**: the system is an automated decision-maker, and it has been for three years.
 
-On Wen's desk: sales proposes raising midweek premium rates by **8%** across the portfolio. Their evidence is the RM system's own reporting: nights with higher rates sell more rooms. (The exhibit is projected in class.) Sales' reading: *demand is strong; the system is under-pricing.*
+On Wen's desk: sales proposes raising midweek premium rates by **8%** across the portfolio. Their evidence is the RM system's own reporting: nights with higher rates sell more rooms. Sales' reading: *demand is strong; the system is under-pricing.*
 
 Wen has three years of logs: 80 hotels × 1,095 nights, with 47 recorded signals per night.
 
 Six comparable nights from one hotel:
 
-| Night | Category | Price $P$ | Demand $Q$ |
+| Night | Category | Rate $D$ | Bookings $Y$ |
 |---|---|---:|---:|
 | 1 | Standard | 30 | 110 |
 | 2 | Standard | 40 | 100 |
@@ -33,14 +33,14 @@ Six comparable nights from one hotel:
 
 **Tasks**
 1. An 8% rise changes contribution per occupied room from ¥600 to what? For the rise to pay, bookings must fall by less than what percentage? Express the break-even as an elasticity.
-2. In pairs: compute the pooled slope of $Q$ on $P$ across the six nights.
+2. In pairs: compute the pooled slope of $Y$ on $D$ across the six nights.
 3. Commit: does Wen raise rates?
 
 ### Part M8-R2. Subtract what the system already knew
 
-Within each category the mean price and mean demand are:
+Within each category the mean rate and mean bookings are:
 
-| Category | Mean price | Mean demand |
+| Category | Mean rate | Mean bookings |
 |---|---:|---:|
 | Standard | 40 | 100 |
 | Premium | 80 | 200 |
@@ -51,7 +51,7 @@ What Wen's team says about the RM system:
 - "Rates still move for reasons unrelated to demand."
 
 **Tasks**
-1. For each night, subtract its category's means from its price and its demand. Regress one residual on the other.
+1. For each night, subtract its category's means from its rate and its bookings. Regress the bookings residual on the rate residual.
 2. Why did the pooled slope and the within-category slope differ in sign? Draw the arrows.
 3. For each of the team's three sentences, say what it guarantees. What does a night priced exactly by the rule contribute to the estimate?
 
@@ -77,14 +77,33 @@ Around that rule, rates still move for reasons tied to no recorded signal.
 3. For each proposal, say what could go wrong with it.
 4. Signals are recorded throughout the day. Name two of the 47 that would be *post-treatment* if recorded after the rate was posted. When must every control be measured?
 
+### Part M8-R4. The last-minute discount
+
+On some nights the RM system opens a **10% discount** for the final 48 hours. Two kinds of night, equally common:
+
+| Night | Share of nights the system opens it | Rooms booked without it | Rooms booked with it |
+|---|---:|---:|---:|
+| Airport | 0.5 | 50 | 54 |
+| Resort | 0.9 | 60 | 72 |
+
+**Tasks**
+1. Compare mean bookings on nights with and without the discount. Why is that not the effect?
+2. What does the partially linear model estimate here? Give the ATE and the ATT. Which one does a decision to open the discount every night need?
+3. The resort models are off: $\hat\mu_1 = 74$ and $\hat e = 0.8$. What do regression alone, weighting alone and AIPW give for mean bookings with the discount at resorts?
+4. Compute the AIPW score of a resort night without the discount that booked 57 rooms. Why is it so far from 12?
+
 ### Part M8-R5. One more thing, says Wen
 
 > Property revenue managers **override** the system on about **8% of nights**. They override on local knowledge: a wedding block, a competitor closing a wing, a conference that never reached the event calendar. The override is logged. **The reason is not.**
 
+Wen's analyst adds two numbers from the logs. The ratio $\mathrm{sd}(\tilde Y - \hat\theta\tilde D)/\mathrm{sd}(\tilde D)$ is **3.0**. Dropping the **event flag** and re-estimating, the flag explains **4%** of the leftover rate variance and **6%** of the leftover bookings variance.
+
 **Tasks**
 1. Which of the team's three sentences in Part R2 is now false? What does that do to the estimate?
 2. Can a more flexible model of the signals repair it? Why or why not?
-3. The estimate sits 0.24 from the break-even. What would you need to know about the overrides to decide whether they could close that gap?
+3. If an override raises both the rate and bookings, in which direction does it bias −1.56? What kind of override would bias it the other way?
+4. The estimate sits 0.24 from the break-even. With the omitted-variable bound, what equal partial $R^2$ on both sides would close the gap?
+5. What bias could a factor as strong as the event flag cause? Twice as strong? Is the override factor plausibly that strong, and what would you do before acting?
 
 ---
 
@@ -140,7 +159,7 @@ The team builds a **second simulator** from the same logs, with a neural network
 **Tasks. In pairs, commit first**
 1. Rank the pipelines on each simulator. Which pipeline has the smallest worst-case regret?
 2. Why does the vendor's pipeline do best on one simulator and worst on the other?
-3. 14% of the vendor's rates lie above anything in the logs. What do both simulators know about bookings there? What does that do to the regret numbers on those nights?
+3. 14% of the vendor's rates lie above ¥1,920, the 95th percentile of the logged rates, where the logs are thin. What do both simulators know about bookings there? What does that do to the regret numbers on those nights?
 4. The vendor's optimiser picks, every night, the rate its model likes most. Why does that make its errors larger than its demand model's average error?
 5. What does the backtest support, and what not? Would you trust either simulator more after it?
 6. Recommend a pipeline to Wen, and the check you would run when it goes live.

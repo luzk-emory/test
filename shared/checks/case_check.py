@@ -1,6 +1,7 @@
 """Arithmetic checks for the case parts rewritten on 8 October 2026 (cases/*/student.md and instructor.md):
 Case A Part M2-R6 (noncompliance and the LATE), Case B Meeting 9 (simulators, PPI, text controls),
-Case C Meeting 11 (synthetic control vs DiD, memo margins). Run: python3 case_check.py"""
+Case C Meeting 11 (synthetic control vs DiD, memo margins); and, from the M7 to M11 case alignment, Case A Meeting 7,
+Case B Meeting 8 and Case C Meeting 10. Run: python3 case_check.py"""
 from decimal import Decimal, ROUND_HALF_UP
 from fractions import Fraction as F
 import math
@@ -36,6 +37,45 @@ check("A complier cost 5.75", "5.75", c * F(buy_o1, open1))
 net_n = -c * nt; check("A never-taker cost", "-2.00", net_n)
 check("A overall net = M1's -2.00", "-2.00", fs * net_c + (1 - fs) * net_n)
 check("A overall net, M1 formula 0.10x30 - 10x0.50", "-2.00", m * itt - c * F(1, 2))
+
+# ---------------- Case A, Meeting 7 (R2 tasks 5-6, R4, R4b) ----------------
+w = [(4000, 0.25), (1000, 4)]
+sw = sum(n * x for n, x in w); sw2 = sum(n * x * x for n, x in w)
+check("A M7 sum of ATT weights", "5000", sw); check("A M7 sum of squared weights", "16250", sw2)
+check("A M7 ESS 1,538", "1538", sw ** 2 / sw2); check("A M7 ATE-weight ESS 3,200", "3200", (1000 * 5 + 4000 * 1.25) ** 2 / (1000 * 5 ** 2 + 4000 * 1.25 ** 2))
+check("A M7 OLS segment weight 800", "800", 5000 * 0.2 * 0.8); check("A M7 OLS with lapsed dummy", "0.125", (0.05 + 0.20) / 2)
+bands = [(2500, 200, 160, 1725, 0.05), (2500, 800, 640, 1275, 0.05), (2500, 1550, 465, 95, 0.20), (2500, 2450, 735, 5, 0.20)]
+eh = [F(c, n) for n, c, *_ in bands]
+for b, (claim, e) in enumerate(zip(["0.08", "0.32", "0.62", "0.98"], eh)): check(f"A M7 e-hat band {b+1}", claim, e)
+wts = [e / (1 - e) for e in eh]
+for b, (claim, x) in enumerate(zip(["0.087", "0.47", "1.63", "49"], wts)): check(f"A M7 ATT weight band {b+1}", claim, x)
+n0 = [n - c for n, c, *_ in bands]
+tot_w = sum(x * m for x, m in zip(wts, n0)); check("A M7 weighted non-recipients", "5000", tot_w)
+check("A M7 band 4 share of weight 49%", "49", 100 * wts[3] * n0[3] / tot_w)
+ess = lambda idx: sum(wts[i] * n0[i] for i in idx) ** 2 / sum(wts[i] ** 2 * n0[i] for i in idx)
+check("A M7 ESS all bands 203", "203", ess(range(4))); check("A M7 ESS trimmed 2,225", "2225", ess(range(3)))
+check("A M7 trimmed non-recipients 4,950", "4950", sum(n0[:3])); check("A M7 trimmed recipients 2,550", "2550", sum(c for _, c, *_ in bands[:3]))
+check("A M7 trimmed share active 39%", "39", 100 * F(1000, 2550))
+check("A M7 SMD of lapsed share", "1.50", (0.80 - 0.20) / math.sqrt((0.16 + 0.16) / 2))
+p1 = [F(y1, c) for n, c, y1, y0, _ in bands]; p0 = [F(y0, n - c) for n, c, y1, y0, _ in bands]
+check("A M7 pooled", "-0.22", F(sum(y for _, _, y, _, _ in bands), 5000) - F(sum(y for *_, y, _ in bands), 5000))
+vw = [n * e * (1 - e) for (n, *_), e in zip(bands, eh)]
+check("A M7 OLS band-dummy weights total 1,366", "1366", sum(vw)); check("A M7 OLS band 4 weight 49", "49", vw[3])
+check("A M7 OLS on band dummies", "0.120", sum(x * (a - b) for x, a, b in zip(vw, p1, p0)) / sum(vw))
+def att(idx):
+    n1 = sum(bands[i][1] for i in idx)
+    est = sum(F(bands[i][1], n1) * (p1[i] - p0[i]) for i in idx)
+    var = sum(float(F(bands[i][1], n1)) ** 2 * (float(p1[i] * (1 - p1[i])) / bands[i][1] + float(p0[i] * (1 - p0[i])) / n0[i]) for i in idx)
+    return est, math.sqrt(var), var
+e_all, se_all, v_all = att(range(4)); e_tr, se_tr, _ = att(range(3)); e_4, se_4, _ = att([3])
+check("A M7 IPW all", "0.17", e_all); check("A M7 IPW SE", "0.022", se_all); check("A M7 IPW interval lower", "0.127", float(e_all) - 1.96 * se_all)
+v4 = (2450 / 5000) ** 2 * (0.21 / 2450 + 0.09 / 50); check("A M7 band 4 share of variance 93%", "93", 100 * v4 / v_all)
+check("A M7 IPW trimmed", "0.141", e_tr); check("A M7 trimmed SE", "0.011", se_tr)
+p1_tr = F(160 + 640 + 465, 2550); check("A M7 trimmed E[Y(1)|D=1]", "0.496", p1_tr)
+check("A M7 trimmed break-even", "0.165", 10 * p1_tr / 30); check("A M7 trimmed net", "-0.73", 30 * float(e_tr) - 10 * float(p1_tr))
+check("A M7 band 4 lift", "0.20", e_4); check("A M7 band 4 SE", "0.043", se_4); check("A M7 band 4 interval lower", "0.115", float(e_4) - 1.96 * se_4)
+check("A M7 band 4 break-even", "0.100", 10 * F(735, 2450) / 30); check("A M7 band 4 net", "3.00", 30 * 0.20 - 10 * 0.30)
+check("A M7 active net per coupon", "-6.50", 30 * 0.05 - 10 * 0.80)
 
 # ---------------- Case B, Meeting 9 ----------------
 truth = -1.50
@@ -106,8 +146,61 @@ w = 0.76; loo = [w * a + (1 - w) * c for a, c in zip(A, C)]
 check("C no-B synthetic wk1", "97.2", loo[0]); check("C no-B synthetic wk4", "129.3", loo[3], tol=0.05)
 check("C no-B effect", "11.7", fl[3] - loo[3], tol=0.05)
 margin = 0.25
-check("C memo margin, 12,400", "600", margin * 12400 - 2500)
-check("C memo margin, first quarter 11,200", "300", margin * 11200 - 2500)
-check("C memo margin, second quarter 13,800", "950", margin * 13800 - 2500)
+check("C memo margin, 11,000", "250", margin * 11000 - 2500)
+check("C memo margin, first quarter 8,000", "-500", margin * 8000 - 2500)
+check("C memo margin, second quarter 14,000", "1000", margin * 14000 - 2500)
+check("C flagship margin 15,900", "1475", margin * 15900 - 2500)
+check("C flagship margin almost six times the cohort's", "5.9", (margin * 15900 - 2500) / (margin * 11000 - 2500))
+# Case C, Meeting 10 (R3 task 6, R4, R5)
+c1 = [176, 178, 180, 182, 192, 200]; c0 = [146, 148, 150, 152, 154, 156]
+gap = [a - b for a, b in zip(c1, c0)]
+check("C TWFE six quarters 17 - 6", "11", (sum(c1[4:]) / 2 - sum(c1[:4]) / 4) - (sum(c0[4:]) / 2 - sum(c0[:4]) / 4))
+check("C cohort 1 change 17", "17", sum(c1[4:]) / 2 - sum(c1[:4]) / 4); check("C comparison change 6", "6", sum(c0[4:]) / 2 - sum(c0[:4]) / 4)
+es = [g - gap[3] for g in gap]; assert es == [0, 0, 0, 0, 8, 14]
+se_s = math.sqrt(36 / 30 + 25 / 89); check("C store-level SE 1.22", "1.22", se_s)
+d_hat = -(1 * es[2] + 2 * es[1] + 3 * es[0]) / 14; check("C drift estimate 0", "0", d_hat)
+check("C drift SE 1.22/sqrt(14)", "0.33", 1.22 / math.sqrt(14)); check("C drift bound 1.96 x 0.326", "0.64", 1.96 * 1.22 / math.sqrt(14))
+check("C delta* four cells", "0.5", (11 - 10) / (5.5 - 3.5)); check("C delta* TWFE six quarters", "0.33", (11 - 10) / (5.5 - 2.5))
+check("C delta* Q6 coefficient", "2.0", (14 - 10) / (6 - 4))
+rho, T = 0.8, 26
+cov = lambda i, j: rho ** abs(i - j)
+before, after = range(T), range(T, 2 * T)
+v = (sum(cov(i, j) for i in after for j in after) + sum(cov(i, j) for i in before for j in before)
+     - 2 * sum(cov(i, j) for i in after for j in before)) / T ** 2
+ratio = v / (2 / T); check("C AR(1) variance ratio", "6.70", ratio); check("C SE factor", "2.59", math.sqrt(ratio))
+se_naive = 1.22 / 2.59; check("C naive SE", "0.47", se_naive)
+check("C naive CI lower", "10.1", 11 - 1.96 * 0.47); check("C naive CI upper", "11.9", 11 + 1.96 * 0.47)
+check("C store CI lower", "8.6", 11 - 1.96 * 1.22); check("C store CI upper", "13.4", 11 + 1.96 * 1.22)
+se_r = math.sqrt(9 / 3 + 6.25 / 9); check("C region SE", "1.92", se_r)
+check("C region CI lower", "6.7", 11 - 2.23 * 1.92); check("C region CI upper", "15.3", 11 + 2.23 * 1.92)
+# Case B, Meeting 8 (R3 interval, R4 discount, R5 sensitivity)
+check("B clustered CI lower", "-1.62", -1.56 - 1.96 * 0.03); check("B clustered CI upper", "-1.50", -1.56 + 1.96 * 0.03)
+pstar = lambda k: 200 * k / (k - 1)
+check("B P* at kappa 1.50", "600", pstar(1.50)); check("B P* at kappa 1.62", "523", pstar(1.62))
+e_a, e_r, m0a, m1a, m0r, m1r = 0.5, 0.9, 50, 54, 60, 72
+with_ = (0.5 * e_a * m1a + 0.5 * e_r * m1r) / (0.5 * e_a + 0.5 * e_r)
+without = (0.5 * (1 - e_a) * m0a + 0.5 * (1 - e_r) * m0r) / (0.5 * (1 - e_a) + 0.5 * (1 - e_r))
+check("B discount with 65.6", "65.6", with_); check("B discount without 51.7", "51.7", without)
+check("B discount naive 13.9", "13.9", with_ - without)
+wa, wr = e_a * (1 - e_a), e_r * (1 - e_r)
+check("B PLM weight airport", "0.25", wa); check("B PLM weight resort", "0.09", wr)
+check("B PLM theta 6.1", "6.1", (wa * 4 + wr * 12) / (wa + wr))
+check("B ATE 8.0", "8.0", 0.5 * 4 + 0.5 * 12); check("B ATT 9.1", "9.1", (0.5 * e_a * 4 + 0.5 * e_r * 12) / (0.5 * e_a + 0.5 * e_r))
+check("B weighting alone 81", "81", e_r * m1r / 0.8); check("B AIPW 71.75", "71.75", 74 + e_r * (m1r - 74) / 0.8)
+check("B AIPW error -0.25", "-0.25", (74 - m1r) * (1 - e_r / 0.8))
+check("B AIPW score 42.0", "42.0", 12 - (57 - 60) / (1 - e_r))
+ovb = lambda ry, rd: math.sqrt(ry * rd / (1 - rd)) * 3.0
+for q, b in [(0.01, "0.03"), (0.02, "0.06"), (0.05, "0.15"), (0.10, "0.32")]:
+    check(f"B OVB at {q:.0%}", b, ovb(q, q))
+check("B 10% range lower", "-1.88", -1.56 - ovb(0.10, 0.10)); check("B 10% range upper", "-1.24", -1.56 + ovb(0.10, 0.10))
+q = 0.05
+while q / math.sqrt(1 - q) * 3.0 < 0.24: q += 1e-6
+check("B robustness value 7.7%", "7.7", 100 * q)
+check("B event flag 1x bias", "0.15", ovb(0.06, 0.04)); check("B event flag 2x bias", "0.31", ovb(0.12, 0.08))
+check("B 1x range lower", "-1.71", -1.56 - ovb(0.06, 0.04)); check("B 1x range upper", "-1.41", -1.56 + ovb(0.06, 0.04))
+check("B 2x range lower", "-1.87", -1.56 - ovb(0.12, 0.08)); check("B 2x range upper", "-1.25", -1.56 + ovb(0.12, 0.08))
+k = 1.0
+while ovb(0.06 * k, 0.04 * k) < 0.24: k += 1e-4
+check("B overturned at about 1.6x the flag", "1.6", k)
 
 print(f"\n{len(FAIL)} mismatches: {FAIL}")

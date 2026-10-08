@@ -532,7 +532,7 @@ Now add the ¥5 coupon. It is paid only when the member buys. Push-test purchase
 
 ### Part M7-R1. The programme on trial
 
-In Q3 the engine's targeting rule went live. It sent a ¥10 coupon to **40%** of the loyalty base, choosing members by a **score** built from recency, tier and spend. A daily contact cap throttled the sends.
+In Q3 the engine's targeting rule went live. It sent the **5,000** ¥10 coupons of Meeting 3, half the 10,000-member base, choosing members by a **score** built from recency, tier and spend. A daily contact cap throttled the sends.
 
 The CFO wants the programme reviewed. Sales has pulled the Q3 logs:
 
@@ -560,8 +560,8 @@ The scoring rule mostly sent coupons to lapsed members, the ones Meetings 3–5 
 
 | Segment | Members | Coupon share | Coupon | No coupon | Purchase rate (coupon / no coupon) |
 |---|---:|---:|---:|---:|---|
-| Active | 500 | 0.20 | 100 | 400 | 0.80 / 0.75 |
-| Lapsed | 500 | 0.80 | 400 | 100 | 0.30 / 0.10 |
+| Active | 5,000 | 0.20 | 1,000 | 4,000 | 0.80 / 0.75 |
+| Lapsed | 5,000 | 0.80 | 4,000 | 1,000 | 0.30 / 0.10 |
 
 **Tasks. In pairs**
 1. Compute the overall purchase rate in each arm, then the difference within each segment.
@@ -569,6 +569,7 @@ The scoring rule mostly sent coupons to lapsed members, the ones Meetings 3–5 
 3. Compute the three averages the CFO could ask for (everyone, recipients, non-recipients). Which does *"keep the programme as run?"* need? Does it clear the break-even?
 4. Commit: does the CFO kill the programme?
 5. To estimate the effect on recipients, controls are reweighted by $e/(1-e)$: 0.25 for active controls and 4 for lapsed controls. How many *effective* controls does the estimate rest on? Use $(\sum w)^2 / \sum w^2$.
+6. *(Optional)* Regress purchase on the coupon and a lapsed dummy. What does the coefficient on the coupon estimate?
 
 ### Part M7-R3. The app-open column
 
@@ -587,20 +588,38 @@ Take a clean case: 1,000 customers, coupon **randomised** 50/50, and suppose the
 
 ### Part M7-R4. The real logs
 
-| | |
-|---|---:|
-| Customers in the Q3 export | 40,000 |
-| Received the coupon | 16,100 |
-| Recorded fields the rule read | 14 |
-| Purchase rate, coupon / no coupon | 0.41 / 0.60 |
+The engine's score reads **14 CRM fields** and cuts them into four bands; each band had a daily send probability, throttled by the cap. **The purchase column stays locked.**
 
-The rule is **banded**: a score from the 14 fields, cut into bands, with a daily send probability for each band, throttled by the cap. The top band was sent coupons on almost every day and the bottom band almost never. Bands in the middle were sent on some days and not others.
+| Band | Segment | Members | Coupon | No coupon |
+|---|---|---:|---:|---:|
+| 1 | active | 2,500 | 200 | 2,300 |
+| 2 | active | 2,500 | 800 | 1,700 |
+| 3 | lapsed | 2,500 | 1,550 | 950 |
+| 4 | lapsed | 2,500 | 2,450 | 50 |
+| Total | | 10,000 | 5,000 | 5,000 |
 
 **Tasks. In pairs**
-1. **Design first.** The purchase column stays locked. Using only the 14 fields and the coupon column, what would you do, and what would you decide, before anyone looks at a purchase?
-2. Write down the model you would fit once the outcomes open.
-3. Predict three estimated lifts: with no controls; from regressing purchase on coupon and the 14 fields linearly; from reweighting each customer by the inverse of their coupon probability. Against a break-even of 0.14, which ones keep the programme?
-4. The engine's rule decided who got a coupon. What does that make the rule, in this analysis?
+1. Reconstruct $\hat e$ by band and the ATT weights $\hat e/(1-\hat e)$.
+2. Which band's comparison is thin? Compute the effective number of non-recipients, $(\sum w)^2 / \sum w^2$.
+3. Trim at $[0.05, 0.95]$. Whom does the ATT now describe?
+4. Write the design record (estimand, estimator, trimming rule, balance check) before seeing any purchase.
+5. What does the engine's rule become in this analysis?
+
+### Part M7-R4b. Opening the outcomes
+
+Lin's design record is written and dated. The purchase column opens:
+
+| Band | Coupon: bought | No coupon: bought |
+|---|---:|---:|
+| 1 | 160 / 200 | 1,725 / 2,300 |
+| 2 | 640 / 800 | 1,275 / 1,700 |
+| 3 | 465 / 1,550 | 95 / 950 |
+| 4 | 735 / 2,450 | 5 / 50 |
+
+**Tasks. In pairs**
+1. Compute the pooled effect, the IPW effect on all recipients (all four bands), the trimmed effect (bands 1 to 3) and the effect in band 4.
+2. Each population has its own break-even, $10p_1/30$, where $p_1$ is its purchase rate with the coupon. Give each population's break-even and net per coupon.
+3. Write Lin's memo to the CFO: what to keep, what to stop, and what to report separately.
 
 ---
 

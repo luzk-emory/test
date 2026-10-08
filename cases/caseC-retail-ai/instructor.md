@@ -12,14 +12,14 @@ Each meeting follows the course spine (`course-spine.md`): estimand → identifi
 
 | Meeting | Estimand (vs ¥10,000 sales per store-week) | Identification | Estimation and uncertainty | Destination |
 |---|---|---|---|---|
-| M10 | $ATT = E[Y_{it}(53) - Y_{it}(\infty) \mid G = 53]$, weeks 53–78 | parallel untreated trends, no anticipation, no spillovers; the threat is the sign-off order | 2 × 2 DiD; TWFE (= 2 × 2 with one date); SE clustered by store, then region; drift $\delta^*$ | 12.4 (SE 1.2); ramp 11.2 → 13.8: **confirm, keep the schedule** |
-| M11 | flagship: $Y_{F,t}(20) - Y_{F,t}(\infty)$, one store | a donor trajectory fitted before week 20, frozen before the post-period; the flagship's treatment differs (co-development) | synthetic control; leave-one-out; in-place and in-time placebos (descriptive); comparison with DiD | flagship 15.9 (sim) = a ceiling for a different treatment; M10's 12.4 is the forecast: **roll out; stagger at random** |
+| M10 | $ATT = E[Y_{it}(53) - Y_{it}(\infty) \mid G = 53]$, weeks 53–78 | parallel untreated trends, no anticipation, no spillovers; the threat is the sign-off order | 2 × 2 DiD; TWFE (= 2 × 2 with one date); event study; one change per store, then clustered by region; drift $\delta^*$ | 11 (SE 1.22); ramp 8 → 14: **confirm, keep the schedule** |
+| M11 | flagship: $Y_{F,t}(20) - Y_{F,t}(\infty)$, one store | a donor trajectory fitted before week 20, frozen before the post-period; the flagship's treatment differs (co-development) | synthetic control; leave-one-out; in-place and in-time placebos (descriptive); comparison with DiD | flagship 15.9 (case givens) = a ceiling for a different treatment; M10's 11 is the forecast: **roll out; stagger at random** |
 
-The design-based alternative, randomising go-live dates (Athey and Imbens 2022), is in the M11 notes. It is what the memo's "two random halves" recommendation would make possible.
+The design-based alternative, randomising go-live dates (Athey and Imbens 2022), is not in the M11 notes; Handout H6 covers it ("The design-based alternative: randomise the dates"). It is what the memo's "two random halves" recommendation would make possible.
 
 ### Why the numbers were kept
 
-Every exhibit uses the numbers in `meetings/m10` and `m11` unchanged: 120 stores, cohorts at weeks 53 and 79, ¥2,500 per store-week, 25% margin, the four cells, six quarters, three stores, three donors and the simulation outputs. The staffing arithmetic is sound and the simulation (`staffing-panel v1`) already exists. The AI story fits the same shape, including the ramp: associates learn the tool while its store catalogue fills in. So the slides need only a re-skin (Section 5).
+Every exhibit uses the numbers in `meetings/m10` and `m11` unchanged: 120 stores, cohorts at weeks 53 and 79, ¥2,500 per store-week, 25% margin, the four cells, six quarters and three donors. The M10 cohort numbers are exact (11, SE 1.22; event-study coefficients 8 and 14) and checked by `shared/checks/slides10_check.py`. The real flagship's results (¥18,700, 15.9, leave-one-out 13.1 to 17.4, weight on 4 donors, rank 1 of 60) are case givens: no simulation script for them is in the repository. The AI story fits the same shape, including the ramp: associates learn the tool while its store catalogue fills in.
 
 New numbers, all narrative:
 - the cost split (¥1,700 licence, ¥300 handsets, ¥500 champion allowance);
@@ -41,20 +41,20 @@ Each of these attaches to a concept already on the slides:
 
 ## 2. Release schedule
 
-M10 no longer has an exam (Exam II is now in M11, block A). The M10 times below were set when the case ran in block B only; **retime them when the M10 deck is rebuilt**. M11: block A is Exam II and the case runs in block B. Controlled projection copies are required for both meetings.
+M10 has no exam; the M10 times follow the rebuilt deck (block A minutes 0–50, block B 50–100). M11: block A is Exam II and the case runs in block B, minutes 50–100. Controlled projection copies are required for both meetings.
 
 | Part | Meeting, block | About | Hand out at | Hold back until the attempt |
 |---|---|---|---|---|
-| M10-R1 | M10 B | 70–78 | `[RELEASE R1]` | "The Number That Decides It" |
-| M10-R2 | M10 B | 78–92 | `[RELEASE R2]` | "Before, Across, and Both"; "Three Ways Parallel Trends Fails" |
-| M10-R3 | M10 B | 92–105 | `[RELEASE R3]` | SE, drift and scale frames |
-| M10-R4 | M10 B | 108–112 | `[RELEASE R4]` | "The Ladder" |
-| M10-R5 | M10 B | 112–120 | `[RELEASE R5]` | "The Audit, Answered"; the memo can finish at home |
-| M11-R1 | M11 B | 60–67 | `[RELEASE R1]` | the flagship's treatment frame |
-| M11-R2 | M11 B | 67–82 | `[RELEASE R2]` | "The Synthetic Flagship"; "Donor Sensitivity" |
-| M11-R3 | M11 B | 82–95 | `[RELEASE R3]` | design-freeze, placebo and falsification frames |
-| M11-R4 | M11 B | 95–102 | `[RELEASE R4]` | the SC-vs-DiD frame |
-| M11-R5 | M11 B | 102–110 | "Dana's Table" | the recommendation (the memo can finish at home) |
+| M10-R1 | M10 A | 0–5 | `[RELEASE R1]` "The Store Assistant" | "The Number That Decides It" |
+| M10-R2 | M10 A | 8–12 | `[RELEASE R2]` "Four Numbers" | "Before–After Keeps Everything Else That Changed"; "A Pilot in the Worst Stores, by Numbers"; "Across Stores Keeps the Level Gap"; "The Four Cells, Two Ways" |
+| M10-R3 | M10 B | 58–75 | `[RELEASE R3]` "Borrowing the Comparison's Trend" | "Parallel in Yuan, or in Percent?"; "The Event Study"; "Flat Pre-Trends Are Weak Evidence"; "Pricing the Doubt: The Breakdown Drift" |
+| M10-R4 | M10 B | 75–82 | `[RELEASE R4]` "Store-Weeks Are Not Independent" | "One Change per Store"; "Cluster Where Treatment Was Assigned" |
+| M10-R5 | M10 B | 90–97 | `[RELEASE R5]` "Six Errors, in Dana's File" | "Dana's Decision" (the memo can finish at home) |
+| M11-R1 | M11 B | 50–55 | `[RELEASE R1]` "One Store, Two Years Ahead" | "One Treated Unit" |
+| M11-R2 | M11 B | 58–63 | `[RELEASE R2]` "Three Donors, by Hand" | "The Synthetic Flagship" |
+| M11-R3 | M11 B | 70–78 | `[RELEASE R3]` "Design Before the Post-Period" | "Rank 1 of 60: A p-Value?"; "Leave-One-Out"; "Limits" |
+| M11-R4 | M11 B | 80–85 | `[RELEASE R4]` "Synthetic Control or DiD?" | "Two Weighted Comparisons" |
+| M11-R5 | M11 B | 92–97 | `[RELEASE R5]` "Dana's Table" | "The Recommendation" (the memo can finish at home) |
 | B1–B3 | take-home | | with Handout H6 | the bonus key below |
 
 Synthetic control now has all of block B.
@@ -92,6 +92,7 @@ Synthetic control now has all of block B.
    - a region whose stores opened or closed mid-panel (composition).
 
    Each is a reason sign-off order relates to where sales were heading. The first two leave traces in the pre-period (R3).
+5. With store-group effects only, the coefficient is **15**, the before/after, because only cohort 1's cells vary in $D$. Period effects bring in the comparison's +4 and give **11**. Each fixed effect is one of the DiD's two subtractions. (In an unbalanced panel, with closures, run the regression rather than one-pass demeaning.)
 
 ### M10-R3
 1. Gaps 30, 30, 30, 30 | 38, 44. Minus Q4: 0, 0, 0, base | **8, 14**. The pre-period is flat: no differential growth, no dip. The post-period is a **ramp**, below break-even in Q5 and above in Q6. The DiD of 11 averages the two: a fact about the window, not the assistant.
@@ -102,26 +103,17 @@ Synthetic control now has all of block B.
 3. $11 - 2\delta = 10 \Rightarrow \delta^* = $ **0.5**, i.e. ¥500 per store-week per quarter, ¥2,000 over a year. It would move the gap by 1.5 from Q1 to Q4, about one store-level SE. **Flat pre-trends cannot rule it out.** Report $\delta^*$ and argue from the case whether a regional drift that large is plausible.
 4. Yuan: $181 + 4 = 185$, effect 11.0. Percent: $181 \times 155/151 = 185.8$, effect 10.2. The choice moves ¥800 of a ¥1,000 margin. The pre-period gaps are flat in yuan; in percent they shrink from 20.5% to 19.7%. So use yuan, and say so.
 5. Margin $= 0.25\Delta - 2{,}500$. Store-clustered [8.6, 13.4] → **[−¥350, +¥850]** per store-week; region-clustered [6.7, 15.3] → **[−¥825, +¥1,325]**. Neither excludes a loss.
-6. With store-group effects only, the coefficient is **15**, the before/after, because only cohort 1's cells vary in $D$. Period effects bring in the comparison's +4 and give **11**. Each fixed effect is one of the DiD's two subtractions. (In an unbalanced panel, with closures, run the regression rather than one-pass demeaning.)
+6. TWFE on six quarters: pre means 179 and 149, post means 196 and 155, so $17 - 6 = $ **11**, the DiD again. Event study with Q4 as base: **0, 0, 0**, base, **8, 14**. Linear drift: $\hat\delta = -(1 \cdot 0 + 2 \cdot 0 + 3 \cdot 0)/14 = 0$, SE $1.22/\sqrt{14} = 0.33$, so the pre-period rules out only drifts beyond **±0.64** (¥640 per store-week per quarter). Breakdown drifts $\delta^* = (\text{DiD} - 10)/(\bar t_{\text{post}} - \bar t_{\text{pre}})$: four cells $(11 - 10)/2 = $ **0.5**; TWFE on six quarters $(11 - 10)/3 = $ **0.33**; Q6 coefficient $(14 - 10)/2 = $ **2.0**. Only the Q6 effect survives a drift the pre-period cannot rule out.
 
-### M10-R4 (sim)
-
-| Estimate | Value |
-|---|---|
-| Before/after | 16.1 |
-| Cross-section | 42.3 |
-| **TWFE** | **12.4** |
-| SE: store-weeks independent / clustered by store | 0.3 / **1.2** |
-| Largest pre-period coefficient | 0.5 |
-| Q5 / Q6 | **11.2 / 13.8** |
-
-Clustering multiplies the SE by four; the interval $12.4 \pm 2.35$ reaches break-even. With one adoption date, TWFE *is* the 2 × 2: double-demeaning the four cells gives exactly 11.
+### M10-R4
+1. With AR(1) autocorrelation 0.8 and 26 weeks each side, $\mathrm{Var}(\Delta_i) = $ **6.70** $\times\,\sigma^2(1/26 + 1/26)$.
+2. The independent-weeks SE is too small by $\sqrt{6.70} = $ **2.59**. From R3's store-level SE: $1.22/2.59 = $ **0.47**, giving $11 \pm 1.96 \times 0.47 = $ **[10.1, 11.9]**, which clears 10 **falsely**. The honest interval, one change per store, is **[8.6, 13.4]**. The fix needs no model of the correlation over time: give each store one number (with one adoption date, asymptotically the TWFE SE clustered by store).
 
 ### M10-R5
 | # | Problem, and the fix |
 |---|---|
 | 1 | Before/after keeps the chain trend. Report the DiD. |
-| 2 | Store-weeks are not independent. Cluster by store: SE 1.2, and the interval reaches 10. |
+| 2 | Store-weeks are not independent. One change per store: SE 1.22, interval [8.6, 13.4], which reaches 10; by region SE 1.92, [6.7, 15.3]. |
 | 3 | Managers re-planned rotas **because of** the assistant: staff hours are a post-treatment control (M7). They absorb part of the effect. |
 | 4 | Fine only if closures are unrelated to the rollout. Report closures by group; a balanced panel changes who is compared. |
 | 5 | Training ran in weeks 51–52 with associates off the floor. End the base period at week 50 and check. |
@@ -131,7 +123,7 @@ Clustering multiplies the SE by four; the interval $12.4 \pm 2.35$ reaches break
 Four of the seven are about what was compared, one about the interval, one about what was assumed, and one about whose number it is. None is about the estimator.
 
 **Model memo:**
-> Confirm cohort 2 for week 79 and keep the regions on their schedule. Clustered by store, the assistant adds ¥12,400 (SE 1,200) a store-week against a break-even of ¥10,000. It ramps from ¥11,200 in the first quarter to ¥13,800 in the second, i.e. about +¥300 then +¥950 of margin per store-week. This assumes cohort 1's regions would have tracked the comparison stores. Pre-trends are flat, but a regional drift of ¥800 per store-week per quarter would erase the average margin, and clustered by region the interval includes ¥10,000. The vendor's "assisted sales" figure measures use, not effect, and is not part of the evidence.
+> Confirm cohort 2 for week 79. Against the 89 comparison stores, the assistant added ¥11,000 a store-week on average over its first two quarters (store-clustered SE 1,220, interval ¥8,600 to ¥13,400) against a break-even of ¥10,000: ¥8,000 in the first quarter (−¥500 of margin) and ¥14,000 in the second (+¥1,000). This assumes cohort 1's regions would have tracked the comparison stores. Pre-period coefficients are flat but cannot rule out a drift of ¥640 per store-week per quarter, more than the ¥500 that would erase the average margin; the second-quarter effect survives any drift up to ¥2,000. Clustered by region, the average's interval (¥6,700 to ¥15,300) includes ¥10,000. The vendor's "assisted sales" figure measures use, not effect, and is not evidence.
 
 ## 4. Key: Meeting 11
 
@@ -142,8 +134,6 @@ Four of the seven are about what was compared, one about the interval, one about
 ### M11-R2
 1. $\tfrac12 A + \tfrac12 B = (100, 110, 120)$: an exact fit. Week 4: $\tfrac12(118) + \tfrac12(138) = 128$.
 2. Effect $141 - 128 = $ **13**.
-3. Without B: best convex fit $0.76A + 0.24C$ (weight $= 3{,}800/5{,}000$). Synthetic 97.2, 109.6, 122.0 | 129.3, gaps 2.8, 0.4, −2.0, so the effect is **11.7** with an acceptable fit. Without A: no mix of B and C gets below 110 in week 1. The best is B alone, with gaps of 10 every week and an effect of 3: **not reportable**.
-4. Report the leave-one-out range over refits whose fit is acceptable: **[11.7, 13.0]**. A refit that cannot match the pre-period is evidence about the donor pool, not about the effect.
 
 ### M11-R3
 1. **Freeze the design first:** donor pool (never-treated, no spillovers), fitting weeks, predictors, and the fit criterion. Hold-out check: fit on weeks 1–14 and see whether the frozen synthetic store predicts weeks 15–19. If it does not, it has no claim on weeks 20 onwards. Never tune the weights after seeing the post-period gap.
@@ -153,8 +143,9 @@ Four of the seven are about what was compared, one about the interval, one about
    - It needs no spillovers from the flagship to them; the case says no shared staff or customers.
    - This changes the recommendation (investigate), not automatically the estimate.
 4. **In-time placebo.** Refit on weeks 1–9 with a fake go-live at week 10. Weeks 10–19 are before anything happened, so the synthetic store should track the flagship with gaps near zero. A clear gap there means the method finds "effects" where there are none (a poor donor pool, or a store-specific shock), and the week-20 gap cannot be trusted either.
+5. **Leave-one-out** (deck frame "Leave-One-Out"). Without B: best convex fit $0.76A + 0.24C$ (weight $= 3{,}800/5{,}000$). Synthetic 97.2, 109.6, 122.0 | 129.3, gaps 2.8, 0.4, −2.0 (pre-period RMSPE 2.0), so the effect is **11.7** with an acceptable fit. Without A: no mix of B and C gets below 110 in week 1. The best is B alone, with gaps of −10 every week and an effect of 3.0: **not reportable**. Without C the fit is unchanged (C carried no weight): 13.0. Report the range over refits whose fit is acceptable: **[11.7, 13.0]**. A refit that cannot match the pre-period is evidence about the donor pool, not about the effect.
 
-Real flagship (sim): weight on 4 donors, 15.9, leave-one-out [13.1, 17.4], in-place placebo rank 1 of 60. There is no standard error. In-time placebos move the go-live date earlier and check that no effect appears before week 20.
+Real flagship (case givens; no simulation script in the repository): weight on 4 donors, 15.9, leave-one-out [13.1, 17.4], in-place placebo rank 1 of 60. There is no standard error. In-time placebos move the go-live date earlier and check that no effect appears before week 20.
 
 ### M11-R4
 1. Equal weights on A, B, C: pre-period means are flagship 110 and donors $(100 + 120 + 140)/3 = 120$; week 4 is 141 against $(118 + 138 + 165)/3 = 140.3$. DiD $= (141 - 110) - (140.3 - 120) = 31 - 20.3 = $ **10.7**, against synthetic control's **13**.
@@ -165,9 +156,9 @@ Real flagship (sim): weight on 4 donors, 15.9, leave-one-out [13.1, 17.4], in-pl
    - Synthetic DiD sits in between: it chooses weights and also allows a level shift (notes, Section 3).
 
 ### M11-R5 (model memo)
-> Roll the assistant out to the remaining 59 stores. Meeting 10's comparison with never-treated stores puts the gain at ¥12,400 of sales a store-week (SE 1,200), about +¥600 of margin after the ¥2,500 cost, rising from +¥300 in the first quarter to +¥950 in the second. This assumes the 59 stores, whose regions signed off last, would see what cohort 1 saw. The flagship's ¥15,900 is one store, chosen first, with a vendor engineer on site and no interval: it bounds the upside of a different treatment and is not the forecast. Stagger the remaining rollout in two random halves six months apart, so the next review has a clean comparison.
+> Roll the assistant out to the remaining 59 stores. Meeting 10's comparison with the 89 stores not yet on it puts the gain at ¥11,000 of sales a store-week (SE 1,220), about +¥250 of margin after the ¥2,500 cost over the first two quarters live: −¥500 in the first quarter, while staff learn it, and +¥1,000 in the second. The cohort interval, [8.6, 13.4], includes the break-even; the second quarter clears it. This assumes the 59 stores, whose regions signed off last, would see what cohort 1 saw. The flagship's ¥15,900 is one store, chosen first, with a vendor engineer on site and no interval: it bounds the upside of a different treatment and is not the forecast. Stagger the remaining rollout in two random halves six months apart, so the next review has a clean comparison.
 
-Margin arithmetic: $0.25 \times 12{,}400 - 2{,}500 = +$¥600; first quarter $0.25 \times 11{,}200 - 2{,}500 = +$¥300; second $0.25 \times 13{,}800 - 2{,}500 = +$¥950.
+Margin arithmetic (deck frames "Dana's Table" and "The Recommendation"): $0.25 \times 11{,}000 - 2{,}500 = +$¥250; first quarter $0.25 \times 8{,}000 - 2{,}500 = -$¥500; second $0.25 \times 14{,}000 - 2{,}500 = +$¥1,000. Budgeting the flagship's lift would promise $0.25 \times 15{,}900 - 2{,}500 = +$¥1,475 a store-week, almost six times the cohort's +¥250.
 
 ## Bonus key (Parts B1–B3)
 
@@ -214,6 +205,8 @@ These are the keys of the former Meeting 11 parts on staggered adoption, unchang
 
 
 ## 5. Deck edits needed for this case
+
+The M10 and M11 decks were rebuilt on 8 October with this case's story, numbers and release markers, and most frames named below no longer exist; the table applies only to old frames reused for the bonus parts.
 
 The general corrections from the Codex review are also in `course-spine.md` §4:
 - no error bar at the base period;

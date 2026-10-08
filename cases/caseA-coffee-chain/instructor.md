@@ -16,9 +16,9 @@ Each meeting follows the course spine (`course-spine.md`): **estimand → identi
 | M4 | leaf effects of a frozen partition vs each line's break-even | randomisation within the partition committed before half B | honest leaf means and SEs; winner's-curse arithmetic |
 | M5 | gain of a frozen list vs ¥1.50 | known coin probability $e$ | IPW contributions; paired SE between lists |
 | M6 | net value under a cap, budget, risk and capacity; a learned policy's value | push-test randomisation; transport to Q4 | plug-in $v_i$; ranking; $\lambda^*$; reserve; value lower bound; DR scores and weighted classification |
-| M7 | ATT of the programme as run vs 0.133 | the engine's rule is the assignment mechanism: unconfoundedness given its inputs, overlap by band | **outcome-free design stage first**; standardisation; IPW; ESS; trimming |
+| M7 | ATT of the programme as run vs 0.133; each trimmed population against its own break-even | the engine's rule is the assignment mechanism: unconfoundedness given its inputs, overlap by band | **outcome-free design stage first**; standardisation; IPW; ESS; trimming; AIPW (double robustness); a first sensitivity check ($\gamma\delta$ against the break-even) |
 
-All numbers match the current decks in `meetings/m01`–`m07`. Numbers marked **(sim)** below are simulation outputs still flagged `\NUM` in the decks; check them when the simulations are rerun.
+All numbers match the current decks in `meetings/m01`–`m07`. The M3-R4 ladder, marked **(sim)** below, is the only simulation output left and is on hold; every M7 number is exact and checked by `shared/checks/slides07_check.py`.
 
 ## 2. The AI thread (four roles, no new lecture content)
 
@@ -35,7 +35,7 @@ Say the M5 → M7 link out loud: *the system that made the decisions in Q3 is ex
 Minutes are elapsed minutes in the meeting and approximate. **Retime when each deck is rebuilt.** The times below come from the v2 calendar:
 - they leave minutes 0–15 of block A in M2, M3, M5 and M7 for a critique case, and reading-and-critique exercises are now dropped, so those meetings gain about 15 minutes;
 - they put Exam I in M6 block A, but it is now in M5 block A, so the M5 releases move to block B and M6 regains block A;
-- M1 to M6 are retimed to the current schedule (M5's releases all fall in block B, minutes 50–100).
+- M1 to M7 are retimed to the current schedule (M5's releases all fall in block B, minutes 50–100).
 
 | Part | Meeting, block | About | Hand out at the deck marker | Hold back until the attempt is written |
 |---|---|---|---|---|
@@ -68,13 +68,12 @@ Minutes are elapsed minutes in the meeting and approximate. **Retime when each d
 | M6-R1 | M6 A | 0–10 | `[RELEASE R1]` "The Q4 Push" | "The Unconstrained Rule" |
 | M6-R2 | M6 A | 15–25 | `[RELEASE R2]` "The Coupon Is Paid on Redemption" | the cost table, "The Sure-Thing Cost", "A Cap: Rank by Net Value" |
 | M6-R3 | M6 A | 30–45 | `[RELEASE R3]` "A Budget: The Knapsack and Its Shadow Price" | "Region 2: ¥8,000 of Expected Cost", "The Q4 List", "Uncertain Effects: The Conservative Rule" (task 5) |
-| M7-R1 | M7 A | 15–25 | `[RELEASE R1]` | "The Number That Decides It" |
-| M7-R2 | M7 A | 25–40 | `[RELEASE R2]` | "Pooled, Then Within Segment" |
-| M7-R3 | M7 B | ~75–82 | `[RELEASE R3]` | "The App-Open Answer" |
-| M7-R4 | M7 B | 90–97 | `[RELEASE R4]` | "The Ladder" (`[RELEASE R5]` is a reveal) |
+| M7-R1 | M7 A | 0–5 | `[RELEASE R1]` "The Programme on Trial" | "The Number That Decides It"; "The Assumptions, Sentence by Sentence" |
+| M7-R2 | M7 A | 12–25 | `[RELEASE R2]` "Two Kinds of Customer" | that frame's pooled and within lines; "The Rule Chose Members Unlikely to Buy"; "Which Average Does the CFO Need?"; "Weighting for the ATT, and How Many Members It Rests On" |
+| M7-R3 | M7 A | 40–45 | `[RELEASE R3]` "The App-Open Column" | "Conditioning on a Collider" |
+| M7-R4 | M7 B | 50–58 | `[RELEASE R4]` "The Real Logs" | "Reconstruct the Rule" to "Design Before Analysis" |
+| M7-R4b | M7 B | 63–72 | `[RELEASE R4b]` "Opening the Outcomes" | its tables; "Trimming Changed the Decision" |
 | Rivergate | take-home | | with the adjustment core | the key below; release it after Notebook 7 is due |
-
-M7 must end by minute 110 because of the proposal presentations.
 
 ## 4. Key, part by part
 
@@ -308,7 +307,7 @@ Take-home check (conservative rule, lift SE 6%): each arm's SE is $0.06/\sqrt2 =
 ### M7-R1
 - $\tau^* = 10 \times 0.40 / 30 = 0.133$.
 - The rule targeted members *unlikely to buy* (lapsed), so recipients' $Y(0)$ is low and the bias is **negative**, possibly enough to flip the sign.
-- Sentences: rule and nothing else → exchangeability, nobody hand-picked. Every field in the export → exchangeability, $X$ holds the rule's inputs. Cap → overlap within bands. One design → consistency. *Hold onto the first sentence*; M8 and M9 show how such a sentence fails.
+- Sentences: rule and nothing else → exchangeability, nobody hand-picked. Every field in the export → exchangeability, $X$ holds the rule's inputs. Cap → overlap within bands. One design → consistency. *Hold onto the first sentence*; M8 prices its failure (sensitivity).
 
 ### M7-R2
 - Pooled: $0.40$ vs $0.62$, −0.22. Within: +0.05 and +0.20.
@@ -316,21 +315,34 @@ Take-home check (conservative rule, lift SE 6%): each arm's SE is $0.06/\sqrt2 =
 - ATE 0.125; ATT **0.17**; ATU 0.08. The CFO needs the ATT: $0.17 \times 30 - 4 = +¥1.10$ per coupon, so **keep**.
 - Extending to everyone uses the ATE against a break-even of $0.55/3 = 0.183$: loses.
 - This is M1-R3(b) with the rule as the manager.
-- Task 5: $\sum w = 400(0.25) + 100(4) = 500$ and $\sum w^2 = 25 + 1{,}600 = 1{,}625$, so ESS $= 500^2/1{,}625 = $ **154 of 500 controls**. The ATT leans on the 100 lapsed controls. (With ATE weights 5/1.25, each arm's ESS is 320 of 500.)
+- Task 5: $\sum w = 4{,}000(0.25) + 1{,}000(4) = 5{,}000$ and $\sum w^2 = 250 + 16{,}000 = 16{,}250$, so ESS $= 5{,}000^2/16{,}250 = $ **1,538 of 5,000 controls**. The ATT leans on the 1,000 lapsed controls. (With ATE weights 5/1.25, each arm's ESS is 3,200 of 5,000.)
+- Task 6 (optional): $\mu_0$ is exactly linear in the lapsed dummy, so the coefficient is the variance-weighted estimand. Each segment's weight is $n\,e(1-e) = 5{,}000 \times 0.2 \times 0.8 = 800$, the same for both, so the coefficient is $\tfrac12(0.05 + 0.20) = 0.125 < 0.133$, which says **kill**. The right control, the wrong estimand: it is not the ATT (0.17).
 
 ### M7-R3
 Among openers: $250/500 = 0.50$ vs $250/250 = 1.00$, an "effect" of **−0.50** for a true 0. Restricting to openers kept every treated customer but only the high-intent untreated. The app-open column is a collider. "Fairer comparison" arguments usually propose one.
 
-### M7-R4 (sim)
-- Task 1, **the outcome-free design stage** (Rubin's design before analysis), written down before purchases open:
-  - Reconstruct the assignment mechanism: $\hat e(x)$ = band × daily send probability, from the 14 fields and the coupon column.
-  - Check overlap by band: the top band has 31 controls among 4,900 rows.
-  - Fix the trimming rule ([0.05, 0.95]) and therefore the estimand: the ATT on the overlap region, 91% of recipients.
-  - Check covariate balance after weighting; choose the estimator.
+### M7-R4
+- Task 1: $\hat e = 0.08, 0.32, 0.62, 0.98$; ATT weights $0.087, 0.47, 1.63, 49$. Each band's weighted non-recipients equal its recipients.
+- Task 2: **band 4**. Its 50 non-recipients stand in for 2,450 recipients and carry **49%** of the weight. ESS $= 5{,}000^2/\sum w^2 = $ **203 of 5,000** non-recipients.
+- Task 3: trimming at $[0.05, 0.95]$ drops band 4. The ATT then describes the **2,550** recipients in bands 1 to 3, **39%** of them active against 20% for the programme: a different population with a different break-even. ESS **2,225 of 4,950**; largest weight 1.63. Report it as such: band 4's members are excluded, and their effect is reported separately, with the 50 members it rests on.
+- Task 4, **the outcome-free design stage** (Rubin's design before analysis), written down and dated before purchases open:
+  - assignment mechanism: $\hat e$ by band, from the coupon column;
+  - overlap: band 4 rests on 50 non-recipients; trim at $[0.05, 0.95]$;
+  - estimand and estimator: the ATT for bands 1 to 3 by Hájek IPW; band 4 reported on its own;
+  - balance: SMD of the lapsed share $(0.80 - 0.20)/\sqrt{(0.16 + 0.16)/2} = 1.50$ before weighting; after ATT weighting both arms are 80% lapsed, so 0.
 
   Same logic as M4's partition and M5's frozen list: decisions made before outcomes cannot be tuned to them.
-- Ladder: no controls −0.19; linear 14 fields +0.06; flexible standardisation +0.14 (top band has only 31 controls among 4,900 rows); IPW untrimmed +0.10 (SE 0.06, max weight 58); **IPW trimmed to [0.05, 0.95] +0.16 (SE 0.02)**; truth +0.17.
-- The engine's rule, times the cap, *is* the propensity score. Report that the trimmed ATT describes the 91% of recipients in bands where the rule left something to chance. **For the top band the effect is not identified from Q3 data.**
+- Task 5: the engine's rule, times the cap, *is* the propensity score.
+
+### M7-R4b
+- Pooled: **−0.22** (nothing causal).
+- OLS on coupon and band dummies: **0.120**, variance-weighted (band 4 gets 49 of 1,366 in weight).
+- Standardisation by segment: **0.17** (band 4's $\mu_0$ learned mostly from band 3).
+- Hájek IPW by band, all recipients: **0.17** (SE 0.022). Its 95% interval starts at **0.127**, below 0.133. Band 4 supplies 93% of the untrimmed variance.
+- Trimmed (bands 1 to 3): **0.141** (SE 0.011). $E[Y(1) \mid D=1] = 0.496$, break-even **0.165**, net **−¥0.73** per coupon.
+- Band 4: **0.20** (SE $\sqrt{0.21/2{,}450 + 0.09/50} = 0.043$). Its interval starts at **0.115**, above its break-even **0.100**; net **+¥3.00** per coupon.
+- **Trimming changed the decision**: the programme's profit (+¥1.10 per coupon) comes from band 4, the band trimming removes and the band with the thinnest comparison.
+- Memo: keep coupons for lapsed members (bands 3 and 4); stop the 1,000 to active members (**−¥6.50** each); report band 4 on its own, with the 50 non-recipients its estimate rests on.
 
 ## 5. Rivergate take-home key
 
@@ -349,7 +361,7 @@ Among openers: $250/500 = 0.50$ vs $250/250 = 1.00$, an "effect" of **−0.50** 
 4. The 200 are 50/50, so the effect is $0.5(10) + 0.5(6) = $ **8** orders a week, an ATE on the rollout mix. The volunteers' ATT is $0.2(10) + 0.8(6) = 6.8$. Her decision needs the 8.
 5. Value per trainee over four weeks $= 8 \times 4 \times 80 = ¥2{,}560 > ¥1{,}800$: pays. High: ¥3,200. Low: $6 \times 320 = ¥1{,}920$, which clears ¥1,800 by only ¥120, so a modest upward bias in the +6 would erase it. A good memo trains the high-skill group and runs a randomised pilot for the low-skill group.
 
-AIPW and double robustness use this same table as the worked example in the M7 notes (Section 2); they are not part of the take-home.
+Rivergate is a take-home table of its own: the M7 notes' worked example (Section 2), on which they show AIPW and double robustness, is FitLife, not Rivergate. AIPW is not part of the take-home.
 
 ## 6. Grading a recommendation (any part)
 
@@ -364,18 +376,10 @@ A justified "test first" earns full marks.
 
 ## 7. Deck issues found while aligning the case
 
-The case follows the decks as they are. Fix these when the slides are revised. The complete accepted change list, including the Codex-review corrections, is in `course-spine.md` §4.
+The case follows the decks as they are. The complete accepted change list, including the Codex-review corrections, is in `course-spine.md` §4. The issues listed here earlier are resolved in the rebuilt decks:
 
-1. **Population sizes conflict.**
-   - M1–M2: the base is 10,000 members and the Q2 test ran in one 1,000-member region.
-   - M3 R4 ("The Q2 Export") says 10,000 members were in the Q2 draw "all three test regions".
-   - M5 uses an evaluation fold of 5,000 from that export.
-   - M7 says the Q3 export has 40,000 customers and the rule sent coupons to 40% of the base, while M3/M5 planned 5,000 coupons (half the base).
-
-   Suggested fix: keep the base at 10,000 throughout. State in M3 that the full Q2 draw covered all three test regions, with the pilot region as the one analysed by hand in M1–M2, and drop the "different populations" sentence in M1's data-roles frame. Resize M7's export to the base, or say the Q3 programme ran chain-wide on a larger base.
-
-   The student case avoids stating the size of the M3 export for this reason.
-2. **Retired assessments still named.** M2 ("A1 released tonight"), M4 ("Due before today: A1"), M5 ("A2", "commitment due 96 hours before L8") and M6 ("proposal due 48 hours before L7"; v2 says 72 hours).
-3. **Simulation numbers** in M7 R4–R5 are still `\NUM`-flagged. (The rebuilt M3 deck dropped its ladder, R4–R5; the rebuilt M4 and M5 decks replaced theirs with exact counts and an exact four-group example.)
-4. **M7 schematic.** The overlap figure is a placeholder ("replace with the sim's overlap figure").
-5. **Case framing to add to the slides.** M5 R1: the automated campaign engine and the CFO's freeze rule. M7 R1: "the engine's rule". (M3: no pointer to the Lab 2 opener; slides carry no lab material.)
+1. **Population sizes** (resolved): the base is 10,000 members throughout M3–M7, and M7's Q3 export is the same 10,000 members with the 5,000 coupons of Meeting 3.
+2. **Retired assessments** (resolved): the rebuilt decks no longer name A1, A2 or proposal deadlines.
+3. **Simulation numbers** (resolved): none are left in the M3–M7 decks; M7's R4 and R4b numbers are exact counts.
+4. **M7 schematic** (resolved): the overlap figure on "Reconstruct the Rule" is drawn from the band counts.
+5. **Case framing** (resolved): M5 R1 introduces the automated campaign engine and the CFO's freeze rule; M7 R1 names the engine's rule. (M3 carries no pointer to the Lab 2 opener; slides carry no lab material.)
