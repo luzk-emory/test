@@ -50,11 +50,11 @@ Minutes are elapsed minutes in the meeting and approximate. **Retime when each d
 | M2-R4 | M2 B | 80–90 | `[RELEASE R4]` | "The Design Effect" |
 | M2-R6 | M2 B | 92–110 | `[RELEASE R6]` | "Assignment and Receipt" to "Which Number for Which Decision" |
 | M2-R5 | take-home | | with "Lin's Test Plan" | (the memo is finished at home) |
-| M3-R1 | M3 A | 15–25 | `[RELEASE R1]` | the table on "The Number That Decides It" |
-| M3-R2 | M3 A | 40–50 | `[RELEASE R2]` | the `\pause` on the interaction frame |
-| M3-R2b | M3 B | 60–65 | after "From Two Segments to Fourteen Fields" | the new SE-of-the-gap frame |
-| M3-R3 | M3 B | 85–95 | `[RELEASE R3]` | the table on "Same RMSE, Opposite Decisions" |
-| M3-R4 | M3 B | 95–100 | `[RELEASE R4]` | "The Ladder" (`[RELEASE R5]` is a reveal, not a handout) |
+| M3-R1 | M3 A | 0–10 | `[RELEASE R1]` "Two Lists for 5,000 Coupons" | "What the Q2 Draw Buys"; "The Number That Decides It" |
+| M3-R2 | M3 A | 30–40 | `[RELEASE R2]` | the table on "The Interaction Model: Both Worlds on Every Row"; "Read the Model Through Its Predictions" |
+| M3-R2b | M3 A | 40–45 | `[RELEASE R2b]` | "Is the Gap Itself Noise?" |
+| M3-R3 | M3 B | 85–95 | `[RELEASE R3]` | the table on "Same RMSE, Opposite Decisions"; "Better Fit, Worse Effect" answers task 5 |
+| M3-R4 | on hold | | no deck frame | the rebuilt deck has no ladder until a seeded simulation produces checkable numbers |
 | M3-R6 | M3 C | 120–125 | Lab 2 opener | answers come out of the lab |
 | M4-R1 | M4 A | 0–5 | `[RELEASE R1]` | |
 | M4-R2 | M4 A | 5–15 | `[RELEASE R2]` | "The Number That Decides It" |
@@ -212,9 +212,9 @@ This part closes M2 with noncompliance and the LATE, the experimental core of in
 - Irreducible part: $(0.16 + 0.1875 + 0.21 + 0.09)/4 = 0.16188$. RMSE: I $= 0.4023$; A $= \sqrt{0.16188 + 0.0375^2} = 0.4041$.
 - Lists: I = lapsed first, **+¥15,000**. A = random, $5{,}000 \times \tfrac12(-6.50 + 3.00) = $ **−¥8,750**.
 - **0.4% of RMSE, ¥23,750 of decision.**
-- Task 5: A misses each outcome by 0.04 but gets the effect exactly (0.20). B misses by only 0.02 but gets **0.24**. The effect's error is the *difference* of the two outcome errors. Their variances add; their biases can cancel (A) or compound (B).
+- Task 5: A misses each outcome by 0.05 but gets the effect exactly (0.20). B misses by only 0.03 but gets **0.26**. The effect's error is the *difference* of the two outcome errors. Their variances add; their biases can cancel (A) or compound (B).
 
-### M3-R4 (sim)
+### M3-R4 (sim; on hold, no frame in the rebuilt deck)
 Ladder: interaction OLS RMSE 0.412, +¥4,100; S-lasso 0.409, −¥6,800; **S-boosted best RMSE 0.401**, +¥1,900; **T-boosted best list +¥9,300** (RMSE 0.406); oracle +¥16,200; marketing's purchase model −¥29,400. The best RMSE and the best list come from different learners.
 
 ### M3-R6 (Lab 2 opener; new to this case)
@@ -373,6 +373,6 @@ The case follows the decks as they are. Fix these when the slides are revised. T
 
    The student case avoids stating the size of the M3 export for this reason.
 2. **Retired assessments still named.** M2 ("A1 released tonight"), M4 ("Due before today: A1"), M5 ("A2", "commitment due 96 hours before L8") and M6 ("proposal due 48 hours before L7"; v2 says 72 hours).
-3. **Simulation numbers** in M3 R5, M4 R3–R5, M5 R4 and M7 R4–R5 are still `\NUM`-flagged.
+3. **Simulation numbers** in M4 R3–R5, M5 R4 and M7 R4–R5 are still `\NUM`-flagged. (The rebuilt M3 deck dropped its ladder, R4–R5, rather than show unchecked numbers.)
 4. **M7 schematic.** The overlap figure is a placeholder ("replace with the sim's overlap figure").
-5. **Case framing to add to the slides.** M5 R1: the automated campaign engine and the CFO's freeze rule. M7 R1: "the engine's rule". M3: a pointer to the Lab 2 opener.
+5. **Case framing to add to the slides.** M5 R1: the automated campaign engine and the CFO's freeze rule. M7 R1: "the engine's rule". (M3: no pointer to the Lab 2 opener; slides carry no lab material.)

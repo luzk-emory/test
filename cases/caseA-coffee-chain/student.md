@@ -265,7 +265,7 @@ Two models of the two-segment world, each fitted to 10,000 members split 50/50:
 2. Compute each model's outcome RMSE. (Hint: with the true cell purchase rates $p$, the irreducible part is the average of $p(1-p)$ over the four cells.)
 3. Each model ranks members by predicted lift and sends 5,000 coupons. What does each list earn? (If a model ties everyone, it picks at random.)
 4. Commit: how much does RMSE differ, and how much does the decision differ?
-5. The same lesson, one row at a time. For lapsed members the truth is $\mu_1 = 0.30$, $\mu_0 = 0.10$. T-learner A predicts 0.34 and 0.14; T-learner B predicts 0.32 and 0.08. Which fits each outcome better? Which gets the effect right?
+5. The same lesson, one row at a time. For lapsed members the truth is $\mu_1 = 0.30$, $\mu_0 = 0.10$. T-learner A predicts 0.35 and 0.15; T-learner B predicts 0.33 and 0.07. Which fits each outcome better? Which gets the effect right?
 
 ### Part M3-R4. The Q2 export
 
