@@ -28,7 +28,7 @@ reviews/                pass-1 review report (2026-10-07)
 |---|---|---|
 | Technical notes, M1–M11 | v4.1 (git tag `v4.1`) | Current. Pass 1 (arithmetic, wording) done; pass 2 (independent proof check) not yet |
 | Handouts H1–H6 | v4.1 | Current, same review state as the notes |
-| Lecture slides | M1 rebuilt (v4.1); M2–M11 v2 content | M1 matches the v4 notes, under review. **M2–M11 not yet revised** |
+| Lecture slides | v2 content | **Not yet revised to match v4 notes or the current schedule** |
 | Schedule, labs, assignments, deadlines | `plan/schedule.xlsx` | Current source of truth |
 | Syllabus | 24 Sep draft | **Out of date**: still has the older calendar (Exam I at M6, Monday meetings). Update from the spreadsheet |
 | Cases A–C | draft | Developed separately from the schedule |

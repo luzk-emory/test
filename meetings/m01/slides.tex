@@ -1,9 +1,8 @@
 % \documentclass[aspectratio=169, 11pt]{beamer}
 \documentclass[aspectratio=169, 11pt, handout]{beamer}
 
-% Meeting 1 lecture slides, rebuilt to match notes.tex (v4.1). Block A follows notes Sections 1.1 to 1.3,
-% block B follows Sections 1.4 to 1.6. Each part of the Section 2 worked example (FitLife) appears right
-% after the Section 1 material it uses. Every number is checked by shared/checks/notes01_check.py.
+% Version 2 (2026-09-28). Restructured on the course spine: estimand -> identification -> estimation
+% (course-spine.md). Changes from slides.tex are listed in m01/CHANGES-v2.md.
 
 % ── Theme ──
 \usetheme{Madrid}
@@ -26,47 +25,36 @@
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{colortbl}
+\usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, calc}
 
-% ── Colours: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
-\definecolor{sbgreen}{HTML}{00704A}
+% ── Colors ──
+\definecolor{sbgreen}{HTML}{00704A}  % course accent
+\definecolor{warnred}{HTML}{CC0000}
 \definecolor{noteblue}{HTML}{2060A0}
-\definecolor{warnred}{HTML}{B42318}
-\definecolor{extgrey}{HTML}{6B7280}
-\definecolor{boxgrey}{HTML}{F3F5F8}
-\definecolor{bluetint}{HTML}{EEF3FA}
-\definecolor{greentint}{HTML}{EEF6F2}
-\definecolor{redtint}{HTML}{FCF1F0}
 
-% ── Notation: same macros as the notes ──
+% ── Commands ──
 \newcommand{\E}{\mathbb{E}}
-\newcommand{\Var}{\operatorname{Var}}
-\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\Prob}{\mathrm{Pr}}
 \newcommand{\indep}{\perp\!\!\!\perp}
-\newcommand{\hatt}{\hat{\tau}}
-\newcommand{\ATE}{\text{ATE}}
-\newcommand{\ATT}{\text{ATT}}
-\newcommand{\ATU}{\text{ATU}}
+\usepackage{soul}
+\newcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\marginpar{\tiny #2}}
+% Beamer frames are typeset inside boxes, where \marginpar raises "Not in outer par mode"
+% and \marginparwidth is 4pt. Same marker; the provenance note goes to the frame footnote.
+\renewcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\footnote[frame]{\tiny #2}}
+% Compact footnote layout so several provenance notes fit under one frame.
+\setbeamertemplate{footnote}{\noindent\raggedright\hspace*{0.6em}\tiny\insertfootnotemark\,\insertfootnotetext\par}
 
-% ── Boxes: numbered as in the notes; statements only, proofs stay in the notes ──
-\newenvironment{result}[2]{%
-  \setbeamercolor{block title}{bg=sbgreen,fg=white}\setbeamercolor{block body}{bg=greentint,fg=black}%
-  \begin{block}{Result #1 (#2)}}{\end{block}}
-\newenvironment{assumption}[2]{%
-  \setbeamercolor{block title}{bg=noteblue,fg=white}\setbeamercolor{block body}{bg=bluetint,fg=black}%
-  \begin{block}{Assumption #1 (#2)}}{\end{block}}
-\newenvironment{definition*}[2]{%
-  \setbeamercolor{block title}{bg=extgrey,fg=white}\setbeamercolor{block body}{bg=boxgrey,fg=black}%
-  \begin{block}{Definition #1 (#2)}}{\end{block}}
-\newenvironment{pitfall}[1]{%
-  \setbeamercolor{block title}{bg=warnred,fg=white}\setbeamercolor{block body}{bg=redtint,fg=black}%
-  \begin{block}{Pitfall: #1}}{\end{block}}
-\newcommand{\step}[1]{\textcolor{sbgreen}{\textbf{#1}}}
+% Step labels for the course spine
+\newcommand{\spinestep}[1]{\textcolor{sbgreen}{\textbf{#1}}}
 
 % ── Title ──
-\title[Meeting 1]{Meeting 1: Causal Basics}
-\subtitle{Estimands, selection bias, randomisation and causal graphs}
+\title[Meeting 1]{Meeting 1: The Coupon and the Coin}
+\subtitle{Applied Causal Inference for Business}
 \author{Zhikun Lu}
 \date{\today}
 
@@ -78,10 +66,7 @@
 \end{frame}
 
 % ====================================================================
-\section{Block A: Potential outcomes}
-% ====================================================================
-
-\begin{frame}{Where the Counterfactual Comes From}
+\begin{frame}{Where Does the Counterfactual Come From?}
 
 \begin{center}
 \begin{tikzpicture}[
@@ -93,8 +78,9 @@
 ]
 \node[active] (A) {\textbf{M1--M6}\\[2pt] A randomised control group\\[3pt] \emph{anything} may be unobserved};
 \node[inactive, right=of A] (B) {\textbf{M7--M8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
-\node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] A simulator learned from logs\\[3pt] the M7 assumption, made explicit};
+\node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] An external shifter of treatment\\[3pt] confounders allowed};
 \node[inactive, right=of C] (D) {\textbf{M10--M11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
+
 \draw[-{Stealth}, gray!50] (A) -- (B);
 \draw[-{Stealth}, gray!50] (B) -- (C);
 \draw[-{Stealth}, gray!50] (C) -- (D);
@@ -105,161 +91,159 @@
 
 \begin{center}
 \small Every decision in this course needs the same missing number: what \emph{would} have happened.\\
-The course gives four sources for it. Today starts with the first: a coin decides who is treated.
+Four answers to where it comes from. Today, the first: a coin decides who is treated.
 \end{center}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Three Questions, Every Meeting}
+\begin{frame}{Three Steps, Every Meeting}
 
 \begin{center}
 \begin{tabular}{p{3.0cm}p{9.6cm}}
 \toprule
-\step{1. Estimand} & The number the decision needs: which units, which intervention against which alternative, which outcome, over what horizon. Written in potential outcomes before any data. \\[0.5em]
-\step{2. Identification} & How treatment was assigned, and what must be true for the data to reveal the estimand. \\[0.5em]
-\step{3. Estimation} & A formula that computes it from data, and how far chance can move the answer. \\
+\spinestep{1. Estimand} & The causal number the decision needs --- for which units, which intervention against which alternative, which outcome, over what horizon. Written in potential outcomes \emph{before} any data. \\[0.5em]
+\spinestep{2. Identification} & How treatment was assigned, and what must be true for the data to reveal the estimand. Every assumption tied to a fact about the procedure. \\[0.5em]
+\spinestep{3. Estimation} & A formula to compute it from the data, and its uncertainty --- which comes from the design: what was random, and at what level. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \bigskip
 
-Regression, machine learning and AI tools work in step~3. They compute an identified quantity; they cannot identify it.
+Methods --- regression, machine learning, instruments, panels --- live in step~3. They compute an identified quantity. \textbf{They never identify it.}
 
 \medskip
 
-AI has made step~3 cheap. Steps 1 and 2 are the skills this course teaches.
+\small AI makes step~3 cheap. Steps 1 and 2 are the scarce skill.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{The Decision}
+\begin{frame}{Today's Plan}
 
-A firm can send a coupon.
-\begin{itemize}
-  \item It costs $c$ each time it is redeemed.
-  \item Each purchase earns margin $m$.
-\end{itemize}
-
-\bigskip
-
-The number that settles the decision is the coupon's \textbf{effect on purchase probability}, held against a \textbf{break-even} that depends on who would have bought anyway.
-
-\bigskip
-
-Today:
 \begin{enumerate}
-  \item what that effect is, and for whom (the estimand);
-  \item why comparing buyers who got the coupon with those who did not gets it wrong, and why a coin gets it right;
-  \item causal graphs, for data where nobody tossed a coin.
+    \item \spinestep{Estimand:} a coupon rollout, the number that settles it, and two worlds for every customer
+    \item \spinestep{Identification:} why the pilot's comparison misleads --- and why a coin does not
+    \item \spinestep{Estimation:} the difference in means, what ``unbiased'' means for one draw, and the regression that computes it
+    \item What counts as a treatment
+    \item What the coupon is worth, and to whom
 \end{enumerate}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Two Potential Outcomes per Unit}
-
-\begin{center}
-\begin{tabular}{ll}
-$i = 1, \dots, n$ & units (customers, members) \\[0.3em]
-$D_i \in \{0, 1\}$ & treatment: 1 if treated, 0 if not \\[0.3em]
-$Y_i(1)$ & potential outcome if treated \\[0.3em]
-$Y_i(0)$ & potential outcome if not treated \\[0.3em]
-$\tau_i = Y_i(1) - Y_i(0)$ & individual effect
-\end{tabular}
-\end{center}
 
 \bigskip
 
-Both potential outcomes exist \textbf{before} treatment is assigned. Assignment only decides which one we see.
+\textbf{Case:} Lin's coupon programme, Meeting 1 (Releases 1--5). \quad \textbf{Workshop, no AI:} arm means, label reversal, seeds.
 
 \bigskip
 
-A causal effect compares the same unit in two states of the world, not two different units.
+\textbf{Reading:} technical notes for Meeting 1. Section 1 is examinable; Section 3 and \emph{Extensions} are reference.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Name the Estimand Before the Data}
+\section{The Estimand}
+% ====================================================================
 
-\begin{definition*}{1.1}{Estimand}
-An estimand is a summary of potential outcomes for a named population. It specifies the units, the intervention and its comparator, the outcome and its horizon. It is fixed before, and independently of, any data or method.
-\end{definition*}
+% [RELEASE R1 — narrative and marketing's pilot numbers]
+\begin{frame}{The Coffee Chain, Before the Experiment}
+
+\textbf{Lin} runs customer analytics for a coffee chain with \textbf{10{,}000} loyalty members.
 
 \bigskip
 
-Said in one sentence, for the worked example later today:
+Marketing wants to send every member a coupon: \textyen 10 off the next purchase.
 
-\medskip
+\bigskip
+\pause
 
-\begin{quote}
-The average effect of \textcolor{noteblue}{offering a free personal-training session}, against \textcolor{noteblue}{no offer}, on \textcolor{noteblue}{renewal at contract end}, among \textcolor{noteblue}{FitLife members whose contracts are about to expire}.
-\end{quote}
-
-\medskip
-
-If you cannot write the sentence, no method will tell you what its output means.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Three Averages, Three Decisions}
+\textbf{Their evidence:} a Q1 pilot in one region of 1{,}000 members. The coupon went to 500 of them --- the ones marketing judged most loyal.
 
 \begin{center}
 \small
-\begin{tabular}{lll}
+\begin{tabular}{lrr}
 \toprule
-\textbf{Estimand} & \textbf{Definition} & \textbf{The decision it serves} \\
+& \textbf{Got coupon} & \textbf{No coupon} \\
 \midrule
-$\ATE$ & $\E[Y(1) - Y(0)]$ & treat everyone? \\
-$\ATT$ & $\E[Y(1) - Y(0) \mid D = 1]$ & keep treating the people we treat now? \\
-$\ATU$ & $\E[Y(1) - Y(0) \mid D = 0]$ & extend treatment to the rest? \\
-$\tau(x)$ & $\E[Y(1) - Y(0) \mid X = x]$ & whom to treat? (Meeting 3) \\
+Purchase rate & 0.68 & 0.24 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-The ATT and ATU depend on the assignment mechanism, which defines who the treated are. The ATE does not.
+\smallskip
+\begin{center}
+Marketing's reading: \emph{``The coupon lifts purchases by 44 points. Send it to everyone.''}
+\end{center}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The Number That Decides It}
+
+A purchase earns \textyen 30 of margin. The coupon costs \textyen 10, paid on \emph{every} purchase a coupon holder makes --- including the ones they would have made anyway.
+
+\bigskip
+
+Per coupon sent, with $p_1$ the purchase rate among holders and $\tau$ the lift the coupon causes:
+\[
+\text{net} \;=\; \underbrace{\tau \times 30}_{\text{purchases the coupon caused}} \;-\; \underbrace{10 \times p_1}_{\text{coupons redeemed}} .
+\]
+
+\pause
+
+\begin{alertblock}{Break-even lift}
+\[
+\tau^{*} \;=\; \frac{10\, p_1}{30} \;=\; \frac{p_1}{3}
+\]
+\end{alertblock}
 
 \medskip
 
-\begin{result}{1.2}{The ATE averages the ATT and ATU}
-With $\pi = \Pr(D=1)$, \quad $\ATE = \pi\,\ATT + (1-\pi)\,\ATU$.
-\end{result}
+Marketing's numbers: $p_1 = 0.68$, so $\tau^* = 0.227$. Their lift of $0.44$ gives $0.44 \times 30 - 6.8 = +$\textyen 6.40 per coupon, \textbf{+\textyen 64{,}000} across the base.
 
-\small The population is the treated plus the untreated, so its average effect is the weighted average of the two groups' effects.
+\medskip
+
+Every estimate today is a lift. The only question is \textbf{which side of $p_1/3$} it lands on.
 \end{frame}
 
-% ====================================================================
-\begin{frame}{Which Population?}
+% [CARRIED VERBATIM from old-decks/lecture01.tex:121]
+\begin{frame}{The Prediction Approach (and Why It Fails)}
 
-\textbf{Finite population (design-based).} $\E$ averages over the $n$ units in the study. The estimand is the \emph{sample average treatment effect}
-\[
-\tau_S = \frac1n \sum_{i=1}^n \tau_i ,
-\]
-a fixed number: the answer about the customers in front of us. It needs no assumption about how they were sampled. Meetings 1 and 2 use this reading for experiments.
+\textbf{Natural idea:} Build a model to predict who will buy, then send coupons to high-probability customers.
 
 \bigskip
 
-\textbf{Superpopulation.} The units are a sample from a larger population, and the estimand is that population's average.
+\textbf{Problem:} The model predicts $\Prob(\text{purchase} \mid X)$, not the \emph{causal effect} of the coupon.
 
 \bigskip
 
-The two coincide when the study is a random sample of the population the decision covers. Otherwise, moving to another population is a separate, assumed step called \textbf{transport} (Meeting 2).
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Customer} & \textbf{P(buy)} & \textbf{Effect of coupon} \\
+\midrule
+Daily regular & 0.95 & $\approx 0$ (buys anyway) \\
+Lapsed customer & 0.05 & could be large \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+
+Prediction targets the \emph{wrong column}. We need the \emph{missing column}: the causal effect.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Four Response Types}
+\begin{frame}{The Four Types of Customers}
 
-With a binary outcome, each unit has one of four pairs $(Y(0), Y(1))$.
+For each customer, imagine \textbf{two worlds}: one with coupon, one without.
 
 \bigskip
 
 \begin{center}
 \begin{tabular}{l|c|c|}
-\multicolumn{1}{c}{} & \multicolumn{1}{c}{$Y(1) = 0$} & \multicolumn{1}{c}{$Y(1) = 1$} \\
+\multicolumn{1}{c}{} & \multicolumn{1}{c}{\textbf{Doesn't buy with coupon}} & \multicolumn{1}{c}{\textbf{Buys with coupon}} \\
 \cline{2-3}
-$Y(0) = 0$ & \cellcolor{gray!15} Lost cause & \cellcolor{green!15} \textbf{Persuadable} \\
- & $\tau_i = 0$ & $\tau_i = +1$ \\
+\textbf{Doesn't buy without} & \cellcolor{gray!15} Lost Cause & \cellcolor{green!15} \textbf{Persuadable} \\
+& ITE $= 0$ & ITE $= +1$ \\
 \cline{2-3}
-$Y(0) = 1$ & \cellcolor{red!15} Do-not-disturb & \cellcolor{blue!10} Sure thing \\
- & $\tau_i = -1$ & $\tau_i = 0$ \\
+\textbf{Buys without} & \cellcolor{red!15} Do-Not-Disturb & \cellcolor{blue!10} Sure Thing \\
+& ITE $= -1$ & ITE $= 0$ \\
 \cline{2-3}
 \end{tabular}
 \end{center}
@@ -267,749 +251,809 @@ $Y(0) = 1$ & \cellcolor{red!15} Do-not-disturb & \cellcolor{blue!10} Sure thing 
 \bigskip
 
 \begin{itemize}
-  \item \textbf{Persuadable:} the coupon causes a purchase.
-  \item \textbf{Sure thing:} buys either way; the coupon discounts a purchase that was coming.
-  \item \textbf{Lost cause:} never buys; the coupon goes unused.
-  \item \textbf{Do-not-disturb:} the coupon prevents a purchase.
+    \item \textbf{Persuadable:} coupon \emph{causes} a purchase
+    \item \textbf{Sure Thing:} buys anyway --- the coupon discounts a purchase that was coming
+    \item \textbf{Lost Cause:} never buys --- the coupon goes unused
+    \item \textbf{Do-Not-Disturb:} coupon \emph{prevents} a purchase
 \end{itemize}
 
-\small A unit's type needs both potential outcomes, so it is never observed.
+\small Types are a thought device: nobody's type is ever observed.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{The ATE in Response Types}
+\begin{frame}{What Each Type Costs}
 
-\begin{result}{1.3}{The ATE in response types}
-$\ATE = \Pr(\text{persuadable}) - \Pr(\text{do-not-disturb})$.
-\end{result}
-
-Only two types have a nonzero effect.
+Change in margin from sending one coupon. \textyen 30 per purchase; the \textyen 10 is paid only when the coupon is used; no contact fee today.
 
 \bigskip
-
-A lift of $0.10$ fits 10\% persuadables and no do-not-disturbs. It also fits 30\% and 20\%. Data identify the difference, not the two shares (bounds are in the notes, Section 3).
-
-\bigskip
-
-\textbf{Predicting who buys finds the wrong people.} A model of $\Pr(\text{purchase} \mid X)$ ranks sure things first: they have the highest purchase rate and zero effect. The decision needs the effect, the column the data never show.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{What a Treatment Is Worth}
-
-Margin $m$ per purchase; coupon cost $c$ per redemption, paid only when a treated unit buys; $p_1 = \E[Y(1)]$ and $p_0 = \E[Y(0)]$ for the population to be treated.
-
-\medskip
-
-\begin{result}{1.4}{Net value and break-even}
-The expected net value per unit treated, relative to not treating, is
-\[
-  V = m\tau - c\,p_1 = (m-c)\,\tau - c\,p_0 ,
-\]
-and treating pays if and only if $\tau > \tau^\ast = c\,p_1/m$.
-\end{result}
-
-\medskip
-
-The second form separates what the coupon does:
-\begin{itemize}
-  \item it earns $m-c$ on every purchase it \emph{causes};
-  \item it loses $c$ on every purchase that would have happened anyway: the \textbf{sure-thing cost} $c\,p_0$.
-\end{itemize}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Who Costs What}
-
-Change in margin from treating one unit, with $m = 30$ and $c = 10$ paid per redemption:
 
 \begin{center}
 \begin{tabular}{lrrr}
 \toprule
-\textbf{Type} & \textbf{Untreated} & \textbf{Treated} & \textbf{Change} \\
+\textbf{Type} & \textbf{Without coupon} & \textbf{With coupon} & \textbf{Change} \\
 \midrule
-Persuadable & 0 & $m-c = 20$ & \textcolor{sbgreen}{$+20$} \\
-Sure thing & $m = 30$ & $m-c = 20$ & \textcolor{warnred}{$-10$} \\
-Lost cause & 0 & 0 & $0$ \\
-Do-not-disturb & $m = 30$ & 0 & \textcolor{warnred}{$-30$} \\
+Persuadable & 0 & 20 & \textcolor{sbgreen}{$+20$} \\
+Sure Thing & 30 & 20 & \textcolor{warnred}{$-10$} \\
+Lost Cause & 0 & 0 & $0$ \\
+Do-Not-Disturb & 30 & 0 & \textcolor{warnred}{$-30$} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\medskip
+\bigskip
 
-A lost cause costs nothing when the treatment is paid only on use. If it costs $c$ per unit \emph{treated} (a phone call, a trainer's hour), then $V = m\tau - c$ and $\tau^\ast = c/m$.
+Average over any mix of types:
+\[
+\text{net} = 20\,p_1 - 30\,p_0 = 30\tau - 10\,p_1 .
+\]
 
-\medskip
+\textbf{The expensive customer is the Sure Thing, not the Lost Cause.} A coupon nobody uses costs nothing here; in M6 a contact fee changes that.
+\end{frame}
+
+% [CARRIED VERBATIM from old-decks/lecture01.tex:180]
+\begin{frame}{The Fundamental Problem}
+
+\begin{alertblock}{Key Insight}
+For each customer, we observe \textbf{only one} of the two worlds.
+\end{alertblock}
+
+\bigskip
 
 \begin{itemize}
-  \item Always state which cost model applies.
-  \item In both, the break-even depends on the population. Hold a lift against the break-even of the population the decision covers.
+    \item If customer $i$ gets the coupon, we see whether they buy \emph{with} the coupon
+    \item We \textbf{never} see what they would have done \emph{without} it
+    \item The other outcome is the \textbf{counterfactual}
+\end{itemize}
+
+\bigskip
+
+This means:
+\begin{itemize}
+    \item We cannot classify any individual into one of the four types
+    \item We need a strategy that works at the \emph{population} level
 \end{itemize}
 \end{frame}
 
-% ====================================================================
-\begin{frame}{One Potential Outcome Is Always Missing}
+% [CARRIED VERBATIM from old-decks/lecture01.tex:208, SUTVA line added]
+\begin{frame}{Formalizing Counterfactuals}
 
-We observe
-\[
-Y_i = D_i\, Y_i(1) + (1 - D_i)\, Y_i(0) .
-\]
-Causal inference is a missing-data problem in which the missing values are missing \emph{by design}.
+\textbf{Notation.} For each individual $i$:
 
 \medskip
 
-\textbf{At the board.} Four records. Fill in what was observed, then the types each record allows.
+\begin{center}
+\begin{tabular}{ll}
+$D_i \in \{0, 1\}$ & treatment assignment (1 = coupon, 0 = no coupon) \\[0.3em]
+$Y_i(1)$ & \textbf{potential outcome} if treated \\[0.3em]
+$Y_i(0)$ & \textbf{potential outcome} if not treated \\[0.3em]
+$\tau_i = Y_i(1) - Y_i(0)$ & \textbf{individual treatment effect} (ITE)
+\end{tabular}
+\end{center}
+
+\bigskip
+
+\textbf{Observed outcome} (consistency):
+\[
+Y_i = D_i \cdot Y_i(1) + (1 - D_i) \cdot Y_i(0)
+\]
+
+\medskip
+
+We see $Y_i(1)$ if treated, $Y_i(0)$ if not. Never both.
+
+\medskip
+
+\small Writing $Y_i(d)$ with one index assumes one version of the coupon and that my outcome does not depend on your coupon (SUTVA). M2 checks both.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The Estimand: Say It in a Sentence First}
+
+\emph{``The average effect of sending this \textyen 10 app coupon, against sending nothing, on a purchase within seven days, among \underline{these} customers.''}
+
+\bigskip
 
 \begin{center}
-\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Estimand} & \textbf{Definition} & \textbf{Averages over} \\
+\midrule
+ATE & $\tau = \E[Y(1) - Y(0)]$ & everyone in the population \\
+ATT & $\E[Y(1) - Y(0) \mid D = 1]$ & those who got the coupon \\
+ATU & $\E[Y(1) - Y(0) \mid D = 0]$ & those who did not \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+
+Linked by $\tau = \Prob(D = 1)\,\tau_{\text{ATT}} + \Prob(D = 0)\,\tau_{\text{ATU}}$. In response types, $\tau = \Prob(\text{Persuadable}) - \Prob(\text{Do-Not-Disturb})$.
+
+\bigskip
+
+\textbf{Which population?} The 1{,}000 members of the test region are where an effect can be \emph{measured}; the 10{,}000-member base is where the decision \emph{lands}. Today's estimand is the first. Moving it to the second is a separate step (M2).
+\end{frame}
+
+% ====================================================================
+\section{Identification: Why the Pilot Misleads}
+% ====================================================================
+
+% [CARRIED VERBATIM from old-decks/lecture01.tex:279]
+\begin{frame}{The Naive Comparison and Why It Fails}
+
+\textbf{Natural idea:} Compare outcomes between treated and untreated groups.
+\[
+\text{``Effect''} = \E[Y \mid D = 1] - \E[Y \mid D = 0]
+\]
+
+\textbf{Problem:} This equals the ATE \emph{only if} the groups are comparable.
+
+\bigskip
+
+If the marketing team targets coupons at loyal customers:
+\begin{itemize}
+    \item Coupon group: packed with \textbf{Sure Things} (buy anyway)
+    \item No-coupon group: more \textbf{Lost Causes} (don't buy anyway)
+    \item The coupon \emph{looks} effective, but the groups were different to begin with
+\end{itemize}
+
+\bigskip
+
+This is \textbf{confounding}: the way treatment was \emph{assigned} (by loyalty) is related to the outcome.
+\end{frame}
+
+% [RELEASE R2 — the warm-up records, then the pilot region's type counts (a thought experiment: nobody observes types)]
+\begin{frame}{Board Task: What Can We Fill In?}
+
+Four customers from the pilot. Fill in only what was observed.
+
+\bigskip
+
+\begin{center}
 \begin{tabular}{crrccl}
 \toprule
-\textbf{Unit} & $D$ & $Y$ & $Y(1)$ & $Y(0)$ & \textbf{Compatible types} \\
+\textbf{Customer} & $D$ & $Y$ & $Y(1)$ & $Y(0)$ & \textbf{Compatible types} \\
 \midrule
-1 & 1 & 1 & 1 & ? & sure thing or persuadable \\
-2 & 0 & 1 & ? & 1 & sure thing or do-not-disturb \\
-3 & 1 & 0 & 0 & ? & lost cause or do-not-disturb \\
-4 & 0 & 0 & ? & 0 & lost cause or persuadable \\
+A & 1 & 1 & 1 & ? & Sure Thing or Persuadable \\
+B & 0 & 1 & ? & 1 & Sure Thing or Do-Not-Disturb \\
+C & 1 & 0 & 0 & ? & Lost Cause or Do-Not-Disturb \\
+D & 0 & 0 & ? & 0 & Lost Cause or Persuadable \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-More units help estimate \textbf{averages}. They never reveal unit 1's missing outcome.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{What Writing $Y_i(d)$ Assumes}
-
-\begin{assumption}{1.5}{SUTVA}
-(i) \emph{No interference}: unit $i$'s outcome depends only on its own treatment. (ii) \emph{Consistency}: ``treated'' names one well-defined intervention, so $Y_i = Y_i(d)$ when $D_i = d$.
-\end{assumption}
-
-\begin{itemize}
-  \item \textbf{No interference fails} when a coupon is shared with friends, or a discount at one store draws shoppers from the next (Handout H4).
-  \item \textbf{Consistency fails} when ``a coupon'' is sometimes 10\% off and sometimes 30\%. The effect is then a mixture over versions, weighted by whatever produced the data.
-\end{itemize}
-
-\medskip
-
-\textbf{Working rule:} describe the intervention precisely enough that you could, in principle, assign it.
-
-\medskip
-
-\small Attributes such as race or loyalty are not interventions. An audit study randomises a \emph{signal} of the attribute instead, such as a name on comparable r\'esum\'es, and estimates the effect of the signal on a reader's decision (notes, Section 3).
-\end{frame}
-
-% ====================================================================
-\begin{frame}{The Naive Comparison}
-
-\begin{result}{1.6}{Selection-bias decomposition}
-Under consistency,
-\[
-  \E[Y \mid D=1] - \E[Y \mid D=0] = \underbrace{\ATT}_{\text{effect on the treated}}
-  + \underbrace{\E[Y(0) \mid D=1] - \E[Y(0) \mid D=0]}_{\text{selection bias}} .
-\]
-\end{result}
-
-The idea: add and subtract $\E[Y(0) \mid D=1]$, the one quantity the data never show.
-
 \bigskip
 
-Selection bias asks how the treated and untreated would have differed \emph{without} treatment.
-\begin{itemize}
-  \item A manager who treats units that would do well anyway makes it positive.
-  \item One who treats struggling units makes it negative, and can reverse the sign.
-  \item It does not shrink as the sample grows.
-\end{itemize}
-\end{frame}
+\small (Handout: attempt before this frame; the last three columns are the answer.)
 
-% ====================================================================
-\begin{frame}{Two Sources of Bias Relative to the ATE}
-
-\begin{result}{1.7}{Two sources of bias relative to the ATE}
-Under consistency,
-\[
-\begin{aligned}
-  \E[Y \mid D=1] - \E[Y \mid D=0] - \ATE &= \underbrace{\E[Y(0) \mid D=1] - \E[Y(0) \mid D=0]}_{\text{baseline selection}}\\
-  &\quad + \underbrace{(1-\pi)(\ATT - \ATU)}_{\text{selection on gains}} .
-\end{aligned}
-\]
-\end{result}
-
-\bigskip
-
-\begin{itemize}
-  \item \textbf{Baseline selection:} the treated would have had different outcomes anyway.
-  \item \textbf{Selection on gains:} the treated respond more (or less) than the untreated would.
-\end{itemize}
-
-\medskip
-
-The first term is Result 1.6. The second comes from $\ATT - \ATE = (1-\pi)(\ATT - \ATU)$, which is Result 1.2 rearranged.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{A Coin Removes Both}
-
-\begin{assumption}{1.8}{Random assignment}
-$D \indep \{Y(0), Y(1)\}$ and $0 < \Pr(D=1) < 1$.
-\end{assumption}
-
-\begin{result}{1.9}{Identification by randomisation}
-Under SUTVA and random assignment, $\ATE = \E[Y \mid D=1] - \E[Y \mid D=0]$, and $\ATE = \ATT = \ATU$.
-\end{result}
-
-\bigskip
-
-By consistency, $\E[Y \mid D=d] = \E[Y(d) \mid D=d]$. Independence then replaces this with $\E[Y(d)]$, because who got treated carries no information about potential outcomes. Both bias terms in Result 1.7 are zero.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Why a Coin Can Be Trusted}
-
-Independence is a property of the \textbf{procedure}, not of the customers. A random number generator does not know anyone's potential outcomes.
-
-\bigskip
-
-\begin{itemize}
-  \item That is why randomisation removes confounding by variables \emph{nobody recorded}.
-  \item It can be audited rather than argued for: the seed, the draw log, no exclusions after the draw.
-  \item Independence holds over the distribution of possible draws. Any single draw can still be unbalanced by chance, and standard errors measure how much that matters (Meeting 2).
-\end{itemize}
-
-\bigskip
-
-Every other design in this course replaces the coin with an assumption about the world. Those assumptions have to be argued, because they cannot be audited.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{FitLife: Who Got the Session}
-
-Front-desk staff offer a free personal-training session to members whose contracts are about to expire. Outcome $Y$: renewal. A session costs \textyen 300 of trainer time whether or not the member renews (a cost per unit \emph{treated}); a renewal is worth \textyen 1{,}000 of margin. Break-even: $\tau^\ast = 300/1{,}000 = 0.30$.
-
-\medskip
-
-\begin{columns}[T]
-\begin{column}{0.52\textwidth}
-\begin{center}
-\footnotesize
-\begin{tabular}{lccccl}
-\toprule
-Member & $Y(0)$ & $Y(1)$ & $\tau_i$ & $D$ & Type \\
-\midrule
-A & 1 & 1 & 0 & 1 & sure thing \\
-B & 1 & 1 & 0 & 1 & sure thing \\
-C & 0 & 1 & 1 & 1 & persuadable \\
-D & 1 & 1 & 0 & 1 & sure thing \\
-E & 0 & 0 & 0 & 0 & lost cause \\
-F & 0 & 1 & 1 & 0 & persuadable \\
-G & 0 & 1 & 1 & 0 & persuadable \\
-H & 1 & 1 & 0 & 0 & sure thing \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{column}
-\begin{column}{0.44\textwidth}
-\vspace{1em}
-A simulation, so both potential outcomes are visible.
-
-\bigskip
-
-Staff offered sessions to the four members they knew best, who mostly renew anyway.
-\end{column}
-\end{columns}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{FitLife: The Estimands and the Naive Comparison}
-
-\step{Estimands.} $\ATE = 3/8 = 0.375$; \quad $\ATT = 1/4 = 0.25$; \quad $\ATU = 2/4 = 0.50$.
-
-\smallskip
-\small Check Result 1.2: $0.5 \times 0.25 + 0.5 \times 0.50 = 0.375$.
 \normalsize
+\bigskip
+
+More customers help us estimate \textbf{averages}. They never reveal A's missing outcome.
+\end{frame}
+
+% [CARRIED VERBATIM from old-decks/lecture01.tex:309]
+\begin{frame}{Confounding: A Numerical Example}
+
+True type distribution: 1,000 customers.
 
 \bigskip
 
-\step{Naive comparison.} Treated renewal rate $4/4 = 1.00$; untreated $1/4 = 0.25$; difference $0.75$.
+\begin{center}
+\begin{tabular}{lrc}
+\toprule
+\textbf{Type} & \textbf{Count} & \textbf{Share} \\
+\midrule
+Lost Cause (0,0) & 400 & 40\% \\
+Sure Thing (1,1) & 300 & 30\% \\
+Persuadable (0,1) & 200 & 20\% \\
+Do-Not-Disturb (1,0) & 100 & 10\% \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \bigskip
+
+True ATE $= 0.50 - 0.40 = \mathbf{0.10}$ (10 pp).
+\end{frame}
+
+% Worksheet: pairs compute both arms' purchase rates from the counts before the \pause reveal.
+% [CARRIED VERBATIM from old-decks/lecture01.tex:331]
+\begin{frame}{Confounded Assignment}
+
+Marketing targets 500 loyal customers $\Rightarrow$ Sure Things overrepresented in coupon group:
+
+\bigskip
+
+\begin{center}
+\begin{tabular}{lccr}
+\toprule
+\textbf{Type} & \textbf{Coupon (500)} & \textbf{No-coupon (500)} & \textbf{Total} \\
+\midrule
+Lost Cause (0,0) & 100 & 300 & 400 \\
+Sure Thing (1,1) & \textcolor{warnred}{220} & 80 & 300 \\
+Persuadable (0,1) & 120 & 80 & 200 \\
+Do-Not-Disturb (1,0) & 60 & 40 & 100 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\pause
 
 \begin{align*}
-\text{Result 1.6:}\quad 0.75 &= \underbrace{0.25}_{\ATT} + \underbrace{3/4 - 1/4}_{\text{selection bias} \,=\, 0.50} \\[0.3em]
-\text{Result 1.7:}\quad 0.75 &= \underbrace{0.375}_{\ATE} + \underbrace{0.50 + 0.5 \times (0.25 - 0.50)}_{\text{bias relative to the ATE} \,=\, 0.375}
+\text{Purchase rate (coupon)} &= (220 + 120)/500 = 0.68 \\
+\text{Purchase rate (no-coupon)} &= (80 + 40)/500 = 0.24 \\
+\text{Naive difference} &= 0.68 - 0.24 = \textcolor{warnred}{0.44}
 \end{align*}
 
+\textbf{4.4$\times$ the true effect!} Sure Things inflate the coupon group's success rate.
+\end{frame}
+
+% [CARRIED VERBATIM from old-decks/lecture02.tex:248]
+\begin{frame}{Selection Bias Decomposition}
+
+Can we estimate the ATE from observed data?
+\[
+\E[Y \mid D\!=\!1] - \E[Y \mid D\!=\!0] \stackrel{?}{=} \tau
+\]
+
+\begin{block}{Proposition: Selection Bias Decomposition}
+\[
+\underbrace{\E[Y \mid D\!=\!1] - \E[Y \mid D\!=\!0]}_{\text{Naive comparison}} = \underbrace{\E[Y(1)\!-\!Y(0) \mid D\!=\!1]}_{\text{ATT}} + \underbrace{\E[Y(0) \mid D\!=\!1] - \E[Y(0) \mid D\!=\!0]}_{\textcolor{warnred}{\text{Selection Bias}}}
+\]
+\end{block}
+
+\medskip
+
+\textbf{Proof:} consistency, then add and subtract $\E[Y(0) \mid D = 1]$ --- the one number the data never show.
+
 \bigskip
 
-Selection bias is $0.50$: three of the four members offered a session would have renewed without it, against one of the four who were not.
+\textbf{Selection bias} $\neq 0$ whenever the treated and untreated would have had different outcomes \emph{even without treatment}.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{FitLife: The Decision}
+\begin{frame}{The Pilot, Decomposed}
 
-Taken at face value, the naive $0.75$ makes the programme look like a clear success. Against the break-even of $0.30$:
-
-\bigskip
+Read the decomposition off the pilot's type counts. $Y(0) = 1$ for Sure Things and Do-Not-Disturbs.
 
 \begin{center}
-\begin{tabular}{lcl}
+\small
+\begin{tabular}{lrr}
 \toprule
-\textbf{Who gets the session} & \textbf{Effect} & \textbf{Against $\tau^\ast = 0.30$} \\
+& \textbf{Coupon (500)} & \textbf{No coupon (500)} \\
 \midrule
-The members staff choose ($\ATT$) & $0.25$ & \textcolor{warnred}{loses money} \\
-The members staff ignore ($\ATU$) & $0.50$ & \textcolor{sbgreen}{pays} \\
-Everyone ($\ATE$) & $0.375$ & \textcolor{sbgreen}{pays} \\
+Would buy \emph{without} the coupon: ST $+$ DND & $220 + 60 = 280$ & $80 + 40 = 120$ \\
+$\E[Y(0) \mid D]$ & $0.56$ & $0.24$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\bigskip
+\begin{align*}
+\text{ATT} &= \frac{\#\text{Persuadable} - \#\text{DND}}{500} = \frac{120 - 60}{500} = 0.12 \\
+\text{selection bias} &= 0.56 - 0.24 = 0.32 \\
+\text{naive} &= 0.12 + 0.32 = \textcolor{warnred}{0.44}
+\end{align*}
 
-\pause
-
-The programme as run loses money. The selection that inflated the naive number also put the sessions in the wrong hands.
-
-\medskip
-
-A randomised offer would have shown this.
+Three quarters of marketing's lift is \textbf{who they picked}, not what the coupon did. Even for the pilot's own recipients, $0.12 < 0.227$:
+\[
+0.12 \times 30 - 6.8 = \textcolor{warnred}{-\text{\textyen}3.20 \text{ per coupon}}.
+\]
 \end{frame}
 
 % ====================================================================
-\begin{frame}{End of Block A}
+\begin{frame}{Two Kinds of Selection}
 
-\begin{itemize}
-  \item An estimand names units, intervention, comparator, outcome and horizon, before any data.
-  \item Value depends on the cost model: per redemption, $\tau^\ast = c\,p_1/m$; per unit treated, $\tau^\ast = c/m$.
-  \item Naive comparison $=$ ATT $+$ selection bias. More data does not shrink the bias.
-  \item A coin sets both bias terms to zero, and its log can be audited.
-\end{itemize}
-
-\vfill
-
-\begin{center}
-\Large \textbf{Block B: Causal graphs}\\[0.4em]
-\normalsize When nobody tossed a coin, what should we compare, and within which groups?
-\end{center}
-\vfill
-\end{frame}
-
-% ====================================================================
-\section{Block B: Causal graphs}
-% ====================================================================
-
-\begin{frame}{A Graph Writes Down Assumptions}
-
-A \textbf{directed acyclic graph} (DAG) states what causes what.
+The non-recipients' effect, from the same table:
+\[
+\tau_{\text{ATU}} = \frac{80 - 40}{500} = 0.08, \qquad \tfrac12(0.12) + \tfrac12(0.08) = 0.10 = \tau \;\checkmark
+\]
 
 \bigskip
 
-\begin{itemize}
-  \item An arrow $A \to B$ says $A$ may directly cause $B$.
-  \item A \emph{missing} arrow says it does not. Missing arrows are the strong claims.
-  \item Acyclic: no variable causes itself through a loop.
-\end{itemize}
-
-\bigskip
-
-The graph is a claim about the world, not something estimated from the data. Two analysts with different graphs can reach different conclusions from the same table, and the graph shows exactly where they disagree.
-
-\bigskip
-
-Three building blocks decide whether two variables are associated.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Chain, Fork, Collider}
-
-\begin{center}
-\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\small}]
-  \node (a1) at (0,0) {$A$}; \node (m1) at (1.3,0) {$M$}; \node (b1) at (2.6,0) {$B$};
-  \draw[->] (a1) -- (m1); \draw[->] (m1) -- (b1); \node at (1.3,-1.0) {\textbf{Chain}};
-  \node (a2) at (4.6,0) {$A$}; \node (f2) at (5.9,0.8) {$F$}; \node (b2) at (7.2,0) {$B$};
-  \draw[->] (f2) -- (a2); \draw[->] (f2) -- (b2); \node at (5.9,-1.0) {\textbf{Fork}};
-  \node (a3) at (9.2,0) {$A$}; \node (c3) at (10.5,-0.6) {$C$}; \node (b3) at (11.8,0) {$B$};
-  \draw[->] (a3) -- (c3); \draw[->] (b3) -- (c3); \node at (10.5,-1.2) {\textbf{Collider}};
-\end{tikzpicture}
-\end{center}
+Against the ATE, the pilot's 0.44 is off by $0.34$, for two separate reasons:
 
 \medskip
 
 \begin{center}
 \small
-\begin{tabular}{llcl}
+\begin{tabular}{lrl}
 \toprule
-\textbf{Structure} & \textbf{Middle node} & \textbf{$A$, $B$ associated?} & \textbf{Condition on the middle node} \\
+\textbf{Source} & \textbf{Size} & \textbf{What marketing did} \\
 \midrule
-Chain $A \to M \to B$ & mediator & yes & blocks the association \\
-Fork $A \leftarrow F \to B$ & common cause & yes & blocks it \\
-Collider $A \to C \leftarrow B$ & common effect & \textbf{no} & \textcolor{warnred}{\textbf{creates} an association} \\
+Baseline selection: $\E[Y(0) \mid D=1] - \E[Y(0) \mid D=0]$ & $0.32$ & picked people who buy anyway \\
+Selection on gains: $\tau_{\text{ATT}} - \tau$ & $0.02$ & picked slightly better responders \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\medskip
+\bigskip
 
-In a fork, $A$ and $B$ are associated although neither causes the other. For a collider, conditioning on anything $C$ causes has the same effect as conditioning on $C$.
+A larger pilot would estimate $0.44$ more precisely. \textbf{It would not move it toward $0.10$.} Bias is about the assignment, not the sample size.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{When Is a Path Open?}
+\begin{frame}{Two Kinds of Customer}
 
-A \textbf{path} is any sequence of arrows between two variables, whatever their direction.
-
-\bigskip
-
-A path is \textbf{blocked} by
-\begin{itemize}
-  \item a middle node of a chain or fork that we condition on, or
-  \item a collider that we do \emph{not} condition on (nor on any of its descendants).
-\end{itemize}
+Lin's CRM splits the whole base into two segments of 5{,}000. Take the segment effects as given for now --- estimating them is M3.
 
 \bigskip
 
-Two variables are associated, given a conditioning set, only through unblocked paths.
-
-\bigskip
-
-\small Conditioning means comparing within levels of a variable: a control in a regression, a filter on the data, a sample restricted to one group. All three have the same consequences on the graph.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Collider Bias in the Simplest Case}
-
-\begin{result}{1.10}{Collider bias in the simplest case}
-Let $D$ and $U$ be independent with $\Pr(D=1) = \Pr(U=1) = \tfrac12$, let $Y = U$ (so $D$ has no effect), and let $C = \max(D, U)$. Then
-\[
-\E[Y \mid D=1, C=1] - \E[Y \mid D=0, C=1] = \tfrac12 - 1 = -\tfrac12 .
-\]
-\end{result}
-
-\begin{columns}[T]
-\begin{column}{0.42\textwidth}
 \begin{center}
-\small
-\begin{tabular}{cccc}
+\begin{tabular}{lccc}
 \toprule
-$D$ & $U = Y$ & $C$ & kept if $C=1$ \\
+\textbf{Segment} & $\E[Y(1) \mid X]$ & $\E[Y(0) \mid X]$ & \textbf{Effect} \\
 \midrule
-0 & 0 & 0 & no \\
-0 & 1 & 1 & yes \\
-1 & 0 & 1 & yes \\
-1 & 1 & 1 & yes \\
+Active ($X = 1$) & 0.80 & 0.75 & $+0.05$ \\
+Lapsed ($X = 0$) & 0.30 & 0.10 & $+0.20$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-\end{column}
-\begin{column}{0.54\textwidth}
-Four equally likely cells. Among units with $C = 1$, learning $D = 0$ tells you $U = 1$.
 
-\medskip
-
-$D$ has no effect on $Y$, yet the comparison within $C = 1$ finds one.
-\end{column}
-\end{columns}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Backdoor Paths}
-
-A \textbf{backdoor path} from $D$ to $Y$ is a path that starts with an arrow \emph{into} $D$.
-
-\bigskip
-
-\begin{center}
-\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\small}]
-  \node (x) at (0,1.3) {$X$};
-  \node (d) at (-2.2,0) {$D$};
-  \node (y) at (2.2,0) {$Y$};
-  \node (m) at (0,-1.1) {$M$};
-  \draw[->] (x) -- (d); \draw[->] (x) -- (y);
-  \draw[->, thick, sbgreen] (d) -- (y);
-  \draw[->, thick, sbgreen] (d) -- (m); \draw[->, thick, sbgreen] (m) -- (y);
-\end{tikzpicture}
-\end{center}
-
-\begin{itemize}
-  \item $D \to Y$ and $D \to M \to Y$ carry the effect of $D$. Leave them open.
-  \item $D \leftarrow X \to Y$ is a backdoor path: an association that is not an effect. Block it by conditioning on $X$.
-  \item Conditioning on $M$ would block part of the effect: $M$ is caused by $D$.
-\end{itemize}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Adjustment for a Backdoor Set}
-
-\begin{result}{1.11}{Adjustment for a backdoor set}
-Suppose a set $X$ of variables (i) contains nothing caused by $D$ and (ii) blocks every backdoor path from $D$ to $Y$. Then conditional exchangeability holds, $\{Y(0), Y(1)\} \indep D \mid X$, and if $0 < \Pr(D=1 \mid X) < 1$,
 \[
-  \E[Y(d)] = \sum_x \E[Y \mid D=d, X=x]\,\Pr(X=x) .
+\tau = 0.5 \times 0.05 + 0.5 \times 0.20 = \mathbf{0.125}
 \]
-\end{result}
+
+The coupon works four times better on customers who were drifting away. Active customers buy anyway.
 
 \bigskip
 
-\begin{itemize}
-  \item Condition (ii) closes the non-causal paths. Condition (i) keeps the causal paths open and avoids opening a collider.
-  \item Within a level of $X$, treated and untreated units are comparable, as if a coin had been tossed within each level.
-  \item $0 < \Pr(D=1 \mid X) < 1$: every level of $X$ needs both treated and untreated units.
-\end{itemize}
+\small This is a different population from the pilot region, and it has a different ATE. Both are real answers; neither is \emph{the} effect. That is why step 1 names the population.
 \end{frame}
 
-% ====================================================================
-\begin{frame}{Standardisation, and the Coin as Graph Surgery}
+% [RELEASE R3 — two targeting policies; pairs compute both before the reveal]
+\begin{frame}{Who Got the Coupon Decides the Sign}
 
-The formula in Result 1.11 is \textbf{standardisation}: compare within levels of $X$, then average with the population's weights. Using the treated units' weights instead gives the ATT.
-
-\bigskip
+Two ways a manager might have run the pilot on the whole base. Treated $=$ one segment, control $=$ the other.
 
 \begin{columns}[T]
-\begin{column}{0.48\textwidth}
-\centering
-\textbf{Staff choose}\\[0.5em]
-\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\small}]
-  \node (x) at (0,1.2) {$X$}; \node (u) at (0,-1.2) {$U$};
-  \node (d) at (-1.8,0) {$D$}; \node (y) at (1.8,0) {$Y$};
-  \draw[->] (x) -- (d); \draw[->] (x) -- (y);
-  \draw[->] (u) -- (d); \draw[->] (u) -- (y);
-  \draw[->, thick, sbgreen] (d) -- (y);
-\end{tikzpicture}
+\begin{column}{0.49\textwidth}
+\textbf{Coupon to the active}
+\begin{align*}
+\E[Y \mid D = 1] &= 0.80 \\
+\E[Y \mid D = 0] &= 0.10 \\
+\text{naive} &= \textcolor{warnred}{+0.70}
+\end{align*}
+\[
+\underbrace{0.70}_{\text{naive}} = \underbrace{0.05}_{\text{ATT}} + \underbrace{0.75 - 0.10}_{\text{bias} \,=\, +0.65}
+\]
+\small Active customers buy anyway: a 14-fold \textbf{overestimate}.
 \end{column}
-\begin{column}{0.48\textwidth}
-\centering
-\textbf{A coin chooses}\\[0.5em]
-\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\small}]
-  \node (x) at (0,1.2) {$X$}; \node (u) at (0,-1.2) {$U$};
-  \node (d) at (-1.8,0) {$D$}; \node (y) at (1.8,0) {$Y$};
-  \node (z) at (-3.2,0) {coin};
-  \draw[->] (z) -- (d);
-  \draw[->] (x) -- (y); \draw[->] (u) -- (y);
-  \draw[->, thick, sbgreen] (d) -- (y);
-\end{tikzpicture}
+\begin{column}{0.49\textwidth}
+\textbf{Coupon to the lapsed}
+\begin{align*}
+\E[Y \mid D = 1] &= 0.30 \\
+\E[Y \mid D = 0] &= 0.75 \\
+\text{naive} &= \textcolor{warnred}{-0.45}
+\end{align*}
+\[
+\underbrace{-0.45}_{\text{naive}} = \underbrace{0.20}_{\text{ATT}} + \underbrace{0.10 - 0.75}_{\text{bias} \,=\, -0.65}
+\]
+\small The coupon looks harmful. It lifts the lapsed by 20 points: a \textbf{sign reversal}.
 \end{column}
 \end{columns}
 
 \bigskip
 
-A coin deletes every arrow into $D$, including those from $U$, which nobody measured. No backdoor path remains, so no adjustment is needed.
+\begin{center}
+Same coupon, same customers. The sign is set by \textbf{who was chosen}. Keep the right-hand column: it comes back in M7.
+\end{center}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Simpson's Paradox}
+\section{Identification by Design: The Coin}
+% ====================================================================
 
-An association can \textbf{reverse} when the data are split by a third variable. Which answer is right is decided by the graph, not by the data.
+% [RELEASE R4 — the Q2 randomised test in the pilot region]
+% [CARRIED VERBATIM from old-decks/lecture01.tex:364]
+\begin{frame}{The Solution: Randomization}
+
+Randomly assign 500 customers to coupon, 500 to control.
 
 \bigskip
 
 \begin{center}
-\begin{tabular}{lll}
+\begin{tabular}{lccr}
 \toprule
-\textbf{The third variable is} & \textbf{Graph} & \textbf{Right comparison} \\
+\textbf{Type} & \textbf{Coupon (500)} & \textbf{No-coupon (500)} & \textbf{Total} \\
 \midrule
-a fork (common cause of $D$ and $Y$) & $D \leftarrow F \to Y$ & within its levels, then standardise \\
-a mediator & $D \to M \to Y$ & pooled; splitting is wrong \\
-a collider & $D \to C \leftarrow Y$ & pooled; splitting is wrong \\
+Lost Cause (0,0) & 200 & 200 & 400 \\
+Sure Thing (1,1) & \textcolor{sbgreen}{150} & \textcolor{sbgreen}{150} & 300 \\
+Persuadable (0,1) & 100 & 100 & 200 \\
+Do-Not-Disturb (1,0) & 50 & 50 & 100 \\
 \bottomrule
 \end{tabular}
 \end{center}
-
-\bigskip
-
-The same table of numbers can come from any of the three graphs. Knowing which one you are in is subject-matter knowledge.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{FitLife: The Group-Class Invitation}
-
-FitLife also invited members to a free group class, mostly new members, who renew less often.
-
-\begin{center}
-\small
-\begin{tabular}{lcccc}
-\toprule
- & \multicolumn{2}{c}{Invited} & \multicolumn{2}{c}{Not invited} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
-Member type & Renewed / members & Rate & Renewed / members & Rate \\
-\midrule
-New & 40 / 200 & 0.20 & 9 / 60 & 0.15 \\
-Long-standing & 38 / 50 & 0.76 & 140 / 200 & 0.70 \\
-\midrule
-Pooled & 78 / 250 & 0.312 & 149 / 260 & 0.573 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-
-Pooled, invited members renew far less. Within each member type they renew more, by $0.05$ and $0.06$.
-
-\medskip
-
-Which comparison answers ``did the invitation help''?
-\end{frame}
-
-% ====================================================================
-\begin{frame}{FitLife: Member Type Is a Fork}
-
-Member type drove the invitations and drives renewal, and the class cannot change it. It is a fork: compare within types and standardise (Result 1.11).
-
-\bigskip
 
 \pause
 
+\begin{align*}
+\text{Purchase rate (coupon)} &= (150 + 100)/500 = 0.50 \\
+\text{Purchase rate (no-coupon)} &= (150 + 50)/500 = 0.40 \\
+\text{Difference} &= 0.50 - 0.40 = \textcolor{sbgreen}{\mathbf{0.10}} = \text{true ATE} \; \checkmark
+\end{align*}
+
+\small This table shows the \emph{expected} split. The next slide shows a draw that actually happens.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{A Random Draw Need Not Balance}
+
+The same 1{,}000 customers; another draw the seed could have produced.
+
+\bigskip
+
 \begin{center}
-\begin{tabular}{lll}
+\begin{tabular}{lrr}
 \toprule
-\textbf{Estimand} & \textbf{Weights} & \textbf{Standardised effect} \\
+\textbf{Type} & \textbf{Coupon (500)} & \textbf{No coupon (500)} \\
 \midrule
-ATE & all 510 members & $(260 \times 0.05 + 250 \times 0.06)/510 = 0.055$ \\
-ATT & the 250 invited & $(200 \times 0.05 + 50 \times 0.06)/250 = 0.052$ \\
+Lost Cause & 195 & 205 \\
+Sure Thing & 155 & 145 \\
+Persuadable & 105 & 95 \\
+Do-Not-Disturb & 45 & 55 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\[
+\widehat\tau = \frac{155 + 105}{500} - \frac{145 + 55}{500} = 0.52 - 0.40 = \mathbf{0.12} \qquad \text{(true: } 0.10\text{)}
+\]
+
+\textbf{Nothing is broken.} Randomisation removes \emph{systematic} selection --- over all the draws the seed could make --- not the luck of this one. How far a single draw can land is this afternoon's workshop, and M2's first question.
+\end{frame}
+
+% [MERGED from old-decks/lecture01.tex:392 and lecture02.tex:364]
+\begin{frame}{Identification Under Random Assignment}
+
+\begin{block}{Assignment mechanism}
+\[
+D \indep \bigl(Y(0),\, Y(1)\bigr), \qquad 0 < \Prob(D = 1) < 1
+\]
+\end{block}
+
+\begin{block}{Result: the ATE is identified}
+Under consistency and random assignment,
+\[
+\tau = \E[Y(1)] - \E[Y(0)] = \E[Y \mid D = 1] - \E[Y \mid D = 0]
+\]
+\end{block}
+
+\textbf{Proof:} consistency gives $\E[Y \mid D\!=\!1] = \E[Y(1) \mid D\!=\!1]$; independence gives $\E[Y(1) \mid D\!=\!1] = \E[Y(1)]$. Same for $D = 0$. Selection bias $= 0$, and $\tau = \tau_{\text{ATT}} = \tau_{\text{ATU}}$. $\square$
+
+\bigskip
+
+Independence is a property of the \textbf{procedure}, not the customers: a random number generator knows nothing about anyone's potential outcomes --- observed or not.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Verifying with the Two Segments}
+
+Under a random 50/50 split of the base, each arm is half active, half lapsed:
+
+\begin{align*}
+\E[Y \mid D = 1] &= 0.5 \times 0.80 + 0.5 \times 0.30 = 0.55 \\
+\E[Y \mid D = 0] &= 0.5 \times 0.75 + 0.5 \times 0.10 = 0.425 \\
+\text{Difference} &= 0.55 - 0.425 = \textcolor{sbgreen}{\mathbf{0.125}} = \tau \quad \checkmark
+\end{align*}
+
+\begin{block}{Under randomisation, all three averages coincide}
+\[
+\tau = \tau_{\text{ATT}} = \tau_{\text{ATU}} = 0.125
+\]
+\end{block}
+
+Both arms are the population in miniature, so ``the treated'' and ``everyone'' are the same people in distribution. Compare the targeted pilots: ATT of $0.05$ or $0.20$, depending on who was picked.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{What Must Be True}
+
+From Lin's description of the Q2 test:
+
+\bigskip
+
+\begin{center}
+\small
+\begin{tabular}{p{6.4cm}p{6.6cm}}
+\toprule
+\textbf{The case says} & \textbf{Which buys} \\
+\midrule
+``The 500 recipients were drawn by a random number generator; the seed is in the log.'' & Independence: $D \indep \{Y(0), Y(1)\}$. Nobody chose. \\[0.5em]
+``Nobody could opt in, and nobody was removed after the draw.'' & Independence survives: the arms are still the draw. \\[0.5em]
+``One coupon design, sent in the app, single-use and tied to the account.'' & Consistency: one version of treatment; codes cannot be passed on. \\[0.5em]
+``Store staff did not know who held a coupon.'' & No other treatment travels with the coupon. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \bigskip
 
-The pooled comparison mixes the effect of the invitation with the difference between new and long-standing members. Standardising removes the second.
+\textbf{Every row can be checked from the logs.} That is what randomisation buys: the identifying assumption is a fact about the \emph{procedure}, not a belief about customers.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Your Turn: Compare Only Members Who Attended?}
+\section{Estimation}
+% ====================================================================
 
-\begin{center}
-\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\small}]
-  \node (t) at (0,1.2) {member type};
-  \node (d) at (-2.6,0) {invited};
-  \node (y) at (2.6,0) {renewed};
-  \node (a) at (0,-1.2) {attended a class};
-  \draw[->] (t) -- (d); \draw[->] (t) -- (y); \draw[->] (d) -- (y);
-  \draw[->] (d) -- (a); \draw[->,dashed] (y) -- (a);
-\end{tikzpicture}
+\begin{frame}{The Estimand, Then the Estimator}
 
-\small\textcolor{extgrey}{dashed: members who plan to renew attend more}
-\end{center}
+\spinestep{Estimand.} The average effect for the 1{,}000 customers in the test region:
+\[
+\tau_S = \frac{1}{1000}\sum_{i=1}^{1000} \bigl\{Y_i(1) - Y_i(0)\bigr\} .
+\]
+These are 2{,}000 fixed numbers. \textbf{The only thing random is the coin.}
 
 \bigskip
 
-An analyst proposes to compare renewal among invited and uninvited members ``who attended at least one class that month'', to compare like with like.
+\spinestep{Estimator.} $\widehat\tau = \bar Y_{\text{coupon}} - \bar Y_{\text{no coupon}}$.
 
 \bigskip
 
-\textbf{In pairs:} use the graph to explain what goes wrong, and say what you would condition on instead.
+\spinestep{Property.} Over all the draws the coin could make, $\E_D[\widehat\tau] = \tau_S$.
+
+\smallskip
+\small
+Why: each customer lands in the coupon arm with probability $500/1000$, so
+$\E_D[\bar Y_{\text{coupon}}] = \frac{1}{500}\sum_i \frac{500}{1000}\, Y_i(1) = \frac{1}{1000}\sum_i Y_i(1)$. Same for the control arm.
+
+\normalsize
+\bigskip
+
+This is the \textbf{design-based} view: potential outcomes fixed, assignment random. Uncertainty will come from the same place --- the spread of $\widehat\tau$ over draws (M2).
 \end{frame}
 
-% ====================================================================
-\begin{frame}{Estimation: What the Randomisation Guarantees}
-
-In a \textbf{completely randomised experiment} exactly $n_1$ of $n$ units are treated, each subset equally likely. Hold the potential outcomes fixed: the only randomness is the draw.
-
-\medskip
-
-\begin{result}{1.12}{Unbiasedness over the design}
-$\hatt = \bar Y_1 - \bar Y_0$ satisfies $\E_D[\hatt] = \tau_S$, where $\E_D$ averages over draws.
-\end{result}
-
-\medskip
-
-\begin{itemize}
-  \item The argument uses nothing but the draw: no outcome model, no sampling assumption, no large-sample approximation.
-  \item The collection of $\hatt$ over all possible draws is the \textbf{randomisation distribution}. Its centre is $\tau_S$; its spread is what a standard error estimates (Meeting 2).
-\end{itemize}
-\end{frame}
-
-% ====================================================================
+% [CONDENSED from old-decks/lecture02.tex:631]
 \begin{frame}{The Regression Computes the Same Number}
 
-\begin{result}{1.13}{OLS on a dummy is the difference in means}
-In the least-squares fit of $Y_i = \alpha + \beta D_i + \varepsilon_i$, \quad $\hat\alpha = \bar Y_0$ and $\hat\beta = \bar Y_1 - \bar Y_0$.
-\end{result}
-
-\bigskip
-
-The regression is a computing device. Whether its coefficient is causal is decided by identification, not by the software.
-
-\bigskip
-
-The omitted-variable-bias formula is Result 1.6 written for a regression. For binary $D$,
+Regress purchase on a coupon dummy:
 \[
-\frac{\Cov(D,Y)}{\Var(D)} = \E[Y(0) \mid D=1] - \E[Y(0) \mid D=0] + \ATT .
+Y_i = \alpha + \beta D_i + \varepsilon_i \qquad \Longrightarrow \qquad \widehat\alpha = \bar Y_0, \quad \widehat\beta = \bar Y_1 - \bar Y_0 .
 \]
-On FitLife's session data the regression returns $0.75$, the naive comparison, with the same $0.50$ of selection bias inside it.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Identification, Estimation, Inference}
-
-Keep the three questions apart.
 
 \bigskip
 
 \begin{center}
-\begin{tabular}{p{2.8cm}p{9.8cm}}
+\begin{tabular}{lrl}
 \toprule
-\step{Identification} & With infinite data, would the comparison equal the estimand? Settled by assumptions about how the data were generated. \\[0.5em]
-\step{Estimation} & How is the comparison computed from finite data? \\[0.5em]
-\step{Inference} & How far is the estimate likely to be from the truth because of chance? \\
+\textbf{Data} & $\widehat\beta$ & \textbf{Causal?} \\
+\midrule
+Marketing's pilot & $0.44$ & \textcolor{warnred}{no}: the assignment was a choice \\
+Q2 randomised test & $0.10$ & \textcolor{sbgreen}{yes}: the assignment was a coin \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \bigskip
 
-A sophisticated estimator cannot rescue a failed identification argument, and a small standard error does not make a biased comparison right.
+Same regression, same software, opposite verdicts. In regression language, selection bias is $\Cov(D, \varepsilon) \neq 0$; the coin sets it to zero.
+
+\medskip
+
+\textbf{The regression computes. The design decides whether what it computes is causal.}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Three Common Errors}
+\section{What Is the Treatment?}
+% ====================================================================
 
-\begin{pitfall}{three common errors}
+% [CARRIED VERBATIM from old-decks/lecture01.tex:240]
+\begin{frame}{A Harder Example: The George Floyd Case}
+
+\begin{quote}
+Would the outcome have been different if George Floyd had been perceived as white?
+\end{quote}
+
+The same framework applies:
 \begin{itemize}
-  \item Holding a lift against zero instead of the break-even of the population the decision covers.
-  \item ``Controlling for everything available'': a mediator removes part of the effect and a collider adds bias.
-  \item Reading a large sample as protection against selection bias. It only makes the wrong number more precise.
+    \item $D = 1$: perceived as Black; $D = 0$: perceived as White
+    \item $Y(1)$: outcome under Black perception; $Y(0)$: outcome under White perception
+    \item ITE: $Y(1) - Y(0)$
 \end{itemize}
-\end{pitfall}
+
+\medskip
+
+Same four types:
+\begin{center}
+\small
+\begin{tabular}{ll}
+\textbf{Type 1:} & Survives regardless (ITE $= 0$) \\
+\textbf{Type 2:} & Dies regardless (ITE $= 0$) \\
+\textbf{Type 3:} & Dies because of race (ITE $= +1$) \\
+\textbf{Type 4:} & Survives because of race (ITE $= -1$) \\
+\end{tabular}
+\end{center}
+
+Floyd: observed $D = 1$, $Y = 1$. He is Type 2 or Type 3. \textbf{We cannot tell which.}
+\end{frame}
+
+% [REVISED from old-decks/lecture01.tex:595]
+\begin{frame}{Back to Floyd: Define the Intervention First}
+
+We cannot randomly assign perceived race. The obstacle is \textbf{conceptual}, not just practical:
+\begin{itemize}
+    \item ``Change Floyd's race but hold everything else fixed''
+    \item What does it mean for Floyd to be perceived as White?
+    \item Same neighborhood? Same life experiences?
+    \item The counterfactual may not be \textbf{well-defined}
+\end{itemize}
 
 \bigskip
 
-Each one has appeared today: the break-even of $0.30$ at FitLife, the class-attendance proposal, and the naive $0.75$, which a larger sample would only make more precise.
+\begin{block}{Holland (1986): ``No causation without manipulation''}
+A strong position, not a theorem. The working rule for this course: \textbf{state an intervention precise enough that you could, in principle, assign it} --- that is step 1. Other frameworks handle attributes; they still have to say what changes and what is held fixed.
+\end{block}
+\end{frame}
+
+% [REVISED from old-decks/lecture01.tex:618]
+\begin{frame}{The Solution: Randomize a Signal}
+
+We cannot assign race. We \emph{can} assign a \textbf{signal} of race --- which changes the estimand.
+
+\bigskip
+
+\textbf{Bertrand \& Mullainathan (2004, \emph{American Economic Review}):}
+\begin{itemize}
+    \item Sent fictitious résumés to job ads in Boston and Chicago
+    \item Names (``Emily Walsh'' vs.\ ``Lakisha Washington'') \textbf{randomly assigned} to otherwise comparable résumés
+    \item Outcome: callbacks. White-sounding names got about \textbf{50\% more}
+\end{itemize}
+
+\medskip
+
+\textbf{Cui, Li, \& Zhang (2020, \emph{Management Science}):}
+\begin{itemize}
+    \item Randomised guest profiles on Airbnb; then randomised a remedy --- a positive review
+    \item The acceptance gap shrank when a credible quality signal was present
+\end{itemize}
+
+\bigskip
+
+\small The estimand is the effect of the \emph{signal} on the reader's decision: well defined, and often the policy-relevant one. The taxonomy of causal questions is in the notes.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Check Yourself}
+\section{What the Coupon Is Worth}
+% ====================================================================
 
-A retailer finds that customers who used its app spent 40\% more than those who did not.
+\begin{frame}{The Test Against the Break-Even}
+
+The Q2 test, back to the rollout decision. The coupon arm bought at $p_1 = 0.50$:
+\[
+\tau^{*} = \frac{0.50}{3} = 0.167 \qquad\qquad \widehat\tau = 0.50 - 0.40 = 0.10
+\]
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+& \textbf{Lift} & \textbf{Break-even} & \textbf{Net per coupon} \\
+\midrule
+Marketing's pilot & $0.44$ & $0.227$ & \textcolor{sbgreen}{$+$\textyen 6.40} \\
+Q2 randomised test & $0.10$ & $0.167$ & \textcolor{warnred}{$0.10 \times 30 - 5 = -$\textyen 2.00} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Across 10{,}000 members: marketing forecast \textbf{+\textyen 64{,}000}; the test says \textbf{$-$\textyen 20{,}000} --- \emph{if} the region's effect carries to the base (M2).
+
+\bigskip
+
+The coupon \emph{works} --- it causes purchases. It does not \emph{pay}: most of the \textyen 10 goes to Sure Things.
+
+\medskip
+
+\small Is $0.10$ itself just the luck of one draw? M2.
+\end{frame}
+
+% [RELEASE R5 — segment economics]
+\begin{frame}{The Average Coupon Loses Money. Some Coupons Don't.}
+
+Same margin and coupon, applied segment by segment on the base:
+\[
+\text{net}(x) = \tau(x) \times 30 \;-\; \E[Y(1) \mid X = x] \times 10
+\]
+
+\begin{center}
+\begin{tabular}{lccccc}
+\toprule
+& \textbf{Effect} & \textbf{Redemption} & \textbf{Revenue} & \textbf{Break-even} & \textbf{Net} \\
+\midrule
+Active & $+0.05$ & 0.80 & \textyen 1.50 & $0.267$ & \textcolor{warnred}{$-$\textyen 6.50} \\
+Lapsed & $+0.20$ & 0.30 & \textyen 6.00 & $0.100$ & \textcolor{sbgreen}{$+$\textyen 3.00} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Everyone: $5{,}000 \times (-6.50) + 5{,}000 \times 3.00 = \textcolor{warnred}{-\text{\textyen}\,17{,}500}$. \quad Lapsed only: \textcolor{sbgreen}{$+$\textyen 15{,}000}.
+
+\bigskip
+
+\textbf{Why:} the active redeem 80\% of the time and are moved by 5 points. The \textyen 10 mostly pays for purchases they were making anyway --- the Sure Thing cost.
+
+\bigskip
+
+\textbf{The decision is not ``coupon or no coupon'' but ``coupon whom''.} That is M3--M6.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Data Roles}
+
+Every column in the Q2 export has exactly one job. Decide it \textbf{before} you fit anything.
+
+\begin{center}
+\small
+\begin{tabular}{llp{6.3cm}}
+\toprule
+\textbf{Column} & \textbf{Role} & \textbf{Rule} \\
+\midrule
+\texttt{member\_id} & Unit & One row per unit of assignment \\
+\texttt{coupon} & Treatment $D$ & Set by the draw; never predicted, never adjusted \\
+\texttt{purchase\_7d} & Outcome $Y$ & Measured after the draw, the same way in both arms \\
+\texttt{tier}, \texttt{recency}, \texttt{spend\_q1} & Pre-treatment $X$ & Fixed before the draw; may describe, split or adjust \\
+\texttt{redeemed}, \texttt{app\_opens\_q2} & Post-treatment & Caused partly by $D$: \textbf{never} a control \\
+\texttt{seed}, \texttt{draw\_time} & Audit & Proves the draw happened as described \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{And every row set has a job:} the test region is where the effect was \emph{measured}; the 10{,}000-member base is where the decision \emph{lands}. M2 asks when a number measured on one transports to the other.
+
+\medskip
+
+\small Your project data gets the same table, in writing, before any model is fitted.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Key Takeaways}
+
+\begin{itemize}
+    \item \spinestep{Estimand.} Name the number the decision needs, for whom, before any data: here a lift held against $\tau^* = p_1/3$. ATE, ATT and ATU average over different people.
+    \item \spinestep{Identification.} Naive $=$ ATT $+$ selection bias; marketing's $0.44$ was $0.12 + 0.32$. Who got treated can inflate an effect or reverse its sign, and a bigger sample does not help. A coin sets the bias to zero \emph{by procedure}, and every assumption is a checkable fact in the log.
+    \item \spinestep{Estimation.} The difference in means --- the same number as OLS on a dummy --- is unbiased \emph{over draws of the coin}. Any one draw misses.
+    \item \textbf{A causal effect needs a treatment you could, in principle, assign.} The coupon is one; ``being a loyal customer'' is not.
+    \item \textbf{An effect can be real and unprofitable.} The expensive customer is the Sure Thing.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Exit Ticket}
+
+On paper, three sentences, before the workshop:
 
 \bigskip
 
 \begin{enumerate}
-  \item Name the potential outcomes.
-  \item Which estimand does a decision to promote the app need?
-  \item What is the likely sign of the selection bias?
-  \item Name one fork in this setting.
+    \item What comparison does the coupon decision need?
+    \item Why is marketing's $0.44$ misleading?
+    \item Give one reason not to roll the coupon out, even though the Q2 lift is positive.
 \end{enumerate}
-
-\bigskip
-
-\small Three minutes, on paper. Then compare with your neighbour.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Summary}
+\begin{frame}[shrink=8]{Workshop (No AI): Arm Means, Label Reversal, Seeds}
 
-\begin{itemize}
-  \item \step{Estimand.} Name the number the decision needs, for whom, before any data. The break-even depends on the population and the cost model.
-  \item \step{Identification.} Naive comparison $=$ ATT $+$ selection bias. A coin removes the bias by procedure. Without one, a graph says what to compare within: block backdoor paths; never condition on a mediator or a collider.
-  \item \step{Estimation.} The difference in means equals OLS on a dummy and is unbiased over draws of the coin. A single draw can miss.
-  \item \textbf{An effect can be real and unprofitable.} At FitLife the sessions worked and still lost money: staff gave them to members who would have renewed anyway.
-\end{itemize}
+The Q2 export, then a simulated region with known types. Sixty minutes, scripted.
 
 \medskip
 
-\textbf{Lab 0:} Python, probability and statistics review. It ends with a potential-outcomes simulator that checks naive $=$ ATT $+$ selection bias.
+\begin{center}
+\scriptsize
+\begin{tabular}{rlp{8.2cm}}
+\toprule
+\textbf{Min} & \textbf{Slot} & \textbf{Prompt} \\
+\midrule
+7  & Predict & The simulated region has a true ATE of $0.10$. Over 200 fresh draws of the coin, what range will $\widehat\tau$ cover? \\
+10 & Hand calculation & Fill in the data-roles table for the export. Compute both arm means and $\widehat\tau$ from the counts. \\
+5  & Demonstration & $\bar Y_1 - \bar Y_0$, then \texttt{regress purchase coupon}: the same number, twice. \\
+15 & Implement & Your own difference in means and OLS; break-even check against $p_1/3$. This is the hand-coded reference for Lab~1. \\
+10 & Perturbation & \textbf{Label reversal:} recode \texttt{coupon} as $1 - D$ and refit. Then redraw the coin with 200 seeds, customers held fixed; record $\widehat\tau$ each time. \\
+8  & Comparison & Histogram of the 200 estimates against the true $0.10$ and the break-even $0.167$. Its mean, its standard deviation, and how many draws cross the break-even. \\
+5  & Interpret & One sentence to marketing: what the test shows and what it does not yet show. \\
+\bottomrule
+\end{tabular}
+\end{center}
 
-\medskip
-
-\textbf{Reading:} technical notes for Meeting 1. Sections 1 and 2 are examinable; Section 3 is reference.
+\small \textbf{Close (3 min):} relabelling flips the sign and nothing else --- the arms are symbols, the draw is the design. The histogram is the \textbf{randomisation distribution}: customers fixed, coin redrawn. Its centre is the ATE (unbiasedness); its spread is the uncertainty M2 puts a formula on.
 \end{frame}
 
 \end{document}
