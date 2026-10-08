@@ -142,14 +142,17 @@ for t, val in enumerate(["106.667", "120", "133.333", "140.333"]): check(f"plot 
 mg = lambda lift000: margin * F(lift000) * 1000 - cost
 check("flagship SC margin +1,475", "1475", mg('15.9'))
 check("LOO low margin +775", "775", mg('13.1')); check("LOO high margin +1,850", "1850", mg('17.4'))
-check("cohort margin +600", "600", mg('12.4')); check("first quarter +300", "300", mg('11.2')); check("second quarter +950", "950", mg('13.8'))
-check("0.25 x 12,400 - 2,500", "600", margin * 12400 - cost)
-check("CI low 10.0", "10.0", 12.4 - 1.96 * 1.2); check("CI high 14.8", "14.8", 12.4 + 1.96 * 1.2)
-check("CI low equals break-even 10 at one decimal", "10.0", cost / margin / 1000)
-assert F('13.1') <= F('15.9') <= F('17.4') and F('15.9') < F('18.7') and F('12.4') < F('15.9')
-assert mg('15.9') > 2 * mg('12.4')                                     # "more than twice the cohort's +600"
-assert all(F(x) > 10 for x in ('12.4', '15.9', '13.1'))                 # both say the assistant pays
-check("in 000: 12,400 -> 12.4", "12.4", F(12400, 1000)); check("15,900 -> 15.9", "15.9", F(15900, 1000))
+# cohort numbers come from Meeting 10 (slides10_check.py): DiD 11 (SE 1.22), quarters 8 and 14
+check("cohort average of quarters 8 and 14", "11.0", (8 + 14) / 2)
+check("cohort margin +250", "250", mg('11.0')); check("first quarter -500", "-500", mg('8.0')); check("second quarter +1,000", "1000", mg('14.0'))
+check("0.25 x 11,000 - 2,500", "250", margin * 11000 - cost)
+check("CI low 8.6", "8.6", 11.0 - 1.96 * 1.22); check("CI high 13.4", "13.4", 11.0 + 1.96 * 1.22)
+assert 11.0 - 1.96 * 1.22 < cost / margin / 1000 < 11.0 + 1.96 * 1.22  # interval includes the break-even
+assert F('14.0') > 10 and F('11.0') > 10 and F('15.9') > 10              # point estimates clear the break-even
+assert F('13.1') <= F('15.9') <= F('17.4') and F('15.9') < F('18.7') and F('11.0') < F('15.9')
+check("flagship margin / cohort margin, almost six", "5.9", mg('15.9') / mg('11.0'))
+check("comparison stores 120 - 30 - 1 = 89", "89", 120 - 30 - 1); check("never-treated after cohort 2: 89 - 30", "59", 89 - 30)
+check("in 000: 11,000 -> 11.0", "11.0", F(11000, 1000)); check("15,900 -> 15.9", "15.9", F(15900, 1000))
 check("18,700 -> 18.7", "18.7", F(18700, 1000))
 
 print(f"\n{len(FAIL)} mismatches: {FAIL}")
