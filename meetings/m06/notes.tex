@@ -292,12 +292,12 @@ and the IPW identity of Meeting~5 applies with those probabilities.
 traffic towards arms that look better as data arrive: \emph{Thompson sampling} assigns each new unit to an arm with
 probability equal to the current posterior probability that the arm is best. Bandits suit many short-lived decisions
 (creative variants); one-off strategic decisions are better served by a clean test. Sequential rules, where today's
-action depends on yesterday's response, are the subject of Handout H5.
+action depends on yesterday's response, are the subject of Handout H3.
 
 \subsection{What the sum assumes}\label{sec:sum}
 
 Writing the value of a list as $\sum_i d_iv(X_i)$ assumes no interference and one well-defined treatment. It fails when
-treated units tell untreated ones, draw demand from them, or share a capacity (Handout H4). Then the objective is not
+treated units tell untreated ones, draw demand from them, or share a capacity (Handout H1). Then the objective is not
 separable and none of the sorting results holds. Check also that the list does not rank cells the experiment never
 contained (no support): the optimiser cannot tell a measured number from an extrapolated one.
 
@@ -443,7 +443,7 @@ the decisions they induce; the SPO+ loss}{Sections 1--4}{3}
 fairness constraints do and do not protect, from an economist's view}{All}{1}
 \reading{Russo, Van Roy, Kazerouni, Osband and Wen (2018), ``A tutorial on Thompson sampling'', \emph{Foundations and Trends in
 Machine Learning}}{Bandits from first principles}{Ch.\ 1--4}{2}
-\reading{Handout H5, \emph{Sequential decisions}}{Dynamic treatment regimes, Q-learning, G-estimation and bandit
+\reading{Handout H3, \emph{Sequential decisions}}{Dynamic treatment regimes, Q-learning, G-estimation and bandit
 logs}{All}{2}
 \end{readinglist}
 

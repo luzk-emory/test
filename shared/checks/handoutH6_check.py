@@ -1,62 +1,84 @@
-"""Arithmetic checks for handoutH6.tex (Neural estimators). Run: python3 handoutH6_check.py"""
-from decimal import Decimal, ROUND_HALF_UP
-from fractions import Fraction as F
+# Independent arithmetic check of handoutH6.tex (Staggered adoption), FitLife waves example and exercise.
+import sys
 import numpy as np
-FAIL = []
-def check(label, claimed, computed, tol=None):
-    s = str(claimed); d = len(s.split('.')[1]) if '.' in s else 0
-    c = Decimal(repr(round(float(computed), 12))).quantize(Decimal(1).scaleb(-d), ROUND_HALF_UP)
-    ok = abs(float(c) - float(s)) < 1e-12 if tol is None else abs(float(computed) - float(s)) <= tol
-    print(f"{'OK ' if ok else 'MISMATCH'} | {label}: text {s}, computed {float(computed):.6g}")
-    if not ok: FAIL.append(label)
+R = []
+def check(label, claimed, computed, tol=1e-9, sev="error"):
+    ok = abs(claimed - computed) <= tol; R.append((ok, sev))
+    print(f"[{'ok  ' if ok else ('FAIL' if sev=='error' else 'WARN')}] {label}: text={claimed} computed={computed:.6g}")
 
-def joint(pU, pD_U, pY_UD):
-    """Return P(D=d, Y=y) as dict from P(U=1), P(D=1|U=u), P(Y=1|U=u,D=d)."""
-    J = {}
-    for d in (0, 1):
-        for yv in (0, 1):
-            tot = 0
-            for u in (0, 1):
-                pu = pU if u else 1 - pU; pd = pD_U(u) if d else 1 - pD_U(u); py = pY_UD(u, d) if yv else 1 - pY_UD(u, d)
-                tot += pu * pd * py
-            J[(d, yv)] = tot
-    return J
-def summarise(J):
-    pD1 = J[(1, 0)] + J[(1, 1)]
-    return pD1, J[(1, 1)] / pD1, J[(0, 1)] / (1 - pD1)
+# Table rebuilt from the stated DGP: common trend +1/month, effect 6 in adoption month, 3 in the next.
+Y = {'E': [40, 47, 45], 'L': [50, 51, 58], 'N': [60, 61, 62]}
+G = {'E': 2, 'L': 3, 'N': np.inf}
+eff = {0: 6, 1: 3, 2: 3}   # e=2 value 3 is the exercise's month-4 assumption
+for g in Y:
+    for t in (1, 2, 3):
+        y0 = Y[g][0] + (t-1)
+        e = t - G[g]
+        gen = y0 + (eff[int(e)] if e >= 0 else 0)
+        check(f"Table cell {g}, month {t} matches stated trend+effects", Y[g][t-1], gen)
+y = lambda g, t: Y[g][t-1]
+att_E2 = (y('E',2)-y('E',1)) - (y('N',2)-y('N',1))
+att_E3 = (y('E',3)-y('E',1)) - (y('N',3)-y('N',1))
+att_L3 = (y('L',3)-y('L',2)) - (y('N',3)-y('N',2))
+check("'ATT(E,2) = (47 - 40) - (61 - 60) = 6'", 6, att_E2)
+check("'ATT(E,3) = (45 - 40) - (62 - 60) = 3'", 3, att_E3)
+check("'ATT(L,3) = (58 - 51) - (62 - 61) = 6'", 6, att_L3)
+check("'(ATT(0), ATT(1)) = (6, 3)': ATT(0)", 6, (att_E2+att_L3)/2)
+check("'(ATT(0), ATT(1)) = (6, 3)': ATT(1)", 3, att_E3)
+check("'overall average 5' (cell-weighted, equal cohort sizes)", 5, np.mean([att_E2, att_E3, att_L3]))
+contam = (y('L',3)-y('L',2)) - (y('E',3)-y('E',2))
+check("'L against E, months 2->3: (58 - 51) - (45 - 47) = 9'", 9, contam)
+check("'ATT(L,3) - [ATT(E,3) - ATT(E,2)] = 6 - (3 - 6) = 9'", 9, att_L3-(att_E3-att_E2))
 
-# Result 'nonid': model A vs model B
-A = joint(F(1, 2), lambda u: F(1, 2), lambda u, d: F(2, 5) + F(1, 5) * d)
-B = joint(F(1, 2), lambda u: F(1, 5) + F(3, 5) * u, lambda u, d: F(1, 3) + F(1, 3) * u)
-tauA = F(1, 5); tauB = sum((F(1, 2)) * ((F(1, 3) + F(1, 3) * u) - (F(1, 3) + F(1, 3) * u)) for u in (0, 1))
-check("model A tau = 0.2", "0.2", tauA); check("model B tau = 0", "0", tauB)
-pA, a1, a0 = summarise(A); pB, b1, b0 = summarise(B)
-check("model A P(D=1)=0.5", "0.5", pA); check("model B P(D=1)=0.5 (same D margin)", "0.5", pB)
-check("A: P(Y=1|D=1)=0.6", "0.6", a1); check("A: P(Y=1|D=0)=0.4", "0.4", a0)
-check("B: P(Y=1|D=1)=0.6", "0.6", b1); check("B: P(Y=1|D=0)=0.4", "0.4", b0)
-ok = A == B; print(f"{'OK ' if ok else 'MISMATCH'} | joint (D,Y) identical in A and B: {ok}")
-if not ok: FAIL.append("joint A==B")
-check("B: P(U=1|D=1)=0.8", "0.8", F(1, 2) * F(4, 5) / pB); check("B: P(U=1|D=0)=0.2", "0.2", F(1, 2) * F(1, 5) / (1 - pB))
-check("B: 0.8*2/3+0.2*1/3 = 0.6", "0.6", F(4, 5) * F(2, 3) + F(1, 5) * F(1, 3))
-check("B: 0.2*2/3+0.8*1/3 = 0.4", "0.4", F(1, 5) * F(2, 3) + F(4, 5) * F(1, 3))
+# Goodman-Bacon 2x2s
+m = lambda g, ts: np.mean([y(g,t) for t in ts])
+EvN = (m('E',[2,3])-m('E',[1])) - (m('N',[2,3])-m('N',[1]))
+LvN = (m('L',[3])-m('L',[1,2])) - (m('N',[3])-m('N',[1,2]))
+EvL = (m('E',[2])-m('E',[1])) - (m('L',[2])-m('L',[1]))
+LvE = (m('L',[3])-m('L',[2])) - (m('E',[3])-m('E',[2]))
+for lab, c, v in [("E vs N 4.5",4.5,EvN),("L vs N 6",6,LvN),("E vs L before 6",6,EvL),("L vs E after 9",9,LvE)]:
+    check(f"Bacon 2x2 {lab}", c, v)
+# Goodman-Bacon (2021) weights, equal group shares
+n = {'E':1/3,'L':1/3,'N':1/3}; Db = {'E':2/3,'L':1/3}
+s_EU = (n['E']+n['N'])**2 * 0.25 * Db['E']*(1-Db['E'])
+s_LU = (n['L']+n['N'])**2 * 0.25 * Db['L']*(1-Db['L'])
+nkl = 0.5
+s_kl_k = ((n['E']+n['L'])*(1-Db['L']))**2 * nkl*(1-nkl) * (Db['E']-Db['L'])/(1-Db['L']) * (1-Db['E'])/(1-Db['L'])
+s_kl_l = ((n['E']+n['L'])*Db['E'])**2 * nkl*(1-nkl) * Db['L']/Db['E'] * (Db['E']-Db['L'])/Db['E']
+S = s_EU+s_LU+s_kl_k+s_kl_l
+for lab, c, v in [("1/3 (E vs N)",1/3,s_EU/S),("1/3 (L vs N)",1/3,s_LU/S),("1/6 (E vs L before)",1/6,s_kl_k/S),("1/6 (L vs E after)",1/6,s_kl_l/S)]:
+    check(f"Bacon weight {lab}", c, v, tol=1e-12)
+bw = (s_EU*EvN+s_LU*LvN+s_kl_k*EvL+s_kl_l*LvE)/S
+check("'1/3(4.5) + 1/3(6) + 1/6(6) + 1/6(9) = 6'", 6, 4.5/3+6/3+6/6+9/6)
+check("Bacon-weighted average = 6", 6, bw)
+# TWFE on the nine cells
+rows, yy = [], []
+units = ['E','L','N']
+for i,g in enumerate(units):
+    for t in (1,2,3):
+        x = np.zeros(6); x[0]=1
+        if i>0: x[i]=1
+        if t>1: x[1+t]=1
+        x[5] = float(t >= G[g]); rows.append(x); yy.append(y(g,t))
+b = np.linalg.lstsq(np.array(rows), np.array(yy), rcond=None)[0][5]
+check("'least squares on the nine cells confirms' 6", 6, b, tol=1e-9)
+check("'TWFE overstates the overall average of 5'", 1, float(b > 5))
+check("Decision: TWFE 6 >= 5.5 but e=1 effect 3 < 5.5", 1, float(b >= 5.5 and att_E3 < 5.5))
 
-# Section 2 worked example (CFR)
-check("CFR tau_hat(c) = 0.6 - 0.2 = 0.4", "0.4", 0.6 - 0.2); check("true tau(c) = 0.6 - 0.5 = 0.1", "0.1", 0.6 - 0.5)
-check("reported chain effect 0.40 equals mu1(c) minus region-(a) control mean", "0.40", 0.6 - 0.2)
+# Exercise: month 4 E:46, L:56, N:63
+Y4 = {'E':46,'L':56,'N':63}
+check("Exercise month-4 E=46 consistent with trend + effect 3", 46, Y['E'][0]+3+3)
+check("Exercise month-4 L=56 consistent with trend + effect 3", 56, Y['L'][0]+3+3)
+check("Exercise month-4 N=63 consistent with trend", 63, Y['N'][0]+3)
+a = (Y4['L']-y('L',2)) - (Y4['N']-y('N',2))
+bb = (Y4['L']-y('L',2)) - (Y4['E']-y('E',2))
+check("Answer (a) '(56 - 51) - (63 - 61) = 3'", 3, a)
+check("Answer (b) '(56 - 51) - (46 - 47) = 5 + 1 = 6'", 6, bb)
+att_E4 = (Y4['E']-y('E',1)) - (Y4['N']-y('N',1))
+check("Answer (c) ATT(E,4) = 3", 3, att_E4)
+check("Answer (c) '3 - (3 - 6) = 6'", 6, a-(att_E4-att_E2))
+check("Answer (c) contamination formula equals (b)", bb, a-(att_E4-att_E2))
 
-# Exercise: P(D=1|U) = 0.3 + 0.4U
-pU = F(1, 2); pD = lambda u: F(3, 10) + F(2, 5) * u
-pD1 = pU * pD(1) + (1 - pU) * pD(0)
-check("exercise P(D=1) still 0.5", "0.5", pD1)
-check("exercise P(U=1,D=1) = 0.35", "0.35", pU * pD(1)); check("exercise P(U=1,D=0) = 0.15", "0.15", pU * (1 - pD(1)))
-r1 = pU * pD(1) / pD1; r0 = pU * (1 - pD(1)) / (1 - pD1)
-check("exercise P(U=1|D=1)=0.7", "0.7", r1); check("exercise P(U=1|D=0)=0.3", "0.3", r0)
-M = np.array([[float(r1), float(1 - r1)], [float(r0), float(1 - r0)]])
-a1_, a0_ = np.linalg.solve(M, [0.6, 0.4])
-check("exercise a1 - a0 = 0.5", "0.5", a1_ - a0_); check("exercise a0 = 0.25", "0.25", a0_); check("exercise a1 = 0.75", "0.75", a1_)
-ok = 0 <= a0_ <= 1 and 0 <= a1_ <= 1; print(f"{'OK ' if ok else 'MISMATCH'} | exercise a0,a1 in [0,1]: {ok}")
-if not ok: FAIL.append("valid probability")
-Jx = joint(pU, pD, lambda u, d: a0_ + (a1_ - a0_) * u); _, e1, e0 = summarise({k: float(v) for k, v in Jx.items()})
-check("exercise reproduces P(Y=1|D=1)=0.6", "0.6", e1); check("exercise reproduces P(Y=1|D=0)=0.4", "0.4", e0)
-print("INFO | weaker U-D link (0.4 vs 0.6) needs stronger U-Y link (0.5 vs 1/3):", float(a1_ - a0_) > 1 / 3)
-print(f"\n{len(FAIL)} mismatches: {FAIL}")
+nbad = [s for ok,s in R if not ok]
+print(f"\n{len(R)} checks; {len(R)-len(nbad)} ok; {nbad.count('error')} FAIL; {nbad.count('minor')} WARN")
+sys.exit(1 if 'error' in nbad else 0)

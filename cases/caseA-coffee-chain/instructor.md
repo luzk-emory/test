@@ -172,7 +172,7 @@ A model memo:
 4. Next: a lapsed-only test with CUPED (175 per arm fits), and the BOGO randomised by store.
 
 ### M2-R6
-This part closes M2 with noncompliance and the LATE, the experimental core of instrumental variables (Handout H1 goes further). The draw $Z$ is the instrument and seeing the coupon is $D$.
+This part closes M2 with noncompliance and the LATE, the experimental core of instrumental variables (Handout H4 goes further). The draw $Z$ is the instrument and seeing the coupon is $D$.
 1. Three comparisons:
    - **as drawn (ITT):** $0.50 - 0.40 =$ **0.10**;
    - **openers only:** $230/400 - 180/360 = 0.575 - 0.500 =$ **0.075**;

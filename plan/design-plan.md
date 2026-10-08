@@ -8,6 +8,10 @@ Codex reviews.
 (proofs, the estimand → identification → estimation spine, design-based inference, exercises), fixes
 the errors and conflicts listed in Section 2, and moves six bonus topics into stand-alone handouts.
 
+> **Handout numbers (8 October 2026).** Handouts were renumbered to follow the meetings. This document and earlier
+> records use the old numbers: old H1 (IV) is now H4, H2 (RD) is H5, H3 (staggered adoption) is H6, H4 (interference) is
+> H1, H5 (sequential decisions) is H3, and H6 (neural estimators) is H2.
+
 ---
 
 ## 1. Where v3 stands

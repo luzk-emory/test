@@ -1,84 +1,99 @@
-# Independent arithmetic check of handoutH3.tex (Staggered adoption), FitLife waves example and exercise.
-import sys
+"""Arithmetic check for handoutH3.tex (Sequential Decisions).
+Run: python3 checks/handoutH3_check.py   (numpy only)
+"""
+import itertools
 import numpy as np
-R = []
-def check(label, claimed, computed, tol=1e-9, sev="error"):
-    ok = abs(claimed - computed) <= tol; R.append((ok, sev))
-    print(f"[{'ok  ' if ok else ('FAIL' if sev=='error' else 'WARN')}] {label}: text={claimed} computed={computed:.6g}")
 
-# Table rebuilt from the stated DGP: common trend +1/month, effect 6 in adoption month, 3 in the next.
-Y = {'E': [40, 47, 45], 'L': [50, 51, 58], 'N': [60, 61, 62]}
-G = {'E': 2, 'L': 3, 'N': np.inf}
-eff = {0: 6, 1: 3, 2: 3}   # e=2 value 3 is the exercise's month-4 assumption
-for g in Y:
-    for t in (1, 2, 3):
-        y0 = Y[g][0] + (t-1)
-        e = t - G[g]
-        gen = y0 + (eff[int(e)] if e >= 0 else 0)
-        check(f"Table cell {g}, month {t} matches stated trend+effects", Y[g][t-1], gen)
-y = lambda g, t: Y[g][t-1]
-att_E2 = (y('E',2)-y('E',1)) - (y('N',2)-y('N',1))
-att_E3 = (y('E',3)-y('E',1)) - (y('N',3)-y('N',1))
-att_L3 = (y('L',3)-y('L',2)) - (y('N',3)-y('N',2))
-check("'ATT(E,2) = (47 - 40) - (61 - 60) = 6'", 6, att_E2)
-check("'ATT(E,3) = (45 - 40) - (62 - 60) = 3'", 3, att_E3)
-check("'ATT(L,3) = (58 - 51) - (62 - 61) = 6'", 6, att_L3)
-check("'(ATT(0), ATT(1)) = (6, 3)': ATT(0)", 6, (att_E2+att_L3)/2)
-check("'(ATT(0), ATT(1)) = (6, 3)': ATT(1)", 3, att_E3)
-check("'overall average 5' (cell-weighted, equal cohort sizes)", 5, np.mean([att_E2, att_E3, att_L3]))
-contam = (y('L',3)-y('L',2)) - (y('E',3)-y('E',2))
-check("'L against E, months 2->3: (58 - 51) - (45 - 47) = 9'", 9, contam)
-check("'ATT(L,3) - [ATT(E,3) - ATT(E,2)] = 6 - (3 - 6) = 9'", 9, att_L3-(att_E3-att_E2))
+N_PASS, N_FLAG = 0, 0
 
-# Goodman-Bacon 2x2s
-m = lambda g, ts: np.mean([y(g,t) for t in ts])
-EvN = (m('E',[2,3])-m('E',[1])) - (m('N',[2,3])-m('N',[1]))
-LvN = (m('L',[3])-m('L',[1,2])) - (m('N',[3])-m('N',[1,2]))
-EvL = (m('E',[2])-m('E',[1])) - (m('L',[2])-m('L',[1]))
-LvE = (m('L',[3])-m('L',[2])) - (m('E',[3])-m('E',[2]))
-for lab, c, v in [("E vs N 4.5",4.5,EvN),("L vs N 6",6,LvN),("E vs L before 6",6,EvL),("L vs E after 9",9,LvE)]:
-    check(f"Bacon 2x2 {lab}", c, v)
-# Goodman-Bacon (2021) weights, equal group shares
-n = {'E':1/3,'L':1/3,'N':1/3}; Db = {'E':2/3,'L':1/3}
-s_EU = (n['E']+n['N'])**2 * 0.25 * Db['E']*(1-Db['E'])
-s_LU = (n['L']+n['N'])**2 * 0.25 * Db['L']*(1-Db['L'])
-nkl = 0.5
-s_kl_k = ((n['E']+n['L'])*(1-Db['L']))**2 * nkl*(1-nkl) * (Db['E']-Db['L'])/(1-Db['L']) * (1-Db['E'])/(1-Db['L'])
-s_kl_l = ((n['E']+n['L'])*Db['E'])**2 * nkl*(1-nkl) * Db['L']/Db['E'] * (Db['E']-Db['L'])/Db['E']
-S = s_EU+s_LU+s_kl_k+s_kl_l
-for lab, c, v in [("1/3 (E vs N)",1/3,s_EU/S),("1/3 (L vs N)",1/3,s_LU/S),("1/6 (E vs L before)",1/6,s_kl_k/S),("1/6 (L vs E after)",1/6,s_kl_l/S)]:
-    check(f"Bacon weight {lab}", c, v, tol=1e-12)
-bw = (s_EU*EvN+s_LU*LvN+s_kl_k*EvL+s_kl_l*LvE)/S
-check("'1/3(4.5) + 1/3(6) + 1/6(6) + 1/6(9) = 6'", 6, 4.5/3+6/3+6/6+9/6)
-check("Bacon-weighted average = 6", 6, bw)
-# TWFE on the nine cells
-rows, yy = [], []
-units = ['E','L','N']
-for i,g in enumerate(units):
-    for t in (1,2,3):
-        x = np.zeros(6); x[0]=1
-        if i>0: x[i]=1
-        if t>1: x[1+t]=1
-        x[5] = float(t >= G[g]); rows.append(x); yy.append(y(g,t))
-b = np.linalg.lstsq(np.array(rows), np.array(yy), rcond=None)[0][5]
-check("'least squares on the nine cells confirms' 6", 6, b, tol=1e-9)
-check("'TWFE overstates the overall average of 5'", 1, float(b > 5))
-check("Decision: TWFE 6 >= 5.5 but e=1 effect 3 < 5.5", 1, float(b >= 5.5 and att_E3 < 5.5))
 
-# Exercise: month 4 E:46, L:56, N:63
-Y4 = {'E':46,'L':56,'N':63}
-check("Exercise month-4 E=46 consistent with trend + effect 3", 46, Y['E'][0]+3+3)
-check("Exercise month-4 L=56 consistent with trend + effect 3", 56, Y['L'][0]+3+3)
-check("Exercise month-4 N=63 consistent with trend", 63, Y['N'][0]+3)
-a = (Y4['L']-y('L',2)) - (Y4['N']-y('N',2))
-bb = (Y4['L']-y('L',2)) - (Y4['E']-y('E',2))
-check("Answer (a) '(56 - 51) - (63 - 61) = 3'", 3, a)
-check("Answer (b) '(56 - 51) - (46 - 47) = 5 + 1 = 6'", 6, bb)
-att_E4 = (Y4['E']-y('E',1)) - (Y4['N']-y('N',1))
-check("Answer (c) ATT(E,4) = 3", 3, att_E4)
-check("Answer (c) '3 - (3 - 6) = 6'", 6, a-(att_E4-att_E2))
-check("Answer (c) contamination formula equals (b)", bb, a-(att_E4-att_E2))
+def check(label, computed, claimed, tol):
+    global N_PASS, N_FLAG
+    ok = abs(computed - claimed) <= tol
+    N_PASS += ok; N_FLAG += (not ok)
+    print(f"{'PASS' if ok else 'FLAG'}  {label}: claimed {claimed}, computed {computed:.6g}")
+    return ok
 
-nbad = [s for ok,s in R if not ok]
-print(f"\n{len(R)} checks; {len(R)-len(nbad)} ok; {nbad.count('error')} FAIL; {nbad.count('minor')} WARN")
-sys.exit(1 if 'error' in nbad else 0)
+
+def flag(label, msg):
+    global N_FLAG
+    N_FLAG += 1
+    print(f"FLAG  {label}: {msg}")
+
+
+# SMART table: P(order wk1 | A1), E[Y | responder, A1], E[Y | non-resp, A1, A2]
+P = {1: .40, 0: .25}
+EYr = {1: 1.5, 0: 1.6}
+EYn = {(1, 1): .9, (1, 0): .5, (0, 1): .9, (0, 0): .3}
+M, CC = 10, 5  # yuan per order, per coupon
+
+
+def regime(d1, d2):
+    """d2 = coupon to non-responders (responders get nothing). Returns (value, orders incl. week-1 order)."""
+    p = P[d1]
+    orders = p*(1 + EYr[d1]) + (1-p)*EYn[(d1, d2)]
+    cost = CC*d1 + CC*(1-p)*d2
+    return M*orders - cost, orders
+
+
+print("== Step 1: stage 2 ==")
+check("2nd coupon adds 0.4 after week-1 coupon", EYn[(1, 1)]-EYn[(1, 0)], 0.4, 1e-12)
+check("worth -1", 10*.4-5, -1, 1e-12)
+check("adds 0.6 after none", EYn[(0, 1)]-EYn[(0, 0)], 0.6, 1e-12)
+check("worth +1", 10*.6-5, 1, 1e-12)
+d2opt = {a1: int(M*(EYn[(a1, 1)]-EYn[(a1, 0)]) - CC > 0) for a1 in (0, 1)}
+check("d2opt: coupon only if no week-1 coupon", float(d2opt == {1: 0, 0: 1}), 1, 0)
+
+print("== Step 2: stage 1 ==")
+Q1_1 = .40*10*(1+1.5) + .60*10*.5 - 5
+Q1_0 = .25*10*(1+1.6) + .75*(10*.9-5)
+check("Q1(A1=1) pieces 10 + 3 - 5", .40*10*2.5, 10, 1e-12)
+check("Q1(A1=1) = 8.0", Q1_1, 8.0, 1e-12)
+check("Q1(A1=0) pieces 6.5 + 3", .25*10*2.6, 6.5, 1e-12)
+check("Q1(A1=0) = 9.5", Q1_0, 9.5, 1e-12)
+check("Q1 via regime() with optimal d2, A1=1", regime(1, d2opt[1])[0], 8.0, 1e-12)
+check("Q1 via regime() with optimal d2, A1=0", regime(0, d2opt[0])[0], 9.5, 1e-12)
+
+print("== Step 3: static vs optimal (g-formula) ==")
+vals = {(d1, d2): regime(d1, d2) for d1, d2 in itertools.product((0, 1), (0, 1))}
+check("coupon both weeks 7.40", vals[(1, 1)][0], 7.40, 1e-9)
+check("week 1 only 8.00", vals[(1, 0)][0], 8.00, 1e-9)
+check("never 8.75", vals[(0, 0)][0], 8.75, 1e-9)
+check("optimal (week 2 to non-responders) 9.50", vals[(0, 1)][0], 9.50, 1e-9)
+check("optimal regime is best of all 4", float(max(vals, key=lambda k: vals[k][0]) == (0, 1)), 1, 0)
+check("both weeks orders 1.54", vals[(1, 1)][1], 1.54, 1e-9)
+check("both weeks = most orders", float(max(vals, key=lambda k: vals[k][1]) == (1, 1)), 1, 0)
+check("both weeks = least profit", float(min(vals, key=lambda k: vals[k][0]) == (1, 1)), 1, 0)
+for k, (v, o) in vals.items():
+    print(f"info  regime d1={k[0]}, d2(non-resp)={k[1]}: value {v:.3f}, orders {o:.4f}")
+
+# 'pull-forward' claim: does the week-1 coupon lower or raise weeks 2-4 orders (Y)?
+for d2 in (0, 1):
+    y1 = P[1]*EYr[1] + (1-P[1])*EYn[(1, d2)]
+    y0 = P[0]*EYr[0] + (1-P[0])*EYn[(0, d2)]
+    print(f"info  effect of A1 on weeks 2-4 orders (d2={d2} for non-responders): {y1:.4f} - {y0:.4f} = {y1-y0:+.4f}")
+y1 = P[1]*EYr[1] + (1-P[1])*EYn[(1, 0)]; y0 = P[0]*EYr[0] + (1-P[0])*EYn[(0, 0)]
+check("text: week-1 coupon adds 1.30 - 0.875 = 0.425 total orders", (P[1]*(1+EYr[1]) + (1-P[1])*EYn[(1,0)]) - (P[0]*(1+EYr[0]) + (1-P[0])*EYn[(0,0)]), 0.425, 1e-9)
+check("text: worth 4.25 < 5", float(10*0.425 < 5), 1, 0)
+
+print("== Exercise 1 ==")
+check("answer: 10 + 2.4 - 5 = 7.4", .40*10*2.5 + .60*(10*.9-5) - 5, 7.4, 1e-9)
+check("answer: 0.60*(10*0.9-5) = 2.4", .60*(10*.9-5), 2.4, 1e-9)
+check("answer orders 1.0 + 0.54 = 1.54", .40*2.5 + .60*.9, 1.54, 1e-9)
+
+print("== Exercise 2: what the mediator-adjusted regression gives on the table's SMART data ==")
+# cell masses: A1 ~ Bern(.5); X2 | A1; A2 ~ Bern(.5) among non-responders only
+cells = []
+for a1 in (1, 0):
+    p = P[a1]
+    cells.append((a1, 0, 1, .5*p, EYr[a1]))
+    for a2 in (1, 0):
+        cells.append((a1, a2, 0, .5*(1-p)*.5, EYn[(a1, a2)]))
+X = np.array([[1, a1, a2, x2] for a1, a2, x2, _, _ in cells], float)
+w = np.array([c[3] for c in cells]); y = np.array([c[4] for c in cells])
+check("cell masses sum to 1", w.sum(), 1, 1e-12)
+beta = np.linalg.solve(X.T @ (w[:, None]*X), X.T @ (w*y))
+print(f"info  WLS Y ~ 1 + A1 + A2 + X2: coef on A1 = {beta[1]:+.4f}")
+check("answer: within-group gaps -0.1, +0.2, 0.0", float(np.allclose([EYr[1]-EYr[0], EYn[(1,0)]-EYn[(0,0)], EYn[(1,1)]-EYn[(0,1)]], [-0.1, 0.2, 0.0])), 1, 0)
+
+print(f"\nhandoutH3: {N_PASS} pass, {N_FLAG} flagged")

@@ -20,7 +20,7 @@ M8 numbers match `meetings/m08`. M9 numbers are the case's own (the M9 notes use
 
 **AI thread.** In M8, AI as the decision-maker: the RM system is an automated pricer, and its decisions are the confounder. This is M7's lesson with a continuous treatment: *the rule that set the treatment is what you must adjust for, and it must enter as flexibly as it was written.* In M9, generative AI as a simulator (block A) and as a source of data (block B), with the vendor's engine as a candidate decision-maker.
 
-**Not in class time:** regression discontinuity (Handout H2, with M8) and instrumental variables beyond M2 (Handout H1). The bonus Parts B1–B4 are for students who want the IV version of Wen's question.
+**Not in class time:** regression discontinuity (Handout H5, with M8) and instrumental variables beyond M2 (Handout H4). The bonus Parts B1–B4 are for students who want the IV version of Wen's question.
 
 ## 2. Release schedule
 

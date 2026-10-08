@@ -48,7 +48,7 @@ There are two categories, and the course keeps them distinct.
 | Place | GenAI content |
 |---|---|
 | M3 notes and lecture | TARNet as a shared representation, between the S- and T-learners |
-| Handout H6 | TARNet, CFR, DragonNet, the CEVAE critique, in-context estimators (Do-PFN), benchmark pitfalls |
+| Handout H2 | TARNet, CFR, DragonNet, the CEVAE critique, in-context estimators (Do-PFN), benchmark pitfalls |
 | M6 notes | Predict-then-optimise → decision-focused learning → policy learning, as one spectrum; policy learning as weighted classification |
 | **M9 (whole meeting)** | A: learned simulators. B: LLM-generated variables. Worked examples: courier-bonus pipelines on two simulators; LLM-coded review outcome with PPI |
 | Lab 1 | AI as **tool**: an LLM writes the A/B readout; students verify it with simulation tests |
@@ -68,15 +68,15 @@ blocks A and B (50 minutes each) and lab C (60 minutes).
 | M | A | B | C (lab) | Notes / handout |
 |---|---|---|---|---|
 | 1 | Potential outcomes | Causal graphs | Lab 0 review | M1 |
-| 2 | Experiments: estimation | Experiments: design; to close, noncompliance and the LATE | Lab 1 (LLM readout) | M2, H4 interference |
-| 3 | CATE basics | Meta-learners, TARNet | Lab 2 | M3, H6 neural |
+| 2 | Experiments: estimation | Experiments: design; to close, noncompliance and the LATE | Lab 1 (LLM readout) | M2, H1 interference |
+| 3 | CATE basics | Meta-learners, TARNet | Lab 2 | M3, H2 neural |
 | 4 | Causal trees | Causal forests | Lab 3 | M4 |
 | 5 | **Exam I (M1–M4)** | Evaluating targeting policies | Lab 4 (LLM as decision-maker) | M5 |
-| 6 | Allocation | Policy learning | Lab 5 | M6, H5 sequential |
-| 7 | Adjustment | Propensity scores, AIPW | Lab 6 (agent audit) | M7, H1 IV |
-| 8 | DML I | DML II | **Proposal presentations** (Lab 7 take-home) | M8, H2 RD |
+| 6 | Allocation | Policy learning | Lab 5 | M6, H3 sequential |
+| 7 | Adjustment | Propensity scores, AIPW | Lab 6 (agent audit) | M7, H4 IV |
+| 8 | DML I | DML II | **Proposal presentations** (Lab 7 take-home) | M8, H5 RD |
 | 9 | GenAI I: simulators | GenAI II: LLM variables | Lab 8 | M9 |
-| 10 | Panel basics | DiD | Lab 9 (AI rollout) | M10, H3 staggered |
+| 10 | Panel basics | DiD | Lab 9 (AI rollout) | M10, H6 staggered |
 | 11 | **Exam II (M5–M10)** | Synthetic control | Lab 10 | M11 |
 | 12 | Final presentations | | | |
 
@@ -121,7 +121,7 @@ The full calendar is in the spreadsheet.
      - M10: a warning slide on staggered timing;
      - M11: synthetic control only.
    - Close Experiments II (M2) with noncompliance in an RCT (ITT, compliance types, the LATE), on the coffee-chain case
-     (Case A, Part M2-R6) and matching M2 notes Section 1.9. Classical IV stays in Handout H1 (M7, bonus).
+     (Case A, Part M2-R6) and matching M2 notes Section 1.9. Classical IV stays in Handout H4 (M7, bonus).
    - Tested slides from the instructor's other course (the Starbucks causal module) are in `plan/old-decks/`, with a
      frame-by-frame map (`plan/old-decks/map.md`). Reuse them where a topic matches. See Section 6.
 2. **Syllabus.** Regenerate from `schedule.xlsx`: calendar, assessment weights, AI policy per assignment, bonus reading.
@@ -135,7 +135,9 @@ The full calendar is in the spreadsheet.
 5. **Review passes.** Pass 2: independent check of every numbered Result. Pass 3: a student reads each meeting one
    week ahead.
 6. **Optional.**
-   - Handout H7, "From elasticity to price": pricing from θ̂(x), coupon menus, capacity. Source is old deck L9.
+   - A pricing handout, "From elasticity to price": pricing from θ̂(x), coupon menus, capacity. Source is old deck L9.
+     Handouts are numbered in meeting order (H1 with M2 to H6 with M10), so if it is written, it takes its meeting's
+     place and the later handouts renumber.
    - Seed the M8 simulation.
    - Confirm three citations (listed in `README.md`).
 
@@ -145,7 +147,7 @@ The full calendar is in the spreadsheet.
   each marked in the source with a comment such as `% [CARRIED VERBATIM from old-decks/lecture01.tex:121]`. Start from
   these frames; do not copy them from `plan/old-decks/` a second time. Once a frame is reworked, delete its comment.
 - **M9 and M11 decks are replaced, not revised.** The current M9 deck teaches instrumental variables (hotel example) and
-  the current M11 deck is mostly staggered DiD. Both topics are now handouts (H1, H3). Write new decks to the M9 and
+  the current M11 deck is mostly staggered DiD. Both topics are now handouts (H4, H6). Write new decks to the M9 and
   M11 notes. The old frames stay in git history (commit `5522695`, the v4.1 state), so no separate copy is needed.
 - **Lectures keep their own case; the notes use a different one on purpose.** Each lecture has its own running case
   (the coffee chain in M1, the hotel in M8, and so on). The notes' Section 2 worked example uses a different business
@@ -166,7 +168,7 @@ The full calendar is in the spreadsheet.
 ## 7. Judgement calls
 
 Decided on 8 October: noncompliance in an RCT (ITT, compliance types, the LATE) closes M2, lecture and notes, while
-classical IV stays in Handout H1 with M7 as bonus reading; A3 is due Friday of Week 5, so nothing is due the weekend
+classical IV stays in Handout H4 with M7 as bonus reading; A3 is due Friday of Week 5, so nothing is due the weekend
 before Exam II; reading-and-critique exercises are dropped for now; M9 keeps the hotel case (Case B)
 and M11 keeps the retail case (Case C), both rewritten, with the old IV and staggered-DiD parts kept as bonus.
 

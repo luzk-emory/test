@@ -49,7 +49,7 @@ their ratio is an effect among compliers under further assumptions (Section~\ref
 \paragraph{The unit of assignment.} If unit $i$'s outcome depends on unit $j$'s treatment, the difference
 in means compares two mixtures of spillover conditions, not ``everyone treated'' with ``no one treated''.
 This is a failure of identification; no variance formula repairs it. The remedy is a unit of assignment
-large enough to contain the spillover (Section~1.7 and Handout H4).
+large enough to contain the spillover (Section~1.7 and Handout H1).
 
 \paragraph{Sample-ratio mismatch.} Check the realised arm sizes against the planned allocation with a
 chi-squared test, $\chi^2 = \sum_d (n_d - \E n_d)^2/\E n_d$ with one degree of freedom. A tiny $p$-value (in
@@ -324,7 +324,7 @@ with those who did not (\emph{as treated}), or keeping only units that followed 
 types (Section~1.2). Hold the ITT against a cost per offer and the LATE against a cost per receiver; when the
 cost is paid only on receipt and noncompliance is one-sided, the two comparisons agree (Section~2, Step~6).
 Instruments that are not randomised offers, and what failures of exclusion or monotonicity do to the ratio, are
-in Handout H1.
+in Handout H4.
 
 \begin{pitfall}[what no standard error can fix]
 Excluding units on post-assignment behaviour; reading a test with a sample-ratio mismatch; analysing a
@@ -416,7 +416,7 @@ randomising users while analysing sessions needs clustering by user.
 
 \begin{extension}[Beyond randomised offers]
 When the offer is not randomised but something else shifts treatment (a rule, a lottery, an outage), the same
-ratio identifies a LATE only if that shifter is as good as random, which must now be argued. Handout H1 covers such
+ratio identifies a LATE only if that shifter is as good as random, which must now be argued. Handout H4 covers such
 \emph{instruments}: two-stage least squares with covariates, weak instruments, what failures of exclusion and
 monotonicity do, and how to describe the compliers.
 \end{extension}
@@ -442,7 +442,7 @@ Applied Statistics}}{Why the interacted adjustment never hurts asymptotically}{S
 clustering?'', \emph{QJE}}{Cluster at the level of assignment, and why}{Sections 1--3}{2}
 \reading{Johari, Koomen, Pekelis and Walsh (2022), ``Always valid inference'', \emph{Operations
 Research}}{Continuous monitoring without inflating errors}{Sections 1--4}{3}
-\reading{Handout H4, \emph{Interference and marketplace experiments}}{What to do when units affect each
+\reading{Handout H1, \emph{Interference and marketplace experiments}}{What to do when units affect each
 other}{All}{2}
 \end{readinglist}
 

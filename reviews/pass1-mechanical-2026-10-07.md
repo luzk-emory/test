@@ -1,5 +1,9 @@
 # Pass 1 review: mechanical checks, wording and flow (2026-10-07)
 
+> **Handout numbers (8 October 2026).** Handouts were renumbered to follow the meetings. This document and earlier
+> records use the old numbers: old H1 (IV) is now H4, H2 (RD) is H5, H3 (staggered adoption) is H6, H4 (interference) is
+> H1, H5 (sequential decisions) is H3, and H6 (neural estimators) is H2.
+
 Scope: all 11 meeting notes, 6 handouts, the notation sheet and `v4notes.sty`. Builds are clean: no LaTeX errors, no undefined references, no em-dashes. Two harmless underfull-box warnings remain (M2, M3).
 
 ## 1. Arithmetic: every computed number re-derived

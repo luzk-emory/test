@@ -1,99 +1,96 @@
-"""Arithmetic check for handoutH5.tex (Sequential Decisions).
-Run: python3 checks/handoutH5_check.py   (numpy only)
+"""Arithmetic check for handoutH5.tex (Regression discontinuity). Run: python3 handoutH5_check.py
+
+Re-runs the data-generating process of checks/h5_sim.py in memory (same seed, < 1 s) without
+writing any file, and compares with the numbers quoted in the text and with h5_bins.csv.
 """
-import itertools
+import os
 import numpy as np
 
-N_PASS, N_FLAG = 0, 0
+fails = []
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def check(label, computed, claimed, tol):
-    global N_PASS, N_FLAG
-    ok = abs(computed - claimed) <= tol
-    N_PASS += ok; N_FLAG += (not ok)
-    print(f"{'PASS' if ok else 'FLAG'}  {label}: claimed {claimed}, computed {computed:.6g}")
-    return ok
+def chk(label, claimed, computed, tol):
+    ok = abs(claimed - computed) <= tol
+    print(f"[{'OK ' if ok else 'BAD'}] {label}: text {claimed}, computed {computed:.5f}")
+    if not ok:
+        fails.append(label)
 
 
-def flag(label, msg):
-    global N_FLAG
-    N_FLAG += 1
-    print(f"FLAG  {label}: {msg}")
+# ---- Setting ---------------------------------------------------------------
+chk("break-even: perks Y60 / renewal Y1,000 = 0.06", 0.06, 60 / 1000, 1e-12)
+
+# ---- Simulation (identical to h5_sim.py) -----------------------------------
+rng = np.random.default_rng(5)
+n = 60000
+R = rng.integers(40, 161, n).astype(float)
+age = 30 + 0.05 * (R - 100) + rng.normal(0, 8, n)
+D = (R >= 100).astype(float)
+p = 0.55 + 0.004 * (R - 100) - 0.00002 * (R - 100) ** 2 + 0.08 * D
+Y = rng.binomial(1, np.clip(p, 0, 1))
+chk("true jump 0.08 (DGP coefficient)", 0.08, 0.08, 0)
 
 
-# SMART table: P(order wk1 | A1), E[Y | responder, A1], E[Y | non-resp, A1, A2]
-P = {1: .40, 0: .25}
-EYr = {1: 1.5, 0: 1.6}
-EYn = {(1, 1): .9, (1, 0): .5, (0, 1): .9, (0, 0): .3}
-M, CC = 10, 5  # yuan per order, per coupon
+def ll(Y, R, h, c=100):
+    w = np.clip(1 - np.abs(R - c) / h, 0, None)
+    m = w > 0
+    Xm = np.c_[np.ones(m.sum()), (R[m] >= c), R[m] - c, (R[m] - c) * (R[m] >= c)]
+    W = w[m]
+    XtW = Xm.T * W
+    b = np.linalg.solve(XtW @ Xm, XtW @ Y[m])
+    e = Y[m] - Xm @ b
+    meat = (Xm.T * (W * e) ** 2) @ Xm
+    bread = np.linalg.inv(XtW @ Xm)
+    V = bread @ meat @ bread
+    return b[1], np.sqrt(V[1, 1]), int(m.sum())
 
 
-def regime(d1, d2):
-    """d2 = coupon to non-responders (responders get nothing). Returns (value, orders incl. week-1 order)."""
-    p = P[d1]
-    orders = p*(1 + EYr[d1]) + (1-p)*EYn[(d1, d2)]
-    cost = CC*d1 + CC*(1-p)*d2
-    return M*orders - cost, orders
+chk("naive gap 0.33", 0.33, Y[D == 1].mean() - Y[D == 0].mean(), 0.005)
 
+table = {10: (9375, 0.091, 0.022), 20: (19197, 0.087, 0.015), 30: (28983, 0.084, 0.012)}
+est = {}
+for h, (nu, t, s) in table.items():
+    tt, ss, mm = ll(Y, R, h)
+    est[h] = (tt, ss)
+    chk(f"table h={h}: members used {nu}", nu, mm, 0)
+    chk(f"table h={h}: tau {t}", t, tt, 5e-4)
+    chk(f"table h={h}: SE {s}", s, ss, 5e-4)
+avg = np.mean([v[0] for v in est.values()])
+chk("'Stable across bandwidths, about 0.085'", 0.085, avg, 0.003)
 
-print("== Step 1: stage 2 ==")
-check("2nd coupon adds 0.4 after week-1 coupon", EYn[(1, 1)]-EYn[(1, 0)], 0.4, 1e-12)
-check("worth -1", 10*.4-5, -1, 1e-12)
-check("adds 0.6 after none", EYn[(0, 1)]-EYn[(0, 0)], 0.6, 1e-12)
-check("worth +1", 10*.6-5, 1, 1e-12)
-d2opt = {a1: int(M*(EYn[(a1, 1)]-EYn[(a1, 0)]) - CC > 0) for a1 in (0, 1)}
-check("d2opt: coupon only if no week-1 coupon", float(d2opt == {1: 0, 0: 1}), 1, 0)
+c_lo = int(((R >= 95) & (R < 100)).sum())
+c_hi = int(((R >= 100) & (R < 105)).sum())
+chk("count 95-99 = 2,503", 2503, c_lo, 0)
+chk("count 100-104 = 2,472", 2472, c_hi, 0)
+ta, sa, _ = ll(age, R, 20)
+chk("age jump 0.30", 0.30, ta, 5e-3)
+chk("age jump SE 0.25", 0.25, sa, 5e-3)
 
-print("== Step 2: stage 1 ==")
-Q1_1 = .40*10*(1+1.5) + .60*10*.5 - 5
-Q1_0 = .25*10*(1+1.6) + .75*(10*.9-5)
-check("Q1(A1=1) pieces 10 + 3 - 5", .40*10*2.5, 10, 1e-12)
-check("Q1(A1=1) = 8.0", Q1_1, 8.0, 1e-12)
-check("Q1(A1=0) pieces 6.5 + 3", .25*10*2.6, 6.5, 1e-12)
-check("Q1(A1=0) = 9.5", Q1_0, 9.5, 1e-12)
-check("Q1 via regime() with optimal d2, A1=1", regime(1, d2opt[1])[0], 8.0, 1e-12)
-check("Q1 via regime() with optimal d2, A1=0", regime(0, d2opt[0])[0], 9.5, 1e-12)
+# ---- Step 4: interval at h = 20 -------------------------------------------
+t20, s20 = est[20]
+lo_r, hi_r = 0.087 - 1.96 * 0.015, 0.087 + 1.96 * 0.015
+lo_u, hi_u = t20 - 1.96 * s20, t20 + 1.96 * s20
+print(f"      CI from rounded table (0.087, 0.015): [{lo_r:.4f}, {hi_r:.4f}]")
+print(f"      CI from unrounded sim  ({t20:.4f}, {s20:.4f}): [{lo_u:.4f}, {hi_u:.4f}]")
+chk("95% CI lower 0.057 (from unrounded sim)", 0.057, lo_u, 5e-4)
+chk("95% CI upper 0.117 (from unrounded sim)", 0.117, hi_u, 5e-4)
+print(f"      lower end vs break-even 0.06: lower end is below 0.06 by {0.06 - lo_u:.4f} "
+      "(text: 'lower end just touches it')")
 
-print("== Step 3: static vs optimal (g-formula) ==")
-vals = {(d1, d2): regime(d1, d2) for d1, d2 in itertools.product((0, 1), (0, 1))}
-check("coupon both weeks 7.40", vals[(1, 1)][0], 7.40, 1e-9)
-check("week 1 only 8.00", vals[(1, 0)][0], 8.00, 1e-9)
-check("never 8.75", vals[(0, 0)][0], 8.75, 1e-9)
-check("optimal (week 2 to non-responders) 9.50", vals[(0, 1)][0], 9.50, 1e-9)
-check("optimal regime is best of all 4", float(max(vals, key=lambda k: vals[k][0]) == (0, 1)), 1, 0)
-check("both weeks orders 1.54", vals[(1, 1)][1], 1.54, 1e-9)
-check("both weeks = most orders", float(max(vals, key=lambda k: vals[k][1]) == (1, 1)), 1, 0)
-check("both weeks = least profit", float(min(vals, key=lambda k: vals[k][0]) == (1, 1)), 1, 0)
-for k, (v, o) in vals.items():
-    print(f"info  regime d1={k[0]}, d2(non-resp)={k[1]}: value {v:.3f}, orders {o:.4f}")
+# ---- Figure: h5_bins.csv ---------------------------------------------------
+bins = np.arange(40, 161, 5)
+mids = (bins[:-1] + bins[1:]) / 2
+means = np.array([Y[(R >= a) & (R < a + 5)].mean() for a in bins[:-1]])
+csv = np.loadtxt(os.path.join(HERE, "..", "..", "meetings", "m08", "h5_bins.csv"), delimiter=",")
+ok = csv.shape == (len(mids), 2) and np.allclose(csv[:, 0], mids) and np.allclose(csv[:, 1], means, atol=5e-4)
+print(f"[{'OK ' if ok else 'BAD'}] figure h5_bins.csv matches regenerated bin means ({len(mids)} bins)")
+if not ok:
+    fails.append("h5_bins.csv")
+inside = (csv[:, 1] >= 0.2).all() and (csv[:, 1] <= 0.9).all() and (csv[:, 0] >= 40).all() and (csv[:, 0] <= 160).all()
+print(f"[{'OK ' if inside else 'BAD'}] figure points inside axis box [40,160]x[0.2,0.9]")
+print(f"      note: bins cover R in [40,160); R = 160 ({int((R == 160).sum())} members) is not in any bin")
 
-# 'pull-forward' claim: does the week-1 coupon lower or raise weeks 2-4 orders (Y)?
-for d2 in (0, 1):
-    y1 = P[1]*EYr[1] + (1-P[1])*EYn[(1, d2)]
-    y0 = P[0]*EYr[0] + (1-P[0])*EYn[(0, d2)]
-    print(f"info  effect of A1 on weeks 2-4 orders (d2={d2} for non-responders): {y1:.4f} - {y0:.4f} = {y1-y0:+.4f}")
-y1 = P[1]*EYr[1] + (1-P[1])*EYn[(1, 0)]; y0 = P[0]*EYr[0] + (1-P[0])*EYn[(0, 0)]
-check("text: week-1 coupon adds 1.30 - 0.875 = 0.425 total orders", (P[1]*(1+EYr[1]) + (1-P[1])*EYn[(1,0)]) - (P[0]*(1+EYr[0]) + (1-P[0])*EYn[(0,0)]), 0.425, 1e-9)
-check("text: worth 4.25 < 5", float(10*0.425 < 5), 1, 0)
+# ---- Exercise (fuzzy) ------------------------------------------------------
+chk("fuzzy RD 0.052/(0.65-0.05) = 0.087", 0.087, 0.052 / (0.65 - 0.05), 5e-4)
 
-print("== Exercise 1 ==")
-check("answer: 10 + 2.4 - 5 = 7.4", .40*10*2.5 + .60*(10*.9-5) - 5, 7.4, 1e-9)
-check("answer: 0.60*(10*0.9-5) = 2.4", .60*(10*.9-5), 2.4, 1e-9)
-check("answer orders 1.0 + 0.54 = 1.54", .40*2.5 + .60*.9, 1.54, 1e-9)
-
-print("== Exercise 2: what the mediator-adjusted regression gives on the table's SMART data ==")
-# cell masses: A1 ~ Bern(.5); X2 | A1; A2 ~ Bern(.5) among non-responders only
-cells = []
-for a1 in (1, 0):
-    p = P[a1]
-    cells.append((a1, 0, 1, .5*p, EYr[a1]))
-    for a2 in (1, 0):
-        cells.append((a1, a2, 0, .5*(1-p)*.5, EYn[(a1, a2)]))
-X = np.array([[1, a1, a2, x2] for a1, a2, x2, _, _ in cells], float)
-w = np.array([c[3] for c in cells]); y = np.array([c[4] for c in cells])
-check("cell masses sum to 1", w.sum(), 1, 1e-12)
-beta = np.linalg.solve(X.T @ (w[:, None]*X), X.T @ (w*y))
-print(f"info  WLS Y ~ 1 + A1 + A2 + X2: coef on A1 = {beta[1]:+.4f}")
-check("answer: within-group gaps -0.1, +0.2, 0.0", float(np.allclose([EYr[1]-EYr[0], EYn[(1,0)]-EYn[(0,0)], EYn[(1,1)]-EYn[(0,1)]], [-0.1, 0.2, 0.0])), 1, 0)
-
-print(f"\nhandoutH5: {N_PASS} pass, {N_FLAG} flagged")
+print("\nFAILURES:", fails if fails else "none")

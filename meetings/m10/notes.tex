@@ -166,7 +166,7 @@ bootstrap.
 When units adopt at different dates, TWFE with a single $D_{it}$ still runs but averages many two-by-two comparisons, some using
 \emph{already-treated} units as controls for later adopters. If effects grow over time, those comparisons subtract part of the effect, some get
 negative weight, and the estimate can be badly biased, even of the wrong sign. Use estimators that compare only with not-yet-treated or
-never-treated units, and report effects by cohort (Handout H3).
+never-treated units, and report effects by cohort (Handout H6).
 
 \begin{pitfall}[DiD errors]
 Before--after on units chosen for a bad period; controls changed by the treatment; unit-period SEs; a base period inside an anticipation window;
@@ -228,7 +228,7 @@ $\delta^\ast = (0.60 - 0.30)/3 = 0.10$, nearly twice what the pre-period allows.
 against regression to the mean. Had they been chosen after a slump, the event study would show a dip before adoption.
 
 \paragraph{Recommendation.} Extend the app. The remaining 30 clubs will adopt at different times, so evaluate the extension with a staggered-adoption
-estimator, ideally with adoption dates randomised across clubs (Handout H3).
+estimator, ideally with adoption dates randomised across clubs (Handout H6).
 
 \begin{exercise}[computation]
 Collapsing to one change per club, the 20 app clubs' changes $\Delta_i$ have SD $0.20$ and the 30 other clubs' SD $0.18$. Compute the SE of the DiD and a
@@ -257,7 +257,7 @@ parallel means with a stable mapping between quantiles.
 
 \begin{extension}[Triple differences and randomised adoption]
 A triple difference adds a within-unit comparison group that should be unaffected (members of a class type not bookable by app). Randomising adoption
-dates turns DiD into a design-based comparison (Handout H3).
+dates turns DiD into a design-based comparison (Handout H6).
 \end{extension}
 
 \subsection*{Annotated reading}
@@ -270,7 +270,7 @@ does to the estimate}{All}{2}
 \reading{Rambachan and Roth (2023), ``A more credible approach to parallel trends'', \emph{Review of Economic Studies}}{Sensitivity beyond linear drift}{Sections
 1--3}{3}
 \reading{Roth, Sant'Anna, Bilinski and Poe (2023), ``What's trending in difference-in-differences?'', \emph{Journal of Econometrics}}{A survey of modern DiD}{All}{2}
-\reading{Handout H3, \emph{Staggered adoption}}{Cohorts, clean comparisons, and the TWFE decomposition}{All}{2}
+\reading{Handout H6, \emph{Staggered adoption}}{Cohorts, clean comparisons, and the TWFE decomposition}{All}{2}
 \end{readinglist}
 
 \end{document}
