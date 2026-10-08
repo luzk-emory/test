@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\handoutheader{H2}{Regression Discontinuity}{Identification from a threshold rule}{Meeting 8 (Double machine learning)}
+\handoutheader{H5}{Regression Discontinuity}{Identification from a threshold rule}{Meeting 8 (Double machine learning)}
 
 \begin{decision}
 Many business rules switch treatment on at a threshold: a loyalty tier at 100 visits, free shipping above a basket value, a
@@ -60,7 +60,7 @@ treatments in $r$, monotonicity, and a nonzero jump in $\Pr(D = 1 \mid R)$), the
 \end{prop}
 \begin{proof}
 At the cut-off, being just above or just below is as good as random by continuity, so the numerator is the ITT and the denominator the first stage
-for units at $c$; apply the LATE theorem (Handout H1) locally.
+for units at $c$; apply the LATE theorem (Meeting~2, Result~1.15) locally.
 \end{proof}
 
 The effect is local twice over: to compliers, and to units at the threshold.
@@ -115,7 +115,7 @@ Should the threshold be lowered to 95 visits? The data are 60{,}000 member-years
 \begin{tikzpicture}
 \begin{axis}[width=0.7\linewidth, height=5cm, xlabel={visits in the year ($R$)}, ylabel={renewal rate}, axis lines=left,
   xmin=40, xmax=160, ymin=0.2, ymax=0.9]
-\addplot[only marks, mark=*, mark size=1.2pt, noteblue] table[col sep=comma, x index=0, y index=1] {h2_bins.csv};
+\addplot[only marks, mark=*, mark size=1.2pt, noteblue] table[col sep=comma, x index=0, y index=1] {h5_bins.csv};
 \draw[dashed, warnred] (axis cs:100,0.2) -- (axis cs:100,0.9);
 \end{axis}
 \end{tikzpicture}

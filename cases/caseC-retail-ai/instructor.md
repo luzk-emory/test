@@ -55,7 +55,7 @@ M10 no longer has an exam (Exam II is now in M11, block A). The M10 times below 
 | M11-R3 | M11 B | 82–95 | `[RELEASE R3]` | design-freeze, placebo and falsification frames |
 | M11-R4 | M11 B | 95–102 | `[RELEASE R4]` | the SC-vs-DiD frame |
 | M11-R5 | M11 B | 102–110 | "Dana's Table" | the recommendation (the memo can finish at home) |
-| B1–B3 | take-home | | with Handout H3 | the bonus key below |
+| B1–B3 | take-home | | with Handout H6 | the bonus key below |
 
 Synthetic control now has all of block B.
 

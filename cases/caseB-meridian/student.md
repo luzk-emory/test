@@ -213,7 +213,7 @@ Write the memo to Wen, in five sentences or fewer:
 
 ## Bonus (not examined): the member-rate coin
 
-These parts were Meeting 9's case when it taught instrumental variables. The experimental core of IV (noncompliance, the ITT and the LATE) now closes Meeting 2; Handout H1 goes further. They use the same hotels, and Part M9-R3's backtest refers to Part B1's test.
+These parts were Meeting 9's case when it taught instrumental variables. The experimental core of IV (noncompliance, the ITT and the LATE) now closes Meeting 2; Handout H4 goes further. They use the same hotels, and Part M9-R3's backtest refers to Part B1's test.
 
 ### Part B1. The member-rate test
 

@@ -1,96 +1,62 @@
-"""Arithmetic check for handoutH2.tex (Regression discontinuity). Run: python3 handoutH2_check.py
-
-Re-runs the data-generating process of checks/h2_sim.py in memory (same seed, < 1 s) without
-writing any file, and compares with the numbers quoted in the text and with h2_bins.csv.
-"""
-import os
+"""Arithmetic checks for handoutH2.tex (Neural estimators). Run: python3 handoutH2_check.py"""
+from decimal import Decimal, ROUND_HALF_UP
+from fractions import Fraction as F
 import numpy as np
+FAIL = []
+def check(label, claimed, computed, tol=None):
+    s = str(claimed); d = len(s.split('.')[1]) if '.' in s else 0
+    c = Decimal(repr(round(float(computed), 12))).quantize(Decimal(1).scaleb(-d), ROUND_HALF_UP)
+    ok = abs(float(c) - float(s)) < 1e-12 if tol is None else abs(float(computed) - float(s)) <= tol
+    print(f"{'OK ' if ok else 'MISMATCH'} | {label}: text {s}, computed {float(computed):.6g}")
+    if not ok: FAIL.append(label)
 
-fails = []
-HERE = os.path.dirname(os.path.abspath(__file__))
+def joint(pU, pD_U, pY_UD):
+    """Return P(D=d, Y=y) as dict from P(U=1), P(D=1|U=u), P(Y=1|U=u,D=d)."""
+    J = {}
+    for d in (0, 1):
+        for yv in (0, 1):
+            tot = 0
+            for u in (0, 1):
+                pu = pU if u else 1 - pU; pd = pD_U(u) if d else 1 - pD_U(u); py = pY_UD(u, d) if yv else 1 - pY_UD(u, d)
+                tot += pu * pd * py
+            J[(d, yv)] = tot
+    return J
+def summarise(J):
+    pD1 = J[(1, 0)] + J[(1, 1)]
+    return pD1, J[(1, 1)] / pD1, J[(0, 1)] / (1 - pD1)
 
+# Result 'nonid': model A vs model B
+A = joint(F(1, 2), lambda u: F(1, 2), lambda u, d: F(2, 5) + F(1, 5) * d)
+B = joint(F(1, 2), lambda u: F(1, 5) + F(3, 5) * u, lambda u, d: F(1, 3) + F(1, 3) * u)
+tauA = F(1, 5); tauB = sum((F(1, 2)) * ((F(1, 3) + F(1, 3) * u) - (F(1, 3) + F(1, 3) * u)) for u in (0, 1))
+check("model A tau = 0.2", "0.2", tauA); check("model B tau = 0", "0", tauB)
+pA, a1, a0 = summarise(A); pB, b1, b0 = summarise(B)
+check("model A P(D=1)=0.5", "0.5", pA); check("model B P(D=1)=0.5 (same D margin)", "0.5", pB)
+check("A: P(Y=1|D=1)=0.6", "0.6", a1); check("A: P(Y=1|D=0)=0.4", "0.4", a0)
+check("B: P(Y=1|D=1)=0.6", "0.6", b1); check("B: P(Y=1|D=0)=0.4", "0.4", b0)
+ok = A == B; print(f"{'OK ' if ok else 'MISMATCH'} | joint (D,Y) identical in A and B: {ok}")
+if not ok: FAIL.append("joint A==B")
+check("B: P(U=1|D=1)=0.8", "0.8", F(1, 2) * F(4, 5) / pB); check("B: P(U=1|D=0)=0.2", "0.2", F(1, 2) * F(1, 5) / (1 - pB))
+check("B: 0.8*2/3+0.2*1/3 = 0.6", "0.6", F(4, 5) * F(2, 3) + F(1, 5) * F(1, 3))
+check("B: 0.2*2/3+0.8*1/3 = 0.4", "0.4", F(1, 5) * F(2, 3) + F(4, 5) * F(1, 3))
 
-def chk(label, claimed, computed, tol):
-    ok = abs(claimed - computed) <= tol
-    print(f"[{'OK ' if ok else 'BAD'}] {label}: text {claimed}, computed {computed:.5f}")
-    if not ok:
-        fails.append(label)
+# Section 2 worked example (CFR)
+check("CFR tau_hat(c) = 0.6 - 0.2 = 0.4", "0.4", 0.6 - 0.2); check("true tau(c) = 0.6 - 0.5 = 0.1", "0.1", 0.6 - 0.5)
+check("reported chain effect 0.40 equals mu1(c) minus region-(a) control mean", "0.40", 0.6 - 0.2)
 
-
-# ---- Setting ---------------------------------------------------------------
-chk("break-even: perks Y60 / renewal Y1,000 = 0.06", 0.06, 60 / 1000, 1e-12)
-
-# ---- Simulation (identical to h2_sim.py) -----------------------------------
-rng = np.random.default_rng(5)
-n = 60000
-R = rng.integers(40, 161, n).astype(float)
-age = 30 + 0.05 * (R - 100) + rng.normal(0, 8, n)
-D = (R >= 100).astype(float)
-p = 0.55 + 0.004 * (R - 100) - 0.00002 * (R - 100) ** 2 + 0.08 * D
-Y = rng.binomial(1, np.clip(p, 0, 1))
-chk("true jump 0.08 (DGP coefficient)", 0.08, 0.08, 0)
-
-
-def ll(Y, R, h, c=100):
-    w = np.clip(1 - np.abs(R - c) / h, 0, None)
-    m = w > 0
-    Xm = np.c_[np.ones(m.sum()), (R[m] >= c), R[m] - c, (R[m] - c) * (R[m] >= c)]
-    W = w[m]
-    XtW = Xm.T * W
-    b = np.linalg.solve(XtW @ Xm, XtW @ Y[m])
-    e = Y[m] - Xm @ b
-    meat = (Xm.T * (W * e) ** 2) @ Xm
-    bread = np.linalg.inv(XtW @ Xm)
-    V = bread @ meat @ bread
-    return b[1], np.sqrt(V[1, 1]), int(m.sum())
-
-
-chk("naive gap 0.33", 0.33, Y[D == 1].mean() - Y[D == 0].mean(), 0.005)
-
-table = {10: (9375, 0.091, 0.022), 20: (19197, 0.087, 0.015), 30: (28983, 0.084, 0.012)}
-est = {}
-for h, (nu, t, s) in table.items():
-    tt, ss, mm = ll(Y, R, h)
-    est[h] = (tt, ss)
-    chk(f"table h={h}: members used {nu}", nu, mm, 0)
-    chk(f"table h={h}: tau {t}", t, tt, 5e-4)
-    chk(f"table h={h}: SE {s}", s, ss, 5e-4)
-avg = np.mean([v[0] for v in est.values()])
-chk("'Stable across bandwidths, about 0.085'", 0.085, avg, 0.003)
-
-c_lo = int(((R >= 95) & (R < 100)).sum())
-c_hi = int(((R >= 100) & (R < 105)).sum())
-chk("count 95-99 = 2,503", 2503, c_lo, 0)
-chk("count 100-104 = 2,472", 2472, c_hi, 0)
-ta, sa, _ = ll(age, R, 20)
-chk("age jump 0.30", 0.30, ta, 5e-3)
-chk("age jump SE 0.25", 0.25, sa, 5e-3)
-
-# ---- Step 4: interval at h = 20 -------------------------------------------
-t20, s20 = est[20]
-lo_r, hi_r = 0.087 - 1.96 * 0.015, 0.087 + 1.96 * 0.015
-lo_u, hi_u = t20 - 1.96 * s20, t20 + 1.96 * s20
-print(f"      CI from rounded table (0.087, 0.015): [{lo_r:.4f}, {hi_r:.4f}]")
-print(f"      CI from unrounded sim  ({t20:.4f}, {s20:.4f}): [{lo_u:.4f}, {hi_u:.4f}]")
-chk("95% CI lower 0.057 (from unrounded sim)", 0.057, lo_u, 5e-4)
-chk("95% CI upper 0.117 (from unrounded sim)", 0.117, hi_u, 5e-4)
-print(f"      lower end vs break-even 0.06: lower end is below 0.06 by {0.06 - lo_u:.4f} "
-      "(text: 'lower end just touches it')")
-
-# ---- Figure: h2_bins.csv ---------------------------------------------------
-bins = np.arange(40, 161, 5)
-mids = (bins[:-1] + bins[1:]) / 2
-means = np.array([Y[(R >= a) & (R < a + 5)].mean() for a in bins[:-1]])
-csv = np.loadtxt(os.path.join(HERE, "..", "..", "meetings", "m08", "h2_bins.csv"), delimiter=",")
-ok = csv.shape == (len(mids), 2) and np.allclose(csv[:, 0], mids) and np.allclose(csv[:, 1], means, atol=5e-4)
-print(f"[{'OK ' if ok else 'BAD'}] figure h2_bins.csv matches regenerated bin means ({len(mids)} bins)")
-if not ok:
-    fails.append("h2_bins.csv")
-inside = (csv[:, 1] >= 0.2).all() and (csv[:, 1] <= 0.9).all() and (csv[:, 0] >= 40).all() and (csv[:, 0] <= 160).all()
-print(f"[{'OK ' if inside else 'BAD'}] figure points inside axis box [40,160]x[0.2,0.9]")
-print(f"      note: bins cover R in [40,160); R = 160 ({int((R == 160).sum())} members) is not in any bin")
-
-# ---- Exercise (fuzzy) ------------------------------------------------------
-chk("fuzzy RD 0.052/(0.65-0.05) = 0.087", 0.087, 0.052 / (0.65 - 0.05), 5e-4)
-
-print("\nFAILURES:", fails if fails else "none")
+# Exercise: P(D=1|U) = 0.3 + 0.4U
+pU = F(1, 2); pD = lambda u: F(3, 10) + F(2, 5) * u
+pD1 = pU * pD(1) + (1 - pU) * pD(0)
+check("exercise P(D=1) still 0.5", "0.5", pD1)
+check("exercise P(U=1,D=1) = 0.35", "0.35", pU * pD(1)); check("exercise P(U=1,D=0) = 0.15", "0.15", pU * (1 - pD(1)))
+r1 = pU * pD(1) / pD1; r0 = pU * (1 - pD(1)) / (1 - pD1)
+check("exercise P(U=1|D=1)=0.7", "0.7", r1); check("exercise P(U=1|D=0)=0.3", "0.3", r0)
+M = np.array([[float(r1), float(1 - r1)], [float(r0), float(1 - r0)]])
+a1_, a0_ = np.linalg.solve(M, [0.6, 0.4])
+check("exercise a1 - a0 = 0.5", "0.5", a1_ - a0_); check("exercise a0 = 0.25", "0.25", a0_); check("exercise a1 = 0.75", "0.75", a1_)
+ok = 0 <= a0_ <= 1 and 0 <= a1_ <= 1; print(f"{'OK ' if ok else 'MISMATCH'} | exercise a0,a1 in [0,1]: {ok}")
+if not ok: FAIL.append("valid probability")
+Jx = joint(pU, pD, lambda u, d: a0_ + (a1_ - a0_) * u); _, e1, e0 = summarise({k: float(v) for k, v in Jx.items()})
+check("exercise reproduces P(Y=1|D=1)=0.6", "0.6", e1); check("exercise reproduces P(Y=1|D=0)=0.4", "0.4", e0)
+print("INFO | weaker U-D link (0.4 vs 0.6) needs stronger U-Y link (0.5 vs 1/3):", float(a1_ - a0_) > 1 / 3)
+print(f"\n{len(FAIL)} mismatches: {FAIL}")

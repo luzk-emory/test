@@ -26,7 +26,7 @@ reviews/                pass-1 review report (2026-10-07)
 
 | Material | Version | State |
 |---|---|---|
-| Technical notes, M1–M11 | v4.1 (git tag `v4.1`) | Current. Pass 1 (arithmetic, wording) done; pass 2 (independent proof check) not yet |
+| Technical notes, M1–M11 | v4.1 (commit `5522695`, not yet tagged) | Current. Pass 1 (arithmetic, wording) done; pass 2 (independent proof check) not yet |
 | Handouts H1–H6 | v4.1 | Current, same review state as the notes |
 | Lecture slides | M1–M2 rebuilt (lecture case kept); M3–M11 v2 content | M1 and M2 aligned with the v4 notes, under review. **M3–M11 not yet revised** |
 | Schedule, labs, assignments, deadlines | `plan/schedule.xlsx` | Current source of truth |
@@ -40,21 +40,21 @@ Meetings on Tuesday and Thursday. Each meeting has two 50-minute lectures (A, B)
 | M | Topic | Handout | Notes |
 |---|---|---|---|
 | 1 | Causal basics | | |
-| 2 | Experiments (closing with noncompliance and the LATE) | H4 Interference | |
-| 3 | Conditional effects | H6 Neural estimators | |
+| 2 | Experiments (closing with noncompliance and the LATE) | H1 Interference | |
+| 3 | Conditional effects | H2 Neural estimators | |
 | 4 | Causal trees and forests | | |
 | 5 | Evaluating targeting policies | | Exam I (M1–M4) |
-| 6 | Allocation and policy learning | H5 Sequential decisions | |
-| 7 | Observational data | H1 Instrumental variables | |
-| 8 | Double machine learning | H2 Regression discontinuity | Proposal presentations |
+| 6 | Allocation and policy learning | H3 Sequential decisions | |
+| 7 | Observational data | H4 Instrumental variables | |
+| 8 | Double machine learning | H5 Regression discontinuity | Proposal presentations |
 | 9 | Generative AI in causal analysis | | |
-| 10 | Panel data and DiD | H3 Staggered adoption | |
+| 10 | Panel data and DiD | H6 Staggered adoption | |
 | 11 | Synthetic control (SDID, matrix completion in Section 3) | | Exam II (M5–M10) |
 | 12 | Final presentations | | |
 
 Four assignments; Labs 0–10; bonus reading is optional. Lecture cases (`cases/`): a coffee chain (Case A, M1–M7), Meridian
 Hotels (Case B, M8–M9) and a home-goods retail chain (Case C, M10–M11). The notes' worked examples deliberately use other
-businesses: FitLife (fitness chain) in M1, M3, M7, M10, H2, H3; QuickBite (food delivery) everywhere else.
+businesses: FitLife (fitness chain) in M1, M3, M7, M10, H5, H6; QuickBite (food delivery) everywhere else.
 
 ## Conventions in the notes
 
@@ -85,8 +85,8 @@ Simulation scripts behind worked examples:
 - `m08_fig.py`: M8 figure data, written into `meetings/m08/`;
 - `m09_sim.py`: M9 simulators, slow, more than 5 minutes;
 - `m11_sim.py`: M11 synthetic control;
-- `h2_sim.py`: H2 regression discontinuity, writes `meetings/m08/h2_bins.csv`;
-- `h3_check.py`: H3 staggered adoption.
+- `h5_sim.py`: H5 regression discontinuity, writes `meetings/m08/h5_bins.csv`;
+- `h6_check.py`: H6 staggered adoption.
 
 After editing a number in the notes, update its check script, then rerun.
 
@@ -95,9 +95,11 @@ After editing a number in the notes, update its check script, then rerun.
 - Simulators and LLM-generated variables get a full meeting (M9), after DML. A learned simulator is both a data
   generator and the testbed for a whole predict-then-optimise pipeline.
 - Proofs are light, for key results; identification theorems always get one.
-- Six handouts. Synthetic DiD and matrix completion stay in M11, Section 3.
+- Six handouts, numbered in meeting order (8 Oct): H1 interference (M2), H2 neural estimators (M3), H3 sequential
+  decisions (M6), H4 instrumental variables (M7), H5 regression discontinuity (M8), H6 staggered adoption (M10). Synthetic
+  DiD and matrix completion stay in M11, Section 3.
 - Noncompliance in an RCT (ITT, compliance types, LATE) closes M2, lecture and notes (8 Oct). Classical IV (outside shifters,
-  2SLS, weak instruments) stays in Handout H1 with M7, as bonus reading.
+  2SLS, weak instruments) stays in Handout H4 with M7, as bonus reading.
 - Reading-and-critique exercises are dropped for now (8 Oct).
 - Slides and notes share estimands, assumptions, notation, Result statements and topic order, but not the example:
   lectures keep their own case.
@@ -106,7 +108,7 @@ After editing a number in the notes, update its check script, then rerun.
   - fairness as a priced constraint, M6;
   - causal (isotonic) calibration, M5;
   - predict-then-optimise / decision-focused / policy-learning spectrum, M6 and M9.
-- Deferred: H7 "From elasticity to price" (pricing from $\hat\theta(x)$, coupon menus, capacity). Material is in the
+- Deferred: a pricing handout, "From elasticity to price" (pricing from $\hat\theta(x)$, coupon menus, capacity). Material is in the
   old L9 deck, now in the archive.
 
 ## Open items
@@ -119,6 +121,6 @@ After editing a number in the notes, update its check script, then rerun.
    - Do-PFN (venue);
    - Chernozhukov et al., "Long story short" (still a working paper?);
    - Mandi et al. 2024, JAIR.
-6. Optional: H7 handout; the M9 "three routes" lab (described in M9 Section 3).
+6. Optional: a pricing handout ("From elasticity to price"); the M9 "three routes" lab (described in M9 Section 3).
 
 Details for items 3–5 are in `reviews/pass1-mechanical-2026-10-07.md` and `plan/CHANGELOG.md`.

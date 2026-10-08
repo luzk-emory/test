@@ -19,6 +19,6 @@ print('age jump',[round(x,3) for x in ll(age,R,20)])
 print('counts 95-99',((R>=95)&(R<100)).sum(),'100-104',((R>=100)&(R<105)).sum())
 bins=np.arange(40,161,5); mids=(bins[:-1]+bins[1:])/2
 means=[Y[(R>=a)&(R<a+5)].mean() for a in bins[:-1]]
-np.savetxt('../../meetings/m08/h2_bins.csv',np.c_[mids,means],delimiter=',',fmt='%.3f')
+np.savetxt('../../meetings/m08/h5_bins.csv',np.c_[mids,means],delimiter=',',fmt='%.3f')
 # naive difference above vs below overall
 print('naive',Y[D==1].mean()-Y[D==0].mean())

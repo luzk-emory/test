@@ -185,7 +185,7 @@ Two bodies of evidence are on Dana's desk: Meeting 10's cohort estimate and the 
 
 ## Bonus (not examined): the staggered rollout
 
-These parts were Meeting 11's case when it taught staggered adoption. That topic is now Handout H3; Meeting 10 ends with a warning about it. The week-104 situation is the same as in Part M11-R1.
+These parts were Meeting 11's case when it taught staggered adoption. That topic is now Handout H6; Meeting 10 ends with a warning about it. The week-104 situation is the same as in Part M11-R1.
 
 ### Part B1. Extend it to everyone?
 
