@@ -1,6 +1,13 @@
 % \documentclass[aspectratio=169, 11pt]{beamer}
 \documentclass[aspectratio=169, 11pt, handout]{beamer}
 
+% Meeting 7 lecture slides. Running case: Lin's coupon programme at a coffee chain (cases/caseA-coffee-chain,
+% Meeting 7 releases R1 to R4b): the review of the Q3 programme from its logs. The notes' worked example (FitLife) is
+% deliberately not reproduced here.
+% Shared with notes.tex: estimands, assumptions, notation, the statement of each Result, the order of topics.
+% Block A follows notes Sections 1.1 to 1.6; block B follows Sections 1.7 to 1.11.
+% Every number is checked by shared/checks/slides07_check.py.
+
 % ── Theme ──
 \usetheme{Madrid}
 \usecolortheme{default}
@@ -22,38 +29,53 @@
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{colortbl}
-\usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 
-% ── Colors ──
-\definecolor{sbgreen}{HTML}{00704A}  % course accent
-\definecolor{warnred}{HTML}{CC0000}
+% ── Colours: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
+\definecolor{sbgreen}{HTML}{00704A}
 \definecolor{noteblue}{HTML}{2060A0}
+\definecolor{warnred}{HTML}{B42318}
+\definecolor{extgrey}{HTML}{6B7280}
+\definecolor{boxgrey}{HTML}{F3F5F8}
+\definecolor{bluetint}{HTML}{EEF3FA}
+\definecolor{greentint}{HTML}{EEF6F2}
+\definecolor{redtint}{HTML}{FCF1F0}
 
-% ── Commands ──
+% ── Notation: same macros as the notes (shared/coursenotes.sty, shared/notation.tex) ──
 \newcommand{\E}{\mathbb{E}}
-\newcommand{\Var}{\mathrm{Var}}
-\newcommand{\Cov}{\mathrm{Cov}}
-\newcommand{\SE}{\mathrm{SE}}
-\newcommand{\Prob}{\mathrm{Pr}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\SE}{\operatorname{SE}}
 \newcommand{\indep}{\perp\!\!\!\perp}
+\newcommand{\hatt}{\hat{\tau}}
+\newcommand{\ATE}{\text{ATE}}
+\newcommand{\ATT}{\text{ATT}}
+\newcommand{\ATU}{\text{ATU}}
+\newcommand{\ind}[1]{\mathbf{1}\{#1\}}
 
-\usepackage{soul}
-\newcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\marginpar{\tiny #2}}
-% Beamer frames are typeset inside boxes, where \marginpar raises "Not in outer par mode"
-% and \marginparwidth is 4pt. Same marker; the provenance note goes to the frame footnote.
-\renewcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\footnote[frame]{\tiny #2}}
-% Compact footnote layout so several provenance notes fit under one frame.
-\setbeamertemplate{footnote}{\noindent\raggedright\hspace*{0.6em}\tiny\insertfootnotemark\,\insertfootnotetext\par}
+% ── Boxes: same number, title and wording as the notes; proofs stay in the notes ──
+\newenvironment{result}[2]{%
+  \setbeamercolor{block title}{bg=sbgreen,fg=white}\setbeamercolor{block body}{bg=greentint,fg=black}%
+  \begin{block}{Result #1 (#2)}}{\end{block}}
+\newenvironment{assumption}[2]{%
+  \setbeamercolor{block title}{bg=noteblue,fg=white}\setbeamercolor{block body}{bg=bluetint,fg=black}%
+  \begin{block}{Assumption #1 (#2)}}{\end{block}}
+\newenvironment{defbox}[1]{%
+  \setbeamercolor{block title}{bg=extgrey,fg=white}\setbeamercolor{block body}{bg=boxgrey,fg=black}%
+  \begin{block}{Definition: #1}}{\end{block}}
+\newenvironment{pitfall}[1]{%
+  \setbeamercolor{block title}{bg=warnred,fg=white}\setbeamercolor{block body}{bg=redtint,fg=black}%
+  \begin{block}{Pitfall: #1}}{\end{block}}
 
-% Version 2 (2026-09-29). Course spine: estimand -> identification -> estimation.
-% Changes from slides.tex: m07/CHANGES-v2.md.
+% Step labels for the course spine
 \newcommand{\spinestep}[1]{\textcolor{sbgreen}{\textbf{#1}}}
 
 % ── Title ──
 \title[Meeting 7]{Meeting 7: When the Logs Must Answer}
-\subtitle{Applied Causal Inference for Business}
+\subtitle{Observational data: adjustment, propensity scores and double robustness}
 \author{Zhikun Lu}
 \date{\today}
 
@@ -65,325 +87,206 @@
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Where Does the Counterfactual Come From?}
+\begin{frame}{Today}
 
-\begin{center}
-\begin{tikzpicture}[
-    node distance=0.45cm and 0.7cm,
-    box/.style={draw, rounded corners, minimum width=2.9cm, minimum height=1.5cm,
-                font=\scriptsize, align=center, text width=2.7cm},
-    active/.style={box, fill=sbgreen!20, draw=sbgreen, very thick},
-    inactive/.style={box, fill=gray!10, draw=gray!50}
-]
-\node[inactive] (A) {\textbf{M1--M6}\\[2pt] A randomised control group\\[3pt] \emph{anything} may be unobserved};
-\node[active, right=of A] (B) {\textbf{M7--M8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
-\node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] An external shifter of treatment\\[3pt] confounders allowed};
-\node[inactive, right=of C] (D) {\textbf{M10--M11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
-
-\draw[-{Stealth}, thick, sbgreen] (A) -- (B);
-\draw[-{Stealth}, gray!50] (B) -- (C);
-\draw[-{Stealth}, gray!50] (C) -- (D);
-\end{tikzpicture}
-\end{center}
-
-\bigskip
-
-\begin{center}
-\small Until today the control group was \emph{given} to us. Today nobody randomised anything.\\
-We must build the comparison from the records the assignment rule left behind.
-\end{center}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\textbf{Block A: Identification and adjustment}
+\begin{itemize}
+  \item The programme on trial; the break-even
+  \item Selection by the rule: pooled and within
+  \item Exchangeability, overlap, consistency
+  \item Standardisation (the g-formula)
+  \item Inverse-probability weighting
+  \item The balancing property
+  \item What regression adjustment estimates
+  \item Good and bad controls
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{Block B: Overlap, design and\\ double robustness}
+\begin{itemize}
+  \item The real logs: reconstructing the rule
+  \item Overlap diagnostics and trimming
+  \item Design before analysis
+  \item Opening the outcomes
+  \item Doubly robust estimation (AIPW)
+  \item The LaLonde lesson
+  \item A first look at sensitivity
+\end{itemize}
+\end{column}
+\end{columns}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Today's Plan}
+\section{Block A: Identification and adjustment}
+% ====================================================================
+
+% [RELEASE R1: the Q3 programme, sales' table and Lin's four sentences]
+\begin{frame}{The Programme on Trial}
+
+In Q3 the chain's \textbf{automated campaign engine} (Meeting 5) sent the \textbf{5{,}000} \textyen 10 coupons, half of the 10{,}000-member base. It chose members by a \textbf{score} built from recency, tier and spend, throttled by a daily contact cap.
+
+\bigskip
+
+The CFO wants the programme reviewed. Sales has pulled the Q3 logs:
 
 \begin{center}
-\small
-\begin{tabular}{rp{11.6cm}}
-\toprule
-\textbf{Minutes} & \\
-\midrule
-0--15 & \textbf{Reading and critique C4} --- on paper, no devices \\
-15--50 & \spinestep{Estimand:} the programme as it ran. \spinestep{Identification:} the engine's rule is the assignment mechanism; what must be true for logs to stand in for an experiment \\
-60--110 & Choosing controls. \spinestep{Design before analysis}, then \spinestep{estimation} at scale: three adjustments and whom each describes \\
-120--180 & \textbf{Twelve proposal presentations} \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-
-\textbf{Case:} Lin's coupon programme, Meeting 7 (Releases 1--5). \quad \textbf{After class:} the take-home adjustment core --- the Rivergate control audit (30--45 min), with Notebook 7.
-
-\bigskip
-
-\textbf{Reading:} technical notes for Meeting 7, including AIPW and double robustness on the Rivergate numbers (Section 3).
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Critique C4: Five Questions, Every Time}
-
-Read the one-page case silently. Notes on your own, then pairs, then the room.
-
-\bigskip
-
-\begin{enumerate}
-    \item What is the claim?
-    \item What causal question does the decision need?
-    \item Who is the comparison group?
-    \item What else could produce this pattern? Give the mechanism and the \textbf{direction} of the bias.
-    \item What would you do to find out?
-\end{enumerate}
-
-\bigskip
-
-\small Not every report is flawed. If this one is sound, say \emph{why} --- and name what it still cannot tell the decision-maker. Hand in your notes at minute 15.
-\end{frame}
-
-% ====================================================================
-\section{The Estimand: The Programme as It Ran}
-% ====================================================================
-
-% [RELEASE R1 — narrative: the programme, the CFO's position, the sales reading]
-\begin{frame}{The Coffee Chain, After the Experiment}
-
-\textbf{Lin} runs customer analytics. In Q2 the chain ran the coupon experiment you analysed in M1--M6. Its \textbf{campaign engine} (M5) turned the results into a targeting rule.
-
-\bigskip
-
-In Q3 the engine's rule went live: a \textyen 10 coupon to \textbf{40\%} of the loyalty base, chosen by a \textbf{scoring rule} on recency, tier and spend, throttled by a daily contact cap.
-
-\bigskip
-\pause
-
-\textbf{Now the CFO wants the programme reviewed.} Sales has pulled the Q3 logs:
-
-\begin{center}
-\small
 \begin{tabular}{lrr}
 \toprule
 & \textbf{Got coupon} & \textbf{No coupon} \\
 \midrule
+Members & 5{,}000 & 5{,}000 \\
 Purchase rate & 0.40 & 0.62 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\smallskip
-\begin{center}
-Sales' reading: \emph{``The coupon repels customers. Kill it.''}
-\end{center}
-
 \bigskip
 
-\textbf{And the CFO will not fund another experiment.} The Q3 logs must answer.
+Sales' reading: \emph{``The coupon repels customers. Kill it.''}
+
+\medskip
+
+The CFO will not fund another experiment. \textbf{The Q3 logs must answer.}
 \end{frame}
 
 % ====================================================================
 \begin{frame}{The Number That Decides It}
 
-A purchase earns \textyen 30 of margin. The coupon costs \textyen 10, paid on \emph{every} purchase a coupon holder makes.
-
-\bigskip
-
-Per coupon sent to last quarter's recipients:
+A purchase earns $m = $ \textyen 30 of margin. The coupon costs $c = $ \textyen 10, paid on \textbf{every} purchase a holder makes. Per coupon sent to last quarter's recipients,
 \[
-\text{net} \;=\; \underbrace{\tau \times 30}_{\text{purchases the coupon caused}} \;-\; \underbrace{10 \times 0.40}_{\text{coupons redeemed}} .
+\text{net} = \underbrace{30\,\tau}_{\text{purchases the coupon caused}} - \underbrace{10 \times 0.40}_{\text{coupons redeemed}} .
 \]
 
-\bigskip
-\pause
+The recipients' purchase rate, $0.40$, is observed: for a recipient, $Y = Y(1)$.
 
-\begin{alertblock}{Break-even lift}
+\begin{defbox}{break-even effect}
 \[
-\tau^{*} \;=\; \frac{10 \times 0.40}{30} \;=\; \frac{4}{30} \;=\; \mathbf{0.133}
+\tau^\ast = \frac{c\,\E[Y(1) \mid D=1]}{m} = \frac{10 \times 0.40}{30} = 0.133 .
 \]
-\end{alertblock}
+\end{defbox}
 
-\bigskip
+\medskip
 
-Sales' number is $-0.22$. Every estimate today is a lift. The only question is \textbf{which side of $0.133$} it lands on.
+Sales' number is $-0.22$. Every estimate today is a lift, and the question is \textbf{which side of $0.133$} it lands on.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Three Steps for the Logs}
+\begin{frame}{Logs Produced by a Targeting Rule}
 
-\begin{center}
-\small
-\begin{tabular}{p{2.8cm}p{9.8cm}}
-\toprule
-\spinestep{Estimand} & The effect of the coupon \textbf{on the members who got it}, as the programme ran: the ATT, held against $0.133$. \\[0.5em]
-\spinestep{Identification} & No coin this time. The \textbf{assignment mechanism is the engine's rule}: we must argue that, among members the rule saw as identical, who got a coupon was as good as random --- and that the rule left something to chance. \\[0.5em]
-\spinestep{Estimation} & First an \textbf{outcome-free design stage}: reconstruct the rule, check overlap, fix the estimand. Only then open the purchases: standardisation, weighting. \\
-\bottomrule
-\end{tabular}
-\end{center}
+Treatment $D$ (coupon), outcome $Y$ (purchase), pre-treatment covariates $X$ (the CRM fields):
+\[
+\mu_d(x) = \E[Y \mid D=d, X=x], \qquad e(x) = \Pr(D=1 \mid X=x).
+\]
 
-\bigskip
+\begin{itemize}
+  \item When a recorded rule assigned treatment, $e$ \textbf{is that rule}, viewed as a function of its inputs.
+  \item That includes a rule written by an automated system. Its decisions are the assignment mechanism, and the logs it leaves are observational however sophisticated it was. The engine did not remove confounding; it \textbf{wrote it down}.
+  \item The ATE, ATT and ATU differ whenever effects vary with $X$ and the rule's targeting depends on $X$. Which one is needed is a question about the decision.
+\end{itemize}
 
-The same system that made the decisions in M5 is what we must now adjust for. An automated decision-maker does not remove confounding; it \emph{writes it down}.
+\medskip
+
+\textbf{The CFO's question}, ``keep the programme as it ran?'', is about the members who got coupons: the \textbf{ATT}, held against $\tau^\ast = 0.133$.
 \end{frame}
 
 % ====================================================================
-% [RELEASE R2 — two-segment table; worksheet attempt before the next frame]
+% [RELEASE R2: the two-segment table; pooled and within-segment differences are computed before the next frame]
 \begin{frame}{Two Kinds of Customer}
 
-The scoring rule mostly sent coupons to \textbf{lapsed} customers --- the ones M5 told you to target.
-
-\bigskip
+The score sent most coupons to \textbf{lapsed} members, the ones Meetings 3 to 5 said to target.
 
 \begin{center}
 \small
-\begin{tabular}{lrrrrr}
+\begin{tabular}{lrrrrc}
 \toprule
-\textbf{Segment} & \textbf{$n$} & \textbf{Coupon share} & \textbf{Treated} & \textbf{Control} & \textbf{Purchase rate (T / C)} \\
+\textbf{Segment} & \textbf{Members} & \textbf{Coupon share} & \textbf{Coupon} & \textbf{No coupon} & \textbf{Bought: coupon / none} \\
 \midrule
-Active & 500 & 0.20 & 100 & 400 & 0.80 / 0.75 \\
-Lapsed & 500 & 0.80 & 400 & 100 & 0.30 / 0.10 \\
+Active & 5{,}000 & 0.20 & 1{,}000 & 4{,}000 & 0.80 / 0.75 \\
+Lapsed & 5{,}000 & 0.80 & 4{,}000 & 1{,}000 & 0.30 / 0.10 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\bigskip
+\medskip
 
-\textbf{In pairs:} compute the overall purchase rate in each arm, then the difference within each segment. Commit in writing --- does the CFO kill the programme?
+Pooled, the table reproduces sales' numbers:
+\[
+\bar Y_1 = \frac{1{,}000(0.80) + 4{,}000(0.30)}{5{,}000} = 0.40, \qquad
+\bar Y_0 = \frac{4{,}000(0.75) + 1{,}000(0.10)}{5{,}000} = 0.62 .
+\]
+
+Within each segment the coupon \textbf{raises} purchases: $0.80 - 0.75 = \textcolor{sbgreen}{+0.05}$ for active members, $0.30 - 0.10 = \textcolor{sbgreen}{+0.20}$ for lapsed ones.
+
+\medskip
+
+For the rest of block A, treat segment as the rule's only input. Block B opens the full export.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Pooled, Then Within Segment}
+\begin{frame}{The Rule Chose Members Unlikely to Buy}
 
-\[
-\bar Y_{\text{T}} = \frac{100(0.80) + 400(0.30)}{500} = 0.40, \qquad
-\bar Y_{\text{C}} = \frac{400(0.75) + 100(0.10)}{500} = 0.62
-\]
-\vspace{-1.2em}
-\[
-\text{difference} = \textcolor{warnred}{-0.22}
-\]
-
-\pause
-\medskip
-
-Within each segment the coupon \textbf{raises} purchases:
-
-\begin{center}
-\small
-\begin{tabular}{lrr}
-\toprule
-& \textbf{Active} & \textbf{Lapsed} \\
-\midrule
-Treated $-$ control & $0.80 - 0.75 = \textcolor{sbgreen}{+0.05}$ & $0.30 - 0.10 = \textcolor{sbgreen}{+0.20}$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\pause
-\medskip
-
-The pooled number decomposes exactly as in M1. Recipients are $0.2$ active, $0.8$ lapsed:
-\vspace{-0.4em}
-\begin{align*}
-\text{ATT} &= 0.2(0.05) + 0.8(0.20) = 0.17 \\
-\text{selection bias} &= \E[Y(0) \mid D{=}1] - \E[Y(0) \mid D{=}0] = 0.23 - 0.62 = -0.39 \\
-\text{naive} &= 0.17 - 0.39 = \textcolor{warnred}{-0.22}
-\end{align*}
-\vspace{-1.0em}
-
-Same logs. Opposite sign. The recipients were chosen \emph{because} they were unlikely to buy.
-\end{frame}
-
-% ====================================================================
-% [REVISED: potential-outcome statement first; OVB as intuition]
-\begin{frame}{Confounding by the Targeting Rule}
-
-The rule sends coupons to customers whose baseline purchase rate is low.
-
+\begin{columns}[T]
+\begin{column}{0.36\textwidth}
 \begin{center}
 \begin{tikzpicture}[
-    node distance=0.7cm and 2.0cm,
-    v/.style={draw, rounded corners, minimum width=2.4cm, minimum height=0.7cm, font=\small},
-    hid/.style={v, fill=warnred!10, draw=warnred, thick}
+    node distance=0.8cm and 0.3cm, scale=0.85, transform shape,
+    v/.style={draw, rounded corners, minimum width=1.9cm, minimum height=0.65cm, font=\small},
+    hid/.style={v, fill=redtint, draw=warnred, thick}
 ]
-\node[hid] (X) {rule inputs $X$};
+\node[hid] (X) {lapsed};
 \node[v, below left=of X] (D) {coupon $D$};
 \node[v, below right=of X] (Y) {purchase $Y$};
-\draw[-{Stealth}, warnred, thick] (X) -- node[above left, font=\scriptsize] {$-$} (D);
-\draw[-{Stealth}, warnred, thick] (X) -- node[above right, font=\scriptsize] {$+$} (Y);
+\draw[-{Stealth}, warnred, thick] (X) -- node[above left, font=\scriptsize] {$+$} (D);
+\draw[-{Stealth}, warnred, thick] (X) -- node[above right, font=\scriptsize] {$-$} (Y);
 \draw[-{Stealth}, thick] (D) -- node[below, font=\small] {$\tau$} (Y);
 \end{tikzpicture}
 \end{center}
-
-\textbf{In potential outcomes} (M1): the bias is $\E[Y(0) \mid D = 1] - \E[Y(0) \mid D = 0] = 0.23 - 0.62 = -0.39$. The rule picked members who would \emph{not} have bought anyway.
-
-\pause
-
-\medskip
-
-\textbf{The same thing in regression language}, as intuition: leaving the rule's input $X$ out of $Y = \alpha + \tau D + \gamma X + \varepsilon$ adds $\gamma \cdot \Cov(D, X)/\Var(D)$. Here $\gamma > 0$ (the active buy more) and $\Cov(D, X) < 0$ (the rule avoids them): negative, large enough to flip the sign.
-
-\medskip
-
-\textbf{Both arrows are the rule's doing --- and the rule is written down.}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Why Not Just Run Another Experiment?}
-
-Because the CFO said no --- and because that answer is the normal one.
-
-\bigskip
-
-\begin{center}
+\end{column}
+\begin{column}{0.62\textwidth}
+Recipients are $0.2$ active and $0.8$ lapsed. Split the pooled difference as in Meeting 1:
 \small
-\begin{tabular}{lll}
-\toprule
-\textbf{Situation} & \textbf{Why no experiment} & \textbf{What exists instead} \\
-\midrule
-This coupon programme & budget; a live rule already in place & the rule's logs \\
-A retailer's pricing & prices set by a system, not assignable & the system's logs \\
-A platform's ranking & hosts set prices; platform only suggests & observational listings \\
-A drug already prescribed & ethics; the treatment is standard care & clinical records \\
-\bottomrule
-\end{tabular}
-\end{center}
+\begin{align*}
+\ATT &= 0.2(0.05) + 0.8(0.20) = 0.17 \\
+\E[Y(0) \mid D=1] &= 0.2(0.75) + 0.8(0.10) = 0.23 \\
+\text{bias} &= 0.23 - 0.62 = -0.39 \\
+\text{pooled} &= 0.17 - 0.39 = \textcolor{warnred}{-0.22}
+\end{align*}
+\end{column}
+\end{columns}
 
 \bigskip
-\pause
 
-In each case a \textbf{rule} assigned the treatment from things it observed. The question is never ``can we randomise?'' but
+Same logs, opposite sign: the selection bias outweighs the effect. The rule picked members who would \textbf{not} have bought anyway: lapsed status raises the chance of a coupon and lowers the chance of a purchase.
 
-\begin{center}
-\emph{do we know what the rule looked at, and did it leave anything to chance?}
-\end{center}
+\medskip
+
+Both arrows are the rule's doing, and the rule is written down. That is what makes adjustment possible.
 \end{frame}
 
 % ====================================================================
-\section{Identification: The Rule Is the Assignment Mechanism}
-% ====================================================================
-
 \begin{frame}{What Must Be True}
 
-\begin{alertblock}{Identifying assumption: conditional exchangeability}
-Among customers the rule saw as identical, who got the coupon is as good as random:
-\[
-\{Y(0), Y(1)\} \;\indep\; D \;\mid\; X .
-\]
-\end{alertblock}
+\begin{assumption}{1.1}{Conditional exchangeability}
+$\{Y(0), Y(1)\} \indep D \mid X$.
+\end{assumption}
 
-\bigskip
-\pause
+\begin{assumption}{1.2}{Overlap}
+$0 < e(x) < 1$ for every $x$ in the population the estimand refers to.
+\end{assumption}
 
-Two more, less dramatic but not optional:
+\begin{assumption}{1.3}{Consistency}
+$Y = Y(D)$: one version of treatment, no interference.
+\end{assumption}
 
-\begin{itemize}
-    \item \textbf{Overlap.} $0 < \Prob(D = 1 \mid X = x) < 1$ for every $x$ we report on. Some coupons, some non-coupons, in every cell.
-    \medskip
-    \item \textbf{Consistency.} $Y = Y(D)$: one coupon, delivered the same way to everyone; my coupon does not change your purchase.
-\end{itemize}
+\medskip
 
-\bigskip
+For the ATT a weaker pair suffices: $Y(0) \indep D \mid X$ and $e(x) < 1$. Recipients' $Y(1)$ is observed; only their $Y(0)$ must be borrowed from non-recipients with the same $x$.
 
-Randomisation in M1 bought the first two for free. Today we must \textbf{argue} for them from the case.
+\medskip
+
+Randomisation (Meetings 1 to 6) delivered the first two by design. Today they must be \textbf{argued}.
 \end{frame}
 
 % ====================================================================
@@ -391,707 +294,656 @@ Randomisation in M1 bought the first two for free. Today we must \textbf{argue} 
 
 From Lin's description of the Q3 programme:
 
-\bigskip
-
 \begin{center}
 \small
 \begin{tabular}{p{6.4cm}p{6.6cm}}
 \toprule
-\textbf{The case says} & \textbf{Which buys} \\
+\textbf{Lin's description says} & \textbf{Which buys} \\
 \midrule
-``Coupons were assigned by the scoring rule and by nothing else.'' & Exchangeability: no one hand-picked recipients on something unrecorded. \\[0.5em]
-``Every field the rule read is in the export.'' & Exchangeability: $X$ contains the rule's inputs. \\[0.5em]
-``The daily cap meant no score band was sent coupons on every day.'' & Overlap: within a band, some got it and some did not. \\[0.5em]
+``Coupons were assigned by the scoring rule and by nothing else.'' & Exchangeability: nobody hand-picked recipients on something unrecorded. \\[0.4em]
+``Every field the rule read is in the export.'' & Exchangeability: $X$ contains the rule's inputs. \\[0.4em]
+``The daily cap meant no score band was sent coupons on every day.'' & Overlap: within a band, some members got a coupon and some did not. \\[0.4em]
 ``One coupon design, one channel, one redemption rule.'' & Consistency. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\bigskip
-\pause
+\medskip
 
-\textbf{Hold onto the first sentence.} We will test whether it is true before the hour ends.
+\textbf{Exchangeability cannot be tested} from the data it concerns. With a rule it reads: the rule's inputs are all in $X$, and whatever the rule left to chance was unrelated to outcomes. Defend it by finding out how decisions were actually made, not by inspecting the data.
+
+\medskip
+
+\textbf{Overlap is checkable}, and it is where a decisive rule fails. Block B checks the third sentence.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Standardisation}
 
-If exchangeability holds \emph{within} cells of $X$, then within each cell the treated--control difference is a causal effect, and we combine cells by their population weights.
-
-\begin{block}{Standardisation (the g-formula, Robins 1986)}
-\[
-\E[Y(1) - Y(0)] \;=\; \sum_x \Prob(X = x)\,\Bigl\{\E[Y \mid D = 1, X = x] - \E[Y \mid D = 0, X = x]\Bigr\}
-\]
-\end{block}
-
-\pause
-\medskip
-
-\textbf{On the two segments:}
-\[
-\widehat\tau_{\text{ATE}} = 0.5 \times 0.05 + 0.5 \times 0.20 = \textcolor{sbgreen}{0.125}
-\]
+\begin{result}{1.4}{Standardisation (the g-formula)}
+Under Assumptions 1.1--1.3, $\E[Y(d)] = \E_X[\mu_d(X)]$, so $\ATE = \E_X[\mu_1(X) - \mu_0(X)]$ and $\ATT = \E[Y - \mu_0(X) \mid D = 1]$.
+\end{result}
 
 \medskip
 
-Each within-cell difference needs \textbf{both arms present} in the cell --- that is where overlap enters, not as decoration.
+Within each $x$ the arms are comparable, so the within-cell difference is a causal effect; average the cells with the weights of the population the estimand refers to.
 
 \medskip
 
-\textbf{Two functions to learn at scale:} $\mu_1(x) = \E[Y \mid D=1, x]$ and $\mu_0(x) = \E[Y \mid D=0, x]$. That is the T-learner of M3, now doing identification rather than targeting.
+\begin{itemize}
+  \item The ATT form needs only $\mu_0$, evaluated at the \textbf{recipients'} $x$: exactly where non-recipients may be scarce.
+  \item With two segments, $\mu_0$ and $\mu_1$ are four cell means and standardisation is arithmetic.
+  \item With 14 fields, $\mu_d$ must be modelled (\textbf{g-computation}). The model fills in every $x$, including those where one arm is empty, and will not report where it is extrapolating.
+\end{itemize}
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Which Average Does the CFO Need?}
 
-The same cell effects, three ways of weighting them (your warm-up):
+The same two cell effects, $0.05$ and $0.20$, weighted three ways:
 
 \begin{center}
-\small
-\begin{tabular}{llrr}
+\begin{tabular}{llrl}
 \toprule
-\textbf{Estimand} & \textbf{Weights} & \textbf{Value} & \textbf{Answers} \\
+\textbf{Estimand} & \textbf{Weights (active / lapsed)} & \textbf{Value} & \textbf{Answers} \\
 \midrule
-ATE & population: $0.5 / 0.5$ & $0.125$ & ``coupon everyone?'' \\
-ATT & who got coupons: $0.2 / 0.8$ & $\mathbf{0.17}$ & ``keep the programme as run?'' \\
-ATU & who did not: $0.8 / 0.2$ & $0.08$ & ``extend to the rest?'' \\
+ATE & everyone: $0.5 / 0.5$ & $0.125$ & ``coupon everyone?'' \\
+ATT & recipients: $0.2 / 0.8$ & $\mathbf{0.17}$ & ``keep the programme as run?'' \\
+ATU & non-recipients: $0.8 / 0.2$ & $0.08$ & ``extend it to the rest?'' \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\pause
 \medskip
 
-The CFO's question is the second one. Against the break-even:
+The CFO's question is the second:
 \[
-\text{ATT} = 0.17 > 0.133 \quad\Longrightarrow\quad \text{net} = 0.17 \times 30 - 4 = \textcolor{sbgreen}{+\text{\textyen}1.1 \text{ per coupon}} .
+\ATT = 0.17 > \tau^\ast = 0.133: \qquad \text{net} = 30 \times 0.17 - 4 = +\text{\textyen}\,1.10 \text{ per coupon}.
 \]
 
-\medskip
-
-Extending to everyone would use the ATE against a \emph{different} break-even, because everyone redeems more: $\E[Y(1)] = 0.55$, so $\tau^{*} = 5.5/30 = 0.183 > 0.125$. \textcolor{warnred}{Loses money.}
+Couponing everyone is a different estimand \textbf{and a different break-even}, because everyone would redeem more: $\E[Y(1)] = 0.55$, so $\tau^\ast = 10 \times 0.55/30 = 0.183 > 0.125$. It loses \textyen 1.75 per member, as in Meeting 3.
 
 \medskip
+
 \begin{center}
 \textbf{Say which average you estimated, and for whom.}
 \end{center}
 \end{frame}
 
 % ====================================================================
-\section{Identification: Choosing Controls}
-% ====================================================================
+\begin{frame}{Weighting Instead of Modelling}
 
-\begin{frame}{The DAG for the Logs}
-
-Everything the rule read is a candidate control. Not everything in the export is.
-
-\vspace{-0.3em}
-\begin{center}
-\begin{tikzpicture}[
-    node distance=0.5cm and 1.6cm,
-    v/.style={draw, rounded corners, minimum width=2.2cm, minimum height=0.65cm, font=\scriptsize},
-    conf/.style={v, fill=noteblue!12, draw=noteblue},
-    med/.style={v, fill=orange!15, draw=orange!80!black},
-    col/.style={v, fill=warnred!10, draw=warnred},
-    a/.style={-{Stealth}, thick}
-]
-\node[conf] (X) {recency, tier, spend};
-\node[v, below left=of X] (D) {coupon $D$};
-\node[v, below right=of X] (Y) {purchase $Y$};
-\node[med, below=0.9cm of $(D)!0.5!(Y)$] (M) {app open};
-\node[col, right=of Y] (S) {survey sample};
-\draw[a, noteblue] (X) -- (D);
-\draw[a, noteblue] (X) -- (Y);
-\draw[a] (D) -- node[above, font=\scriptsize] {$\tau$} (Y);
-\draw[a, orange!80!black] (D) -- (M);
-\draw[a, orange!80!black] (M) -- (Y);
-\draw[a, warnred] (D.north) to[bend left=28] (S.north);
-\draw[a, warnred] (Y) -- (S);
-\end{tikzpicture}
-\end{center}
-
-\medskip
-\pause
-
-\textbf{Blue:} the rule's inputs open the back door $D \leftarrow X \rightarrow Y$. Condition on them.
-
-\textbf{Orange:} the app open is \emph{how} the coupon works. Condition on it and you block the effect.
-
-\textbf{Red:} the survey went to coupon recipients \emph{and} recent purchasers. Condition on it and you \emph{create} a path.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Good Controls and Bad Controls}
-\begin{figure}
-    \centering
-    \includegraphics[width=.95\linewidth]{fig/controls.png}
-    % \caption{Enter Caption}
-    \label{fig:controls}
-\end{figure}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Good Controls and Bad Controls}
-
-Not every column in the export belongs in $X$. Including the wrong ones \textbf{introduces new bias}.
-
-\bigskip
+\begin{result}{1.5}{The IPW identity}
+Under Assumptions 1.1--1.3, $\E[DY/e(X)] = \E[Y(1)]$ and $\E[(1-D)Y/(1-e(X))] = \E[Y(0)]$. Under the weaker ATT conditions,
+\[
+  \ATT = \frac{\E[DY] - \E\big[\tfrac{e(X)}{1-e(X)}(1-D)Y\big]}{\Pr(D=1)} .
+\]
+\end{result}
 
 \begin{center}
 \footnotesize
-\begin{tabular}{llcl}
+\begin{tabular}{lrrrr}
 \toprule
-\textbf{Column} & \textbf{Type} & \textbf{Include?} & \textbf{Why} \\
+& \textbf{Active, coupon} & \textbf{Lapsed, coupon} & \textbf{Active, none} & \textbf{Lapsed, none} \\
 \midrule
-Recency, tier, past spend & Confounder & \textcolor{sbgreen}{Yes} & Rule inputs that also predict buying \\
-App open in coupon week & Mediator & \textcolor{warnred}{No} & Coupon $\to$ open $\to$ purchase \\
-Redeemed the coupon & Post-treatment & \textcolor{warnred}{No} & A version of the outcome \\
-In the Q3 survey sample & Collider & \textcolor{warnred}{No} & Sampled on coupon \emph{and} purchase \\
-Store of first visit & Pre-treatment, not an input & Optional & Harmless; tightens the interval \\
+Members & 1{,}000 & 4{,}000 & 4{,}000 & 1{,}000 \\
+Weight $1/e$ or $1/(1-e)$ & $1/0.2 = 5$ & $1/0.8 = 1.25$ & $1/0.8 = 1.25$ & $1/0.2 = 5$ \\
+Weighted members & 5{,}000 & 5{,}000 & 5{,}000 & 5{,}000 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\bigskip
-\pause
-
-The test is not ``is it correlated with $Y$?'' --- the mediator and the collider both are. The test is \textbf{when} the column was determined, and \textbf{by what}. Timing is necessary, not sufficient: a variable fixed \emph{before} the coupon can still be a collider if two unrecorded causes of $D$ and $Y$ both drive it.
+Each arm now looks like the whole base, half active and half lapsed: $\widehat\E[Y(1)] = \tfrac12(0.80 + 0.30) = 0.55$, $\widehat\E[Y(0)] = \tfrac12(0.75 + 0.10) = 0.425$, and the difference is $0.125 = \ATE$.
 \end{frame}
 
 % ====================================================================
-% [RELEASE R3 — collider worksheet; answer on the next frame after the attempt]
-\begin{frame}{Exercise: The App-Open Column}
+\begin{frame}{Weighting for the ATT, and How Many Members It Rests On}
 
-A junior analyst argues: ``Customers who never open the app cannot see the coupon. Restrict to app openers --- it makes the comparison fairer.''
+For the ATT, recipients keep weight one; non-recipients get the odds $e/(1-e)$:
 
-\bigskip
+\begin{center}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Non-recipients} & \textbf{Members} & $e$ & \textbf{Weight $e/(1-e)$} & \textbf{Weighted members} \\
+\midrule
+Active & 4{,}000 & 0.2 & 0.25 & 1{,}000 \\
+Lapsed & 1{,}000 & 0.8 & 4 & 4{,}000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\[
+\widehat\E[Y(0) \mid D=1] = \frac{1{,}000(0.75) + 4{,}000(0.10)}{5{,}000} = 0.23, \qquad \widehat\ATT = 0.40 - 0.23 = 0.17 .
+\]
 
-Take a clean case: 1{,}000 customers, coupon \textbf{randomised} 50/50, and suppose the coupon has \textbf{no effect at all}.
+\textbf{H\'ajek form:} divide by the sum of the weights within each arm, as here. It is invariant to shifting $Y$ and usually less variable.
+
+\textbf{Effective sample size} of an arm's weights, $(\sum_i w_i)^2/\sum_i w_i^2$:
+\[
+\frac{5{,}000^2}{4{,}000(0.25^2) + 1{,}000(4^2)} = \frac{25{,}000{,}000}{16{,}250} = 1{,}538 \text{ of } 5{,}000 .
+\]
+The ATT's comparison rests mostly on the 1{,}000 lapsed non-recipients. (With ATE weights, each arm's is 3{,}200 of 5{,}000.)
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Why One Number Can Replace All of $X$}
+
+\begin{result}{1.6}{The balancing property (Rosenbaum and Rubin)}
+$D \indep X \mid e(X)$; hence if exchangeability holds given $X$, it holds given $e(X)$ alone.
+\end{result}
+
+\medskip
 
 \begin{itemize}
-    \item Half the customers have \emph{high intent} and buy regardless; half have low intent and never buy.
-    \item A customer opens the app if they received a coupon \textbf{or} have high intent.
+  \item Two members with the same $e(x)$ were treated alike by the rule, whichever of the 14 fields produced that value. Comparing them is as good as comparing members with identical $x$.
+  \item Adjusting for the scalar $e(X)$, by \textbf{weighting}, \textbf{stratifying} or \textbf{matching} recipients to non-recipients with similar $e$, does the work of the full vector.
 \end{itemize}
 
+\medskip
+
+\textbf{The propensity model is not a prediction task.} Its job is to reproduce the assignment mechanism and balance $X$. A model that predicts the coupon almost perfectly is reporting that the rule was nearly deterministic: a failure of overlap, not a success.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{What Regression Adjustment Estimates}
+
+$Y = \alpha + \tau D + X^\top\beta + \varepsilon$ is standardisation with two restrictions: $\mu_0$ linear in $X$ (else residual confounding is attributed to $D$), and a constant effect (else the coefficient matches none of the three estimands).
+
+\begin{result}{1.7}{Variance-weighted estimand}
+If $\mu_0(X) = X^\top\beta$ exactly and effects vary, the OLS coefficient on $D$ converges to $\E[\tau(X)\,e(X)(1-e(X))]/\E[e(X)(1-e(X))]$.
+\end{result}
+
+\textbf{On the Q3 logs}, regress purchase on the coupon and a lapsed dummy. $\mu_0$ is exactly linear in the dummy, so Result 1.7 applies. Each segment's weight is $n_s e_s(1 - e_s) = 5{,}000 \times 0.2 \times 0.8 = 800$, the same for both, so
+\[
+\hatt_{\text{OLS}} = \tfrac12(0.05 + 0.20) = 0.125 .
+\]
+
+The right control, the wrong estimand: $0.125 < 0.133$ says \textcolor{warnred}{kill}; the ATT, $0.17$, says \textcolor{sbgreen}{keep}. The weights are largest where the rule was least decided ($e$ near $0.5$). Interacting $D$ with centred $X$, or standardising, targets the ATE or ATT instead.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Good and Bad Controls}
+
+Exchangeability is a statement about a particular $X$, and enlarging $X$ can destroy it (Meeting 1's backdoor criterion).
+
+\begin{center}
+\footnotesize
+\begin{tabular}{lllp{5.4cm}}
+\toprule
+\textbf{Column in the export} & \textbf{Type} & \textbf{Include?} & \textbf{Why} \\
+\midrule
+Recency, tier, past spend & confounder & \textcolor{sbgreen}{yes} & the rule's inputs, which also predict buying \\
+App open in the coupon week & mediator & \textcolor{warnred}{no} & coupon $\to$ open $\to$ purchase: removes part of the effect \\
+Redeemed the coupon & post-treatment & \textcolor{warnred}{no} & a version of the outcome \\
+In the Q3 survey sample & collider & \textcolor{warnred}{no} & sampled on coupon \emph{and} recent purchase \\
+Send day under the cap & predicts $D$ only & \textcolor{warnred}{no} & within band and day the coupon is all or nothing: no overlap left \\
+Store of first visit & predicts $Y$ only & optional & pre-treatment; can tighten the estimate \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+The test is not ``is it correlated with $Y$?'': the mediator and the collider both are. Measure controls \textbf{before} the treatment decision, and justify each by its \textbf{causes}, not only its date. ``Everything in the warehouse'' almost always contains post-treatment variables.
+\end{frame}
+
+% ====================================================================
+% [RELEASE R3: the app-open column; the effect among app openers is computed before the next frame]
+\begin{frame}{The App-Open Column}
+
+A junior analyst: \emph{``Members who never open the app cannot see the coupon. Restrict to app openers; it makes the comparison fairer.''}
+
 \bigskip
+
+Take a clean case: 1{,}000 members, coupon \textbf{randomised} 50/50, and a coupon with \textbf{no effect at all}.
+\begin{itemize}
+  \item Half the members have high intent and buy regardless; half have low intent and never buy.
+  \item A member opens the app if they received a coupon \textbf{or} have high intent.
+\end{itemize}
 
 \begin{center}
 \small
 \begin{tabular}{lrrr}
 \toprule
-& \textbf{$n$} & \textbf{Open the app} & \textbf{Buy} \\
+& \textbf{Members} & \textbf{Open the app} & \textbf{Buy} \\
 \midrule
 Coupon, high intent & 250 & 250 & 250 \\
-Coupon, low intent  & 250 & 250 & 0 \\
+Coupon, low intent & 250 & 250 & 0 \\
 No coupon, high intent & 250 & 250 & 250 \\
-No coupon, low intent  & 250 & 0 & 0 \\
+No coupon, low intent & 250 & 0 & 0 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\medskip
-\textbf{In pairs:} the coupon effect \emph{among app openers}. Commit before the next frame.
+\textbf{What is the coupon ``effect'' among app openers?}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{The App-Open Answer}
+\begin{frame}{Conditioning on a Collider}
 
 Among app openers:
 \[
-\Prob(\text{buy} \mid \text{coupon, open}) = \frac{250}{500} = 0.50, \qquad
-\Prob(\text{buy} \mid \text{no coupon, open}) = \frac{250}{250} = 1.00 .
+\Pr(\text{buy} \mid \text{coupon, open}) = \frac{250}{500} = 0.50, \qquad
+\Pr(\text{buy} \mid \text{no coupon, open}) = \frac{250}{250} = 1.00 .
 \]
 
-\bigskip
-
 \begin{center}
-\Large ``Effect'' $= \textcolor{warnred}{-0.50}$ \qquad for a true effect of $\mathbf{0}$.
+\Large ``Effect'' $= \textcolor{warnred}{-0.50}$ \quad for a true effect of $\mathbf{0}$.
 \end{center}
 
-\bigskip
-\pause
-
-The coupon was randomised, so there was \textbf{no confounding to fix}. Restricting to openers selected \emph{all} treated customers but only the \emph{high-intent} untreated ones. Conditioning on a variable that both $D$ and intent cause makes $D$ and intent dependent.
-
-\bigskip
-
-\begin{alertblock}{The pattern}
-A variable determined \emph{after} treatment, by treatment and by the outcome's causes, is a collider. ``Fairer comparison'' arguments almost always propose one.
-\end{alertblock}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Is Exchangeability Credible?}
-
-Once the controls are the rule's inputs, exchangeability says: among customers with the same inputs, who got the coupon was down to the cap and the calendar. Substantive and \textbf{untestable}.
-
-\begin{center}
-\small
-\begin{tabular}{lll}
-\toprule
-\textbf{Could have moved both $D$ and $Y$} & \textbf{In the export?} & \textbf{Status} \\
-\midrule
-Recency, tier, past spend & \textcolor{sbgreen}{Yes} & Controlled for \\
-Score band, contact-cap day & \textcolor{sbgreen}{Yes} & Controlled for \\
-Store-manager ``VIP'' additions & \textcolor{warnred}{No} & Residual confounding, if they exist \\
-A regional push in week 9 & \textcolor{warnred}{Unclear} & Ask Lin \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-\pause
-
-\textbf{Professional standard:} state the assumption, list what the rule saw, list what it might have seen that you cannot, and say how large that would have to be to matter (M8 shows how to price it).
+The coupon was randomised: there was no confounding to fix. Opening the app is caused by the coupon \emph{and} by intent, so restricting to openers keeps every recipient but only the high-intent non-recipients (Meeting 1, collider result).
 
 \medskip
-\textbf{Rivergate worksheet:} the same audit on a second firm's logs, for the take-home core.
+
+\textbf{Timing is necessary but not sufficient.} A variable recorded \emph{before} the coupon is still a collider if two unrecorded causes, one of $D$ and one of $Y$, both drive it (\textbf{M-bias}). Justify each control by its causes, not only its date.
 \end{frame}
 
 % ====================================================================
-\section{Design, Then Estimation at Scale}
-% ====================================================================
+\begin{frame}{End of Block A}
 
-% [RELEASE R4 — full export description; collect three proposed estimators on the board]
-\begin{frame}{The Real Logs}
+\begin{itemize}
+  \item The engine's rule is the assignment mechanism: $e(x)$ is the rule. It confounds by construction: $-0.22$ pooled, $+0.05$ and $+0.20$ within segment.
+  \item Exchangeability is a claim about how decisions were made; overlap is checkable.
+  \item Standardisation and IPW identify the same quantities from the outcome side and the assignment side. The CFO needs the ATT: $0.17 > 0.133$, \textyen 1.10 per coupon.
+  \item The ATT rests on 1{,}538 effective non-recipients of 5{,}000. One number, $e(x)$, can stand in for all of $X$.
+  \item Regression with the right control returns $0.125$: a variance-weighted average, and the wrong decision.
+  \item Choose controls by timing and cause: the app-open column manufactures $-0.50$ from nothing.
+\end{itemize}
+
+\vfill
 
 \begin{center}
-\small
-\begin{tabular}{lr}
+\Large \textbf{Block B: Overlap, design and double robustness}\\[0.4em]
+\normalsize The full export: where the comparison is thin, what to decide before looking, and AIPW.
+\end{center}
+\vfill
+\end{frame}
+
+% ====================================================================
+\section{Block B: Overlap, design and double robustness}
+% ====================================================================
+
+% [RELEASE R4: the real logs, coupon column only; the purchase column stays locked]
+\begin{frame}{The Real Logs}
+
+The engine's score reads \textbf{14 CRM fields} and cuts them into four bands; each band had a daily send probability, throttled by the cap. The export has the 14 fields, the band and the coupon column. \textbf{The purchase column stays locked.}
+
+\begin{center}
+\begin{tabular}{llrrr}
 \toprule
-Customers in the Q3 export & \NUM{40{,}000}{sim coupon-logs v1: number of loyalty customers in the export} \\
-Received the coupon & \NUM{16{,}100}{sim coupon-logs v1: treated count} \\
-Recorded fields the rule read & \NUM{14}{sim coupon-logs v1: rule inputs} \\
-Purchase rate, coupon / no coupon & \NUM{0.41}{sim coupon-logs v1: treated purchase rate} / \NUM{0.60}{sim coupon-logs v1: control purchase rate} \\
+\textbf{Score band} & \textbf{Segment} & \textbf{Members} & \textbf{Coupon} & \textbf{No coupon} \\
+\midrule
+1 (lowest) & active & 2{,}500 & 200 & 2{,}300 \\
+2 & active & 2{,}500 & 800 & 1{,}700 \\
+3 & lapsed & 2{,}500 & 1{,}550 & 950 \\
+4 (highest) & lapsed & 2{,}500 & 2{,}450 & 50 \\
+\midrule
+Total & & 10{,}000 & 5{,}000 & 5{,}000 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\bigskip
-\pause
+\medskip
 
-The rule is \textbf{banded}: a score from the 14 fields, cut into bands; each band had a daily send probability, throttled by the cap.
+The bands refine the two segments: they add up to block A's 1{,}000 and 4{,}000 coupons. Everything on the next four frames uses only these columns.
+\end{frame}
 
-\begin{itemize}\small
-    \item the top band was sent coupons on almost every day; the bottom band almost never
-    \item bands in the middle were sent on some days and not others
+% ====================================================================
+\begin{frame}{Reconstruct the Rule}
+
+The assignment mechanism, from the coupon column alone: $\hat e(\text{band}) = $ coupons $/$ members.
+
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{center}
+\small
+\begin{tabular}{lrr}
+\toprule
+\textbf{Band} & $\hat e$ & \textbf{ATT weight $\hat e/(1-\hat e)$} \\
+\midrule
+1 & 0.08 & 0.087 \\
+2 & 0.32 & 0.47 \\
+3 & 0.62 & 1.63 \\
+4 & 0.98 & 49 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=6.6cm, height=4.0cm, ybar, bar width=7pt, ymin=0, ymax=2700,
+  symbolic x coords={0.08,0.32,0.62,0.98}, xtick=data, xlabel={$\hat e$ (band 1 to 4)},
+  ylabel={members}, ylabel style={font=\scriptsize}, xlabel style={font=\scriptsize},
+  tick label style={font=\scriptsize}, scaled y ticks=false,
+  legend columns=2, legend style={font=\scriptsize, at={(0.5,1.03)}, anchor=south, draw=none, fill=none}]
+\addplot[fill=sbgreen, draw=sbgreen] coordinates {(0.08,200) (0.32,800) (0.62,1550) (0.98,2450)};
+\addplot[fill=extgrey!60, draw=extgrey] coordinates {(0.08,2300) (0.32,1700) (0.62,950) (0.98,50)};
+\legend{coupon, no coupon}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{column}
+\end{columns}
+
+The band is a \textbf{saturated} propensity model: no functional form to get wrong. With 14 raw fields, $e$ is estimated from the rule's inputs, or written down if the rule is known.
+
+Lin's third sentence holds, barely: some members of every band went without a coupon. But in band 4, 98\% got one.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Overlap Diagnostics}
+
+Two checks, both outcome-free: the distribution of $\hat e$ in each arm, and the largest weights.
+
+\begin{center}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Band} & \textbf{Non-recipients} & \textbf{Weight} & \textbf{Weighted non-recipients} & \textbf{Share of the weight} \\
+\midrule
+1 & 2{,}300 & 0.087 & 200 & 4\% \\
+2 & 1{,}700 & 0.47 & 800 & 16\% \\
+3 & 950 & 1.63 & 1{,}550 & 31\% \\
+4 & 50 & 49 & 2{,}450 & 49\% \\
+\midrule
+Total & 5{,}000 & & 5{,}000 & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+\begin{itemize}
+  \item Each band's weighted non-recipients equal its recipients: that is what the ATT weights are for.
+  \item \textbf{Fifty members stand in for 2{,}450.} Half the ATT's comparison rests on 1\% of the non-recipients.
+  \item Effective sample size: $5{,}000^2 / \sum_i w_i^2 = 203$ of 5{,}000 non-recipients.
 \end{itemize}
+\end{frame}
 
-\bigskip
+% ====================================================================
+\begin{frame}{Trimming, and the Estimand It Leaves}
 
-\textbf{In pairs:} write down the model you would fit. Three proposals go on the board.
-\vspace{1.2em}
+\textbf{Trimming} restricts to $\hat e(X) \in [a, 1-a]$, often with $a = 0.05$ or $0.10$. With $a = 0.05$, band 4 goes.
+
+\begin{center}
+\small
+\begin{tabular}{lrr}
+\toprule
+& \textbf{All four bands} & \textbf{Bands 1 to 3} \\
+\midrule
+Recipients the ATT describes & 5{,}000 & 2{,}550 \\
+Share of them active & 20\% & 39\% \\
+Largest weight & 49 & 1.63 \\
+Effective non-recipients & 203 of 5{,}000 & 2{,}225 of 4{,}950 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+Trimming stabilises the estimate but \textbf{changes the estimand}: the ATT for the 2{,}550 recipients in bands 1 to 3, a population twice as active as the programme's. It must be reported as such:
+
+\begin{center}
+\emph{``Members in the top score band, 98\% of whom received a coupon, are excluded.''}
+\end{center}
+
+Their effect is not estimated away; it is reported separately, with the 50 members it rests on.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Design Before Analysis}
 
-The purchase column stays \textbf{locked}. Using only the 14 fields and the coupon column:
+Every choice so far was made without a purchase in sight, and should be (Rubin, 2008). Lin's design record:
 
 \begin{enumerate}
-    \item \textbf{Reconstruct the assignment mechanism.} Fit the coupon on the rule's inputs: $\hat e(x)$ is the band's send probability, throttled by the cap.
-    \item \textbf{Check overlap, band by band.} Where is $\hat e(x)$ near 0 or 1? Who has no comparison?
-    \item \textbf{Fix the estimand and the trimming rule.} If some bands must go, the estimand becomes the ATT \emph{on the rest} --- decided now, in writing.
-    \item \textbf{Check balance} of the 14 fields after weighting.
+  \item \textbf{Assignment mechanism:} $\hat e$ by band, from the coupon column.
+  \item \textbf{Overlap:} band 4 rests on 50 non-recipients; trim at $[0.05, 0.95]$.
+  \item \textbf{Estimand and estimator:} the ATT for bands 1 to 3 by H\'ajek IPW; band 4 reported on its own.
+  \item \textbf{Balance}, standardised mean difference of the lapsed share:
+  \[
+  \text{before: } \frac{0.80 - 0.20}{\sqrt{(0.16 + 0.16)/2}} = 1.50; \quad \text{after ATT weighting, both arms are } 80\% \text{ lapsed: } 0 .
+  \]
+  \item Record the design in writing, with a date. \textbf{Only then open the outcomes.}
 \end{enumerate}
-
-\bigskip
-
-\begin{block}{Why before}
-Every choice above can be made without an outcome. Made after, each one could be tuned to the answer --- the same reason M4 froze the partition and M5 froze the list (Rubin: \emph{design before analysis}).
-\end{block}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Predict Before You Look}
-
-Two segments worked by hand. The export has 14 fields and a banded rule.
-
-\bigskip
-
-\textbf{In pairs, write down three numbers} --- the estimated lift:
-
-\bigskip
-
-\begin{enumerate}
-    \item with no controls
-    \item regressing purchase on coupon and the 14 fields, linearly
-    \item reweighting each customer by the inverse of their coupon probability
-\end{enumerate}
-
-\bigskip
-
-Against the break-even \NUM{0.14}{p1-hat / 3, p1-hat = treated purchase rate in the sim export}, which ones keep the programme?
-
-\bigskip
-
-\begin{center}
-\small Commit before the next slide.
-\end{center}
-\end{frame}
-
-% ====================================================================
-% [RELEASE R5 — the ladder; reveal only after predictions are on the board]
-\begin{frame}{The Ladder}
-
-\begin{center}
-\begin{tabular}{lr}
-\toprule
-\textbf{Comparison} & \textbf{Lift} \\
-\midrule
-Pooled, no controls & \NUM{$-0.19$}{sim coupon-logs v1: difference in means} \\
-Linear regression on coupon and 14 fields & \NUM{$+0.06$}{sim coupon-logs v1: OLS coefficient on D with linear controls} \\
-Standardisation, flexible outcome models & \NUM{$+0.14$}{sim coupon-logs v1: T-learner g-formula, ATT weights} \\
-IPW, all customers & \NUM{$+0.10$}{sim coupon-logs v1: Hájek ATT estimator, untrimmed} \\
-\midrule
-\textit{(today's destination)} & \textcolor{sbgreen}{\NUM{$+0.16$}{sim coupon-logs v1: Hájek ATT, ê trimmed to [0.05, 0.95]}} \\
-\bottomrule
-\end{tabular}
-\end{center}
 
 \medskip
-\pause
 
-\begin{itemize}
-    \item Adding the fields linearly recovers the \textbf{sign} and less than half the \textbf{magnitude}.
-    \item Two methods that both ``adjust for $X$'' disagree by more than the break-even margin.
-\end{itemize}
-
-\begin{center}
-\textbf{So: what does each one actually compute?}
-\end{center}
+The observational counterpart of the frozen partition (Meeting 4) and the frozen list (Meeting 5): choices made before the outcomes cannot be tuned to them.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Attempt 1 --- Regression Adjustment}
-
-\[
-Y_i = \alpha + \tau D_i + X_i'\beta + \varepsilon_i
-\]
-
-\bigskip
-\pause
-
-\begin{center}
-\Large $\widehat\tau = $ \NUM{$+0.06$}{sim coupon-logs v1: OLS on D and linear X} \qquad $\Longrightarrow$ \qquad \textcolor{warnred}{\textbf{kill}}
-\end{center}
-
-\bigskip
-\pause
-
-\textbf{Why it fails.} Two things at once.
-
-\begin{itemize}
-    \item The rule is a \emph{staircase} in the score; a linear term is a \emph{ramp}. Whatever the ramp misses stays in $\varepsilon$ and keeps confounding $\tau$.
-    \item Even with the right controls, one coefficient on $D$ forces a \textbf{single} effect. When effects differ by segment (they do: $0.05$ vs $0.20$), OLS returns a weighted average that over-weights cells where the rule was \emph{least} decided --- not the ATT the CFO asked for.
-\end{itemize}
-
-\bigskip
-\begin{center}
-\small The second point is the M8 story in binary clothing; the notes state it. Today: a well-specified outcome model is not one line.
-\end{center}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Attempt 2 --- Standardisation With a Flexible Outcome Model}
-
-Fit $\widehat\mu_1(x)$ on the coupon rows and $\widehat\mu_0(x)$ on the others with a boosted model. Then, for the recipients,
-\[
-\widehat\tau_{\text{ATT}} = \frac{1}{n_1}\sum_{i : D_i = 1} \bigl\{ Y_i - \widehat\mu_0(X_i) \bigr\} .
-\]
-
-\bigskip
-\pause
-
-\begin{center}
-\Large $\widehat\tau = $ \NUM{$+0.14$}{sim coupon-logs v1: T-learner standardisation, ATT} \qquad $\Longrightarrow$ \qquad \textcolor{warnred}{\textbf{knife edge}}
-\end{center}
-
-\bigskip
-\pause
-
-\textbf{Where it strains.} $\widehat\mu_0(x)$ must be evaluated at recipients' $x$. For the top score band there are \NUM{31}{sim coupon-logs v1: control rows in the top band} untreated customers to learn from among \NUM{4{,}900}{sim coupon-logs v1: rows in the top band}. The model \emph{extrapolates} into that band, and nothing in the fit says so.
-
-\bigskip
-
-The estimate is honest about the middle bands and a guess about the top one. We need a method that \textbf{shows} us where the comparison is thin.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{The Old Decision Rule Is the Propensity Score}
-
-\begin{block}{Propensity score}
-$e(x) = \Prob(D = 1 \mid X = x)$: the probability the rule sent a coupon to a customer with fields $x$.
-\end{block}
-
-\bigskip
-
-In Q3 this is not a modelling abstraction. It is \textbf{the scoring rule times the cap}. We reconstruct it by fitting $D$ on the 14 fields:
+% [RELEASE R4b: purchases by band, once the design record is written]
+\begin{frame}{Opening the Outcomes}
 
 \begin{center}
 \small
-\begin{tabular}{lr}
-\toprule
-Out-of-fold AUC of the fitted rule & \NUM{0.91}{sim coupon-logs v1: cross-fitted logistic/boosted propensity model} \\
-Customers with $\widehat e < 0.05$ or $\widehat e > 0.95$ & \NUM{9\%}{sim coupon-logs v1: share outside [0.05, 0.95]} \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\medskip
-\pause
-
-\textbf{Two customers with the same $\widehat e(x)$ were treated alike by the rule}, whatever their 14 fields. One number does the work of fourteen (the balancing property; proof in the notes).
-
-\smallskip
-
-\textbf{Not a prediction task.} A propensity model that fits ``too well'' reports that the rule left nothing to chance --- bad news, not good.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Inverse Probability Weighting}
-
-Weight treated customers by $1/e(x)$, controls by $1/\{1 - e(x)\}$. Each arm then stands in for the \textbf{whole} population.
-
-\vspace{-0.3em}
-\begin{block}{The identity}
-\vspace{-0.6em}
-\[
-\E\!\left[\frac{D\,Y}{e(X)}\right] = \E\!\left[\frac{D\,Y(1)}{e(X)}\right] = \E\!\left[\frac{\E[D \mid X]\,\E[Y(1) \mid X]}{e(X)}\right] = \E[Y(1)]
-\]
-\vspace{-0.9em}
-
-\small consistency; exchangeability within $X$; $\E[D \mid X] = e(X)$.
-\end{block}
-
-\pause
-\vspace{-0.2em}
-
-\textbf{On the two segments:} weights $1/0.2 = 5$ and $1/0.8 = 1.25$.
-
-\begin{center}
-\scriptsize
-\begin{tabular}{lrrrr}
-\toprule
-& \textbf{Active T} & \textbf{Lapsed T} & \textbf{Active C} & \textbf{Lapsed C} \\
-\midrule
-Rows & 100 & 400 & 400 & 100 \\
-Weight & 5 & 1.25 & 1.25 & 5 \\
-Weighted rows & 500 & 500 & 500 & 500 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\vspace{-0.6em}
-\[
-\widehat\tau_{\text{ATE}} = \frac{500(0.80) + 500(0.30)}{1000} - \frac{500(0.75) + 500(0.10)}{1000} = 0.55 - 0.425 = \textcolor{sbgreen}{0.125}
-\]
-\vspace{-0.8em}
-
-\small For the ATT, leave the treated alone and weight controls by $e/(1-e)$: $0.40 - 0.23 = 0.17$.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{How Many Controls Does the ATT Rest On?}
-
-For the ATT the treated stay as they are; controls are weighted by $e/(1-e)$ to look like the recipients:
-
-\begin{center}
 \begin{tabular}{lrrr}
 \toprule
-& \textbf{Controls} & $e$ & \textbf{Weight} $e/(1-e)$ \\
+\textbf{Band} & \textbf{Coupon: bought} & \textbf{No coupon: bought} & \textbf{Difference} \\
 \midrule
-Active & 400 & 0.2 & 0.25 \\
-Lapsed & 100 & 0.8 & 4 \\
+1 & 160 / 200 $= 0.80$ & 1{,}725 / 2{,}300 $= 0.75$ & 0.05 \\
+2 & 640 / 800 $= 0.80$ & 1{,}275 / 1{,}700 $= 0.75$ & 0.05 \\
+3 & 465 / 1{,}550 $= 0.30$ & 95 / 950 $= 0.10$ & 0.20 \\
+4 & 735 / 2{,}450 $= 0.30$ & 5 / 50 $= 0.10$ & 0.20 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\[
-\text{ESS} = \frac{\bigl(\sum w\bigr)^2}{\sum w^2} = \frac{(100 + 400)^2}{400(0.0625) + 100(16)} = \frac{250{,}000}{1{,}625} \approx \mathbf{154}
-\]
-
-\bigskip
-
-500 controls in the data; the ATT's comparison rests on about \textbf{154} of them --- mostly the 100 lapsed controls. (With ATE weights 5 and 1.25, each arm's ESS is 320 of 500.)
-
-\medskip
-
-\small Report the effective sample size next to any weighted estimate. It is the first sign of the weights explosion on the next slide.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Attempt 3 --- IPW on the Logs, and Where the Weights Explode}
-
-\begin{columns}[T]
-\begin{column}{0.46\textwidth}
 \begin{center}
-\Large $\widehat\tau_{\text{ATT}} = $ \NUM{$+0.10$}{sim coupon-logs v1: Hájek ATT, untrimmed}\\[0.4em]
-\small SE \NUM{0.06}{sim coupon-logs v1: sandwich SE, untrimmed}
-\end{center}
-
-\smallskip
-The interval straddles the break-even because a handful of rows carry most of the weight: the largest control weight is \NUM{58}{sim coupon-logs v1: max e/(1-e) among controls}.
-\end{column}
-\begin{column}{0.52\textwidth}
-\begin{center}
-\begin{tikzpicture}[scale=0.42]
-% schematic overlap histogram: replace with fig-overlap from the sim
-\draw[-{Stealth}] (0,0) -- (10.4,0); \node[font=\scriptsize] at (5,-0.5) {$\widehat e(x)$};
-\draw[-{Stealth}] (0,0) -- (0,4.2);
-\foreach \x/\h in {0.5/0.3,1.5/0.9,2.5/1.6,3.5/2.2,4.5/2.6,5.5/2.4,6.5/2.0,7.5/1.5,8.5/0.9,9.5/0.4}
-  \fill[sbgreen!60] (\x-0.45,0) rectangle (\x+0.05,\h);
-\foreach \x/\h in {0.5/3.4,1.5/2.8,2.5/2.1,3.5/1.7,4.5/1.2,5.5/0.9,6.5/0.6,7.5/0.35,8.5/0.15,9.5/0.05}
-  \fill[gray!55] (\x+0.05,0) rectangle (\x+0.55,\h);
-\draw[dashed, warnred] (0.5,0) -- (0.5,3.8); \draw[dashed, warnred] (9.5,0) -- (9.5,3.8);
-\node[font=\scriptsize] at (0.5,-0.4) {0.05}; \node[font=\scriptsize] at (9.5,-0.4) {0.95};
-\node[font=\scriptsize, sbgreen] at (8.3,3.6) {coupon}; \node[font=\scriptsize, gray!70!black] at (2.2,3.9) {no coupon};
-\end{tikzpicture}\\
-{\scriptsize schematic --- replace with the sim's overlap figure}
-\end{center}
-\end{column}
-\end{columns}
-
-\smallskip
-Outside the dashed lines one arm is nearly empty. Standardisation \emph{extrapolated} there silently; IPW \textbf{shouts}.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Trimming, and Who the Answer Now Describes}
-
-Drop customers with $\widehat e(x)$ outside $[0.05, 0.95]$ --- the bands the rule had all but decided --- and reweight.
-
-\medskip
-
-\begin{center}
-\Large $\widehat\tau_{\text{ATT}} = $ \NUM{$+0.16$}{sim coupon-logs v1: Hájek ATT on the trimmed sample} \qquad SE \NUM{0.02}{sim coupon-logs v1: sandwich SE, trimmed} \qquad $\Longrightarrow$ \qquad \textcolor{sbgreen}{\textbf{keep}}
-\end{center}
-
-\medskip
-\pause
-
-\textbf{The price.} The estimate no longer describes all recipients. It describes the \NUM{91\%}{sim coupon-logs v1: share of treated retained after trimming} of them in bands where the rule left something to chance.
-
-\smallskip
-
-For the top band the logs contain \textbf{no comparison}, and no method manufactures one. The memo says so: \emph{``for the top score band the effect is not identified from Q3 data.''}
-
-\smallskip
-
-Overlap is the warm-up's question in continuous form: \emph{which population are you averaging over?}
-\vspace{1.6em}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Lin's Table}
-
-\begin{center}
-\scriptsize
-\begin{tabular}{llrl}
+\small
+\begin{tabular}{llr}
 \toprule
-\textbf{Method} & \textbf{What it estimates} & \textbf{Lift} & \textbf{Verdict} \\
+\textbf{Estimate} & \textbf{What it estimates} & \textbf{Lift} \\
 \midrule
-Difference in means & nothing causal & \NUM{$-0.19$}{sim v1: naive} & \textcolor{warnred}{kill} \\
-Linear adjustment & variance-weighted average, wrong form & \NUM{$+0.06$}{sim v1: OLS} & \textcolor{warnred}{kill} \\
-Flexible standardisation & ATT, extrapolated in the top band & \NUM{$+0.14$}{sim v1: g-formula} & knife edge \\
-IPW, untrimmed & ATT, dominated by a few weights & \NUM{$+0.10$}{sim v1: IPW} & \textcolor{warnred}{unclear} \\
-IPW, trimmed & ATT on the overlap region & \NUM{$+0.16$}{sim v1: IPW trimmed} & \textcolor{sbgreen}{keep} \\
-\midrule
-\textit{Truth in the simulation} & ATT & \NUM{$+0.17$}{sim v1: true ATT in the DGP} & \\
+Pooled difference & nothing causal & $-0.22$ \\
+OLS on coupon and band dummies & variance-weighted: band 4 gets 49 of 1{,}366 & $0.120$ \\
+Standardisation by segment & ATT; band 4's $\mu_0$ learned mostly from band 3 & $0.17$ \\
+H\'ajek IPW by band & ATT, all recipients (SE $0.022$) & $0.17$ \\
+H\'ajek IPW, trimmed & ATT, bands 1 to 3 (SE $0.011$) & $0.141$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\pause
-
-\small Each fails for its own reason, visible only once you ask \textbf{what population} and \textbf{which comparison} it used.
-\textbf{Recommendation:} keep the programme in the bands it ran in; do not extend to the top band on this evidence.
-\vspace{2.2em}
+\small SE from the cell counts: $\sqrt{\sum_b (n_{1b}/n_1)^2\{p_{1b}(1-p_{1b})/n_{1b} + p_{0b}(1-p_{0b})/n_{0b}\}}$. Band 4 supplies 93\% of the untrimmed variance.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Continuous Dose}
+\begin{frame}{Trimming Changed the Decision}
 
-Q4 will vary the face value: \textyen 5, \textyen 10, \textyen 15. The treatment is no longer on/off.
+Each population has its own break-even, $\tau^\ast = 10\,\E[Y(1) \mid D=1]/30$:
 
-\bigskip
+\begin{center}
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Recipients} & \textbf{Members} & \textbf{Lift} & $\E[Y(1) \mid D=1]$ & $\tau^\ast$ & \textbf{Net per coupon} \\
+\midrule
+All (the programme) & 5{,}000 & 0.17 & 0.40 & 0.133 & \textcolor{sbgreen}{$+$\textyen 1.10} \\
+Bands 1 to 3 (trimmed) & 2{,}550 & 0.141 & 0.496 & 0.165 & \textcolor{warnred}{$-$\textyen 0.73} \\
+Band 4 & 2{,}450 & 0.20 & 0.30 & 0.100 & \textcolor{sbgreen}{$+$\textyen 3.00} \\
+\bottomrule
+\end{tabular}
+\end{center}
 
-Each customer has a \textbf{curve} of potential outcomes $\{Y(d) : d \in \mathcal{D}\}$; we observe one point on it. Everything today survives with $x$ and $d$ side by side:
-
-\[
-\mu(d) \equiv \E[Y(d)] = \E_X\!\bigl[\E[Y \mid D = d, X]\bigr], \qquad
-\frac{d\mu}{dd} = \E_X\!\left[\frac{\partial}{\partial d}\E[Y \mid D = d, X]\right]
-\]
-
-under exchangeability $\{Y(d)\} \indep D \mid X$ and overlap at every dose.
-
-\bigskip
-\pause
-
-What changes:
+\medskip
 
 \begin{itemize}
-    \item ``Overlap'' now means every dose observed at every $x$, and a propensity becomes a \emph{density}.
-    \item Reporting a whole curve is expensive; reporting its \textbf{slope} is cheap and is usually what the decision needs.
+  \item The programme's profit comes from band 4, the band trimming removes and the band with the thinnest comparison.
+  \item Band 4's lift has SE $\sqrt{0.21/2{,}450 + 0.09/50} = 0.043$; its 95\% interval starts at $0.115$, still above its break-even of $0.100$.
+  \item The untrimmed ATT's interval, $0.17 \pm 1.96 \times 0.022$, starts at $0.127$, below $0.133$.
+\end{itemize}
+
+\textbf{Lin's memo:} keep coupons for lapsed members (bands 3 and 4); stop the 1{,}000 to active members, who lose \textyen 6.50 each.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Silent Extrapolation, Loud Weights}
+
+Standardisation does not fail visibly where overlap is thin: \textbf{the outcome model extrapolates silently}. Weighting fails loudly, with large weights and a small effective sample.
+
+\medskip
+
+Suppose 10 of band 4's 50 non-recipients had bought, not 5:
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+& \textbf{5 bought (the logs)} & \textbf{10 bought} \\
+\midrule
+Standardisation by segment & 0.17 & 0.166 \\
+H\'ajek IPW by band & 0.17 & 0.121 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+\begin{itemize}
+  \item The segment model learns lapsed non-recipients' $\mu_0$ from 1{,}000 members, 950 of them in band 3, and applies it to band 4. Five purchases barely move it.
+  \item IPW by band lets band 4's 50 members speak for 2{,}450 recipients: five purchases move the ATT by $0.049$.
+\end{itemize}
+
+\textbf{Compute both. Where they disagree, look first at the overlap diagnostics.}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Doubly Robust Estimation}
+
+\begin{result}{1.8}{AIPW and double robustness}
+Let
+\[
+  \phi = \tilde\mu_1(X) - \tilde\mu_0(X) + \frac{D\,(Y - \tilde\mu_1(X))}{\tilde e(X)} - \frac{(1-D)(Y - \tilde\mu_0(X))}{1 - \tilde e(X)}
+\]
+for working models $\tilde\mu_d$ and $\tilde e$. Under Assumptions 1.1--1.3, $\E[\phi] = \ATE$ if \emph{either} $\tilde\mu_d = \mu_d$ for both $d$ \emph{or} $\tilde e = e$.
+\end{result}
+
+\medskip
+
+\begin{itemize}
+  \item The first two terms are standardisation; the weighted residuals correct what the outcome model got wrong.
+  \item Given $X$, the error is a sum of \textbf{products}: the outcome model's error times the propensity model's relative error. Each product vanishes if either model is right.
+  \item With flexible models, the estimator's error depends on the product of the two models' errors; with cross-fitting (Meeting 8) it has a valid normal approximation where neither IPW nor standardisation alone does.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Two Chances on the Two Segments}
+
+Truth by segment: $\mu_1 = 0.80, 0.30$; $\mu_0 = 0.75, 0.10$; $e = 0.2, 0.8$; $\ATE = 0.125$. The mean of $\phi$ in each segment:
+
+\begin{center}
+\small
+\begin{tabular}{p{7.4cm}rrr}
+\toprule
+\textbf{Working models} & \textbf{Active} & \textbf{Lapsed} & \textbf{AIPW ATE} \\
+\midrule
+Outcome model ignores segment ($\tilde\mu_1 = 0.40$, $\tilde\mu_0 = 0.62$); $\tilde e$ right & $0.05$ & $0.20$ & \textcolor{sbgreen}{$0.125$} \\[0.3em]
+Outcome model right; $\tilde e = 0.5$ for everyone & $0.05$ & $0.20$ & \textcolor{sbgreen}{$0.125$} \\[0.3em]
+Both wrong & $-0.268$ & $-0.172$ & \textcolor{warnred}{$-0.22$} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+First row, active members: $-0.22 + \frac{0.2}{0.2}(0.80 - 0.40) - \frac{0.8}{0.8}(0.75 - 0.62) = -0.22 + 0.40 - 0.13 = 0.05$. The residuals undo the outcome model's error exactly.
+
+\medskip
+
+Second row: the residuals have mean zero in each segment, so wrong weights multiply nothing. Both wrong: here AIPW is back at the pooled $-0.22$.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{What Double Robustness Does Not Cover}
+
+\textbf{Modelling errors, not missing variables.} Double robustness protects against a wrong $\tilde\mu_d$ or a wrong $\tilde e$. If exchangeability fails, say store managers added unrecorded ``VIP'' members to the list, every estimator today is biased: standardisation, IPW, regression and AIPW alike.
+
+\bigskip
+
+\textbf{Inference.}
+\begin{itemize}
+  \item Bootstrap over members, re-estimating $\hat e$ (and $\hat\mu_d$) in every replicate: the propensity is estimated, and its noise belongs in the interval.
+  \item If members share a store whose shocks move them together, resample stores as blocks.
+  \item Or use the cross-fitted AIPW standard error (Meeting 8).
 \end{itemize}
 
 \bigskip
 
-\textbf{Next time:} a hotel group whose rates are set by a system, night by night. The treatment is continuous, the rule has 47 inputs, and the question becomes \emph{how} $X$ must enter the model.
+\textbf{Trimming and the design record apply to AIPW too}: its weighted residuals carry the same $1/\tilde e$ and $1/(1 - \tilde e)$, and band 4's 50 members carry the same weight.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Key Takeaways}
+\begin{frame}{How Well Does Adjustment Work? The LaLonde Lesson}
+
+\textbf{LaLonde (1986)} took a job-training experiment, replaced its randomised control group with survey respondents, and asked whether adjustment recovered the experimental answer.
 
 \begin{itemize}
-    \item \spinestep{Estimand.} The CFO's question is the ATT of the programme \emph{as it ran}, held against its own break-even. Extending it to everyone is a different estimand, with a different break-even.
-    \item \spinestep{Identification.} The engine's rule is the assignment mechanism. It confounds by construction ($-0.22$ pooled, $+0.17$ within segment). Exchangeability is a claim about the rule, tied to sentences; controls are chosen by timing and cause, not correlation.
-    \item \spinestep{Design before analysis.} Reconstruct the rule, check overlap, fix trimming and the estimand, check balance --- all before the outcomes are opened.
-    \item \spinestep{Estimation.} Standardisation and IPW are the same identification, seen from the outcome and the assignment side. Where one arm is empty, the first extrapolates silently and the second fails loudly. Report the effective sample size.
-    \item \textbf{Every estimate describes a population.} Trimming changes it. Say which.
+  \item The regressions of the time missed badly, sometimes with the wrong sign.
+  \item Later work (Dehejia and Wahba, 1999, and others) found that propensity methods do well when the comparison group \textbf{overlaps} the treated \emph{and} the covariates include \textbf{prior values of the outcome}, and badly otherwise.
 \end{itemize}
+
+\bigskip
+
+\textbf{The covariates matter more than the estimator.}
 
 \medskip
 
-\small \textbf{Take-home core:} the Rivergate control audit (30--45 min), due with Notebook 7 --- 96 hours from now. \quad \textbf{Reading:} LaLonde's benchmark --- can observational controls recover an experiment? (Cunningham, \emph{Causal Inference: The Mixtape}, ch.~5; it is also the story behind P3's data.)
+At the coffee chain, the defence of the Q3 review is not the choice among IPW, standardisation and AIPW. It is that the export holds every field the score read, past purchases among them, and that within a band the cap, not the members, decided who got a coupon.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{This Afternoon: Twelve Proposals}
+\begin{frame}{A First Look at Sensitivity}
 
-\begin{columns}[T]
-\begin{column}{0.36\textwidth}
+If an unmeasured $U$ shifts the purchase rate by $\gamma$ and differs between recipients and non-recipients with the same $X$ by $\delta$, a linear adjustment is off by about $\gamma\delta$. Ask the reverse question: \textbf{how large must $\gamma\delta$ be to move the estimate across the break-even?}
+
+\begin{center}
 \small
-\begin{tabular}{lr}
+\begin{tabular}{lrrr}
 \toprule
-Talk & 2 min 30 s \\
-Feedback & 2 min \\
-Transition & 30 s \\
+\textbf{Conclusion} & \textbf{Estimate} & \textbf{Break-even} & \textbf{$\gamma\delta$ that overturns it} \\
 \midrule
-Per pair & 5 min \\
-Twelve pairs & 60 min \\
+Keep the programme as run & 0.17 & 0.133 & 0.037 \\
+Coupon lapsed members & 0.20 & 0.100 & 0.100 \\
+Stop coupons to active members & 0.05 & 0.267 & 0.217 \\
 \bottomrule
 \end{tabular}
-\end{column}
-\begin{column}{0.60\textwidth}
-\small
-\textbf{Every proposal must say:}
-\begin{enumerate}
-    \item \spinestep{Estimand:} who is eligible, what changes, the outcome and horizon, the decision it serves
-    \item \spinestep{Identification:} which comparison supplies the missing outcome, and what would make it as good as random
-    \item which controls are fixed \emph{before} treatment
-    \item \spinestep{Estimation:} the estimator, and where its uncertainty comes from
-\end{enumerate}
-\end{column}
-\end{columns}
+\end{center}
+
+\textbf{The yardstick:} the strongest measured confounder. Segment shifts $\mu_0$ by $\gamma = 0.75 - 0.10 = 0.65$ and differs between the arms by $\delta = 0.80 - 0.20 = 0.60$: $\gamma\delta = 0.39$, the selection bias of block A.
+
+\medskip
+
+A hidden confounder a tenth as strong as segment overturns ``keep as run''; stopping the active coupons survives one over half as strong. None needs a confounder stronger than segment, so the conclusions rest on Lin's first sentence. Meeting 8 makes this precise.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Adjustment Errors}
+
+\begin{pitfall}{adjustment errors}
+Adjusting for post-treatment or collider variables; trimming without restating the estimand; choosing the specification after seeing the outcome; treating a near-perfect propensity model as good news; believing double robustness covers unmeasured confounders.
+\end{pitfall}
 
 \bigskip
 
-\textbf{The room asks one question first:} \emph{What is the comparison group, and what would make it as good as random?}
+Each one has appeared today:
+\begin{itemize}
+  \item the app-open column turns a coupon with no effect into $-0.50$;
+  \item trimmed, the coupon loses \textyen 0.73 per recipient; for the programme as run it earns \textyen 1.10;
+  \item the design record was written with the purchase column locked;
+  \item band 4's $\hat e = 0.98$ is the model working, and the overlap failing;
+  \item with both working models wrong, AIPW returns the pooled $-0.22$, and no model fixes an unrecorded VIP list.
+\end{itemize}
+\end{frame}
 
-\bigskip
+% ====================================================================
+\begin{frame}{Summary}
 
-\small Your revised identification plan is due 48 hours after M8 (72 hours after M10 for IV or panel designs). The design menu lists the assumptions each design needs and the meeting that teaches it.
+\begin{itemize}
+  \item \spinestep{Estimand.} Keeping the programme as it ran needs the ATT, held against its own break-even ($0.133$). Couponing everyone is the ATE against $0.183$. A trimmed analysis estimates the ATT of a different population, with a different break-even.
+  \item \spinestep{Identification.} The engine's rule is the assignment mechanism and $e(x)$ is the rule. Exchangeability is a claim about how decisions were made; overlap is checked in the coupon column; controls are chosen by timing and cause, not correlation.
+  \item \spinestep{Design.} Reconstruct the rule, check overlap, fix the trimming rule and the estimand, check balance, write it down; only then open the outcomes.
+  \item \spinestep{Estimation.} Standardisation and IPW are one identification seen from two sides; regression returns a variance-weighted average; AIPW is right if either model is. Thin overlap makes standardisation extrapolate silently and weights explode visibly.
+  \item \spinestep{Inference.} Report the effective sample size; bootstrap with $\hat e$ re-estimated; ask how strong a hidden confounder would have to be.
+  \item \textbf{Every estimate describes a population.} Say which: here the answer is ``keep for lapsed members, stop for active ones''.
+\end{itemize}
 \end{frame}
 
 \end{document}
