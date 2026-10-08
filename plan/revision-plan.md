@@ -104,7 +104,7 @@ syllabus's weekly table follows it, with an "Out / due" column.
 | Handouts H1–H6 | **Done.** Renumbered in meeting order on 8 Oct (H1 interference, M2, to H6 staggered adoption, M10). H4 (IV) refocused on classical IV, with a new worked example, so it no longer repeats M2 Section 1.9 |
 | Notation sheet, style, build and check scripts | Done. `run_all.sh` runs the notes, handout, slide and case checks |
 | Schedule, labs, assignments, deadlines, bonus reading | Planned in `schedule.xlsx` (Release and Due columns since 8 Oct); judgement calls in Section 7 still open |
-| Lecture slides | **M1 to M6 rebuilt on the coffee-chain case, under review**: M1 44 frames, M2 37, M3 30, M4 33, M5 21 (one lecture block; block A is Exam I), M6 34. Each checked by `slidesNN_check.py`. M7–M11 hold v2 content, built for the old calendar |
+| Lecture slides | **All eleven decks rebuilt to the v4.1 notes and the current schedule, under review** (8 Oct): M1 44 frames, M2 37, M3 30, M4 33, M5 21 (one lecture block; block A is Exam I), M6 34, M7 34, M8 35, M9 36 (new), M10 31, M11 21 (new; one block, Exam II). Each checked by `slidesNN_check.py`. Lecture cases: coffee chain M1–M7, Meridian M8–M9, retail M10–M11 |
 | Syllabus | Draft 3 (8 Oct), matches `schedule.xlsx`, handouts H1–H6 in meeting order, no critique exercises. Undecided items marked `\tbd` (dates, weights, policies) |
 | Lab notebooks 0–10 | Not built |
 | Assignments A1–A4, autograder, locked RCT set | Not built |
@@ -115,20 +115,12 @@ syllabus's weekly table follows it, with an "Out / due" column.
 
 ## 5. Work remaining, in suggested order
 
-1. **Slides, M7 to M11** (M1 to M6 are done and under review). Rebuild each deck to match its v4.1 notes and its
-   schedule row, one deck at a time, stopping for the instructor's review after each. Lecture slides carry the
-   intuition and the lecture's own running case; proofs stay in the notes. Slides and notes share the method, not the
-   example (Section 6). M1 and M2 set the pattern: title, road map, block A, block boundary, block B, summary;
-   Results with the notes' numbers and titles in the notes' order; a `slidesNN_check.py` for every number.
-   - Exam meetings (M5, M11) have only block B of lecture.
-   - M9 needs a new deck. New material for other decks:
-     - M3: TARNet slide (done, on the coffee chain's 14 CRM fields; instructor to confirm the case);
-     - M5: isotonic calibration (done, on the coffee chain);
-     - M6: capacity and the critical fractile, fairness as a priced constraint, the predict-then-optimise spectrum (done, on
-       the Region 2 push: two stores for capacity, North and South districts for fairness);
-     - M8: DML II with sensitivity bounds;
-     - M10: a warning slide on staggered timing;
-     - M11: synthetic control only.
+1. **Slides: instructor review.** All eleven decks are rebuilt (8 Oct) and follow the pattern: title, road map, block A,
+   block boundary, block B, summary (exam meetings M5 and M11 have one lecture block); Results with the notes' numbers,
+   titles and wording in the notes' order; the lecture's own case and numbers; a `slidesNN_check.py` for every number.
+   Remaining: the instructor's review of each deck, and the decisions flagged in the CHANGELOG entries of 8 Oct (case
+   choice for TARNet; given numbers in M8's event-flag benchmark and M11's flagship results, which have no simulation
+   script; whether to add case parts for the new M5 and M6 material).
    - Done on 8 Oct: M2 closes with noncompliance in an RCT (ITT, compliance types, the LATE), on Case A Part M2-R6,
      matching M2 notes Section 1.9. Classical IV stays in Handout H4 (M7, bonus).
    - Tested slides from the instructor's other course (the Starbucks causal module) are in `plan/old-decks/`. Reuse them
@@ -164,9 +156,9 @@ syllabus's weekly table follows it, with an "Out / due" column.
 
 - **Carried frames.** The frames taken from the old decks into the v2 decks for M1 to M6 have all been reworked or
   deleted in the rebuilds. For M7 to M11, reuse `plan/old-decks/` only where a topic matches, and rework what you take.
-- **M9 and M11 decks are replaced, not revised.** The current M9 deck teaches instrumental variables (hotel example) and
-  the current M11 deck is mostly staggered DiD. Both topics are now handouts (H4, H6). Write new decks to the M9 and
-  M11 notes. The old frames stay in git history (commit `5522695`, the v4.1 state), so no separate copy is needed.
+- **M9 and M11 decks were replaced, not revised** (done 8 Oct). The v2 M9 deck taught instrumental variables and the v2
+  M11 deck was mostly staggered DiD; both topics are now handouts (H4, H6). The old frames stay in git history (commit
+  `5522695`, the v4.1 state).
 - **Lectures keep their own case; the notes use a different one on purpose.** Each lecture has its own running case
   (the coffee chain in M1, the hotel in M8, and so on). The notes' Section 2 worked example uses a different business
   (FitLife or QuickBite) so students see the method transfer. Do not move a slide example to the notes' business.
@@ -181,7 +173,7 @@ syllabus's weekly table follows it, with an "Out / due" column.
 - **Source decks.** `plan/old-decks/lecture01.tex` to `lecture09.tex` are reference material only: do not build or
   edit them.
 - **No critique frames.** Reading-and-critique exercises are dropped for now. Delete the v2 critique frames when
-  rebuilding those decks: C1 to C3 are gone with the M2, M3 and M5 rebuilds; C4 to C6 remain in the M7, M9 and M11 decks, along
+  rebuilding those decks: all six (C1 to C6) are gone with the rebuilds, along
   with their "Today's plan" rows.
 - **Block order follows the notes.** Where the v2 deck or the old schedule ordered topics differently, the notes win,
   and `schedule.xlsx` and the syllabus are updated to match (as in M2: transport ends block A, CUPED moves to block B).
@@ -204,7 +196,7 @@ Decided on 8 October:
 
 Still open (decide before building the affected pieces):
 
-1. Staggered DiD: a warning slide in Panel II plus an optional extension in Lab 9.
+1. Staggered DiD: the warning slide in Panel II is in the M10 deck (8 Oct); still open, an optional extension in Lab 9.
 2. A2 and A3 pose the same decision (RCT-trained versus logs-trained), so both need an autograder and a locked set.
 3. Proposal due Sunday of Week 3.
 4. No panel-data assignment.
