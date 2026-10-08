@@ -8,12 +8,12 @@ together with `README.md` (layout, build, checks) and `AGENTS.md` (working rules
 - **Course thesis.** AI makes prediction and code cheap, so identification and verification are the scarce skills.
   - Lectures teach causal reasoning.
   - LLM and agent work happens in labs, assignments and projects.
-  - Case critiques are read on paper, without AI.
 - **What changed from the previous version.**
   - Generative AI moves from a side topic to a full meeting (M9) plus a thread through the labs and assignments.
   - Exams sit at M5 and M11. Proposals are presented at M8.
-  - Instrumental variables, regression discontinuity, staggered DiD and synthetic DiD leave the core lectures. They
-    become bonus reading and handouts.
+  - Regression discontinuity, staggered DiD and synthetic DiD leave the core lectures. They become bonus reading and
+    handouts. Instrumental variables keeps only its experimental core (noncompliance, ITT and the LATE), which closes
+    M2; Handout H1 goes further.
   - The technical notes were rebuilt (v4) with proofs of the key results and a consistent house style.
 - **Writing standard.** Readable by someone not taking the course. No em-dashes. Must not read like AI-generated prose.
 
@@ -67,12 +67,12 @@ blocks A and B (50 minutes each) and lab C (60 minutes).
 | M | A | B | C (lab) | Notes / handout |
 |---|---|---|---|---|
 | 1 | Potential outcomes | Causal graphs | Lab 0 review | M1 |
-| 2 | Experiments: estimation | Experiments: design | Lab 1 (LLM readout) | M2, H4 interference |
+| 2 | Experiments: estimation | Experiments: design; to close, noncompliance and the LATE | Lab 1 (LLM readout) | M2, H4 interference, H1 IV |
 | 3 | CATE basics | Meta-learners, TARNet | Lab 2 | M3, H6 neural |
 | 4 | Causal trees | Causal forests | Lab 3 | M4 |
 | 5 | **Exam I (M1–M4)** | Evaluating targeting policies | Lab 4 (LLM as decision-maker) | M5 |
 | 6 | Allocation | Policy learning | Lab 5 | M6, H5 sequential |
-| 7 | Adjustment | Propensity scores, AIPW | Lab 6 (agent audit) | M7, H1 IV |
+| 7 | Adjustment | Propensity scores, AIPW | Lab 6 (agent audit) | M7 |
 | 8 | DML I | DML II | **Proposal presentations** (Lab 7 take-home) | M8, H2 RD |
 | 9 | GenAI I: simulators | GenAI II: LLM variables | Lab 8 | M9 |
 | 10 | Panel basics | DiD | Lab 9 (AI rollout) | M10, H3 staggered |
@@ -103,7 +103,8 @@ The full calendar is in the spreadsheet.
 | Syllabus | Draft 3 (8 Oct), generated from `schedule.xlsx`; undecided items marked `\tbd` |
 | Lab notebooks 0–10 | Not built |
 | Assignments A1–A4, autograder, locked RCT set | Not built |
-| Case critiques A–C | Drafts, developed separately; not in the schedule |
+| Lecture cases A–C | Drafts. Case B's M9 part (generative AI) and Case C's M11 part (synthetic control) rewritten 8 Oct; their old IV and staggered-DiD parts kept at the end as bonus |
+| Reading-and-critique exercises | Dropped for now (instructor, 8 Oct); may return later |
 
 ## 5. Work remaining, in suggested order
 
@@ -118,7 +119,8 @@ The full calendar is in the spreadsheet.
      - M8: DML II with sensitivity bounds;
      - M10: a warning slide on staggered timing;
      - M11: synthetic control only.
-   - Keep one noncompliance slide in Experiments II, pointing to H1.
+   - Close Experiments II (M2) with noncompliance, ITT and the LATE, on the coffee-chain case (Case A, Part M2-R6).
+     Handout H1 goes further.
    - Tested slides from the instructor's other course (the Starbucks causal module) are in `plan/old-decks/`, with a
      frame-by-frame map (`plan/old-decks/map.md`). Reuse them where a topic matches. See Section 6.
 2. **Syllabus.** Regenerate from `schedule.xlsx`: calendar, assessment weights, AI policy per assignment, bonus reading.
@@ -157,10 +159,19 @@ The full calendar is in the spreadsheet.
     carries it, consistent with the case that meeting's existing slides use, and get the instructor's agreement.
 - **Source decks.** `plan/old-decks/lecture01.tex` to `lecture09.tex` are reference material only: do not build or
   edit them.
+- **No critique frames.** Reading-and-critique exercises are dropped for now. Delete the v2 critique frames (C1 to C6,
+  in the M2, M3, M5, M7, M9 and M11 decks) when rebuilding those decks.
 
-## 7. Open judgement calls (decide before building the affected pieces)
+## 7. Judgement calls
 
-1. Noncompliance: one slide in Experiments II; IV stays in bonus reading and H1.
+Decided on 8 October: IV, noncompliance and the LATE close M2 (H1 goes with M2); A3 is due Friday of Week 5, so nothing
+is due the weekend before Exam II; reading-and-critique exercises are dropped for now; M9 keeps the hotel case (Case B)
+and M11 keeps the retail case (Case C), both rewritten, with the old IV and staggered-DiD parts kept as bonus.
+
+Still open (decide before building the affected pieces):
+
+1. M2 notes and H1: if IV's core closes M2, the M2 notes need its Results (two effects of the draw, compliance types,
+   the LATE theorem) in Section 1, and H1 moves from `meetings/m07/` to M2.
 2. Staggered DiD: a warning slide in Panel II plus an optional extension in Lab 9.
 3. A2 and A3 pose the same decision (RCT-trained versus logs-trained), so both need an autograder and a locked set.
 4. Proposal due Sunday of Week 3.
@@ -169,10 +180,4 @@ The full calendar is in the spreadsheet.
    - Alternative: make A4 a DiD evaluation and fold the simulator into Lab 8.
 6. Final-project appendices: an LLM review of the draft plus responses, and a planted-effect validation of the design.
 7. Exam weights: Exam II covers more lectures than Exam I; consider weighting it more.
-8. A3 is due Sunday of Week 5, the weekend before Exam II (Thursday of Week 6). That breaks the rule "nothing due
-   ... the weekend before an exam" if the rule counts the whole preceding weekend. Options: keep it (read the rule as
-   the weekend right before a Monday or Tuesday exam), or move A3 to Friday of Week 5.
-9. Reading-and-critique exercises: the brief and draft 2 of the syllabus have them, but `schedule.xlsx` does not say
-   which meetings. Blocks A of M5 and M11 are exams, so draft 2's list (M2, M3, M5, M7, M9, M11) no longer fits.
-10. Lecture case for M9: Case B (Meridian Hotels) teaches IV in its M9 part, and Case C's M11 part is mostly staggered
-    DiD. Both parts need rewriting, and the M9 case needs choosing (the hotel group fits A4's hotel simulators).
+

@@ -102,7 +102,8 @@ data} (Lab 8) and an \emph{intervention} to evaluate (Lab 9).
 By the end of the course you should be able to:
 \begin{enumerate}
     \item state the counterfactual a business decision needs, and the break-even that decides it;
-    \item estimate average and conditional treatment effects from experiments, with honest uncertainty;
+    \item estimate average and conditional treatment effects from experiments, with honest uncertainty, and
+    say what an experiment with noncompliance identifies;
     \item turn effect estimates into a targeting policy under costs, caps, budgets and capacity, and
     evaluate that policy, including one chosen by an automated system, on data it was not chosen on;
     \item estimate effects from observational data by adjustment, propensity scores, double machine
@@ -133,21 +134,6 @@ breaks between them. Blocks A and B are lectures. Block C is a lab (Labs 0--10; 
 Case material is released in stages during class. Worksheets ask you to attempt a calculation before
 the slides explain it: commit to your answer in writing, even when you are unsure.
 
-\textbf{Reading and critique.} Some meetings open with a short reading-and-critique exercise, about
-15 minutes, done on paper without AI or devices. \tbd{Which meetings: to be set (blocks A of
-Meetings 5 and 11 are exams).} You read a one- or two-page case, write individual notes, discuss in
-pairs, then as a class. The questions are always the same:
-\begin{enumerate}
-    \item What is the claim?
-    \item What causal question does the decision need?
-    \item Who is the comparison group?
-    \item What else could produce this pattern? Give the mechanism and the direction of the bias.
-    \item What would you do to find out?
-\end{enumerate}
-Early cases contain one flaw, matched to a concept already taught. Later cases are excerpts of real
-reports with several flaws, which you rank by how much they matter for the decision. Occasionally a
-report is sound, and saying so, with reasons, is the right answer.
-
 \textbf{Technical notes and handouts.} Each meeting has a set of technical notes, released after the
 meeting. Section~1 states the general results, with short proofs of the key ones, and is
 examinable. Section~2 is a worked example in a different business, with exercises, and is
@@ -161,7 +147,7 @@ they are for projects and further study and are \emph{not} examined:
 \toprule
 \textbf{Handout} & \textbf{Topic} & \textbf{With meeting} \\
 \midrule
-H1 & Instrumental variables & 7 \\
+H1 & Instrumental variables (beyond Meeting 2) & 2 \\
 H2 & Regression discontinuity & 8 \\
 H3 & Staggered adoption & 10 \\
 H4 & Interference and marketplace experiments & 2 \\
@@ -186,7 +172,7 @@ Exams & 40 & Exam I (Meeting 5, block A) on Meetings 1--4; Exam II (Meeting 11, 
 Assignments & 20 & A1--A4, 5 points each (below). \tbd{Team size.} \\
 Final project & 20 & In pairs: slides and abstract, presentation and defence, report with required appendices. \tbd{Breakdown.} \\
 Project proposal & 5 & Due Sunday of Week 3; presented in Meeting 8. \\
-Participation & 5 & Critique discussions, worksheets, presentations and defence questions. \\
+Participation & 5 & Worksheets and case discussions in class, presentations and defence questions. \\
 Labs & 10 & Labs 1--10, each marked out of 10 and weighted equally. Lab 0 is ungraded. \\
 \midrule
 Total & 100 & \\
@@ -210,7 +196,7 @@ Meetings 3--6. Conditional effects from two meta-learners and a causal forest; t
 with Qini curves and RATE; a budgeted allocation and a depth-2 policy tree. You submit frozen
 policies, which an autograder scores on a locked randomised evaluation set. Memo on value, cost, and
 what could overturn the recommendation.
-\item[A3: Learn the policy from the logs] Out after Meeting 8; due Sunday of Week 5. Covers
+\item[A3: Learn the policy from the logs] Out after Meeting 8; due Friday of Week 5. Covers
 Meetings 6--8. The same decision from observational logs only: a DAG and an adjustment set; average
 and conditional effects by regression, AIPW and DML; overlap and trimming. Your policy is scored on
 the same locked set, next to a policy trained on the randomised data. Sensitivity: how strong hidden
@@ -311,7 +297,7 @@ in the delegation step of A1; and in A4, where the simulators are the testbed.
 hand-coded step; in Lab 2 once the S- and T-learners are done by hand; and in the final project, in
 any way you choose. Disclose which tools you used and for what. You are responsible for every number
 and claim you submit.
-\item[Prohibited] In the exams; in the reading-and-critique exercises, which are done on paper; in
+\item[Prohibited] In the exams; in
 Lab 0, part 1 of Lab 1 and part 1 of Lab 6; and in the hand-coded estimator of A1.
 \end{description}
 \tbd{School policy on AI use, and how it applies here.}
@@ -331,12 +317,12 @@ Optional, for students with strong backgrounds.
 \textbf{M} & \textbf{Topic} & \textbf{Readings} \\
 \midrule
 1 & Causal graphs & Hern\'an and Robins, \emph{Causal Inference: What If}, chapters 1--3 and 6--8 \\
-2 & Spillover & Hudgens and Halloran (2008); Johari et al.\ (2022) on two-sided marketplace experiments; Bojinov, Simchi-Levi and Zhao (2023) on switchbacks; Kohavi, Tang and Xu (2020) as the practitioner reference \\
+2 & Spillover; instrumental variables & Hudgens and Halloran (2008); Johari et al.\ (2022) on two-sided marketplace experiments; Bojinov, Simchi-Levi and Zhao (2023) on switchbacks; Kohavi, Tang and Xu (2020) as the practitioner reference. Angrist, Imbens and Rubin (1996); Angrist and Pischke, \emph{Mastering 'Metrics}, chapter 3 \\
 3 & More deep causal models & Shalit, Johansson and Sontag (2017); Shi, Blei and Veitch (2019); Curth and van der Schaar (2021); Louizos et al.\ (2017) read together with Rissanen and Marttinen (2021) \\
 4 & Forest theory & Athey and Imbens (2016); Wager and Athey (2018); Athey, Tibshirani and Wager (2019) \\
 5 & Evaluating prioritisation rules & Yadlowsky et al.\ on RATE; Chernozhukov, Demirer, Duflo and Fern\'andez-Val on generic machine-learning inference for heterogeneous effects \\
 6 & Policy learning; dynamic regimes & Kitagawa and Tetenov (2018); Athey and Wager (2021); Murphy (2003) \\
-7 & Instrumental variables & Angrist, Imbens and Rubin (1996); Angrist and Pischke, \emph{Mastering 'Metrics}, chapter 3 \\
+7 & Design before analysis; limited overlap & Rubin (2008), ``For objective causal inference, design trumps analysis''; Crump, Hotz, Imbens and Mitnik (2009), ``Dealing with limited overlap'' \\
 8 & Regression discontinuity & Cattaneo, Idrobo and Titiunik (2020) \\
 9 & Causal transformer & Melnychuk, Frauen and Feuerriegel (2022); Do-PFN (2025), \url{https://arxiv.org/abs/2506.06039} \\
 10 & Staggered DiD & Goodman-Bacon (2021); Callaway and Sant'Anna (2021); Sun and Abraham (2021); Roth, Sant'Anna, Bilinski and Poe (2023) \\
@@ -361,7 +347,7 @@ Dates are \tbd{to be set}; the rules above govern. Exams and proposal presentati
 \endhead
 \wk{Week 1 \quad \tbd{dates}}
 1 (Tue) & \textbf{Causal basics}\newline Coffee chain & Potential outcomes: the decision and its break-even lift; ATE, ATT, CATE; the fundamental problem; naive difference $=$ ATT $+$ selection bias; SUTVA. & Causal graphs: forks, chains, colliders; backdoor paths; randomisation as graph surgery; Simpson's paradox; identification vs estimation vs inference. & Lab 0 & \\
-2 (Thu) & \textbf{Experiments}\newline Coffee chain & Estimation: difference in means as OLS on a dummy; robust SEs; testing against the break-even; CUPED; balance and sample-ratio checks. & Design: power and MDE for a decision; randomisation unit and clustered SEs; interference; peeking and multiple metrics; noncompliance; transport. & Lab 1 & H4 \\
+2 (Thu) & \textbf{Experiments}\newline Coffee chain & Estimation: difference in means as OLS on a dummy; robust SEs; testing against the break-even; CUPED; balance and sample-ratio checks. & Design: power and MDE for a decision; randomisation unit and clustered SEs; interference; peeking and multiple metrics; transport. To close: noncompliance, ITT and the LATE. & Lab 1 & H4, H1 \\
 \wk{Week 2 \quad \tbd{dates}}
 3 (Tue) & \textbf{Conditional effects}\newline Coffee chain & Why the average misleads targeting; $\tau(x)$; effect modifiers vs prognostic variables; subgroups and interactions; multiple testing; GATE and BLP. & Meta-learners: S, T, X, DR, R; TARNet as a shared representation; choosing a model without ground truth. & Lab 2 & H6 \\
 4 (Thu) & \textbf{Causal trees and forests}\newline Coffee chain & Causal trees; honesty and sample splitting; the winner's curse; committing a discovery. & Forests as adaptive neighbours; local centring; CATE intervals and their limits; variable importance; BLP, calibration test, GATES. & Lab 3 & \\
@@ -369,7 +355,7 @@ Dates are \tbd{to be set}; the rules above govern. Exams and proposal presentati
 5 (Tue) & \textbf{Evaluating targeting policies}\newline Coffee chain & \textbf{Exam I} (Meetings 1--4) & Ranking vs calibration; isotonic recalibration; uplift and Qini curves; RATE; policy value on held-out data; selection vs evaluation data; comparing two policies. & Lab 4 & \\
 6 (Thu) & \textbf{Allocation and policy learning}\newline Coffee chain & Net value and thresholds; caps; budgets and the shadow price; coupon depths; lower-bound allocation; the price of fairness; capacity and the critical fractile. & Predict-then-optimise, decision-focused learning and policy learning; DR scores; empirical welfare maximisation; policy trees; holdouts; bandits. & Lab 5 & H5 \\
 \wk{Week 4 \quad \tbd{dates}}
-7 (Tue) & \textbf{Observational data}\newline Coffee chain & Adjustment: logs produced by a targeting rule; exchangeability, positivity, consistency; standardisation; good and bad controls; regression adjustment. & Propensity scores: matching and IPW; doubly robust AIPW; overlap, trimming and the estimand; the outcome-free design stage; the LaLonde benchmark; sensitivity. & Lab 6 & H1 \\
+7 (Tue) & \textbf{Observational data}\newline Coffee chain & Adjustment: logs produced by a targeting rule; exchangeability, positivity, consistency; standardisation; good and bad controls; regression adjustment. & Propensity scores: matching and IPW; doubly robust AIPW; overlap, trimming and the estimand; the outcome-free design stage; the LaLonde benchmark; sensitivity. & Lab 6 & \\
 8 (Thu) & \textbf{Double machine learning}\newline Hotel group & Why plug-in ML fails; the partially linear model; residualisation; orthogonality; cross-fitting; price elasticity. & Inference and repeated splits; nuisance learners; the interactive model; DML for CATE; overlap; sensitivity bounds. & \textbf{Proposal presentations}; Lab 7 take-home & H2 \\
 \wk{Week 5 \quad \tbd{dates}}
 9 (Tue) & \textbf{Generative AI in causal analysis}\newline \tbd{Hotel group} & Learned simulators: planting effects and confounding; estimator vs pipeline testbeds; backtests, support, compounding error; planted vs asserted truth. & LLM-generated variables: labels by role and bias direction; gold subsamples with PPI and DSL; embeddings as DML controls; leakage and overlap collapse. & Lab 8 & H6 \\
@@ -394,7 +380,7 @@ Dates are \tbd{to be set}; the rules above govern. Exams and proposal presentati
 2 & Lab 1 (Mon), Lab 2 (Thu) & A1 (Fri) & Question and data idea (Thu) \\
 3 & \textbf{Exam I} (Tue), Lab 3 (Wed), Lab 4 (Thu) & Proposal (Sun) & \\
 4 & Lab 5 (Mon), Lab 6 (Thu) & A2 (Sun) & Proposal presentations (Thu) \\
-5 & Lab 7 (Mon), Lab 8 (Thu) & A3 (Sun) & Revised identification plan (Sat) \\
+5 & Lab 7 (Mon), Lab 8 (Thu) & A3 (Fri) & Revised identification plan (Sat) \\
 6 & Lab 9 (Mon), \textbf{Exam II} (Thu), Lab 10 (Sat) & A4 (Sun) & \\
 7 & Final presentations (Thu) & Final slides (Wed) & Draft to peer pair (Sat) \\
 8 & & Final report (Thu) & Peer review returned (Mon) \\
