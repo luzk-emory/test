@@ -156,10 +156,10 @@ syllabus's weekly table follows it, with an "Out / due" column.
 - **Deck structure (instructor, 8 Oct).** Slide 1 is the title. Slide 2 is a road map of the meeting's topics, by
   block, in the order they are taught. The deck ends with a summary frame, and nothing follows it.
 - **Slides are self-contained.** No lab previews, assignment or project notices, case-handout instructions, exit
-  tickets, "in pairs" or other in-class activity prompts, and no reading pointers in the summary. A question on a slide
-  is answered on the slide or the next one. The running case is the lecture's example, so its story and numbers stay;
-  the `% [RELEASE ...]` comments in the source are for the instructor and do not print. Short references to another
-  meeting or a handout, where a topic continues, may stay in the text.
+  tickets, "in pairs" or other in-class activity prompts, and no pointers to the notes or handouts. A question on a
+  slide is answered on the slide or the next one. The running case is the lecture's example, so its story and numbers
+  stay; the `% [RELEASE ...]` comments in the source are for the instructor and do not print. Short references to
+  another meeting, where a topic continues, may stay in the text.
 
 - **Carried frames are a starting point.** The v2 decks for M4 to M6 still hold 38 frames taken from the old decks
   (M1 to M3 have been reworked), each marked in the source with a comment such as
