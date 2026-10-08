@@ -28,7 +28,7 @@ reviews/                pass-1 review report (2026-10-07)
 |---|---|---|
 | Technical notes, M1–M11 | v4.1 (git tag `v4.1`) | Current. Pass 1 (arithmetic, wording) done; pass 2 (independent proof check) not yet |
 | Handouts H1–H6 | v4.1 | Current, same review state as the notes |
-| Lecture slides | v2 content | **Not yet revised to match v4 notes or the current schedule** |
+| Lecture slides | M1 rebuilt (lecture case kept); M2–M11 v2 content | M1 aligned with the v4 notes, under review. **M2–M11 not yet revised** |
 | Schedule, labs, assignments, deadlines | `plan/schedule.xlsx` | Current source of truth |
 | Syllabus | 24 Sep draft | **Out of date**: still has the older calendar (Exam I at M6, Monday meetings). Update from the spreadsheet |
 | Cases A–C | draft | Developed separately from the schedule |
@@ -76,7 +76,7 @@ document and key, and writes the combined PDFs to `pdf/`. Edit the style only in
 
 ## How to check the numbers
 
-`bash shared/checks/run_all.sh` reruns about 850 checks, one script per document, and prints only failures. It needs
+`bash shared/checks/run_all.sh` reruns about 850 checks, one script per document (notes, handouts and rebuilt slides), and prints only failures. It needs
 Python 3 with numpy, scipy and scikit-learn.
 
 Simulation scripts behind worked examples:
