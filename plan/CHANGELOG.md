@@ -1,3 +1,12 @@
+# Slides rebuild (2026-10-08)
+
+## Meeting 1 (slides)
+- Rebuilt to match notes v4.1: 39 frames (title, block A 20, block boundary, block B 16, summary). Block A follows notes Sections 1.1 to 1.3, block B Sections 1.4 to 1.6; each part of the FitLife worked example follows the Results it uses.
+- Results 1.1 to 1.13 appear as statements with the notes' numbers, titles and box colours; proofs stay in the notes.
+- Removed the coffee-chain story (marketing pilot, type counts, segments, Q2 test, rollout totals), whose numbers were not in the notes, and the Floyd, data-roles, exit-ticket and workshop frames. The audit-study point survives as two sentences on the SUTVA frame.
+- New frames for block B (causal graphs): chain, fork and collider; blocked paths; Result 1.10 (collider bias); backdoor paths; Result 1.11; standardisation and graph surgery; Simpson's paradox with the FitLife group-class table; the class-attendance question.
+- Every number is covered by `shared/checks/notes01_check.py`.
+
 # v4.1 (2026-10-07): items brought back from the old decks, plus calibration and decision-focused learning
 
 ## Meeting 5 (notes05)
