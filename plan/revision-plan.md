@@ -8,12 +8,13 @@ together with `README.md` (layout, build, checks) and `AGENTS.md` (working rules
 - **Course thesis.** AI makes prediction and code cheap, so identification and verification are the scarce skills.
   - Lectures teach causal reasoning.
   - LLM and agent work happens in labs, assignments and projects.
-  - Case critiques are read on paper, without AI.
 - **What changed from the previous version.**
   - Generative AI moves from a side topic to a full meeting (M9) plus a thread through the labs and assignments.
   - Exams sit at M5 and M11. Proposals are presented at M8.
-  - Instrumental variables, regression discontinuity, staggered DiD and synthetic DiD leave the core lectures. They
-    become bonus reading and handouts.
+  - Classical instrumental variables (outside shifters of treatment, 2SLS, weak instruments), regression discontinuity,
+    staggered DiD and synthetic DiD leave the core lectures. They become bonus reading and handouts.
+  - Noncompliance in an RCT (the ITT, compliance types and the LATE) is not classical IV: it needs only potential
+    outcomes and the draw, and it closes M2, in the lecture and in the notes.
   - The technical notes were rebuilt (v4) with proofs of the key results and a consistent house style.
 - **Writing standard.** Readable by someone not taking the course. No em-dashes. Must not read like AI-generated prose.
 
@@ -67,7 +68,7 @@ blocks A and B (50 minutes each) and lab C (60 minutes).
 | M | A | B | C (lab) | Notes / handout |
 |---|---|---|---|---|
 | 1 | Potential outcomes | Causal graphs | Lab 0 review | M1 |
-| 2 | Experiments: estimation | Experiments: design | Lab 1 (LLM readout) | M2, H4 interference |
+| 2 | Experiments: estimation | Experiments: design; to close, noncompliance and the LATE | Lab 1 (LLM readout) | M2, H4 interference |
 | 3 | CATE basics | Meta-learners, TARNet | Lab 2 | M3, H6 neural |
 | 4 | Causal trees | Causal forests | Lab 3 | M4 |
 | 5 | **Exam I (M1–M4)** | Evaluating targeting policies | Lab 4 (LLM as decision-maker) | M5 |
@@ -99,16 +100,18 @@ The full calendar is in the spreadsheet.
 | Technical notes M1–M11, handouts H1–H6 | **Done (v4.1).** Pass 1 review done |
 | Notation sheet, style, build and check scripts | Done |
 | Schedule, labs, assignments, deadlines, bonus reading | Planned in `schedule.xlsx`; judgement calls below still open |
-| Lecture slides | **Not started for this revision.** Files hold v2 content, built for the old calendar |
-| Syllabus | Out of date (24 Sep draft: Exam I at M6, Monday meetings) |
+| Lecture slides | **M1 and M2 rebuilt, under review; M1 sets the pattern.** M3–M11 hold v2 content, built for the old calendar |
+| Syllabus | Draft 3 (8 Oct), generated from `schedule.xlsx`; undecided items marked `\tbd` |
 | Lab notebooks 0–10 | Not built |
 | Assignments A1–A4, autograder, locked RCT set | Not built |
-| Case critiques A–C | Drafts, developed separately; not in the schedule |
+| Lecture cases A–C | Drafts. Case B's M9 part (generative AI) and Case C's M11 part (synthetic control) rewritten 8 Oct; their old IV and staggered-DiD parts kept at the end as bonus |
+| Reading-and-critique exercises | Dropped for now (instructor, 8 Oct); may return later |
 
 ## 5. Work remaining, in suggested order
 
 1. **Slides, all 11 meetings.** Rebuild each deck to match its v4.1 notes and its schedule row. Lecture slides carry
-   the intuition and the worked example; proofs stay in the notes.
+   the intuition and the lecture's own running case; proofs stay in the notes. Slides and notes share the method, not
+   the example (Section 6).
    - Exam meetings (M5, M11) have only block B of lecture.
    - M9 needs a new deck. New material for other decks:
      - M3: TARNet slide;
@@ -117,9 +120,10 @@ The full calendar is in the spreadsheet.
      - M8: DML II with sensitivity bounds;
      - M10: a warning slide on staggered timing;
      - M11: synthetic control only.
-   - Keep one noncompliance slide in Experiments II, pointing to H1.
-   - Tested slides from the instructor's other course (the Starbucks causal module) are in the archive
-     (`old-decks/`), with a frame-by-frame map (`map.md`). Reuse them where a topic matches.
+   - Close Experiments II (M2) with noncompliance in an RCT (ITT, compliance types, the LATE), on the coffee-chain case
+     (Case A, Part M2-R6) and matching M2 notes Section 1.9. Classical IV stays in Handout H1 (M7, bonus).
+   - Tested slides from the instructor's other course (the Starbucks causal module) are in `plan/old-decks/`, with a
+     frame-by-frame map (`plan/old-decks/map.md`). Reuse them where a topic matches. See Section 6.
 2. **Syllabus.** Regenerate from `schedule.xlsx`: calendar, assessment weights, AI policy per assignment, bonus reading.
 3. **Labs 0–10.** Data and tasks are specified in the spreadsheet's Labs tab. The heaviest preparation is Lab 8
    (cached LLM outputs, gold labels) and Lab 6 (agent harness).
@@ -135,14 +139,45 @@ The full calendar is in the spreadsheet.
    - Seed the M8 simulation.
    - Confirm three citations (listed in `README.md`).
 
-## 6. Open judgement calls (decide before building the affected pieces)
+## 6. Notes for the slide rebuild
 
-1. Noncompliance: one slide in Experiments II; IV stays in bonus reading and H1.
-2. Staggered DiD: a warning slide in Panel II plus an optional extension in Lab 9.
-3. A2 and A3 pose the same decision (RCT-trained versus logs-trained), so both need an autograder and a locked set.
-4. Proposal due Sunday of Week 3.
-5. No panel-data assignment.
+- **Carried frames are a starting point.** The v2 decks for M1 to M6 already hold 69 frames taken from the old decks,
+  each marked in the source with a comment such as `% [CARRIED VERBATIM from old-decks/lecture01.tex:121]`. Start from
+  these frames; do not copy them from `plan/old-decks/` a second time. Once a frame is reworked, delete its comment.
+- **M9 and M11 decks are replaced, not revised.** The current M9 deck teaches instrumental variables (hotel example) and
+  the current M11 deck is mostly staggered DiD. Both topics are now handouts (H1, H3). Write new decks to the M9 and
+  M11 notes. The old frames stay in git history (commit `5522695`, the v4.1 state), so no separate copy is needed.
+- **Lectures keep their own case; the notes use a different one on purpose.** Each lecture has its own running case
+  (the coffee chain in M1, the hotel in M8, and so on). The notes' Section 2 worked example uses a different business
+  (FitLife or QuickBite) so students see the method transfer. Do not move a slide example to the notes' business.
+  - *Shared between slides and notes:* the estimands, the assumptions, the notation (`shared/notation.tex`), the
+    statement of each Result (same number and title), and the order of topics.
+  - *Not shared:* the worked example and its numbers. Slide numbers are the lecture's own; they must be internally
+    consistent and checked by a script in `shared/checks/` (`slidesNN_check.py`), not matched to `notes.tex`.
+  - A slide may point to the notes ("a second worked example, on a fitness chain, is in the notes") but does not
+    reproduce it.
+  - New material (M9, and the additions in M3, M5, M6 and M11): before writing frames, propose which lecture case
+    carries it, consistent with the case that meeting's existing slides use, and get the instructor's agreement.
+- **Source decks.** `plan/old-decks/lecture01.tex` to `lecture09.tex` are reference material only: do not build or
+  edit them.
+- **No critique frames.** Reading-and-critique exercises are dropped for now. Delete the v2 critique frames (C1 to C6,
+  in the M2, M3, M5, M7, M9 and M11 decks) when rebuilding those decks.
+
+## 7. Judgement calls
+
+Decided on 8 October: noncompliance in an RCT (ITT, compliance types, the LATE) closes M2, lecture and notes, while
+classical IV stays in Handout H1 with M7 as bonus reading; A3 is due Friday of Week 5, so nothing is due the weekend
+before Exam II; reading-and-critique exercises are dropped for now; M9 keeps the hotel case (Case B)
+and M11 keeps the retail case (Case C), both rewritten, with the old IV and staggered-DiD parts kept as bonus.
+
+Still open (decide before building the affected pieces):
+
+1. Staggered DiD: a warning slide in Panel II plus an optional extension in Lab 9.
+2. A2 and A3 pose the same decision (RCT-trained versus logs-trained), so both need an autograder and a locked set.
+3. Proposal due Sunday of Week 3.
+4. No panel-data assignment.
    - As planned, DiD is tested on Exam II and practised in Labs 9 and 10.
    - Alternative: make A4 a DiD evaluation and fold the simulator into Lab 8.
-6. Final-project appendices: an LLM review of the draft plus responses, and a planted-effect validation of the design.
-7. Exam weights: Exam II covers more lectures than Exam I; consider weighting it more.
+5. Final-project appendices: an LLM review of the draft plus responses, and a planted-effect validation of the design.
+6. Exam weights: Exam II covers more lectures than Exam I; consider weighting it more.
+

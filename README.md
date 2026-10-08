@@ -17,7 +17,7 @@ shared/                 coursenotes.sty (master copy), notation.tex, build.sh, b
 pdf/                    combined notes, combined answer keys, notation sheet (generated; not tracked by git)
 plan/                   revision-plan.md (the brief for the whole revision), schedule.xlsx,
                         design-plan.md (the v4 notes design and decisions), CHANGELOG.md
-syllabus/               syllabus.tex (needs updating, see below)
+syllabus/               syllabus.tex (draft 3, generated from plan/schedule.xlsx)
 cases/                  case studies A to C, student and instructor versions (drafts)
 reviews/                pass-1 review report (2026-10-07)
 ```
@@ -28,10 +28,10 @@ reviews/                pass-1 review report (2026-10-07)
 |---|---|---|
 | Technical notes, M1–M11 | v4.1 (git tag `v4.1`) | Current. Pass 1 (arithmetic, wording) done; pass 2 (independent proof check) not yet |
 | Handouts H1–H6 | v4.1 | Current, same review state as the notes |
-| Lecture slides | v2 content | **Not yet revised to match v4 notes or the current schedule** |
+| Lecture slides | M1–M2 rebuilt (lecture case kept); M3–M11 v2 content | M1 and M2 aligned with the v4 notes, under review. **M3–M11 not yet revised** |
 | Schedule, labs, assignments, deadlines | `plan/schedule.xlsx` | Current source of truth |
-| Syllabus | 24 Sep draft | **Out of date**: still has the older calendar (Exam I at M6, Monday meetings). Update from the spreadsheet |
-| Cases A–C | draft | Developed separately from the schedule |
+| Syllabus | Draft 3 (8 Oct) | Matches `schedule.xlsx`. Undecided items are marked `\tbd` (dates, weights, policies) |
+| Cases A–C (lecture cases) | draft | M2-R6 (Case A), M9 (Case B) and M11 (Case C) rewritten 8 Oct to the current schedule; other release times to be retimed with each deck. Numbers in the rewritten parts are checked by `shared/checks/case_check.py` |
 
 ## Course structure (from the spreadsheet)
 
@@ -40,7 +40,7 @@ Meetings on Tuesday and Thursday. Each meeting has two 50-minute lectures (A, B)
 | M | Topic | Handout | Notes |
 |---|---|---|---|
 | 1 | Causal basics | | |
-| 2 | Experiments | H4 Interference | |
+| 2 | Experiments (closing with noncompliance and the LATE) | H4 Interference | |
 | 3 | Conditional effects | H6 Neural estimators | |
 | 4 | Causal trees and forests | | |
 | 5 | Evaluating targeting policies | | Exam I (M1–M4) |
@@ -52,8 +52,9 @@ Meetings on Tuesday and Thursday. Each meeting has two 50-minute lectures (A, B)
 | 11 | Synthetic control (SDID, matrix completion in Section 3) | | Exam II (M5–M10) |
 | 12 | Final presentations | | |
 
-Four assignments; Labs 0–10; bonus reading is optional. Running cases: FitLife (fitness chain) in M1, M3, M7, M10,
-H2, H3; QuickBite (food delivery) everywhere else.
+Four assignments; Labs 0–10; bonus reading is optional. Lecture cases (`cases/`): a coffee chain (Case A, M1–M7), Meridian
+Hotels (Case B, M8–M9) and a home-goods retail chain (Case C, M10–M11). The notes' worked examples deliberately use other
+businesses: FitLife (fitness chain) in M1, M3, M7, M10, H2, H3; QuickBite (food delivery) everywhere else.
 
 ## Conventions in the notes
 
@@ -76,7 +77,7 @@ document and key, and writes the combined PDFs to `pdf/`. Edit the style only in
 
 ## How to check the numbers
 
-`bash shared/checks/run_all.sh` reruns about 850 checks, one script per document, and prints only failures. It needs
+`bash shared/checks/run_all.sh` reruns about 850 checks, one script per document (notes, handouts, rebuilt slides, rewritten case parts), and prints only failures. It needs
 Python 3 with numpy, scipy and scikit-learn.
 
 Simulation scripts behind worked examples:
@@ -95,6 +96,11 @@ After editing a number in the notes, update its check script, then rerun.
   generator and the testbed for a whole predict-then-optimise pipeline.
 - Proofs are light, for key results; identification theorems always get one.
 - Six handouts. Synthetic DiD and matrix completion stay in M11, Section 3.
+- Noncompliance in an RCT (ITT, compliance types, LATE) closes M2, lecture and notes (8 Oct). Classical IV (outside shifters,
+  2SLS, weak instruments) stays in Handout H1 with M7, as bonus reading.
+- Reading-and-critique exercises are dropped for now (8 Oct).
+- Slides and notes share estimands, assumptions, notation, Result statements and topic order, but not the example:
+  lectures keep their own case.
 - Ported from the old causal-module decks (October 2026):
   - newsvendor and capacity, M6;
   - fairness as a priced constraint, M6;
@@ -106,7 +112,7 @@ After editing a number in the notes, update its check script, then rerun.
 ## Open items
 
 1. Revise slides to match the v4 notes and the current schedule.
-2. Update the syllabus from the spreadsheet.
+2. Syllabus: settle the items marked `\tbd` in `syllabus/syllabus.tex` (see `plan/revision-plan.md`, Section 7).
 3. Pass 2: independent check of every numbered Result. Pass 3: a student read, one meeting ahead.
 4. Seed the M8 simulation so its numbers are exactly reproducible (text uses $-0.575$; runs give $-0.574$ to $-0.578$).
 5. Confirm three citations:

@@ -1,8 +1,11 @@
 % \documentclass[aspectratio=169, 11pt]{beamer}
 \documentclass[aspectratio=169, 11pt, handout]{beamer}
 
-% Version 2 (2026-09-28). Restructured on the course spine: estimand -> identification -> estimation
-% (course-spine.md). Changes from slides.tex are listed in m02/CHANGES-v2.md.
+% Meeting 2 lecture slides. Running case: Lin's coupon programme at a coffee chain (cases/caseA-coffee-chain,
+% Meeting 2 releases R1 to R6). The notes' worked example (QuickBite) is deliberately not reproduced here.
+% Shared with notes.tex: estimands, assumptions, notation, the statement of each Result, the order of topics.
+% Block A follows notes Sections 1.1 to 1.5; block B follows Sections 1.6 to 1.9.
+% Every number is checked by shared/checks/slides02_check.py.
 
 % ── Theme ──
 \usetheme{Madrid}
@@ -25,36 +28,49 @@
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{colortbl}
-\usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 
-% ── Colors ──
-\definecolor{sbgreen}{HTML}{00704A}  % course accent
-\definecolor{warnred}{HTML}{CC0000}
+% ── Colours: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
+\definecolor{sbgreen}{HTML}{00704A}
 \definecolor{noteblue}{HTML}{2060A0}
+\definecolor{warnred}{HTML}{B42318}
+\definecolor{extgrey}{HTML}{6B7280}
+\definecolor{boxgrey}{HTML}{F3F5F8}
+\definecolor{bluetint}{HTML}{EEF3FA}
+\definecolor{greentint}{HTML}{EEF6F2}
+\definecolor{redtint}{HTML}{FCF1F0}
 
-% ── Commands ──
+% ── Notation: same macros as the notes (shared/coursenotes.sty, shared/notation.tex) ──
 \newcommand{\E}{\mathbb{E}}
-\newcommand{\Var}{\mathrm{Var}}
-\newcommand{\Cov}{\mathrm{Cov}}
-\newcommand{\SE}{\mathrm{SE}}
-\newcommand{\Prob}{\mathrm{Pr}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\SE}{\operatorname{SE}}
 \newcommand{\indep}{\perp\!\!\!\perp}
-\usepackage{soul}
-\newcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\marginpar{\tiny #2}}
-% Beamer frames are typeset inside boxes, where \marginpar raises "Not in outer par mode"
-% and \marginparwidth is 4pt. Same marker; the provenance note goes to the frame footnote.
-\renewcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\footnote[frame]{\tiny #2}}
-% Compact footnote layout so several provenance notes fit under one frame.
-\setbeamertemplate{footnote}{\noindent\raggedright\hspace*{0.6em}\tiny\insertfootnotemark\,\insertfootnotetext\par}
+\newcommand{\hatt}{\hat{\tau}}
+\newcommand{\ATE}{\text{ATE}}
+\newcommand{\ATT}{\text{ATT}}
+\newcommand{\ATU}{\text{ATU}}
+
+% ── Boxes: same number, title and wording as the notes; proofs stay in the notes ──
+\newenvironment{result}[2]{%
+  \setbeamercolor{block title}{bg=sbgreen,fg=white}\setbeamercolor{block body}{bg=greentint,fg=black}%
+  \begin{block}{Result #1 (#2)}}{\end{block}}
+\newenvironment{assumption}[2]{%
+  \setbeamercolor{block title}{bg=noteblue,fg=white}\setbeamercolor{block body}{bg=bluetint,fg=black}%
+  \begin{block}{Assumption #1 (#2)}}{\end{block}}
+\newenvironment{pitfall}[1]{%
+  \setbeamercolor{block title}{bg=warnred,fg=white}\setbeamercolor{block body}{bg=redtint,fg=black}%
+  \begin{block}{Pitfall: #1}}{\end{block}}
 
 % Step labels for the course spine
 \newcommand{\spinestep}[1]{\textcolor{sbgreen}{\textbf{#1}}}
 
 % ── Title ──
 \title[Meeting 2]{Meeting 2: Real, Profitable, and Where It Holds}
-\subtitle{Applied Causal Inference for Business}
+\subtitle{Experiments: uncertainty from the design, decisions under it, and designing the next test}
 \author{Zhikun Lu}
 \date{\today}
 
@@ -66,85 +82,10 @@
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Where Does the Counterfactual Come From?}
-
-\begin{center}
-\begin{tikzpicture}[
-    node distance=0.45cm and 0.7cm,
-    box/.style={draw, rounded corners, minimum width=2.9cm, minimum height=1.5cm,
-                font=\scriptsize, align=center, text width=2.7cm},
-    active/.style={box, fill=sbgreen!20, draw=sbgreen, very thick},
-    inactive/.style={box, fill=gray!10, draw=gray!50}
-]
-\node[active] (A) {\textbf{M1--M6}\\[2pt] A randomised control group\\[3pt] \emph{anything} may be unobserved};
-\node[inactive, right=of A] (B) {\textbf{M7--M8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
-\node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] An external shifter of treatment\\[3pt] confounders allowed};
-\node[inactive, right=of C] (D) {\textbf{M10--M11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
-\draw[-{Stealth}, gray!50] (A) -- (B);
-\draw[-{Stealth}, gray!50] (B) -- (C);
-\draw[-{Stealth}, gray!50] (C) -- (D);
-\end{tikzpicture}
-\end{center}
-
-\bigskip
-
-\begin{center}
-\small Last time the coin removed the bias. It did not remove the \emph{luck}: one draw, one estimate.\\
-Today: how far one draw can mislead, where its answer applies, and how to design the next one.
-\end{center}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Today's Plan}
-
-\begin{center}
-\small
-\begin{tabular}{rp{11.6cm}}
-\toprule
-\textbf{Minutes} & \\
-\midrule
-0--15 & \textbf{Reading and critique C1} --- on paper, no devices \\
-15--50 & The Q2 test, read two ways. \spinestep{Estimand} and \spinestep{estimation}: uncertainty from the draw --- Fisher, then Neyman \\
-60--110 & Significant is not profitable; a second campaign (\spinestep{a new estimand}: transport); designing the next test --- power, CUPED, the unit of assignment \\
-120--180 & \textbf{Lab 1:} prompt specifications; generated estimators tested against a known effect and against your M1 estimator \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-
-\textbf{Case:} Lin's coupon programme, Meeting 2 (Releases 1--4). \quad \textbf{Today:} form project pairs; P1 released.
-
-\bigskip
-
-\textbf{Reading:} technical notes for Meeting 2. Section 1 is examinable.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Critique C1: Five Questions, Every Time}
-
-Read the one-page case silently. Notes on your own, then pairs, then the room.
-
-\bigskip
-
-\begin{enumerate}
-    \item What is the claim?
-    \item What causal question does the decision need?
-    \item Who is the comparison group?
-    \item What else could produce this pattern? Give the mechanism and the \textbf{direction} of the bias.
-    \item What would you do to find out?
-\end{enumerate}
-
-\bigskip
-
-\small Questions 2 and 3 are Meeting 1's steps 1 and 2: the estimand, and where the counterfactual comes from. Hand in your notes at minute 15.
-\end{frame}
-
-% ====================================================================
-\section{The Test Is Back}
+\section{Block A: Experiments I, estimation}
 % ====================================================================
 
-% [RELEASE R1 — the Q2 result and the two readings of it]
+% [RELEASE R1: the Q2 result and the two readings of it]
 \begin{frame}{The Q2 Test, Read Two Ways}
 
 In the 1{,}000-member test region, 500 members were drawn at random for the \textyen 10 coupon.
@@ -170,21 +111,17 @@ No coupon & 500 & 200 & 0.40 \\
 
 \bigskip
 
-Both can be true. They answer different questions, and each answer comes from \textbf{one draw of the coin}. Before anyone rolls anything out, we need to know how far one draw can mislead.
+Both can be right. They ask different questions, and each answer comes from \textbf{one draw of the coin}. Today: how far one draw can mislead, which question the decision needs, and how to design the next test.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{The Number That Decides It}
 
-From M1: with \textyen 30 margin and a \textyen 10 coupon paid on every holder's purchase,
+From Meeting 1: \textyen 30 margin, a \textyen 10 coupon paid on every holder's purchase, so $\tau^\ast = c\,p_1/m = p_1/3$.
 
-\begin{alertblock}{Break-even lift}
-\[
-\tau^{*} = \frac{p_1}{3} = \frac{0.50}{3} = \mathbf{0.167}
-\]
-\end{alertblock}
-
-\bigskip
+\begin{center}
+\Large $\tau^{\ast} = 0.50/3 = \mathbf{0.167}$
+\end{center}
 
 Two different null hypotheses, two different decisions:
 
@@ -201,27 +138,26 @@ Does the coupon pay? & $\tau \leq 0.167$ & the CFO \\
 
 \bigskip
 
-Every estimate today comes with an interval. The only question is \textbf{where the interval sits relative to $0$ and to $0.167$}.
+Every estimate today comes with an interval. The question is \textbf{where the interval sits relative to $0$ and to $0.167$}.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{What Exactly Are We Uncertain About?}
 
-\spinestep{Estimand.} $\tau_S = \frac{1}{1000}\sum_i \{Y_i(1) - Y_i(0)\}$ for the 1{,}000 members of the region: \textbf{a fixed number}. \\
-\spinestep{Identification} (M1): the draw makes $\bar Y_1 - \bar Y_0$ unbiased for it.
+\spinestep{Estimand.} $\tau_S = \frac{1}{1000}\sum_i \{Y_i(1) - Y_i(0)\}$ for the 1{,}000 members of the region: \textbf{a fixed number}. Meeting 1 showed the draw makes $\hatt = \bar Y_1 - \bar Y_0$ unbiased for it.
 
 \bigskip
 
-So where does uncertainty come from? Two answers:
+So where does uncertainty come from? Two frames:
 
 \medskip
 
 \begin{center}
 \begin{tabular}{p{3.2cm}p{4.6cm}p{4.6cm}}
 \toprule
-& \textbf{Design-based} (today first) & \textbf{Superpopulation} \\
+& \textbf{Design-based} (first) & \textbf{Superpopulation} \\
 \midrule
-Customers & fixed: these 1{,}000 & a random sample from a larger population \\
+Customers & fixed: these 1{,}000 & an i.i.d.\ sample from a larger population \\
 Random & only the coin & the coin \emph{and} the sample \\
 Estimand & $\tau_S$, this region & the population's ATE \\
 Needs & nothing but the draw log & a sampling assumption \\
@@ -231,127 +167,174 @@ Needs & nothing but the draw log & a sampling assumption \\
 
 \bigskip
 
-\small Your M1 workshop drew the design-based distribution directly: customers fixed, the coin redrawn 200 times.
-\end{frame}
-
-% ====================================================================
-\section{Uncertainty From the Draw}
-% ====================================================================
-
-% [CONDENSED from old-decks/lecture01.tex (tea) and lecture02 urn frames]
-\begin{frame}{Fisher: Is the Difference Real or Just the Draw?}
-
-\textbf{Sharp null:} the coupon does nothing for \emph{anyone}, $Y_i(1) = Y_i(0)$ for every $i$.
-
-\medskip
-
-Then every member's outcome is known under both labels: 450 buyers, 550 non-buyers, whatever the coin said. \textbf{The only random element is which 500 the draw labelled ``coupon''.}
-
-\bigskip
-
-\begin{columns}[T]
-\begin{column}{0.46\textwidth}
-\small
-\textbf{Tea (Fisher, 1935).} 8 cups, 4 milk-first. Under ``she is guessing'', all $\binom{8}{4} = 70$ labellings are equally likely; a perfect score has probability $1/70 = 0.014$.
-\end{column}
-\begin{column}{0.50\textwidth}
-\small
-\textbf{Coupon.} Under the sharp null, $\bar Y_1 - \bar Y_0$ over all possible draws has mean 0 and, with the pooled rate $\hat p = 0.45$,
-\[
-\SE_0 = \sqrt{\tfrac{2(0.45)(0.55)}{500}} = 0.0315 ,
-\]
-so $z = 0.10/0.0315 = 3.17$, $p \approx 0.0015$.
-\end{column}
-\end{columns}
-
-\bigskip
-
-\textbf{Reject: the coupon does something for someone.} No model, no sampling assumption --- only the draw. But it answers only ``is it zero for \emph{everyone}?'', and its SE is computed assuming that answer. For an interval around an average effect, we need Neyman.
-\end{frame}
-
-% ====================================================================
-\begin{frame}[shrink=10]{Neyman: How Far Does One Draw Land?}
-
-Customers fixed, only the coin random. Over all possible draws, exactly:
-\[
-\Var_D(\widehat\tau) = \frac{S_1^2}{n_1} + \frac{S_0^2}{n_0} - \frac{S_\tau^2}{n} ,
-\]
-with $S_1^2, S_0^2$ the spreads of $Y(1)$ and $Y(0)$ across the 1{,}000 members, and $S_\tau^2$ the spread of their individual effects.
-
-\bigskip
-
-\textbf{The last term needs both potential outcomes of each member --- never observed.} Drop it:
-\[
-\widehat\SE = \sqrt{\frac{\hat p_1(1-\hat p_1)}{n_1} + \frac{\hat p_0(1-\hat p_0)}{n_0}} = \sqrt{\frac{0.25}{500} + \frac{0.24}{500}} = \mathbf{0.0313}
-\]
-
-\begin{block}{The standard SE is conservative for a fixed population}
-On M1's type table, $\sqrt{0.000500 + 0.000480 - 0.000290} = \mathbf{0.026}$: the spread of your 200 workshop draws. The usual formula says $0.031$. The gap is effect heterogeneity we cannot see.
-\end{block}
-
-\small If the customers were instead a random sample from a larger population, the same $\widehat\SE$ is the right one for that population's ATE.
-\end{frame}
-
-% [REVISED from old-decks/lecture01.tex:531]
-\begin{frame}{Testing and the Confidence Interval}
-
-$z$-statistic against zero, with the Neyman SE:
-\[
-z = \frac{\hat{\tau}}{\widehat{\SE}} = \frac{0.10}{0.0313} \approx 3.19, \qquad \text{p-value} \approx 0.0014
-\]
-
-\bigskip
-
-95\% confidence interval:
-\[
-\hat{\tau} \pm 1.96 \times \widehat{\SE} = 0.10 \pm 0.061 = [0.039, \; 0.161]
-\]
-
-\bigskip
-
-\textbf{What the 95\% means:} across repeated draws of the coin, about 95\% of intervals built this way would contain $\tau_S$ --- at least 95\%, since the SE is conservative. It is \emph{not} a 95\% probability that this interval contains a fixed number.
-
-\bigskip
-
-\begin{block}{Two statements, always both}
-The test says whether the difference is \textbf{distinguishable from the draw}. The interval says \textbf{how big} the effect plausibly is. The interval is the set of nulls the test does not reject.
-\end{block}
+\small Lab 0 built a potential-outcomes simulator. Redraw its coin with the customers held fixed, and you get the design-based distribution.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Analyse as Drawn}
 
-Marketing proposes a ``cleaner'' comparison: drop members who never opened the app during the test --- \emph{``they never saw the coupon''}.
-
-\bigskip
+Marketing proposes a ``cleaner'' comparison: drop members who never opened the app during the test, \emph{``they never saw the coupon''}.
 
 \begin{itemize}
-    \item Opening the app is measured \textbf{after} the draw, and the coupon notification makes it more likely: it is post-treatment (M1's data roles).
+    \item Opening the app is measured \textbf{after} the draw, and the coupon's notification makes it more likely: it is post-treatment.
     \item Dropping non-openers keeps different people in the two arms. The coin no longer decides who is compared.
 \end{itemize}
 
 \bigskip
 
 \begin{block}{Compare the arms as the coin made them}
-The difference over \emph{all} drawn members is the effect of \textbf{sending} the coupon --- the intention-to-treat effect. It is also the decision: the chain controls sending, not reading.
+The difference over \emph{all} drawn members is the effect of \textbf{assignment}, the intention-to-treat (ITT) effect. It is also the decision: the chain controls sending, not reading.
 \end{block}
 
-\small The effect of \emph{receiving} it is a different estimand, with its own identification. M9.
+\medskip
+
+\small The effect of \emph{seeing} the coupon is a different estimand, with its own assumptions. It closes today's meeting.
 \end{frame}
 
 % ====================================================================
-\section{Significant Is Not Profitable}
-% ====================================================================
+\begin{frame}{Check the Draw Before Reading the Outcome}
 
-\begin{frame}{Test Against the Break-Even, Not Against Zero}
-
-Same estimate, same $\widehat\SE = 0.0313$, a different null:
+\textbf{Sample-ratio mismatch.} Compare the realised arm sizes with the planned allocation:
 \[
-H_0 : \tau \leq \tau^* = 0.167 \;\; \text{(does not pay)}, \qquad
-z = \frac{0.10 - 0.167}{0.0313} = -2.13
+\chi^2 = \sum_d \frac{(n_d - \E n_d)^2}{\E n_d} \quad \text{(one degree of freedom)}.
 \]
 
-The estimate is \textbf{two standard errors below} break-even. And the 95\% interval $[0.039,\, 0.161]$ excludes \emph{both} $0$ and $0.167$.
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+& \textbf{Coupon} & \textbf{No coupon} & $\chi^2$ & $p$ \\
+\midrule
+Q2 test, planned 500 / 500 & 500 & 500 & 0 & 1 \\
+A broken log, planned 500 / 500 & 560 & 440 & 14.4 & 0.0001 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A tiny $p$-value (in practice below about $0.001$) means the draw or the logging is broken: a filter that removed more members from one arm, a delivery failure. The arms are no longer a random split, and \textbf{no outcome analysis proceeds} until the cause is found.
+
+\bigskip
+
+\small Two more threats to the draw come later today: one member's outcome depending on another's coupon (block B), and members who never see their coupon (the end of block B).
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Fisher: Could the Draw Alone Explain It?}
+
+\begin{result}{1.1}{Randomisation test of the sharp null}
+Under the sharp null $Y_i(1) = Y_i(0)$ for every $i$, the observed outcomes are both potential outcomes, so the distribution of any statistic over the $\binom{n}{n_1}$ equally likely draws is known exactly. The $p$-value is the share of draws giving a statistic at least as extreme as the observed one.
+\end{result}
+
+\begin{columns}[T]
+\begin{column}{0.46\textwidth}
+\small
+\textbf{Tea (Fisher, 1935).} 8 cups, 4 milk-first. If she is guessing, all $\binom{8}{4} = 70$ labellings are equally likely, so a perfect score has probability $1/70 = 0.014$.
+\end{column}
+\begin{column}{0.50\textwidth}
+\small
+\textbf{Coupon.} Under the sharp null, 450 buyers and 550 non-buyers whatever the coin said. Over all draws, with the pooled rate $0.45$,
+$\SE_0 = \sqrt{2(0.45)(0.55)/500} = 0.0315$, so $z = 0.10/0.0315 = 3.18$, $p \approx 0.0015$.
+\end{column}
+\end{columns}
+
+\medskip
+
+No model and no sampling assumption, only the draw. Its limitation is its null: ``no effect for \emph{anyone}'', not ``zero on average'' or ``does not pay''.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Neyman: How Far Does One Draw Land?}
+
+\begin{result}{1.2}{Neyman's variance}
+Holding the potential outcomes fixed,
+\[
+  \Var_D(\hatt) = \frac{S_1^2}{n_1} + \frac{S_0^2}{n_0} - \frac{S_\tau^2}{n}.
+\]
+\end{result}
+
+\begin{result}{1.3}{The usual variance estimator is conservative}
+With $s_d^2$ the sample variance in arm $d$, $\widehat\Var = s_1^2/n_1 + s_0^2/n_0$ satisfies $\E_D[\widehat\Var] = S_1^2/n_1 + S_0^2/n_0 \ge \Var_D(\hatt)$, with equality if and only if every unit has the same effect.
+\end{result}
+
+The last term needs \textbf{both potential outcomes of each member}, which no experiment reveals. Dropping it is the price of not knowing individual effects.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{How Conservative, on Meeting 1's Region}
+
+The pilot region's types (400 lost causes, 300 sure things, 200 persuadables, 100 do-not-disturbs), split 500/500:
+\[
+S_1^2 = \tfrac{250}{999}, \quad S_0^2 = \tfrac{240}{999}, \quad S_\tau^2 = \tfrac{290}{999} .
+\]
+True SD over draws $= \mathbf{0.026}$; the usual SE $= \mathbf{0.031}$.
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=0.72\textwidth, height=4.2cm, domain=0:0.2, samples=120, xlabel={$\hatt$ over draws},
+  ytick=\empty, axis lines=left, legend style={draw=none, font=\scriptsize, at={(0.99,0.97)}, anchor=north east},
+  xtick={0,0.05,0.10,0.15,0.20}, xticklabel style={/pgf/number format/fixed, font=\scriptsize}]
+\addplot[thick, sbgreen] {exp(-(x-0.10)^2/(2*0.026^2))/(0.026*sqrt(2*pi))};
+\addplot[thick, dashed, noteblue] {exp(-(x-0.10)^2/(2*0.031^2))/(0.031*sqrt(2*pi))};
+\legend{true randomisation distribution (SD $0.026$), normal with the usual SE ($0.031$)}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\small The gap is effect heterogeneity we cannot see. The usual SE describes a wider distribution than the one the draw produces.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The Same Formula, Read for a Population}
+
+\begin{result}{1.4}{Superpopulation variance}
+If units are i.i.d.\ draws and assignment is independent of potential outcomes, $\Var(\hatt) = \sigma_1^2/n_1 + \sigma_0^2/n_0$, estimated by the same $\widehat\Var$.
+\end{result}
+
+\bigskip
+
+On the Q2 test:
+\[
+\widehat\SE = \sqrt{\frac{0.50 \times 0.50}{500} + \frac{0.40 \times 0.60}{500}} = \sqrt{\frac{0.25}{500} + \frac{0.24}{500}} = \mathbf{0.0313}.
+\]
+
+Two readings of one number: a conservative SE for these 1{,}000 members, or the exact SE for a population they were sampled from.
+
+\bigskip
+
+\textbf{In a regression.} Meeting 1's OLS on a dummy gives the same $\hatt$. With heteroskedasticity-robust (HC2) standard errors it also gives this SE; the default homoskedastic SE is wrong when the arms differ in size and variance.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Testing and the Confidence Interval}
+
+Against zero, with the SE above:
+\[
+z = \frac{\hatt}{\widehat\SE} = \frac{0.10}{0.0313} = 3.19, \qquad p \approx 0.0014 .
+\]
+
+95\% confidence interval:
+\[
+\hatt \pm 1.96\,\widehat\SE = 0.10 \pm 0.061 = [0.039,\; 0.161] .
+\]
+
+\bigskip
+
+\textbf{What the 95\% means.} Across draws of the coin, at least about 95\% of intervals built this way contain $\tau_S$ (``at least'', because the SE is conservative). It is not a 95\% probability that this interval contains a fixed number.
+
+\bigskip
+
+The interval is the set of null values the test does not reject. Zero is one point in it, with nothing special about it unless the decision is about zero.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Test Against the Break-Even, Not Against Zero}
+
+Same estimate, same $\widehat\SE$, the CFO's null:
+\[
+H_0 : \tau \leq \tau^\ast = 0.1667 \;\; \text{(does not pay)}, \qquad
+z = \frac{0.100 - 0.1667}{0.0313} = -2.13 .
+\]
+
+The estimate is \textbf{two standard errors below} break-even, and the interval $[0.039,\, 0.161]$ excludes \emph{both} $0$ and $0.167$.
 
 \begin{center}
 \small
@@ -359,114 +342,97 @@ The estimate is \textbf{two standard errors below} break-even. And the 95\% inte
 \toprule
 \textbf{Where the interval sits} & \textbf{Decision} \\
 \midrule
-Entirely above $\tau^*$ & Roll out \\
-Straddles $\tau^*$ & Undecided on profit: a bigger or sharper test \\
-Between $0$ and $\tau^*$ & \textcolor{warnred}{It works and it does not pay} \quad $\leftarrow$ Q2 \\
+Entirely above $\tau^\ast$ & Roll out \\
+Straddles $\tau^\ast$ & Undecided on profit: a bigger or sharper test \\
+Between $0$ and $\tau^\ast$ & \textcolor{warnred}{It works and it does not pay} \quad $\leftarrow$ Q2 \\
 Includes $0$ & Cannot yet tell it works \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Marketing and the CFO were both right. ``Significant'' answered marketing's question. It was never the decision.
+``Significant'' answered marketing's question. It was never the decision.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Test the Profit Directly}
+\begin{frame}{Put the Interval on the Quantity the Decision Is Made On}
 
-The break-even used $\hat p_1 = 0.50$, which is \emph{itself} an estimate. Put the decision variable on the left --- M1's per-type margins, averaged:
+The break-even used $\hat p_1 = 0.50$, itself an estimate. Write the decision variable as a combination of arm means: $V = m\tau - c\,\mu_1 = (m - c)\mu_1 - m\mu_0$.
+
+\begin{result}{1.5}{Inference on net value}
+$\hat V = (m-c)\bar Y_1 - m\bar Y_0$ is unbiased for $V$ over the draw, with (conservative) variance estimate $(m-c)^2 s_1^2/n_1 + m^2 s_0^2/n_0$.
+\end{result}
+
 \[
-\text{net} = 30\tau - 10\,p_1 = 20\,p_1 - 30\,p_0
-\qquad\Longrightarrow\qquad
-\widehat{\text{net}} = 20(0.50) - 30(0.40) = -\text{\textyen}2.00
+\hat V = 20(0.50) - 30(0.40) = -\text{\textyen}2.00
 \]
-
-The same (conservative) variance calculation, with the coefficients squared:
 \[
-\Var(\widehat{\text{net}}) = 20^2 \times 0.0005 + 30^2 \times 0.00048 = 0.200 + 0.432 = 0.632,
-\qquad \widehat\SE = 0.795
+\widehat\Var = 400 \times 0.0005 + 900 \times 0.00048 = 0.632, \qquad \widehat\SE = 0.795 .
 \]
-
-\begin{alertblock}{The number for the CFO}
-\[
-\text{net per coupon} = -\text{\textyen}2.00, \qquad 95\% \text{ CI } [-\text{\textyen}3.56,\; -\text{\textyen}0.44]
-\]
-\end{alertblock}
-
-The whole interval loses money. \textbf{Put the uncertainty on the quantity the decision is made on} --- not only on the lift.
-\end{frame}
-
-% ====================================================================
-\section{A Second Campaign: A New Estimand}
-% ====================================================================
-
-% [RELEASE R2 — two proposed second campaigns, each with its own randomised test]
-\begin{frame}{Campaign A: The Active-Heavy List}
-
-Regional managers propose a Q3 campaign on 600 members they call ``loyal'': 400 active, 200 lapsed. It will be tested properly --- a 50/50 draw \emph{within} the list. Segment effects from M1.
 
 \begin{center}
-\begin{tabular}{lcccc}
+\textbf{Net per coupon $-$\textyen 2.00, 95\% CI $[-$\textyen 3.56$,\; -$\textyen 0.44$]$.}
+\end{center}
+
+The whole interval loses money. Marketing and the CFO were both right; only the CFO asked the decision's question.
+\end{frame}
+
+% ====================================================================
+% [RELEASE R2: two proposed second campaigns, each with its own randomised test]
+\begin{frame}{Two Second Campaigns}
+
+Two regions propose Q3 campaigns, each tested properly with a 50/50 draw \textbf{within its own list}. Segment effects from Meeting 1 (active $+0.05$, lapsed $+0.20$).
+
+\begin{center}
+\begin{tabular}{lrrr}
 \toprule
-& \textbf{On the list} & \textbf{Coupon} & \textbf{Control} & \textbf{Whole base} \\
+\textbf{List} & \textbf{Active} & \textbf{Lapsed} & \textbf{Effect the test measures} \\
 \midrule
-Active & 400 (67\%) & 200 & 200 & 5{,}000 (50\%) \\
-Lapsed & 200 (33\%) & 100 & 100 & 5{,}000 (50\%) \\
+Campaign A (``loyal'') & 400 & 200 & $\tfrac23(0.05) + \tfrac13(0.20) = 0.10$ \\
+Campaign B (``lapsing'') & 200 & 400 & $\tfrac13(0.05) + \tfrac23(0.20) = 0.15$ \\
+Whole base & 5{,}000 & 5{,}000 & $\tfrac12(0.05) + \tfrac12(0.20) = 0.125$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-
-The draw is valid within the list, so the difference in means correctly estimates the list's effect:
-\[
-\tau_{\text{A}} = \tfrac{2}{3} \times 0.05 + \tfrac{1}{3} \times 0.20 = 0.10
-\]
-
-The whole base has $\tau = 0.50 \times 0.05 + 0.50 \times 0.20 = 0.125$.
 
 \bigskip
 
-$\tau_{\text{A}} < \tau$ because the list over-represents active customers. \textbf{Identification is fine; the estimand is this list's.}
+Both tests are internally valid. Each measures \textbf{its own list's} effect. Neither is ``the'' effect of the coupon.
+
+\medskip
+
+From the campaign brief: \emph{``The same coupon, in the same app, in the same quarter.''} What does that sentence license?
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Campaign B: The Lapsed-Heavy List}
+\begin{frame}{Transport to Another Population}
 
-A second region proposes 600 members flagged ``lapsing'': 200 active, 400 lapsed. Also a proper 50/50 draw within the list.
+\begin{assumption}{1.6}{Conditional effect invariance}
+$\tau_T(x) = \tau_S(x)$ for every $x$ in $T$'s support, and that support is contained in $S$'s.
+\end{assumption}
 
-\begin{center}
-\begin{tabular}{lcccc}
-\toprule
-& \textbf{On the list} & \textbf{Coupon} & \textbf{Control} & \textbf{Whole base} \\
-\midrule
-Active & 200 (33\%) & 100 & 100 & 5{,}000 (50\%) \\
-Lapsed & 400 (67\%) & 200 & 200 & 5{,}000 (50\%) \\
-\bottomrule
-\end{tabular}
-\end{center}
+\begin{result}{1.7}{Transport by reweighting}
+Under Assumption 1.6, $\tau_T = \sum_x \Pr_T(X=x)\,\tau_S(x)$.
+\end{result}
 
-\[
-\tau_{\text{B}} = \tfrac{1}{3} \times 0.05 + \tfrac{2}{3} \times 0.20 = 0.15
-\]
+\bigskip
 
-Now $\tau_{\text{B}} > \tau = 0.125$: the list over-represents lapsed customers, who respond more.
-
-\begin{alertblock}{Lesson}
-Both tests are internally valid. Each measures \emph{its list's} estimand. Carrying a number from one population to another is a \textbf{new estimand plus an assumption}.
-\end{alertblock}
+\begin{itemize}
+  \item The brief's sentence is the argument for Assumption 1.6: same coupon, same channel, same season, so segment effects carry over.
+  \item It fails when the effect depends on something not in $X$ that differs between populations: the season, the channel, the price level.
+  \item Types absent from the experiment cannot be reweighted into it.
+\end{itemize}
 \end{frame}
 
 % ====================================================================
-\begin{frame}[shrink=3]{Transport the Effect --- and the Break-Even}
+\begin{frame}{Transport the Decision, Not Just the Effect}
 
-\spinestep{Assumption:} the coupon works the same within each segment wherever it is sent. Then any list's effect is its segment mix times the segment effects:
-\[
-\tau_{\text{list}} = \sum_s w_s\,\tau_s, \qquad p_{1,\text{list}} = \sum_s w_s\, \E[Y(1) \mid s], \qquad \tau^*_{\text{list}} = p_{1,\text{list}}/3
-\]
+Each list's purchase rate with the coupon, and so its break-even, moves with its mix too.
 
 \begin{center}
 \small
 \begin{tabular}{lrrrrr}
 \toprule
-\textbf{List} & \textbf{Active share} & $\tau$ & $p_1$ & $\tau^*$ & \textbf{Net per coupon} \\
+\textbf{List} & \textbf{Active share} & $\tau$ & $p_1$ & $\tau^\ast$ & \textbf{Net per coupon} \\
 \midrule
 Active only & 1 & 0.050 & 0.800 & 0.267 & \textcolor{warnred}{$-$\textyen 6.50} \\
 Campaign A & 2/3 & 0.100 & 0.633 & 0.211 & \textcolor{warnred}{$-$\textyen 3.33} \\
@@ -477,53 +443,68 @@ Lapsed only & 0 & 0.200 & 0.300 & 0.100 & \textcolor{sbgreen}{$+$\textyen 3.00} 
 \end{tabular}
 \end{center}
 
-Campaign B has a higher lift than the base and \textbf{still loses}: its break-even moved too. Transport the decision, not just the effect.
+\bigskip
 
-\medskip
-
-\small The case says the Q3 campaign uses \emph{``the same coupon, in the same app, in the same quarter''}. That sentence is what licenses $\tau_s$ carrying over. It is also why the Q2 region's $-$\textyen 20{,}000 is only a forecast for the base.
+Campaign B has a higher lift than the base and \textbf{still loses}: its break-even moved too. The Q2 region's $-$\textyen 20{,}000 for the base is a transported forecast, not a measurement.
 \end{frame}
 
 % ====================================================================
-\section{Designing the Next Test}
+\begin{frame}{End of Block A}
+
+\begin{itemize}
+  \item Analyse the arms as drawn; check the arm sizes before any outcome.
+  \item Fisher asks whether the draw alone could explain the gap. Neyman says how far one draw lands; the usual SE is conservative for a fixed population (0.031 against a true 0.026).
+  \item Test against the break-even, or better, put the interval on net value: Q2 works and does not pay, $-$\textyen 2.00 [$-$3.56, $-$0.44].
+  \item Another population is another estimand, reached only by an assumption; move the break-even with it.
+\end{itemize}
+
+\vfill
+
+\begin{center}
+\Large \textbf{Block B: Experiments II, design}\\[0.4em]
+\normalsize The next test, the unit of assignment, and members who never saw the coupon.
+\end{center}
+\vfill
+\end{frame}
+
+% ====================================================================
+\section{Block B: Experiments II, design}
 % ====================================================================
 
-% [RELEASE R3 — Lin's two proposed Q3 tests and the lapsed-member constraint]
+% [RELEASE R3: Lin's two proposed Q3 tests and the lapsed-member constraint]
 \begin{frame}{The Next Test}
 
-The Q2 test settled one question (do not coupon everyone). Lin proposes two Q3 tests for the questions it left open:
+The Q2 test settled one question (do not coupon everyone). Lin proposes two Q3 tests:
 
 \begin{enumerate}
-    \item \textbf{A lapsed-only coupon test.} Does the coupon pay on lapsed members? Planning value $\tau = 0.20$; break-even $0.10$.
-    \item \textbf{An in-store BOGO promotion.} It runs on the menu board, so it cannot be sent to individuals.
+    \item \textbf{A lapsed-only coupon test.} Does the coupon pay on lapsed members? Planning values $p_1 = 0.30$, $p_0 = 0.10$: a lift of $0.20$ against a break-even of $0.10$.
+    \item \textbf{An in-store buy-one-get-one (BOGO) offer.} It runs on the menu board, so it cannot be sent to individuals.
 \end{enumerate}
 
 \bigskip
 
-\textbf{The constraint:} the test window reaches about 350 lapsed members --- \textbf{175 per arm}.
+\textbf{The constraint:} the test window reaches about 350 lapsed members, \textbf{175 per arm}.
 
 \bigskip
 
-\begin{alertblock}{The number that decides the design}
-The test must be able to tell $0.20$ from $0.10$: its \textbf{minimum detectable effect} must be at most the gap to break-even, $0.10$.
-\end{alertblock}
+\begin{center}
+The test must tell $0.20$ from $0.10$: its \textbf{minimum detectable effect} (MDE) must be at most the gap to break-even, $0.10$.
+\end{center}
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Fix It in Writing Before the First Coupon Goes Out}
 
-A randomised test can still be ruined by what happens around the draw.
-
 \begin{center}
 \small
-\begin{tabular}{p{3.4cm}p{8.8cm}}
+\begin{tabular}{p{4.4cm}p{8.2cm}}
 \toprule
 \textbf{Fix in advance} & \textbf{For the lapsed test} \\
 \midrule
-Unit and allocation & member; 175 / 175 by seeded draw \\
-Outcome and window & any purchase within 7 days, every drawn member \\
+Unit and allocation & member; 175 / 175 by a seeded draw \\
+Outcome and window & any purchase within 7 days, for every drawn member \\
 Decision threshold & test against $0.10$, not $0$; report net value \\
-Sample size, stopping rule & 175 per arm; analyse once, at the end --- no peeking \\
+Sample size, stopping rule & 175 per arm; analyse once, at the end \\
 Exposure logging, guardrails & coupon delivery logged; unsubscribe rate watched \\
 \bottomrule
 \end{tabular}
@@ -531,36 +512,29 @@ Exposure logging, guardrails & coupon delivery logged; unsubscribe rate watched 
 
 \bigskip
 
-\textbf{Day-one check: sample-ratio mismatch.} If the arms are not close to 175 / 175, the draw or the logging is broken --- stop before reading any outcome.
-
-\medskip
-
-\small Industry experimentation teams publish checklists of this kind (Microsoft's ExP ``pre-experiment'' patterns). Project P4's planted problems come from this list.
+\textbf{Day one:} check the arm sizes (sample-ratio mismatch) and that exposure is being logged, before reading any outcome.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Power and the Minimum Detectable Effect}
+\begin{frame}{Sample Size and the Minimum Detectable Effect}
 
-For a two-sided test at level $\alpha$ with power $1 - \beta$, per arm:
+\begin{result}{1.8}{Sample size}
+With $n$ units per arm, a level-$\alpha$ two-sided test has approximate power $1-\beta$ against an effect $\delta$ away from the null value when
 \[
-n = \frac{(z_{\alpha/2} + z_\beta)^2 \cdot (\sigma_1^2 + \sigma_0^2)}{\text{MDE}^2}
-\qquad\Longleftrightarrow\qquad
-\text{MDE} = (z_{\alpha/2} + z_\beta)\sqrt{\frac{\sigma_1^2 + \sigma_0^2}{n}}
+  n = \frac{(z_{1-\alpha/2} + z_{1-\beta})^2(\sigma_1^2 + \sigma_0^2)}{\delta^2}, \quad\text{rounded up.}
 \]
+For a one-sided test replace $z_{1-\alpha/2}$ by $z_{1-\alpha}$.
+\end{result}
 
-With $\alpha = 0.05$ and 80\% power, $z_{\alpha/2} + z_\beta = 1.96 + 0.84 = 2.80$: the MDE is \textbf{2.8 standard errors}.
+Inverted: $\text{MDE} = (z_{1-\alpha/2} + z_{1-\beta})\SE$, about $1.96 + 0.84 = 2.80$ SEs at 5\% and 80\% power.
 
-\bigskip
+\medskip
 
-\textbf{Check on Q2.} To detect $0.10$ with $\sigma_1^2 + \sigma_0^2 = 0.25 + 0.24 = 0.49$:
-\[
-n = \frac{2.80^2 \times 0.49}{0.01} = 384.2 \;\Rightarrow\; \mathbf{385} \text{ per arm (round up)}.
-\]
-Q2 had 500, so its MDE was $2.80 \times 0.0313 = 0.088$.
+\textbf{Check on Q2.} To detect $0.10$ with $\sigma_1^2 + \sigma_0^2 = 0.25 + 0.24 = 0.49$: $n = 2.80^2 \times 0.49/0.01 = 384.2$, so \textbf{385} per arm. Q2 had 500, so its MDE was $2.80 \times 0.0313 = 0.088$.
 
-\bigskip
+\medskip
 
-Q2 was built to tell $0.10$ from zero. For the CFO's question the gap is $0.167 - 0.10 = 0.067$, below its MDE: under 80\% power. It separated them on this draw anyway. Power is a property of the design \textbf{and of the question}.
+\small Q2 was built to tell $0.10$ from zero. The CFO's gap is $0.167 - 0.10 = 0.067$, below that MDE: the test was underpowered for the profit question and separated them on this draw anyway.
 \end{frame}
 
 % ====================================================================
@@ -573,7 +547,7 @@ Planning values for lapsed members: $p_1 = 0.30$, $p_0 = 0.10$.
 
 \textbf{Needed} for an MDE of $0.10$:
 \[
-n = \frac{7.84 \times 0.30}{0.01} = 235.2 \;\Rightarrow\; \textcolor{warnred}{\mathbf{236} \text{ per arm}} \quad > \quad 175 \text{ available}
+n = \frac{7.84 \times 0.30}{0.01} = 235.2 \;\Rightarrow\; \textcolor{warnred}{\mathbf{236} \text{ per arm}} \quad > \quad 175 \text{ available.}
 \]
 
 \textbf{Available:} at 175 per arm,
@@ -583,45 +557,36 @@ n = \frac{7.84 \times 0.30}{0.01} = 235.2 \;\Rightarrow\; \textcolor{warnred}{\m
 
 \bigskip
 
-Two ways out: wait a quarter for more lapsed members, or \textbf{make each member's observation carry more information}. The second costs nothing.
+Two ways out: wait a quarter for more lapsed members, or \textbf{make each member's observation carry more information}. Halving an MDE takes four times the sample; the second way costs nothing.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{CUPED on One Slide}
+\begin{frame}{Variance Reduction With a Pre-Treatment Covariate}
 
-Let $X$ be a \textbf{pre-period} metric --- Q1 purchases --- fixed before the draw. Analyse
-\[
-Y^{\text{cv}} = Y - \theta\,(X - \bar X) \quad \text{instead of } Y .
-\]
+Let $X$ be fixed before the draw (Q1 purchases) and analyse $Y^{\text{cv}} = Y - \theta(X - \bar X)$.
 
-\textbf{Still unbiased.} $X$ was set before the draw, so the arms have the same $X$ \emph{on average over draws}; the correction has mean zero.
+\begin{result}{1.9}{CUPED}
+For any fixed $\theta$, $\hatt^{\text{cv}} = \hatt - \theta(\bar X_1 - \bar X_0)$ is unbiased over the draw. Within an arm, $\Var(Y - \theta X)$ is minimised at $\theta^\ast = \Cov(Y,X)/\Var(X)$, where it equals $\Var(Y)(1-\rho^2)$, $\rho = \mathrm{Corr}(Y, X)$.
+\end{result}
 
-\textbf{Less variable.} $\Var(Y - \theta X)$ is minimised at $\theta^* = \Cov(Y, X)/\Var(X)$, giving $\Var(Y)\,(1 - \rho^2)$.
-
-\bigskip
-
-\textbf{It can move the estimate, too.} $\widehat\tau^{\text{cv}} = \widehat\tau - \theta(\bar X_1 - \bar X_0)$. In any one draw the arms differ a little in $X$; CUPED removes that chance imbalance. A shift in the point estimate is the method working, not failing.
-
-\begin{alertblock}{Precision, not identification}
-Identification came from the draw. CUPED is step 3 only --- and only if $X$ is pre-treatment. A post-treatment $X$ (M1's data roles; M7's controls) subtracts part of the effect.
-\end{alertblock}
+\begin{itemize}
+  \item In any one draw $\bar X_1 \ne \bar X_0$, so the adjusted estimate moves: that shift corrects chance imbalance.
+  \item CUPED is regression adjustment: $Y = \alpha + \tau D + \beta X + \varepsilon$. Adding $D \times (X - \bar X)$ (Lin's estimator) guarantees it never hurts in large samples.
+  \item \textbf{Precision, not identification.} The draw identified the effect. If $X$ were affected by treatment, the correction would subtract part of the effect.
+\end{itemize}
 \end{frame}
 
 % ====================================================================
 \begin{frame}{CUPED on the Lapsed Test}
 
-Among lapsed members in the Q2 data, Q1 purchases and the outcome correlate at \NUM{0.6}{sim coupon-q2 v1: corr(Q1 purchases, Q2 purchase) among lapsed members}.
-
-\bigskip
-
-At $\rho = 0.6$, every variance is multiplied by $1 - 0.36 = 0.64$:
+Among lapsed members in the Q2 data, Q1 purchases and the outcome correlate at $\rho = 0.6$. Every variance is multiplied by $1 - 0.36 = 0.64$.
 
 \begin{center}
 \begin{tabular}{lrr}
 \toprule
 & \textbf{Without CUPED} & \textbf{With CUPED} \\
 \midrule
-Needed per arm for MDE $0.10$ & 236 & $0.64 \times 235.2 = 151$ \\
+Needed per arm for an MDE of $0.10$ & 236 & $0.64 \times 235.2 = 151$ \\
 MDE at 175 per arm & 0.116 & $2.80\sqrt{0.64 \times 0.30/175} = 0.093$ \\
 \bottomrule
 \end{tabular}
@@ -629,29 +594,18 @@ MDE at 175 per arm & 0.116 & $2.80\sqrt{0.64 \times 0.30/175} = 0.093$ \\
 
 \bigskip
 
-\textcolor{sbgreen}{\textbf{The test fits in the window.}} Same members, same coupon, same draw; the pre-period column did the work of 85 extra customers per arm.
+\textcolor{sbgreen}{\textbf{The test fits in the window.}} Same members, same coupon, same draw; the pre-period column did the work of 85 extra members per arm.
 
 \bigskip
 
-The same regression you ran in M1, with one more column: $Y = \alpha + \tau D + \beta X + \varepsilon$. The coefficient on $D$ is the CUPED estimate up to how $\theta$ is fitted.
+\small Why Q1 purchases but never \texttt{app\_opens\_q2}? The first is fixed before the draw; the second is caused partly by the coupon.
 \end{frame}
 
 % ====================================================================
-\section{The Unit of Assignment}
-% ====================================================================
-
-% [RELEASE R4 — the in-store BOGO proposal]
+% [RELEASE R4: the in-store BOGO proposal]
 \begin{frame}{Whose Outcome Depends on Whose Treatment?}
 
-Writing $Y_i(1), Y_i(0)$ assumed something M1 did not stop to check.
-
-\begin{block}{SUTVA (Stable Unit Treatment Value Assumption)}
-\begin{itemize}
-    \item \textbf{No interference:} $i$'s outcome does not depend on $j$'s assignment
-    \item \textbf{No hidden versions:} the treatment is the same for everyone
-\end{itemize}
-Without it we would need $Y_i(D_1, \ldots, D_n)$ --- a different estimand.
-\end{block}
+Meeting 1's SUTVA (Assumption 1.5) asked for \textbf{no interference}: unit $i$'s outcome depends only on its own treatment. Without it, the difference in means compares two mixtures of spillovers, not ``everyone treated'' with ``no one treated''.
 
 \begin{center}
 \small
@@ -660,44 +614,39 @@ Without it we would need $Y_i(D_1, \ldots, D_n)$ --- a different estimand.
 \textbf{The case says} & \textbf{What it means for the unit} \\
 \midrule
 ``Q2 codes were single-use and tied to the account.'' & No interference between members: the member is a valid unit. \\[0.4em]
-``The BOGO goes on the menu board; everyone in the store sees it.'' & Members in one store share one treatment: the unit is the \textbf{store}. \\
+``The BOGO goes on the menu board; everyone in the store sees it.'' & Customers in one store share one treatment: the unit is the \textbf{store}. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-The unit of assignment is the smallest unit whose treatment you can set \emph{independently}.
+\bigskip
+
+This is a failure of identification, and no variance formula repairs it. The remedy is a unit of assignment large enough to contain the spillover (Handout H4 for marketplaces and switchbacks).
 \end{frame}
 
 % ====================================================================
 \begin{frame}{The Design Effect}
 
-$m$ customers per store, correlation $\rho_c$ between two customers of the \emph{same} store (the ICC):
+\begin{result}{1.10}{Design effect}
+For a cluster of $m$ units with common variance $\sigma^2$ and pairwise correlation $\rho_c$, $\Var(\text{cluster mean}) = \tfrac{\sigma^2}{m}[1 + (m-1)\rho_c]$: the variance is inflated by $\text{DEFF} = 1 + (m-1)\rho_c$ relative to $m$ independent units.
+\end{result}
+
+\textbf{The BOGO test:} 50 stores (25 per arm), about 400 customers per store-week, 20{,}000 customers in all. In the Q2 data the within-store correlation of weekly purchase is $\rho_c = 0.01$:
 \[
-\Var(\text{store mean}) = \frac{\sigma^2}{m}\bigl[1 + (m - 1)\rho_c\bigr],
-\qquad \text{DEFF} = 1 + (m - 1)\rho_c
+\text{DEFF} = 1 + 399 \times 0.01 = 4.99, \qquad \sqrt{4.99} = 2.23, \qquad 20{,}000/4.99 \approx 4{,}000 .
 \]
 
-\textbf{The BOGO test:} 50 stores (25 per arm), 400 customers per store-week, 20{,}000 customers in all. If $\rho_c = 0.01$:
-\[
-\text{DEFF} = 1 + 399 \times 0.01 = 4.99, \qquad \sqrt{4.99} = 2.23, \qquad \frac{20{,}000}{4.99} \approx 4{,}000
-\]
-
-\textbf{A correlation of one percent makes the true SE 2.2 times the customer-level one}, and 20{,}000 customers carry the information of about 4{,}000.
+A correlation of one per cent makes the correct SE 2.2 times the customer-level one: 20{,}000 customers carry the information of about 4{,}000. The coin was tossed 50 times, not 20{,}000.
 
 \medskip
 
-\small In the Q2 data the ICC of weekly purchase within store is \NUM{0.01}{sim coupon-q2 v1: within-store ICC of weekly purchase}. Shared staff, queues and weather make small correlations the rule.
-
-\normalsize
-\medskip
-
-\textbf{Uncertainty comes from the design:} the coin was tossed 50 times, not 20{,}000. Compare store means, or cluster the SE by store.
+\small Compare store means, or cluster the SE by store. With fewer than about 40 clusters, use small-sample corrections or randomisation inference over store assignments.
 \end{frame}
 
-% [REPLACES old-decks/lecture02.tex:138 and :169]
+% ====================================================================
 \begin{frame}{Which Unit Protects the Comparison?}
 
-Pick the smallest unit that contains the spillover --- and pay for it in independent units.
+Choose the smallest unit that contains the spillover, and pay for it in independent units.
 
 \begin{center}
 \small
@@ -715,11 +664,181 @@ The offer carries into next week & time block with a gap & carry-over longer tha
 
 \bigskip
 
-Interference is not a standard-error problem. It changes \textbf{what the difference in means estimates}: a contrast between two mixtures of spillovers, not ``everyone treated'' against ``no one''. The remedy is design --- the unit --- not a better formula.
+Each fix reduces the number of independent units and widens the interval. That cost is the price of an estimand that means something.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Peeking and Many Metrics}
+
+The 5\% error rate holds for \textbf{one look} at a sample size fixed in advance.
+
+\begin{itemize}
+  \item \textbf{Peeking.} Stopping at the first $p < 0.05$ over ten equally spaced looks raises the false-positive rate under no effect to about 19\%. Look once, or use a method built for monitoring (group-sequential boundaries, always-valid tests: notes, Section 3).
+  \item \textbf{Many metrics.} Twenty metrics at 5\% yield about one false positive when nothing works. Declare one primary metric tied to the decision; treat the others as guardrails or exploration.
+  \item \textbf{Several tests that drive one decision.} Control the family-wise error with Holm's step-down procedure: order the $p$-values, compare the $k$-th smallest with $\alpha/(K - k + 1)$, and stop at the first failure.
+\end{itemize}
+
+\bigskip
+
+\small For the lapsed test: the stopping rule is ``analyse once, at the end'', and the primary metric is purchase within 7 days. A daily dashboard is a guardrail, not a decision rule.
+\end{frame}
+
+% ====================================================================
+% [RELEASE R6: who saw the coupon]
+\begin{frame}{Who Saw the Coupon?}
+
+Back to marketing's proposal. The app log for the Q2 test: a member saw the coupon only if they opened the app in the coupon week; the control arm had no coupon to see.
+
+\begin{center}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Arm} & \textbf{Members} & \textbf{Opened} & \textbf{Bought, openers} & \textbf{Bought, non-openers} & \textbf{Bought, all} \\
+\midrule
+Coupon & 500 & 400 & 230 & 20 & 250 \\
+No coupon & 500 & 360 & 180 & 20 & 200 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{In pairs, commit first.} Three comparisons:
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+All members, as drawn & $0.50 - 0.40 = 0.10$ \\
+Openers only & $230/400 - 180/360 = 0.575 - 0.500 = 0.075$ \\
+Saw the coupon vs did not & $230/400 - 220/600 = 0.575 - 0.367 = 0.208$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Which one, if any, is the effect of \emph{seeing} the coupon, and for whom?
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Assignment and Receipt}
+
+Write $Z$ for assignment (the draw) and $D$ for receipt (saw the coupon). Each member has potential receipts $D(0), D(1)$ and potential outcomes $Y(d, z)$. The draw gives independence. Two more assumptions:
+
+\begin{assumption}{1.11}{Exclusion}
+$Y(d, 0) = Y(d, 1) \equiv Y(d)$: assignment affects the outcome only through receipt.
+\end{assumption}
+\begin{assumption}{1.12}{Monotonicity}
+$D(1) \ge D(0)$ for every unit: nobody takes the treatment because they were \emph{not} offered it.
+\end{assumption}
+
+\bigskip
+
+Neither assumption is checkable from the data. Exclusion is argued from the design: here, a notification that does not show the amount. Monotonicity is argued from behaviour; here it holds trivially, because nobody in the control arm can see a coupon.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{What the Draw Alone Identifies}
+
+\begin{result}{1.13}{Two effects of assignment}
+Under random assignment alone, $\text{ITT} \equiv \E[Y \mid Z=1] - \E[Y \mid Z=0] = \E[Y(D(1),1) - Y(D(0),0)]$ and the first stage $\pi \equiv \E[D \mid Z=1] - \E[D \mid Z=0] = \E[D(1) - D(0)]$.
+\end{result}
+
+\bigskip
+
+Q2: ITT $= 0.50 - 0.40 = 0.10$; first stage $\pi = 400/500 - 0 = 0.80$.
+
+\bigskip
+
+\begin{itemize}
+  \item The ITT is the effect of the offer through every channel, with take-up as it happened. It is the number a decision to send needs, and it needs neither exclusion nor monotonicity.
+  \item Those two are needed only to attribute an effect to \emph{seeing} the coupon.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Compliance Types}
+
+Meeting 1's response types, written for receipt instead of the outcome:
+
+\begin{center}
+\begin{tabular}{lccl}
+\toprule
+\textbf{Type} & $D(0)$ & $D(1)$ & \textbf{In the Q2 test} \\
+\midrule
+Always-taker & 1 & 1 & sees a coupon without one: impossible here \\
+Never-taker & 0 & 0 & never opens the app that week \\
+Complier & 0 & 1 & sees it if, and only if, sent it \\
+Defier & 1 & 0 & ruled out by monotonicity \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{result}{1.14}{Type shares}
+Under random assignment and monotonicity, $\pi_A = \Pr(D=1 \mid Z=0)$, $\pi_N = \Pr(D=0 \mid Z=1)$ and $\pi_C = \pi$.
+\end{result}
+
+Q2: $\pi_A = 0$, $\pi_N = 100/500 = 0.20$, $\pi_C = 0.80$. As with response types, nobody's compliance type is observed; only shares and averages are.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The LATE}
+
+\begin{result}{1.15}{The LATE theorem (Imbens and Angrist)}
+Under random assignment, exclusion and monotonicity, with $\pi > 0$,
+\[
+  \frac{\text{ITT}}{\pi} = \frac{\E[Y \mid Z=1] - \E[Y \mid Z=0]}{\E[D \mid Z=1] - \E[D \mid Z=0]} = \E[Y(1) - Y(0) \mid \text{complier}] \equiv \text{LATE}.
+\]
+\end{result}
+
+\begin{result}{1.16}{One-sided noncompliance}
+If no unit assigned to control can receive the treatment ($D(0) = 0$ for all), then under random assignment and exclusion, $\text{ITT}/\pi = \E[Y(1) - Y(0) \mid D = 1]$: the ratio is the effect on those who received it.
+\end{result}
+
+Q2: $0.10/0.80 = \mathbf{0.125}$, the effect of seeing the coupon on members who saw it. Always- and never-takers contribute nothing to the ITT; the ratio rescales it to the compliers.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Why the Other Two Comparisons Fail}
+
+Coupon-arm non-openers are never-takers, and by exclusion their $20/100 = 0.20$ is an untreated rate. The control arm then gives compliers' untreated rate:
+\[
+0.40 = 0.80\,\mu_{C0} + 0.20 \times 0.20 \quad\Rightarrow\quad \mu_{C0} = 0.36/0.80 = 0.45, \qquad 0.575 - 0.45 = 0.125 .
+\]
+
+\begin{itemize}
+  \item \textbf{Openers only} ($0.075$, too low). Opening is partly caused by the draw. The 360 control openers are members who open the app anyway, and they buy more without a coupon ($0.50$) than compliers as a whole ($0.45$).
+  \item \textbf{Saw vs did not} ($0.208$, too high). It compares compliers with a mix that includes never-takers, who buy at only $0.20$.
+\end{itemize}
+
+Both condition on receipt, which assignment caused: Meeting 1's selection bias, created by a post-treatment variable.
+
+\bigskip
+
+\small If the notification had said ``\textyen 10 off'', non-openers would be partly treated and exclusion would fail: the ITT would include a direct effect, and dividing by $0.80$ inflates it.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Which Number for Which Decision}
+
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Decision} & \textbf{Estimand} & \textbf{Hold it against} \\
+\midrule
+Send the coupon? & ITT $= 0.10$ & cost per coupon \emph{sent}: break-even $0.167$ \\
+Does it pay for those who see it? & LATE $= 0.125$ & cost per member who \emph{sees} it \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \medskip
 
-\small Referral bonuses, surge pricing and switchback designs: notes, Section 3.
+For compliers, $\tau^\ast = 10 \times 0.575/30 = 0.192 > 0.125$: it does not pay among those who see it either, $0.125 \times 30 - 5.75 = -$\textyen 2.00 per seen coupon. Never-takers still cost \textyen 2.00 each through the automatic till discount. Overall: $-$\textyen 2.00, Meeting 1's number.
+
+\bigskip
+
+\textbf{A text message to reach the non-openers?} The LATE describes compliers, not non-openers, who buy at $0.20$ against compliers' $0.45$. Their effect is unknown. Reaching them is a new treatment: test it.
+
+\medskip
+
+\small Handout H1, with Meeting 7, covers instruments that are not randomised offers: the same ratio, with far more to argue.
 \end{frame}
 
 % ====================================================================
@@ -727,67 +846,40 @@ Interference is not a standard-error problem. It changes \textbf{what the differ
 
 \begin{center}
 \scriptsize
-\begin{tabular}{>{\raggedright\arraybackslash}p{2.6cm}ll>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{3.3cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.8cm}ll>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{3.3cm}}
 \toprule
 \textbf{Question (estimand)} & \textbf{Unit} & \textbf{Size} & \textbf{Estimate and SE} & \textbf{Decided by} \\
 \midrule
-Coupon everyone? (Q2, done) & member & 500/arm & diff.\ in means; Neyman SE & net CI $[-3.56, -0.44]$: \textcolor{warnred}{no} \\
-Campaign A or B? & member & --- & transport from segments & both lose: \textcolor{warnred}{no} \\
+Coupon everyone? (Q2, done) & member & 500/arm & difference in means; Neyman SE & net CI $[-3.56, -0.44]$: \textcolor{warnred}{no} \\
+Campaign A or B? & member & 300/arm & transport from segments & both lose: \textcolor{warnred}{no} \\
 Coupon the lapsed? & member & 175/arm & CUPED on Q1 purchases & $\tau$ vs $0.10$; MDE $0.093$ \\
 In-store BOGO? & store & 25/arm & store means; store-level SE & 25 vs 25 stores, not 20{,}000 customers \\
+Effect of seeing it? & member & 500/arm & ITT$/\pi$ & LATE $0.125$: \textcolor{warnred}{no} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \bigskip
 
-\textbf{Lin's memo, four judgements:}
-\begin{enumerate}
-    \item \spinestep{Identified?} Randomised: a causal effect for the 1{,}000-member region.
-    \item \spinestep{Estimate:} $0.10$, CI $[0.039, 0.161]$; net $-$\textyen 2.00, CI $[-3.56, -0.44]$.
-    \item \spinestep{Against the threshold:} coupon-everyone does not pay.
-    \item \spinestep{Next design:} lapsed-only with CUPED; BOGO randomised by store.
-\end{enumerate}
+\begin{pitfall}{what no standard error can fix}
+Excluding units on post-assignment behaviour; reading a test with a sample-ratio mismatch; analysing a store-randomised test with customer-level SEs; stopping when the dashboard turns green; reporting whichever of twenty metrics moved.
+\end{pitfall}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Key Takeaways}
+\begin{frame}{Summary}
 
 \begin{itemize}
-    \item \spinestep{Estimand.} The Q2 estimand is the region's average effect --- a fixed number. A second list, or the base, is a \textbf{different estimand}, reached only by a transport assumption; move the break-even with it.
-    \item \spinestep{Identification.} Unchanged from M1: the draw. Analyse the arms as drawn; post-draw filtering (``openers only'') undoes it.
-    \item \spinestep{Estimation --- uncertainty from the design.} Fisher: is the draw alone a plausible explanation? Neyman: how far one draw lands. The usual SE is \textbf{conservative} for a fixed population (0.031 against a true 0.026).
-    \item \textbf{Significant is not profitable.} Test against the break-even, or better, put an interval on net value itself. Q2: works, does not pay.
-    \item \textbf{Design for the question.} The MDE is 2.8 SEs and must fit inside the gap to break-even. CUPED buys precision with a pre-period column. The SE lives at the level the coin was tossed.
+    \item \spinestep{Estimand.} The Q2 estimand is the region's average effect, a fixed number. Another list is another estimand, reached by a transport assumption; move the break-even with it.
+    \item \spinestep{Identification.} The draw, as in Meeting 1. Analyse as drawn: ``openers only'' undoes it. With noncompliance the draw still identifies the ITT; the LATE needs exclusion and monotonicity too.
+    \item \spinestep{Uncertainty from the design.} Fisher: could the draw alone explain the gap? Neyman: how far one draw lands. The SE lives at the level the coin was tossed.
+    \item \textbf{Significant is not profitable.} Put the interval on net value. Q2 works and does not pay.
+    \item \textbf{Design for the question.} The MDE is 2.8 SEs and must fit inside the gap to break-even; CUPED buys precision with a pre-period column; fix the plan before the first coupon goes out.
 \end{itemize}
-
-\smallskip
-\small \textbf{Before you leave:} project pairs registered. \quad \textbf{P1} (guided project) is released tonight.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Lab 1: Write the Specification, Then Delegate}
-
-The M1 export and a simulated 50-store week with a \textbf{known} effect. Sixty minutes.
 
 \medskip
 
-\begin{center}
-\scriptsize
-\begin{tabular}{rlp{8.4cm}}
-\toprule
-\textbf{Min} & \textbf{Slot} & \textbf{Task} \\
-\midrule
-5  & Task and specification & Write, in plain language, what each estimator must take in and return: difference in means with its Neyman SE; CUPED with $\widehat\theta$; store-level estimate and SE. \\
-10 & Demonstration & Calling the model through the course wrapper; a specification that fails and one that works. \\
-30 & Build & Have the model generate the three estimators from your specification. \textbf{Do not edit the code by hand.} \\
-10 & Verify & Test each against a known answer: your own M1 difference in means on the export; the simulation's true effect over 200 redraws; the store-level SE against the DEFF formula. \\
-5  & Interpret & One sentence: which generated estimator failed a test, and how you knew. \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\small \textbf{Close:} generated code is an estimate of the code you meant. A test against a known effect is how you find out which. Model, access and wrapper details: the lab handout and syllabus appendix.
+\small \textbf{Notes for Meeting 2:} Section 1 states every Result above with its proof; Section 2 is a second worked example, on a food-delivery platform. \textbf{Lab 1:} an A/B readout by hand, then one generated by a language model and checked by simulation tests. \textbf{A1} is released tonight; register your project pair.
 \end{frame}
 
 \end{document}

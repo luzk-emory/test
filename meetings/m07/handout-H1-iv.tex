@@ -1,19 +1,19 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\handoutheader{H1}{Instrumental Variables}{Encouragement, noncompliance, and outside shifters of treatment}{Meeting 7 (Observational data)}
+\handoutheader{H1}{Instrumental Variables}{Outside shifters of treatment: instruments that nobody randomised}{Meeting 7 (Observational data)}
 
 \begin{decision}
-A firm can randomise an \emph{offer} but not whether people take it up, or it suspects an unmeasured confounder that no
-adjustment can fix. An instrument, something that shifts treatment but affects the outcome only through treatment, can
-still identify an effect: the effect on the units whose treatment the instrument moved. This handout says when, for whom,
-and how to tell a strong instrument from a weak one.
+A firm suspects an unmeasured confounder that no adjustment can fix (Meeting 7), and it cannot run an experiment. Something
+outside its control may still shift the treatment: a rule, a manager's choice, a system outage, the weather. Meeting~2 showed
+what the ratio of two differences identifies when the shifter is a randomised offer. This handout is about shifters that
+nobody randomised: what must then be argued, what goes wrong when the argument fails, and how to tell a strong instrument
+from a weak one.
 \end{decision}
 
 \begin{goals}
-  \item state the four IV assumptions and say which can be checked;
-  \item show what randomisation of the instrument alone identifies (the ITT and the first stage);
-  \item prove the LATE theorem and recover complier means;
+  \item say what changes when the instrument is not randomised, and argue independence and exclusion from the institution;
+  \item describe the compliers, the units whose effect the ratio measures;
   \item quantify what failures of exclusion and monotonicity do to the ratio;
   \item interpret two-stage least squares with covariates, and guard against weak instruments.
 \end{goals}
@@ -21,73 +21,44 @@ and how to tell a strong instrument from a weak one.
 %=====================================================================================
 \sectionone
 
-\subsection{Setup}
+\subsection{From a randomised offer to an outside shifter}
 
-Let $Z \in \{0,1\}$ be an instrument, $D \in \{0,1\}$ a treatment and $Y$ an outcome. Each unit has \emph{potential treatments}
-$D(0), D(1)$ and potential outcomes $Y(d, z)$; we observe $D = D(Z)$ and $Y = Y(D, Z)$.
+The notation is Meeting~2's (Section~1.9): a binary instrument $Z$, a treatment $D$ with potential treatments $D(0), D(1)$,
+and potential outcomes $Y(d, z)$. Meeting~2 took $Z$ to be a randomised offer, so independence came from the draw. Here
+$Z$ is any variable that shifts $D$, and independence becomes an assumption.
 
 \begin{assum}{Independence}{ind}
-$\{Y(d,z), D(z) : d, z \in \{0,1\}\} \indep Z$.
-\end{assum}
-\begin{assum}{Exclusion}{excl}
-$Y(d, 0) = Y(d, 1) \equiv Y(d)$: the instrument affects the outcome only through treatment.
+$\{Y(d,z), D(z) : d, z \in \{0,1\}\} \indep Z$, possibly only within levels of covariates $X$.
 \end{assum}
 \begin{assum}{Relevance}{rel}
 $\E[D(1) - D(0)] \ne 0$.
 \end{assum}
-\begin{assum}{Monotonicity}{mono}
-$D(1) \ge D(0)$ for every unit.
-\end{assum}
 
-A randomised instrument delivers independence by design. Relevance is checkable. Monotonicity is a claim about behaviour,
-argued from the institution. Exclusion is a claim that no other channel exists, and in general it can be tested neither from
-the data nor from the design.
+Exclusion and monotonicity are as in Meeting~2 (Assumptions~1.11 and~1.12), with $Z$ in place of the draw. Under all four,
+Meeting~2's results carry over unchanged: the ITT and the first stage are identified (Result~1.13), the type shares are
+identified (Result~1.14), and the ratio $\text{ITT}/\pi$ is the LATE, the average effect on compliers (Result~1.15). What
+changes is the status of each assumption. Relevance is checkable. Independence, which a draw delivers by design, is now a
+claim about the world, argued like Meeting~7's exchangeability. Exclusion and monotonicity were already claims; with an
+outside shifter they are usually harder to defend, because nobody designed the instrument to satisfy them.
 
-\subsection{What independence alone buys}
+\subsection{Arguing for an instrument}
 
-\begin{prop}{Two effects of the instrument}{itt}
-Under independence alone, $\text{ITT} \equiv \E[Y \mid Z=1] - \E[Y \mid Z=0] = \E[Y(D(1),1) - Y(D(0),0)]$ and
-$\pi \equiv \E[D \mid Z=1] - \E[D \mid Z=0] = \E[D(1) - D(0)]$.
-\end{prop}
-\begin{proof}
-Given $Z = z$, $Y = Y(D(z), z)$ and $D = D(z)$; independence lets the conditioning be dropped.
-\end{proof}
+No test confirms an instrument; each of the following can only count against one.
+\begin{itemize}
+  \item \emph{Where does $Z$ come from?} Name the process that set it and everything that process responded to. Those
+  variables belong in $X$, and independence is claimed only within their levels.
+  \item \emph{Balance.} Pre-treatment covariates should not differ by $Z$ within levels of $X$. Imbalance is evidence against
+  independence; balance is consistent with it, not proof.
+  \item \emph{Zero-first-stage groups.} Units the instrument cannot move (ineligible customers, a system that cannot display
+  the offer) should show no outcome difference by $Z$. A difference there is a direct effect: evidence against exclusion,
+  and an estimate of its size (Result~\ref{prop:violation}).
+  \item \emph{Placebo outcomes.} Outcomes the treatment cannot affect, such as anything measured before $Z$, should not move with $Z$.
+\end{itemize}
 
-The ITT is the effect of assigning the instrument through every channel. If the business controls the offer but not its
-take-up, and would roll the offer out with everything that came with it in the test, the ITT \emph{is} the policy effect and
-exclusion is not needed. Exclusion is needed only to attribute the effect to the treatment itself.
-
-\subsection{Compliance types and the LATE}
-
-Under monotonicity each unit is an \emph{always-taker} ($D(0) = D(1) = 1$), a \emph{never-taker} ($D(0) = D(1) = 0$) or a
-\emph{complier} ($D(0) = 0$, $D(1) = 1$); \emph{defiers} ($D(0) = 1$, $D(1) = 0$) are ruled out.
-
-\begin{prop}{Type shares}{shares}
-Under independence and monotonicity, $\pi_A = \Pr(D=1 \mid Z=0)$, $\pi_N = \Pr(D=0 \mid Z=1)$ and $\pi_C = \pi$.
-\end{prop}
-\begin{proof}
-With no defiers, $D = 1$ under $Z = 0$ only for always-takers and $D = 0$ under $Z = 1$ only for never-takers; independence makes
-each arm's shares the population's. The rest are compliers, and $\pi = (\pi_A + \pi_C) - \pi_A$.
-\end{proof}
-
-No individual's type is observed; only shares and averages over types are identified.
-
-\begin{prop}{The LATE theorem (Imbens and Angrist)}{late}
-Under Assumptions~\ref{asm:ind}--\ref{asm:mono},
-\[
-  \frac{\text{ITT}}{\pi} = \frac{\E[Y \mid Z=1] - \E[Y \mid Z=0]}{\E[D \mid Z=1] - \E[D \mid Z=0]} = \E[Y(1) - Y(0) \mid \text{complier}] \equiv \text{LATE}.
-\]
-\end{prop}
-\begin{proof}
-By exclusion the ITT is $\E[Y(D(1)) - Y(D(0))]$. For always- and never-takers $D(1) = D(0)$ and the difference is zero; for compliers
-it is $Y(1) - Y(0)$; there are no defiers. So $\text{ITT} = \pi_C\,\text{LATE}$; divide by $\pi = \pi_C > 0$.
-\end{proof}
-
-The ratio (the \emph{Wald estimator}) is the effect on units whose treatment the instrument changed. The data say nothing
-about always-takers or never-takers.
+\subsection{Who the compliers are}
 
 \begin{prop}{Complier outcome means}{complier}
-Under Assumptions~\ref{asm:ind}--\ref{asm:mono},
+Under independence, relevance, exclusion and monotonicity,
 $\E[Y(1) \mid C] = \{\E[YD \mid Z=1] - \E[YD \mid Z=0]\}/\pi$ and $\E[Y(0) \mid C] = \{\E[Y(1-D) \mid Z=0] - \E[Y(1-D) \mid Z=1]\}/\pi$.
 \end{prop}
 \begin{proof}
@@ -95,7 +66,8 @@ $\E[YD \mid Z=1] = \pi_A\E[Y(1) \mid A] + \pi_C\E[Y(1) \mid C]$ and $\E[YD \mid 
 never-takers in the same way.
 \end{proof}
 
-Replacing $Y$ with a covariate describes the compliers, the first step in arguing whether their effect transports.
+Replacing $Y$ with a covariate describes the compliers, the first step in arguing whether their effect transports. With an
+outside shifter the compliers are whoever the shifter happened to move, a group nobody chose.
 
 \subsection{When exclusion or monotonicity fails}
 
@@ -115,7 +87,8 @@ Keep independence, exclusion and relevance but allow defiers. Then
 $\text{ITT}/\pi = (\pi_C\,\text{LATE}_C - \pi_D\,\text{LATE}_D)/(\pi_C - \pi_D)$.
 \end{prop}
 \begin{proof}
-The LATE proof now leaves a defier term $-\pi_D\,\text{LATE}_D$ in the ITT, and the first stage is $\pi_C - \pi_D$.
+The proof of the LATE theorem (Meeting~2, Result~1.15) now leaves a defier term $-\pi_D\,\text{LATE}_D$ in the ITT, and the first
+stage is $\pi_C - \pi_D$.
 \end{proof}
 
 With defiers one weight is negative, and the ratio need not lie between the two groups' effects; it can have the wrong sign.
@@ -126,7 +99,7 @@ If the instrument is random only given covariates $X$ (assignment probabilities 
 stratum indicators computes $\hat\theta = \sum_i\tilde Z_iY_i/\sum_i\tilde Z_iD_i$ with $\tilde Z_i = Z_i - \hat\E[Z \mid X_i]$.
 
 \begin{prop}{What 2SLS with strata estimates}{tsls}
-Under the conditional versions of Assumptions~\ref{asm:ind}--\ref{asm:mono}, with discrete $X$,
+Under independence and relevance within each level of $X$, with exclusion and monotonicity, and with discrete $X$,
 \[
   \hat\theta \to \frac{\E[\Var(Z \mid X)\,\pi(X)\,\text{LATE}(X)]}{\E[\Var(Z \mid X)\,\pi(X)]}.
 \]
@@ -177,44 +150,74 @@ effects, a different LATE. Ask who the compliers are (Result~\ref{prop:complier}
 induced, and whether the decision is about the compliers at all.
 
 \begin{pitfall}[IV errors]
-Comparing those who took the treatment with those who did not; dividing a small ITT by a weak first stage and reporting the ratio;
-controlling for anything measured after assignment; reading a LATE as the ATE; ignoring a direct effect of the encouragement.
+Treating an outside shifter as random without naming what set it; leaving out the covariates that determined the instrument;
+dividing a small ITT by a weak first stage and reporting the ratio; controlling for anything measured after the instrument; reading a
+LATE as the ATE; ignoring a direct effect of the instrument.
 \end{pitfall}
 
 %=====================================================================================
 \sectiontwo
 
-\paragraph{Setting.} QuickBite emails a random half of 20{,}000 customers an invitation to join QuickBite Plus ($Z = 1$). Joining ($D$)
-is up to the customer. The outcome $Y$ is orders over the next month. Each order earns ¥10 of margin; each Plus member costs ¥15 a month
-in waived delivery fees.
+\paragraph{Setting.} QuickBite wants the effect of its Plus membership ($D$) on orders ($Y$, orders in the following month).
+Each order earns ¥10 of margin; each Plus member costs ¥15 a month in waived delivery fees. Members choose to join, and heavy
+users join most, so comparing members with non-members is hopeless. In March, regional managers in 6 of the 12 cities chose
+to run an in-app campaign promoting Plus ($Z = 1$ for a customer in a campaign city). Nobody randomised the campaign: managers
+in big cities were keener (4 of 6 big cities ran it, 2 of 6 small ones), and big-city customers order more.
 
-\paragraph{Step 1: ITT and first stage.} Plus membership is $0.30$ among invited and $0.05$ among others (customers can join on their own),
-so $\pi = 0.25$, $\SE(\hat\pi) = 0.0051$ and $F \approx 2{,}400$: a very strong instrument. Mean orders are $4.30$ and $4.00$, so
-$\text{ITT} = 0.30$ (SE about $0.05$, with an outcome SD of 3.5).
+\begin{center}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+& \multicolumn{3}{c}{Campaign city ($Z = 1$)} & \multicolumn{3}{c}{No campaign ($Z = 0$)} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+City size & Customers & Plus & Orders & Customers & Plus & Orders \\
+\midrule
+Big & 8{,}000 & 0.30 & 5.30 & 4{,}000 & 0.05 & 5.00 \\
+Small & 2{,}000 & 0.30 & 3.30 & 6{,}000 & 0.05 & 3.00 \\
+\bottomrule
+\end{tabular}
+\end{center}
 
-\paragraph{Step 2: types and the LATE.} $\pi_A = 0.05$, $\pi_N = 0.70$, $\pi_C = 0.25$. $\text{LATE} = 0.30/0.25 = 1.2$ extra orders a month per
-complier, SE about $0.05/0.25 = 0.20$. Complier means (Result~\ref{prop:complier}): with $\E[YD \mid Z=1] = 1.75$ and $\E[YD \mid Z=0] = 0.35$,
-$\E[Y(1) \mid C] = 1.40/0.25 = 5.6$; with $\E[Y(1-D) \mid Z=0] = 3.65$ and $\E[Y(1-D) \mid Z=1] = 2.55$, $\E[Y(0) \mid C] = 4.4$. Compliers would order
-$4.4$ times a month without Plus and $5.6$ with it.
+\paragraph{Step 1: the pooled ratio.} Pooled, orders are $4.90$ in campaign cities and $3.80$ elsewhere, an ITT of $1.10$; Plus
+membership is $0.30$ against $0.05$, a first stage of $0.25$. The ratio $1.10/0.25 = 4.4$ extra orders per complier is not a
+LATE: campaign cities are mostly big cities, so the ITT mixes the campaign's effect with the gap between big and small cities.
+Independence fails unconditionally.
 
-\paragraph{Step 3: the decisions.} Two different questions.
+\paragraph{Step 2: within city size.} City size determined the campaign's probability, so it belongs in $X$. Within each size
+the ITT is $0.30$ and the first stage $0.25$, so the ratio is $1.2$ in both, and two-stage least squares with city-size
+indicators (Result~\ref{prop:tsls}) returns $1.2$, with an SE of about $0.22$ for an outcome SD of $3.5$. The first stage is
+strong: $F$ is about 1{,}600 in big cities and 550 in small ones. Within city size, independence is still a claim, that managers
+did not choose the campaign because they expected their city's orders to rise. Balance on pre-March orders within each size
+is the first check.
+
+\paragraph{Step 3: who the compliers are.} In big cities, $\E[YD \mid Z=1] = 2.15$, $\E[YD \mid Z=0] = 0.40$,
+$\E[Y(1-D) \mid Z=0] = 4.60$ and $\E[Y(1-D) \mid Z=1] = 3.15$. By Result~\ref{prop:complier}, compliers would order
+$(4.60 - 3.15)/0.25 = 5.8$ times a month without Plus and $(2.15 - 0.40)/0.25 = 7.0$ with it. Always-takers, who joined
+without a campaign, order $0.40/0.05 = 8.0$; never-takers $3.15/0.70 = 4.5$. The campaign moved middling customers, not the
+heaviest ones.
+
+\paragraph{Step 4: exclusion.} The campaign cities also put up billboards. Corporate accounts cannot join Plus, so for them the
+first stage is zero, and within each city size they ordered $0.05$ more in campaign cities: a direct effect $\delta = 0.05$.
+By Result~\ref{prop:violation} the ratio overstates the LATE by $0.05/0.25 = 0.2$; the corrected complier effect is
+$(0.30 - 0.05)/0.25 = 1.0$.
+
+\paragraph{Step 5: the decisions.}
 \begin{itemize}
-  \item \emph{Should QuickBite send the invitation?} The ITT is the policy effect: per invited customer, $10 \times 0.30 = $ ¥3.00 of margin against
-  $0.25 \times 15 = $ ¥3.75 of waived fees for the extra members. Net $-$¥0.75: do not send it, whether or not exclusion holds.
-  \item \emph{Is Plus worth it for the customers the email recruits?} $10 \times 1.2 = $ ¥12 a month against ¥15: no, for compliers. Always-takers
-  are a different population; the email says nothing about them.
+  \item \emph{Run the campaign, billboards and all, in every city?} The within-size ITT is the policy effect, billboards
+  included: per customer, $10 \times 0.30 = $ ¥3.00 of margin against $0.25 \times 15 = $ ¥3.75 of waived fees for the extra
+  members. Net $-$¥0.75: no.
+  \item \emph{Is Plus worth it for the customers the campaign recruits?} $10 \times 1.0 = $ ¥10 a month against ¥15 (and
+  $10 \times 1.2 = $ ¥12 before the exclusion correction): no, for compliers. The data say nothing about always-takers, the
+  heaviest users, for whom Plus may well pay.
 \end{itemize}
 
-\paragraph{Step 4: exclusion.} The email itself may remind customers to order. If it adds $\delta = 0.05$ orders directly, the ratio
-overstates the LATE by $0.05/0.25 = 0.2$ (Result~\ref{prop:violation}): the true complier effect would be $1.0$, strengthening the conclusion.
-A reminder email without the invitation, sent to a third randomised group, would measure $\delta$.
-
 \begin{exercise}[computation]
-Suppose instead the invitation lifted membership only from $0.05$ to $0.07$ ($\pi = 0.02$, $\SE(\hat\pi) \approx 0.0034$) with the same ITT of $0.30$
-(SE $0.05$). Compute the first-stage $F$, the Wald ratio and its approximate SE, and say what you would report.
+Suppose instead the campaign had lifted membership only from $0.05$ to $0.07$ in each city size ($\pi = 0.02$, $\SE(\hat\pi) \approx 0.0034$),
+with the same within-size ITT of $0.30$ (SE $0.05$). Compute the first-stage $F$, the ratio and its approximate SE, and say what you would
+report.
 \end{exercise}
 \answer{$F = (0.02/0.0034)^2 \approx 35$. Ratio $0.30/0.02 = 15$ orders per complier, SE roughly $0.05/0.02 = 2.5$ before the first-stage term,
-and more after it. An effect of 15 orders a month per complier is implausible: any direct effect of the email of $\delta$ is multiplied by
+and more after it. An effect of 15 orders a month per complier is implausible: any direct effect of the campaign of $\delta$ is multiplied by
 $1/0.02 = 50$. With $F$ between 10 and 100, report the ITT and first stage, plus an Anderson--Rubin set; do not headline the ratio.}
 
 \begin{exercise}[judgement]
@@ -245,7 +248,7 @@ $\delta$ at which the decision flips. Conley, Hansen and Rossi (2012) formalise 
 \subsection*{Annotated reading}
 \begin{readinglist}
 \reading{Angrist, Imbens and Rubin (1996), ``Identification of causal effects using instrumental variables'', \emph{JASA}}{The
-potential-outcomes framework for IV, compliance types and the LATE}{Sections 1--4}{2}
+potential-outcomes framework for IV, compliance types and the LATE (also in Meeting~2's list)}{Sections 1--4}{2}
 \reading{Angrist and Pischke (2015), \emph{Mastering 'Metrics}, Princeton}{IV at an intuitive level, with classic
 examples}{Ch.\ 3}{1}
 \reading{Imbens and Angrist (1994), ``Identification and estimation of local average treatment effects'',

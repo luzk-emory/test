@@ -177,6 +177,28 @@ Write Lin's memo on the Q2 test in four sentences, one judgement each:
 3. Against the break-even: does it pay?
 4. What should the next test change?
 
+### Part M2-R6. Who saw the coupon?
+
+Back to marketing's proposal in Part R1: drop the members who never opened the app. Lin pulls the app log for the Q2 test. A member saw the coupon only if they opened the app during the coupon week; members in the control arm had no coupon to see.
+
+| Arm | Members | Opened the app | Bought, among openers | Bought, among non-openers | Bought, all |
+|---|---:|---:|---:|---:|---:|
+| Coupon | 500 | 400 | 230 | 20 | 250 |
+| No coupon | 500 | 360 | 180 | 20 | 200 |
+
+From Lin's log:
+- "The draw decided who was sent the coupon. Nobody in the control arm could get one."
+- "The coupon reached a member only through the app; the push notification said *You have a new offer*, without the amount."
+- "Any purchase by a member of the coupon arm got ¥10 off at the till, whether or not they had seen the coupon."
+
+**Tasks. In pairs, commit first**
+1. Compute three comparisons: all members as drawn; openers only (marketing's proposal); members who **saw** the coupon against everyone who did not.
+2. What share of the coupon arm saw the coupon? Divide the comparison of all members as drawn by that share. What does the ratio measure, and for whom?
+3. Members in the coupon arm who never opened the app would not have seen a coupon in either arm. What is their purchase rate? Use it, and the control arm, to find the purchase rate that members who *would* see a coupon have without it. Check that their treated rate minus this untreated rate gives the ratio from task 2.
+4. Why are the openers in the two arms not the same people? Which way does the openers-only comparison miss, and why?
+5. Match each log sentence to the assumption it supports. Suppose the notification had said *¥10 off your next coffee*. Which assumption would that threaten, and in which direction would the ratio move?
+6. Among members who see the coupon, does it pay? (Use the break-even rule from Meeting 1 with their purchase rate when they see it.) Lin's team proposes a text message to reach the non-openers. What does the ratio tell you about that proposal, and what does it not?
+
 ---
 
 ## Meeting 3: Coupon Whom?

@@ -17,7 +17,9 @@ does not guarantee.
   \item reduce variance with a pre-treatment covariate (CUPED) and size an experiment for a decision;
   \item choose the unit of randomisation, compute a design effect, and cluster standard errors correctly;
   \item recognise the threats that no formula repairs: post-assignment exclusions, sample-ratio mismatch,
-  peeking, many metrics, interference.
+  peeking, many metrics, interference;
+  \item separate the effect of an offer (the ITT) from the effect of taking it up (the LATE), and say for whom the
+  LATE holds.
 \end{goals}
 
 %=====================================================================================
@@ -42,7 +44,7 @@ after assignment (``opened the app'', ``redeemed'', ``stayed to the end'') compa
 whenever treatment affects that variable. The difference in means over all assigned units identifies the
 effect of \emph{assignment}, the intention-to-treat (ITT) effect, which is what a decision to send an offer
 needs. When uptake is partial, the first stage $\E[D \mid Z=1] - \E[D \mid Z=0]$ is also identified, and
-their ratio is an effect among compliers under further assumptions (Handout H1).
+their ratio is an effect among compliers under further assumptions (Section~\ref{sec:noncompliance}).
 
 \paragraph{The unit of assignment.} If unit $i$'s outcome depends on unit $j$'s treatment, the difference
 in means compares two mixtures of spillover conditions, not ``everyone treated'' with ``no one treated''.
@@ -251,6 +253,79 @@ primary metric tied to the decision; treat others as guardrails or exploration; 
 decision, control the family-wise error (Holm's step-down procedure: order the $p$-values and compare the
 $k$-th smallest with $\alpha/(K - k + 1)$, stopping at the first failure).
 
+\subsection{Noncompliance: the ITT and the LATE}\label{sec:noncompliance}
+
+Often the coin assigns an \emph{offer} and units decide whether to take it up. Write $Z \in \{0,1\}$ for
+assignment and $D \in \{0,1\}$ for receipt. Each unit has \emph{potential receipts} $D(0), D(1)$ and potential
+outcomes $Y(d, z)$; we observe $D = D(Z)$ and $Y = Y(D, Z)$. Randomising $Z$ delivers independence,
+$\{Y(d,z), D(z) : d, z \in \{0,1\}\} \indep Z$. Two more assumptions are needed before anything can be said
+about receipt.
+
+\begin{assum}{Exclusion}{excl-nc}
+$Y(d, 0) = Y(d, 1) \equiv Y(d)$: assignment affects the outcome only through receipt.
+\end{assum}
+\begin{assum}{Monotonicity}{mono-nc}
+$D(1) \ge D(0)$ for every unit: nobody takes the treatment because they were \emph{not} offered it.
+\end{assum}
+
+\begin{prop}{Two effects of assignment}{itt}
+Under random assignment alone, $\text{ITT} \equiv \E[Y \mid Z=1] - \E[Y \mid Z=0] = \E[Y(D(1),1) - Y(D(0),0)]$ and
+the first stage $\pi \equiv \E[D \mid Z=1] - \E[D \mid Z=0] = \E[D(1) - D(0)]$.
+\end{prop}
+\begin{proof}
+Given $Z = z$, $Y = Y(D(z), z)$ and $D = D(z)$; independence lets the conditioning be dropped.
+\end{proof}
+
+The ITT is the effect of the offer through every channel, with take-up as it happened. It is the number an
+offer decision needs, and it needs neither exclusion nor monotonicity. Those are needed only to attribute an
+effect to receipt itself.
+
+Under monotonicity each unit is an \emph{always-taker} ($D(0) = D(1) = 1$), a \emph{never-taker}
+($D(0) = D(1) = 0$) or a \emph{complier} ($D(0) = 0$, $D(1) = 1$); \emph{defiers} ($D(0) = 1$, $D(1) = 0$) are
+ruled out. These are Meeting~1's response types, written for receipt instead of the outcome, and as there, no
+unit's type is observed.
+
+\begin{prop}{Type shares}{shares}
+Under random assignment and monotonicity, $\pi_A = \Pr(D=1 \mid Z=0)$, $\pi_N = \Pr(D=0 \mid Z=1)$ and
+$\pi_C = \pi$.
+\end{prop}
+\begin{proof}
+With no defiers, $D = 1$ under $Z = 0$ only for always-takers and $D = 0$ under $Z = 1$ only for never-takers;
+independence makes each arm's shares the population's. The rest are compliers, and $\pi = (\pi_A + \pi_C) - \pi_A$.
+\end{proof}
+
+\begin{prop}{The LATE theorem (Imbens and Angrist)}{late}
+Under random assignment, exclusion and monotonicity, with $\pi > 0$,
+\[
+  \frac{\text{ITT}}{\pi} = \frac{\E[Y \mid Z=1] - \E[Y \mid Z=0]}{\E[D \mid Z=1] - \E[D \mid Z=0]}
+  = \E[Y(1) - Y(0) \mid \text{complier}] \equiv \text{LATE}.
+\]
+\end{prop}
+\begin{proof}
+By exclusion the ITT is $\E[Y(D(1)) - Y(D(0))]$. For always- and never-takers $D(1) = D(0)$ and the difference
+is zero; for compliers it is $Y(1) - Y(0)$; there are no defiers. So $\text{ITT} = \pi_C\,\text{LATE}$; divide by
+$\pi = \pi_C > 0$.
+\end{proof}
+
+\begin{prop}{One-sided noncompliance}{onesided}
+If no unit assigned to control can receive the treatment ($D(0) = 0$ for all), then under random assignment and
+exclusion, $\text{ITT}/\pi = \E[Y(1) - Y(0) \mid D = 1]$: the ratio is the effect on those who received it.
+\end{prop}
+\begin{proof}
+With $D(0) = 0$ there are no always-takers or defiers, so monotonicity holds, and the units with $D = 1$ are the
+compliers assigned to treatment. By independence they have the same potential outcomes on average as all
+compliers, so their average effect is the LATE.
+\end{proof}
+
+The ratio (the \emph{Wald estimator}) rescales the ITT and changes the population: from everyone assigned to the
+compliers, a group the data choose. Two tempting alternatives fail. Comparing those who received the treatment
+with those who did not (\emph{as treated}), or keeping only units that followed their assignment
+(\emph{per protocol}), conditions on receipt, which assignment caused, so each compares different mixtures of
+types (Section~1.2). Hold the ITT against a cost per offer and the LATE against a cost per receiver; when the
+cost is paid only on receipt and noncompliance is one-sided, the two comparisons agree (Section~2, Step~6).
+Instruments that are not randomised offers, and what failures of exclusion or monotonicity do to the ratio, are
+in Handout H1.
+
 \begin{pitfall}[what no standard error can fix]
 Excluding units on post-assignment behaviour; reading a test with a sample-ratio mismatch; analysing a
 store-randomised test with customer-level SEs; stopping when the dashboard turns green; reporting whichever
@@ -294,10 +369,13 @@ break-even is $2.486 \times 0.287 = $ ¥0.71.
 $\text{DEFF} = 1 + 499 \times 0.01 = 5.99$: twenty zones (10{,}000 customers) carry the information of about
 $1{,}670$ independent customers, and the SE must be clustered by zone.
 
-\paragraph{Step 6: assignment versus receipt.} Forty per cent of offered customers redeemed. The ITT of ¥1.84
-is the effect of \emph{offering}, the number the offer decision needs. The ratio $1.84/0.40 = $ ¥4.60 estimates
-the effect among customers who redeem because they were offered (Handout H1), useful for understanding the
-mechanism but not to be held against a per-offer cost.
+\paragraph{Step 6: assignment versus receipt.} Only offered customers could use the discount, and 15\% of them
+did: one-sided noncompliance with $\pi = 0.15$ (the cost of ¥1.50 per offer is $0.15 \times$ ¥10). The ITT of
+¥1.84 is the effect of \emph{offering}, the number the offer decision needs. By
+Result~\ref{prop:onesided}, the ratio $1.84/0.15 = $ ¥12.27 is the effect on customers who used the discount.
+Held against the ¥10 each of them cost, it leaves ¥2.27, which is $(1.84 - 1.50)/0.15$: the same test as the ITT
+against ¥1.50 per offer, rescaled by $1/0.15$. The ratio adds an interpretation (a customer who uses the
+discount gains about ¥12 of margin) but not a new verdict, and its interval is $1/0.15$ times as wide.
 
 \paragraph{Recommendation.} Do not roll out yet: the effect is real but not shown to exceed break-even. Run the
 follow-up at about 8{,}200 per arm with CUPED and 30-day margin declared as the primary metric.
@@ -318,7 +396,7 @@ discount.
 openers are compared with control customers who opened something different (or are a different mix of
 people). The comparison carries selection bias. It equals an effect only if opening were unaffected by
 assignment and unrelated to potential outcomes, which is implausible. Report the ITT; for the effect among
-those who engage, use assignment as an instrument (Handout H1).}
+those who engage, divide the ITT by the share who engage when offered (Result~\ref{prop:late}).}
 
 %=====================================================================================
 \sectionthree
@@ -336,6 +414,13 @@ session) have numerator and denominator in both arms; their standard error needs
 randomising users while analysing sessions needs clustering by user.
 \end{extension}
 
+\begin{extension}[Beyond randomised offers]
+When the offer is not randomised but something else shifts treatment (a rule, a lottery, an outage), the same
+ratio identifies a LATE only if that shifter is as good as random, which must now be argued. Handout H1 covers such
+\emph{instruments}: two-stage least squares with covariates, weak instruments, what failures of exclusion and
+monotonicity do, and how to describe the compliers.
+\end{extension}
+
 \begin{extension}[Sequential testing]
 Group-sequential designs spend the error rate over planned looks (O'Brien--Fleming, Pocock). The mixture
 sequential probability ratio test gives always-valid $p$-values that may be checked at any time.
@@ -344,7 +429,9 @@ sequential probability ratio test gives always-valid $p$-values that may be chec
 \subsection*{Annotated reading}
 \begin{readinglist}
 \reading{Imbens and Rubin (2015), \emph{Causal Inference for Statistics, Social, and Biomedical
-Sciences}}{Fisher and Neyman inference in the design-based frame, with proofs}{Ch.\ 5--6, 9}{2}
+Sciences}}{Fisher and Neyman inference in the design-based frame, with proofs; noncompliance in experiments}{Ch.\ 5--6, 9, 23--24}{2}
+\reading{Angrist, Imbens and Rubin (1996), ``Identification of causal effects using instrumental variables'',
+\emph{JASA}}{Compliance types and the LATE in potential outcomes}{Sections 1--4}{2}
 \reading{Kohavi, Tang and Xu (2020), \emph{Trustworthy Online Controlled Experiments}}{The practitioner's
 checklist: SRM, guardrails, peeking, ratio metrics}{Ch.\ 3, 17, 21}{1}
 \reading{Deng, Xu, Kohavi and Walker (2013), ``Improving the sensitivity of online controlled experiments'',

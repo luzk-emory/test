@@ -88,9 +88,134 @@ Around that rule, rates still move for reasons tied to no recorded signal.
 
 ---
 
-## Meeting 9: Rates the Hotel Did Not Choose
+## Meeting 9: Generative AI at Meridian
 
-### Part M9-R1. The member-rate test
+### Part M9-R1. A simulator of Meridian
+
+Meeting 8 ended on the overrides: about 8% of nights, logged, with no reason recorded. The elasticity of −1.56 assumed they did no harm.
+
+Meridian's data-science team has trained a **generative model of the logs**. Given a hotel-night's 47 signals and a rate, it draws a number of premium bookings. It was fitted on the 87,600 hotel-nights of Meeting 8. On top of what it learned, the team **planted** two things:
+- a true elasticity of **−1.50** on every night;
+- an **override effect**: on 8% of nights an unrecorded local event (a wedding block, a conference) raises demand by 12%, and the manager raises the rate by 10%.
+
+**Tasks**
+1. The simulator answers "how many bookings at a different rate?" for any night. What must be true of Meridian's real logs for that answer to be a causal effect? Which meeting's assumption is it?
+2. List what the simulator took from the data and what the analyst chose.
+3. Commit: can the simulator tell Wen the true elasticity of Meridian's guests?
+
+### Part M9-R2. An estimator testbed
+
+The team draws 200 simulated datasets with the same hotels, nights and signals as the real logs, and runs each estimator on each. The truth is −1.50 because they planted it.
+
+| Estimator | Override effect planted? | Mean estimate | Share of 95% intervals covering −1.50 |
+|---|---|---:|---:|
+| Log–log OLS, no controls | no | +0.42 | 0.00 |
+| OLS, hotel and six occupancy bands | no | −1.18 | 0.02 |
+| DML, boosted-tree nuisances | no | −1.49 | 0.94 |
+| DML, lasso nuisances | no | −1.41 | 0.71 |
+| DML, boosted-tree nuisances | **yes** | −1.37 | 0.38 |
+
+**Tasks**
+1. Compute the bias of each row.
+2. Which estimator would you use on data shaped like Meridian's? Why does lasso do worse than boosted trees here? (Recall how the RM rule is written.)
+3. With the override effect planted, DML is biased toward zero. If the real overrides behave like the planted ones, where would the true elasticity lie, given Meeting 8's −1.56? Does Wen's decision about the 8% rise (break-even −1.32) change?
+4. What can this testbed **not** tell you about the real overrides?
+
+### Part M9-R3. A pipeline testbed
+
+The RM vendor offers a new engine: a boosted-tree demand model fitted to the logs, and an optimiser that posts the rate with the highest **predicted** contribution, (rate − ¥200) × bookings, night by night. Wen's analyst builds a rival: price from the DML elasticity. Both are compared with the current RM rule.
+
+The team builds a **second simulator** from the same logs, with a neural network in place of boosted trees, and the same planted truth. On each simulator, an **oracle** knows the planted demand and posts the best rate. Regret is the oracle's contribution minus the pipeline's, per hotel-night.
+
+| Pipeline | Regret, boosted simulator | Regret, neural simulator | Nights priced above ¥1,920 |
+|---|---:|---:|---:|
+| Current RM rule | ¥1,450 | ¥1,520 | 5% |
+| Vendor: predict, then optimise | ¥380 | ¥2,240 | 14% |
+| DML elasticity, then optimise | ¥690 | ¥760 | 3% |
+
+¥1,920 is the 95th percentile of the rates in the logs.
+
+**Backtest.** The team re-ran the member-rate test of six months ago (Bonus, Part B1) inside each simulator, with managers' overrides as logged. The real test measured **+4.8** extra member bookings per heads night from the rate (SE 1.3; the email's share is already removed). The boosted simulator reproduces **+4.6**, the neural one **+3.4**.
+
+**Tasks. In pairs, commit first**
+1. Rank the pipelines on each simulator. Which pipeline has the smallest worst-case regret?
+2. Why does the vendor's pipeline do best on one simulator and worst on the other?
+3. 14% of the vendor's rates lie above anything in the logs. What do both simulators know about bookings there? What does that do to the regret numbers on those nights?
+4. The vendor's optimiser picks, every night, the rate its model likes most. Why does that make its errors larger than its demand model's average error?
+5. What does the backtest support, and what not? Would you trust either simulator more after it?
+6. Recommend a pipeline to Wen, and the check you would run when it goes live.
+
+### Part M9-R4. Ask the model instead?
+
+A second vendor offers "synthetic guests": a language model plays 10,000 guests, each shown a Meridian hotel at ¥800 and at ¥864 and asked whether they would book. Its report: **elasticity −0.9**. *"Demand is inelastic. Raise rates."*
+
+**Tasks**
+1. In the simulator of Part R1, where did the truth come from? Where does it come from here?
+2. Against Meeting 8's −1.56 and the break-even of −1.32, the two answers point in opposite directions. Which do you believe, and what evidence could settle it?
+3. Could the synthetic guests serve as a testbed for Meridian's estimators? Why or why not?
+
+### Part M9-R5. Reviews, read by a model
+
+Wen did not take the 8% rise on trust. In Q3 she tested it: at 40 hotels, a coin chose each hotel-week's midweek premium rate, the current one or 8% higher. Bookings are the main outcome. The guardrail is guest reviews: *stop the rise if complaints about price or value go up by more than 5 points.*
+
+**Bookings.** On higher-rate weeks, midweek premium bookings were **12.4% lower** (SE 1.2%).
+
+Nobody can read 10,000 reviews, so a language model labels each one: complains about price or value, yes or no. A random 200 reviews per arm were also labelled by trained staff (the gold labels).
+
+| | Higher rate | Current rate |
+|---|---:|---:|
+| Reviews | 5,000 | 5,000 |
+| Share the model labels "complaint" | 0.22 | 0.15 |
+
+In the gold subsample:
+
+| | Higher rate | Current rate |
+|---|---:|---:|
+| Gold complaints, model says yes | 34 | 26 |
+| Gold complaints, model says no | 2 | 2 |
+| Gold non-complaints, model says yes | 12 | 4 |
+| Gold non-complaints, model says no | 152 | 168 |
+
+**Tasks**
+1. Estimate the effect of the rise on complaints using the model's labels. Does it trip the guardrail?
+2. From the gold subsample: the true complaint rate in each arm, and the effect. For each arm, the share of complaints the model catches and the share of non-complaints it flags.
+3. Is the model's error the same in both arms? Read a few reviews from higher-rate nights in your head: why might it differ?
+4. Suppose the error had been the same in both arms, with the current-rate arm's two shares. What would the model-labelled effect have been, given the gold effect? In which direction does error of that kind push an estimate?
+5. Prediction-powered inference (PPI): for each arm, take the model's rate on all 5,000 reviews and correct it by the average of (gold − model) in that arm's subsample. Give the corrected rates and the effect. Its standard error is about 0.023; the gold labels alone give about 0.037. Why is PPI unbiased, even though the model's error differs between arms? Why is it more precise than the gold labels alone?
+6. Does the guardrail trip?
+7. Convert the bookings result into an elasticity, with a 95% interval. Compare it with Meeting 8's −1.56 and the break-even of −1.32.
+
+### Part M9-R6. Text as controls
+
+Back to Meeting 8's elasticity. Each hotel has a listing page, and each stay a review. The team turns text into **embeddings** and adds them as controls in the DML of Meeting 8.
+
+| Controls | Share of log-rate variance left after the controls | Elasticity (SE) |
+|---|---:|---:|
+| 47 signals | 9% | −1.56 (0.03) |
+| + embeddings of the listing pages, as of each night | 6% | −1.58 (0.04) |
+| + embeddings of that night's guest reviews | 1% | −0.97 (0.09) |
+
+**Tasks**
+1. Which text is a legitimate control and which is not? Draw where each sits relative to the rate and bookings.
+2. Why does the standard error grow as the share of variance left falls? By roughly what factor from 9% to 1%?
+3. Why does the last estimate move toward zero?
+
+### Part M9-R7. The memo
+
+Write the memo to Wen, in five sentences or fewer:
+1. the 8% rise: what Meeting 8, the testbed and the Q3 test together say;
+2. the vendor's engine: adopt, reject, or pilot, and how;
+3. the synthetic-guest report;
+4. whether the review guardrail tripped, and the number;
+5. the assumption that could still overturn your advice.
+
+---
+
+## Bonus (not examined): the member-rate coin
+
+These parts were Meeting 9's case when it taught instrumental variables. The experimental core of IV (noncompliance, the ITT and the LATE) now closes Meeting 2; Handout H1 goes further. They use the same hotels, and Part M9-R3's backtest refers to Part B1's test.
+
+### Part B1. The member-rate test
 
 Meeting 8's estimate rests on an assumption the logs cannot check: nothing unrecorded moved both rates and bookings. The overrides break it.
 
@@ -106,7 +231,7 @@ On Wen's desk: make the member rate permanent, portfolio-wide.
 1. An 8% member rate changes contribution per occupied room from ¥600 to what? By what percentage must bookings rise for the cut to pay? Express the break-even as an elasticity.
 2. What did the coin make random, and what did it not?
 
-### Part M9-R2. The test log
+### Part B2. The test log
 
 One thousand premium hotel-nights from hotels where the coin was 50/50. Member bookings per night:
 
@@ -138,7 +263,7 @@ Then:
 7. Complier nights book 60 without the member rate. Convert your number into an elasticity. Does it clear the break-even?
 8. Match each of the four description sentences to the assumption it supports.
 
-### Part M9-R3. Two things nobody mentioned
+### Part B3. Two things nobody mentioned
 
 **Marketing's email.** Marketing confirms that on every heads night the engine also emailed *"Members' Week at Meridian"* to members who had searched that hotel, **whether or not the manager blocked the rate**.
 
@@ -165,25 +290,7 @@ The share of nights the member rate was shown is 0.70 on heads and 0.10 on tails
 5. Let $a$ be the email's direct effect on bookings per heads night, whatever its size. Write the complier elasticity as a function of $a$, using the hand log with the email (ITT 6.0). How large would $a$ have to be for the member rate to stop paying? Compare it with what the old-engine hotels measured.
 6. The permanent programme would keep sending the "Members' Week" email. Is the email's effect still a bias? Which number does Wen's decision need?
 
-### Part M9-R4. The full test
-
-The full test covers 80 hotels, 182 nights, **14,560 premium hotel-nights**. The coin probability was set by hotel × month.
-
-**Task 1. In pairs, predict three elasticities:**
-- the ratio pooled over all hotels, with no controls;
-- two-stage least squares (2SLS) with hotel × month strata;
-- 2SLS with strata and the 47 signals, corrected for the email using the old-engine hotels.
-
-Against the break-even, which ones roll out the member rate? Commit.
-
-**The city hotels.** In the 12 city-centre hotels, managers overrode the coin almost always. The member rate was shown on 15% of heads nights and 10% of tails nights, with 200 nights per arm. The standard error of the heads-minus-tails booking difference is about 2.0.
-
-**Task 2**
-1. Compute the city hotels' first stage, its standard error and $F = (\text{first stage}/\text{SE})^2$. Do the same for the hand log of Part R2.
-2. Approximate the SE of the city hotels' ratio. How large would the email's bias be there?
-3. Write the rule you would commit to *before* seeing any ratio.
-
-### Part M9-R5. Candidate-instrument audit
+### Part B4. Candidate-instrument audit
 
 Analysts across the group propose other instruments for the rate. **In pairs:** mark each assumption ✓, ✗ or ?, with one reason.
 
@@ -196,12 +303,3 @@ Analysts across the group propose other instruments for the rate. **In pairs:** 
 | The member-rate coin | | | | |
 
 Then answer: which assumption do most candidates fail, and why can the data not settle it?
-
-### Part M9-R6. The memo
-
-Write the memo to Wen, in five sentences or fewer:
-1. what to do, and on which nights;
-2. the number and its interval;
-3. whose elasticity it is;
-4. the assumption that could overturn it;
-5. what the next test should change.

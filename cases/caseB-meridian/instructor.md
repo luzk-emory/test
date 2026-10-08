@@ -1,30 +1,30 @@
-# Case B: Wen's Rate Decisions — Instructor Version
+# Case B: Wen's Rate Decisions: Instructor Version
 
-**Meetings 8–9. Instructor only: contains every answer and all future releases.**
+**Meetings 8–9. Instructor only: contains every answer and all future releases.** Meeting 9 was rewritten on 8 October for the generative-AI meeting; its old IV parts are kept at the end as a bonus (Parts B1–B4).
 
 ## 1. What the case does
 
-Two meetings, one question: *what happens to bookings if Meridian changes its rate?*
+Two meetings, one question: *what happens to bookings if Meridian changes its rate, and how should it set rates?*
 
 - **M8** answers it from the RM system's logs (adjustment and DML) and ends on the assumption the logs cannot check: unlogged overrides.
-- **M9** answers it from a coin the booking engine flipped (IV). The M8 breakdown is the motivation for M9; do not let the two meetings read as separate cases.
+- **M9** keeps the question and brings in generative AI in both of its roles. A simulator learned from the M8 logs tests the M8 estimator against the override problem, and tests whole pricing pipelines (block A). A language model reads guest reviews for a randomised rate test's guardrail, and text becomes DML controls (block B). The M8 breakdown is the motivation for M9; do not let the two meetings read as separate cases.
 
 Each meeting follows the course spine (`course-spine.md`): estimand → identification → estimation.
 
 | Meeting | Estimand (vs break-even) | Assignment mechanism → identification | Estimation and uncertainty | Destination |
 |---|---|---|---|---|
 | M8 | average price elasticity of premium bookings: local and variance-weighted (vs −1.32) | the RM system's rule; unconfoundedness given the signals **measured as of pricing time**; overlap = off-rule variation | partially linear model; DML with cross-fitting (folds by night); date-clustered SE; partial-$R^2$ sensitivity | −1.56 [−1.64, −1.51]: **do not raise** |
-| M9 | ITT of the member-rate offer; LATE on complier nights (vs −1.35) | the coin within hotel × month; exclusion, monotonicity, relevance (compliance types) | Wald ratio, 2SLS with strata; F-guard; direct-effect sensitivity | −1.55 (0.08): **roll out on complier nights** |
+| M9 | the elasticity again (vs −1.32); regret of a pricing pipeline against an oracle; the rise's effect on value complaints (guardrail: 5 points) | a simulator's effects are g-formula effects: the M8 assumption, with the truth planted; the Q3 test is randomised | estimator and pipeline testbeds on two simulators; backtest; PPI with a gold subsample; text embeddings as controls | Q3 test −1.72 [−2.07, −1.38]: **do not raise**; pilot DML pricing inside the logged range with a holdout; guardrail 0.03 (SE 0.023): not tripped, not cleared |
 
-All numbers match `meetings/m08` and `m09`. **(sim)** marks simulation outputs still `\NUM`-flagged or figure-based in the decks.
+M8 numbers match `meetings/m08`. M9 numbers are the case's own (the M9 notes use a food-delivery example) and are checked by `shared/checks/case_check.py`. **(sim)** marks simulation outputs still `\NUM`-flagged or figure-based in the decks.
 
-**AI thread: AI as the decision-maker.** The RM system is an automated pricer, and its decisions are the confounder. This is M7's lesson with a continuous treatment: *the rule that set the treatment is what you must adjust for, and it must enter as flexibly as it was written.* In M9 the booking engine's coin is the only part of the system nobody could steer.
+**AI thread.** In M8, AI as the decision-maker: the RM system is an automated pricer, and its decisions are the confounder. This is M7's lesson with a continuous treatment: *the rule that set the treatment is what you must adjust for, and it must enter as flexibly as it was written.* In M9, generative AI as a simulator (block A) and as a source of data (block B), with the vendor's engine as a candidate decision-maker.
 
-**Removed from class time:** the fish-market log-price IV and regression discontinuity (sharp and fuzzy) are in the M9 notes only. Exam II has no RD items. This case contains neither.
+**Not in class time:** regression discontinuity (Handout H2, with M8) and instrumental variables beyond M2 (Handout H1). The bonus Parts B1–B4 are for students who want the IV version of Wen's question.
 
 ## 2. Release schedule
 
-M8 has no critique case and no slack. If the meeting runs long, cut the elasticity discussion first and the partial-$R^2$ sensitivity second. In M9, critique C5 takes about minutes 0–15.
+M8 has no slack. If the meeting runs long, cut the elasticity discussion first and the partial-$R^2$ sensitivity second. M9's times are provisional until the M9 deck is written.
 
 | Part | Meeting, block | About | Hand out at | Hold back until the attempt |
 |---|---|---|---|---|
@@ -33,12 +33,14 @@ M8 has no critique case and no slack. If the meeting runs long, cut the elastici
 | M8-R3 | M8 A/B | 45–65 | **at "Predict Before You Look"** (before the deck's R3 marker) | "The Ladder"; Attempts 1–3 |
 | (R4) | M8 B | ~95 | `[RELEASE R4]` Wen's table | a reveal; no handout |
 | M8-R5 | M8 B | 100–110 | `[RELEASE R5]` | "How Strong Would It Have To Be?" |
-| M9-R1 | M9 A | 15–20 | `[RELEASE R1]` | "The Number That Decides It" |
-| M9-R2 | M9 A | 20–50 | `[RELEASE R2]` | "As Shown, Then As Assigned"; "Four Kinds of Night"; "What the Ratio Estimates" |
-| M9-R3 | M9 B | 60–75 | `[RELEASE R3]` | "A Placebo for Exclusion"; "Controls for Independence" |
-| M9-R4 | M9 B | 80–95 | `[RELEASE R4]`; the city-hotel paragraph at "Weak Instruments" | "The Ladder"; the weak-instrument table |
-| M9-R5 | M9 B | 95–103 | `[RELEASE R5]` | "The Audit, Answered" |
-| M9-R6 | M9 B | 103–110 | "Wen's Table" | "The Recommendation" |
+| M9-R1 | M9 A | 0–10 | `[RELEASE R1]` | the frame that names the simulator's assumption |
+| M9-R2 | M9 A | 10–25 | `[RELEASE R2]` | bias and coverage frames |
+| M9-R3 | M9 A | 25–45 | `[RELEASE R3]` | regret table reveal; home advantage; support |
+| M9-R4 | M9 A | 45–50 | `[RELEASE R4]` | "Planted vs asserted truth" |
+| M9-R5 | M9 B | 60–85 | `[RELEASE R5]` | error-by-arm and PPI frames |
+| M9-R6 | M9 B | 85–100 | `[RELEASE R6]` | leakage and overlap frames |
+| M9-R7 | M9 B | 100–110 | "Wen's Table" | the recommendation (the memo can finish at home) |
+| B1–B4 | take-home | | with the notes | the bonus key below |
 
 Controlled projection copy for M8 is still required: do not project residual vectors before R2's attempt. **The simulation's true elasticities are never shown in lecture**; they appear only in the M8 and M9 workshop comparisons.
 
@@ -84,10 +86,60 @@ Controlled projection copy for M8 is still required: do not project residual vec
    The recommendation survives **conditionally**. Sensitivity prices the doubt; it does not remove it. Bridge line: *"Next time: rates the hotel did not choose."*
 
 ### M9-R1
+1. **Unconfoundedness given the signals**, with positivity and consistency: the M7 and M8 assumption. The simulator learned $\E[Y \mid D, X]$ and the distribution of $X$ from the logs; sampling from it at a new rate is the g-formula. Its "bookings at another rate" are causal only if the logs' rates were as good as random given the 47 signals. The overrides are exactly where that fails.
+2. **From the data:** the signals' joint distribution, the shape of demand across nights, the noise. **From the analyst:** the elasticity −1.50, the override effect (+12% demand, +10% rate) and its 8% share.
+3. **No.** A simulator learned from confounded logs inherits their confounding, and the truth inside it is planted by the team. It can test whether an estimator recovers a truth on data shaped like Meridian's. It cannot reveal Meridian's truth.
+
+### M9-R2
+1. Bias (mean − (−1.50)): **+1.92, +0.32, +0.01, +0.09, +0.13**.
+2. DML with boosted trees: unbiased with near-nominal coverage (0.94) on this data shape. The RM rule is a step function of bucketed signals with interactions. Lasso fits it with smooth linear terms, so part of the rule stays in the residuals (regularisation bias), and coverage falls to 0.71.
+3. If the real overrides act like the planted ones, DML is about 0.13 too close to zero, so the truth is near $-1.56 - 0.13 = $ **−1.69**. That is further from −1.32, so the decision **does not change: do not raise**.
+4. Whether the real overrides look like the planted ones. Their size and correlation with demand were **chosen**; the logs cannot reveal them. Turn the dial (A4 does) and report the decision across settings: that is a sensitivity analysis, not a measurement.
+
+### M9-R3
+1. Boosted simulator: vendor 380 < DML 690 < RM 1,450. Neural: DML 760 < RM 1,520 < vendor 2,240. Worst-case regret: RM 1,520, vendor 2,240, **DML 760, the smallest**.
+2. **Home advantage.** The vendor's demand model and the boosted simulator are the same model class fitted to the same logs, so the vendor's errors are the simulator's errors. The neural simulator does not share them. A pipeline should be ranked across simulators of different classes, never on its own class alone.
+3. Neither simulator has data above ¥1,920; both extrapolate the shapes they learned. On 14% of the vendor's nights the regret measures one model against another, not against reality. Treat those nights as untested, or cap rates at the logged range.
+4. **The optimiser's curse.** Choosing, every night, the rate with the highest *predicted* contribution selects the rates where the prediction is most optimistic. This is the winner's curse of M4, and it is why the realised loss exceeds the model's average error. Errors compound: the prediction error becomes a pricing error.
+5. Near current rates both simulators pass: $4.6$ is 0.2 from 4.8 and $3.4$ is 1.4 from it, about one SE. The backtest is weak evidence (it rejects neither) and says nothing above ¥1,920, where the two pipelines differ most. A backtest earns trust only in the region it covers.
+6. **DML elasticity, then optimise**: the smallest worst-case regret, and it stays inside the logged range. Run it with a **holdout**: a random 10% of hotel-nights stay on the current rule (or alternate by night, a switchback), so realised contribution can be compared. Pilot the vendor's engine the same way, only with rates capped at the logged range.
+
+### M9-R4
+1. In R1 the analyst planted the truth on top of what was learned from Meridian's own logs, so an estimator can be checked against it. Here the truth is **asserted**: it is whatever the language model's priors say about guests in general. Nobody planted it, and nothing ties it to Meridian's guests.
+2. Believe the evidence with a design: M8 (−1.56, conditional on its assumption), the testbed (direction of the override bias), and above all a randomised test. The Q3 test (R5) settles it: −1.72. The synthetic number is a hypothesis, not evidence.
+3. **No.** A testbed needs a known truth on the business's data shape; the synthetic guests' truth is unknown. (CEVAE sits on the same side: its identification rests on structure it does not state.)
+
+### M9-R5
+1. Model labels: $0.22 - 0.15 = $ **0.07**, which trips the 5-point guardrail.
+2. Gold rates: higher $36/200 = 0.18$, current $28/200 = 0.14$, effect **0.04**. Higher arm: catches $34/36 = 0.944$, flags $12/164 = 0.073$. Current arm: catches $26/28 = 0.929$, flags $4/172 = 0.023$.
+3. **Differential error.** On higher-rate nights more reviews mention the price without complaining (*"worth it even at this price"*), and the model flags them, so the false-positive share is three times higher. The treatment changed the text, and with it the model's error.
+4. Non-differential error with the current arm's shares scales the effect by $26/28 - 4/172 = 0.905$: $0.905 \times 0.04 = $ **0.036**, attenuated toward zero. The actual 0.07 is **inflated**: differential error manufactured about 0.03 of the effect.
+5. PPI. Higher: model rate in the subsample $46/200 = 0.23$, correction $0.18 - 0.23 = -0.05$, corrected **0.17**. Current: $30/200 = 0.15$, correction $-0.01$, corrected **0.14**. Effect **0.03**.
+   - **Unbiased:** each arm's correction is estimated from a random subsample *of that arm*, so the corrected rate is unbiased whatever the error looks like, provided the gold labels are right.
+   - **More precise:** the 5,000 model labels carry the level; gold labels only estimate a small correction, whose variance (about 0.07 and 0.03 per review) is far below the outcome's (about 0.15 and 0.12).
+   - SEs: $\sqrt{0.22 \cdot 0.78/5000 + 0.0675/200} = 0.019$ and $\sqrt{0.15 \cdot 0.85/5000 + 0.0299/200} = 0.013$, so 0.023 for the effect; gold alone $\sqrt{0.18 \cdot 0.82/200 + 0.14 \cdot 0.86/200} = 0.037$. (The gold reviews are a subsample of the 5,000, so this SE is a slight approximation; the notes say how.)
+6. Corrected 0.03, 95% CI $[-0.015, 0.075]$. Below the guardrail at the point estimate, but the interval includes 5 points: **not tripped, not cleared**. A larger gold sample would settle it; here the bookings result makes it moot.
+7. $\ln(1 - 0.124)/\ln 1.08 = $ **−1.72**; interval from $-12.4\% \pm 1.96 \times 1.2\%$: **[−2.07, −1.38]**. That is consistent with M8 (−1.56) and the testbed (about −1.69), and it excludes the break-even of −1.32, narrowly. **Do not raise.**
+
+### M9-R6
+1. Listing pages **as of each night** are pre-treatment: written before the rate, they proxy for quality, a confounder. Legitimate. That night's **reviews** are written after the stay: caused by the rate (value perceptions) and by bookings (crowding). They are post-treatment, and they encode the outcome. **Leakage**; never a control.
+2. DML uses only the variation in the rate left after the controls, so its SE scales roughly as $1/\sqrt{\text{share left}}$: from 9% to 1% is a factor of $\sqrt{9} = 3$ (0.03 → 0.09); from 9% to 6%, $\sqrt{1.5} = 1.22$ (0.04). **Overlap collapse**: almost no rate variation remains that the text cannot predict.
+3. The reviews carry part of the effect and the outcome itself. Controlling for them absorbs the effect (as a mediator would) and opens collider paths, which pulls the estimate toward zero: −0.97.
+
+### M9-R7 (model memo)
+> Do not raise midweek premium rates by 8%. The Q3 test puts the elasticity at −1.72 (95% CI −2.07 to −1.38), past the break-even of −1.32, and it agrees with Meeting 8's −1.56 once the override bias the testbed found is allowed for. Pilot DML-based pricing, with rates capped at the logged range and 10% of hotel-nights held out on the current rule. Pilot the vendor's engine only on the same terms: it won only on a simulator built like itself. The synthetic-guest report is not evidence; its −0.9 is the model's prior, and the Q3 test contradicts it. On reviews, the model's labels said complaints rose 7 points, but the gold-corrected rise is 3 points, with an interval up to 7.5, so the guardrail neither tripped nor cleared. The advice rests on Q3 at 40 hotels carrying over to all 80.
+
+Grade on the same five dimensions as Case A.
+
+## Bonus key (Parts B1–B4)
+
+These are the keys of the former Meeting 9 (instrumental variables), unchanged except for the part numbers. The full-test ladder and the city hotels (former R4) and the IV memo (former R6) were dropped.
+
+### B1
 1. Contribution goes from 600 to 536. Bookings must rise more than $600/536 - 1 = $ **11.9%**. $\eta^* = \ln(600/536)/\ln(0.92) = $ **−1.35**. M8's DML said −1.56, but only if the overrides did no harm.
 2. The coin randomises **what members were offered**. It does not randomise **what they were shown**, because managers could block or add.
 
-### M9-R2
+### B2
 1. As shown: $(350 \cdot 64 + 50 \cdot 40)/400 = 61.0$ vs $(150 \cdot 90 + 450 \cdot 70)/600 = 75.0$, a difference of **−14.0**.
 2. As assigned: heads 71.8, tails 67.0, **ITT = +4.8**.
 3. First stage: $0.70 - 0.10 = $ **0.60**.
@@ -109,7 +161,7 @@ Controlled projection copy for M8 is still required: do not project residual vec
 
    Randomisation buys only the first. Hold onto the second.
 
-### M9-R3
+### B3
 1. ITT becomes 6.0, the ratio 10.0 and the elasticity $\ln(70/60)/\ln(0.92) = $ **−1.85**. Bias $= 1.2/0.60 = 2.0$ bookings: **the ratio divides the violation by the first stage.** Nothing in the test log shows it.
 2. The old-engine hotels' first stage is zero by construction, so their heads–tails gap of 1.2 is the email alone. Corrected ratio $(6.0 - 1.2)/0.60 = $ **8.0**.
    - The correction assumes the email works the same everywhere: a patch, not a proof.
@@ -130,35 +182,7 @@ Controlled projection copy for M8 is still required: do not project residual vec
    The old-engine placebo measured 1.2, only about 0.5 bookings from the point where the cut stops paying. The data cannot say which column is true; the table prices the doubt.
 6. **If the email continues, it is part of the policy, not a bias.** Exclusion matters only for attributing effects to the *rate*. Wen then needs the effect of the programme as it will run, which is the ITT side (ITT 6.0 bookings per heads night, with managers' overrides included), converted to contribution. The email-corrected elasticity answers a different question: the member rate *without* the email. Make students say which programme they are pricing.
 
-### M9-R4
-Ladder (sim):
-
-| Comparison | Elasticity (SE) |
-|---|---|
-| shown vs not shown | +0.35 |
-| pooled Wald ratio | −3.10 |
-| 2SLS, hotel × month | −1.86 (0.15) |
-| 2SLS + 47 signals | −1.84 (0.08) |
-| **email-corrected** | **−1.55 (0.08)** |
-
-The signals halved the SE but barely moved the estimate. The email correction moved it more than any control, because it is the only step that addresses an assumption.
-
-City hotels:
-
-| | Hand log | City hotels |
-|---|---|---|
-| First stage | 0.60 | 0.05 |
-| SE of first stage | $\sqrt{(0.21 + 0.09)/500} = 0.024$ | $\sqrt{(0.1275 + 0.09)/200} = 0.033$ |
-| $F$ | **600** | **2.3** |
-| SE of ratio | 2.1 | $2.0/0.05 = $ **40** |
-| Email bias | 2.0 | $1.2/0.05 = $ **24** |
-
-- *Weak and slightly invalid is the worst combination.*
-- The guard, written down in advance: report the first stage and $F$, clustered as the estimate will be. If $F < 10$, report the ITT and the first stage only. If $F$ is just above 10, use a weak-IV-robust interval (Anderson–Rubin, notes).
-- $F > 10$ is a floor, not a certificate: a standard 5% t-test needs $F$ near 105 for correct size (Lee et al. 2022). Our 600 and 410 clear either bar.
-- Full test $F$ = 410 (sim). The M9 workshop's perturbation shows the ratio drifting toward the "as shown" answer and coverage collapsing as the first stage falls.
-
-### M9-R5
+### B4
 
 | Candidate | Relevance | Independence | Exclusion | Monotonicity |
 |---|---|---|---|---|
@@ -170,13 +194,6 @@ City hotels:
 
 Most fail on **exclusion**, which the data cannot test in general. The coin passes because someone designed it, and even it failed once.
 
-### M9-R6 (model memo)
-> Switch the member rate on for nights managers now leave to the system and that are not forecast to sell out. The full test puts their elasticity at −1.55 ± 0.16, past the break-even of −1.35, worth about +1.7% of contribution. This is the complier nights' elasticity. It says nothing about peak nights, where a cut cannot sell rooms that do not exist. It rests on a correction that assumes the email works the same everywhere. Rerun with the email on both arms, and test the city hotels with a coin managers cannot override.
-
-- Arithmetic: at −1.50, bookings $\times 1.133$ and contribution $536 \times 1.133/600 - 1 = +1.2\%$. At −1.55: +1.7%. Marketing's email-inflated −1.85 gives +4.2%: that is the number marketing will quote.
-- **L8's DML and today's LATE average over different nights.** DML covers nights where the system left room to vary; the LATE covers compliers. A disagreement is not by itself a contradiction.
-
-Grade memos on the same five dimensions as Case A. A memo that recommends the portfolio-wide rollout loses the "population" mark.
 
 ## 4. Deck issues found while aligning the case
 
@@ -184,5 +201,5 @@ The complete accepted change list, including the Codex-review corrections, is in
 
 1. **M8 release order.** The deck marker `[RELEASE R3]` sits after "Predict Before You Look" and "The Ladder", which already refer to 80 hotels and 47 signals. Move the marker before "Predict Before You Look" or hand R3 out there (as scheduled above).
 2. **M8 outputs are figures.** "The Exhibit" and "Wen's Table" are figures (`fig-exhibit.pdf`, `fig-decision.pdf`). Their numbers are not in the slide text, so check them against the key above when the figures are regenerated.
-3. **Simulation numbers.** M9's ladder, $F$ = 410 and the corrected estimate are `\NUM`-flagged.
+3. **The M9 deck is replaced.** The old IV deck's frames (Wald ratio, ladder, $F = 410$) survive only in git history (commit `5522695`) and in the bonus parts. The new deck follows the M9 notes' order with this case's numbers.
 4. **Case framing to add to the slides.** State on the M8 opening frame that the RM system is an automated decision-maker (the AI-as-decision-maker thread).
