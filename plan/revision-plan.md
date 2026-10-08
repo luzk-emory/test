@@ -100,7 +100,7 @@ The full calendar is in the spreadsheet.
 | Notation sheet, style, build and check scripts | Done |
 | Schedule, labs, assignments, deadlines, bonus reading | Planned in `schedule.xlsx`; judgement calls below still open |
 | Lecture slides | **M1 rebuilt, under review; it sets the pattern for the rest.** M2–M11 hold v2 content, built for the old calendar |
-| Syllabus | Out of date (24 Sep draft: Exam I at M6, Monday meetings) |
+| Syllabus | Draft 3 (8 Oct), generated from `schedule.xlsx`; undecided items marked `\tbd` |
 | Lab notebooks 0–10 | Not built |
 | Assignments A1–A4, autograder, locked RCT set | Not built |
 | Case critiques A–C | Drafts, developed separately; not in the schedule |
@@ -169,3 +169,10 @@ The full calendar is in the spreadsheet.
    - Alternative: make A4 a DiD evaluation and fold the simulator into Lab 8.
 6. Final-project appendices: an LLM review of the draft plus responses, and a planted-effect validation of the design.
 7. Exam weights: Exam II covers more lectures than Exam I; consider weighting it more.
+8. A3 is due Sunday of Week 5, the weekend before Exam II (Thursday of Week 6). That breaks the rule "nothing due
+   ... the weekend before an exam" if the rule counts the whole preceding weekend. Options: keep it (read the rule as
+   the weekend right before a Monday or Tuesday exam), or move A3 to Friday of Week 5.
+9. Reading-and-critique exercises: the brief and draft 2 of the syllabus have them, but `schedule.xlsx` does not say
+   which meetings. Blocks A of M5 and M11 are exams, so draft 2's list (M2, M3, M5, M7, M9, M11) no longer fits.
+10. Lecture case for M9: Case B (Meridian Hotels) teaches IV in its M9 part, and Case C's M11 part is mostly staggered
+    DiD. Both parts need rewriting, and the M9 case needs choosing (the hotel group fits A4's hotel simulators).

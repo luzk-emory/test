@@ -17,7 +17,7 @@ shared/                 coursenotes.sty (master copy), notation.tex, build.sh, b
 pdf/                    combined notes, combined answer keys, notation sheet (generated; not tracked by git)
 plan/                   revision-plan.md (the brief for the whole revision), schedule.xlsx,
                         design-plan.md (the v4 notes design and decisions), CHANGELOG.md
-syllabus/               syllabus.tex (needs updating, see below)
+syllabus/               syllabus.tex (draft 3, generated from plan/schedule.xlsx)
 cases/                  case studies A to C, student and instructor versions (drafts)
 reviews/                pass-1 review report (2026-10-07)
 ```
@@ -30,7 +30,7 @@ reviews/                pass-1 review report (2026-10-07)
 | Handouts H1–H6 | v4.1 | Current, same review state as the notes |
 | Lecture slides | M1 rebuilt (lecture case kept); M2–M11 v2 content | M1 aligned with the v4 notes, under review. **M2–M11 not yet revised** |
 | Schedule, labs, assignments, deadlines | `plan/schedule.xlsx` | Current source of truth |
-| Syllabus | 24 Sep draft | **Out of date**: still has the older calendar (Exam I at M6, Monday meetings). Update from the spreadsheet |
+| Syllabus | Draft 3 (8 Oct) | Matches `schedule.xlsx`. Undecided items are marked `\tbd` (dates, weights, critique meetings, policies) |
 | Cases A–C | draft | Developed separately from the schedule |
 
 ## Course structure (from the spreadsheet)
@@ -106,7 +106,7 @@ After editing a number in the notes, update its check script, then rerun.
 ## Open items
 
 1. Revise slides to match the v4 notes and the current schedule.
-2. Update the syllabus from the spreadsheet.
+2. Syllabus: settle the items marked `\tbd` in `syllabus/syllabus.tex` (see `plan/revision-plan.md`, Section 7).
 3. Pass 2: independent check of every numbered Result. Pass 3: a student read, one meeting ahead.
 4. Seed the M8 simulation so its numbers are exactly reproducible (text uses $-0.575$; runs give $-0.574$ to $-0.578$).
 5. Confirm three citations:
