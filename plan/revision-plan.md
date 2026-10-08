@@ -118,8 +118,8 @@ The full calendar is in the spreadsheet.
      - M10: a warning slide on staggered timing;
      - M11: synthetic control only.
    - Keep one noncompliance slide in Experiments II, pointing to H1.
-   - Tested slides from the instructor's other course (the Starbucks causal module) are in the archive
-     (`old-decks/`), with a frame-by-frame map (`map.md`). Reuse them where a topic matches.
+   - Tested slides from the instructor's other course (the Starbucks causal module) are in `plan/old-decks/`, with a
+     frame-by-frame map (`plan/old-decks/map.md`). Reuse them where a topic matches. See Section 6.
 2. **Syllabus.** Regenerate from `schedule.xlsx`: calendar, assessment weights, AI policy per assignment, bonus reading.
 3. **Labs 0–10.** Data and tasks are specified in the spreadsheet's Labs tab. The heaviest preparation is Lab 8
    (cached LLM outputs, gold labels) and Lab 6 (agent harness).
@@ -135,7 +135,21 @@ The full calendar is in the spreadsheet.
    - Seed the M8 simulation.
    - Confirm three citations (listed in `README.md`).
 
-## 6. Open judgement calls (decide before building the affected pieces)
+## 6. Notes for the slide rebuild
+
+- **Carried frames are a starting point.** The v2 decks for M1 to M6 already hold 69 frames taken from the old decks,
+  each marked in the source with a comment such as `% [CARRIED VERBATIM from old-decks/lecture01.tex:121]`. Start from
+  these frames; do not copy them from `plan/old-decks/` a second time. Once a frame is reworked, delete its comment.
+- **M9 and M11 decks are replaced, not revised.** The current M9 deck teaches instrumental variables (hotel example) and
+  the current M11 deck is mostly staggered DiD. Both topics are now handouts (H1, H3). Write new decks to the M9 and
+  M11 notes. The old frames stay in git history (commit `5522695`, the v4.1 state), so no separate copy is needed.
+- **One business per meeting, as in the notes.** Coffee-chain examples remain in the M1, M3, M6 and M7 decks and hotel
+  examples in M7, M8 and M9. Move each to the business its meeting's notes use: FitLife for M1, M3, M7 and M10;
+  QuickBite for the rest.
+- **Source decks.** `plan/old-decks/lecture01.tex` to `lecture09.tex` are reference material only: do not build or
+  edit them.
+
+## 7. Open judgement calls (decide before building the affected pieces)
 
 1. Noncompliance: one slide in Experiments II; IV stays in bonus reading and H1.
 2. Staggered DiD: a warning slide in Panel II plus an optional extension in Lab 9.
