@@ -104,7 +104,7 @@ syllabus's weekly table follows it, with an "Out / due" column.
 | Handouts H1–H6 | **Done.** Renumbered in meeting order on 8 Oct (H1 interference, M2, to H6 staggered adoption, M10). H4 (IV) refocused on classical IV, with a new worked example, so it no longer repeats M2 Section 1.9 |
 | Notation sheet, style, build and check scripts | Done. `run_all.sh` runs the notes, handout, slide and case checks |
 | Schedule, labs, assignments, deadlines, bonus reading | Planned in `schedule.xlsx` (Release and Due columns since 8 Oct); judgement calls in Section 7 still open |
-| Lecture slides | **M1 (44 frames), M2 (37) and M3 (30) rebuilt on the coffee-chain case, under review**, checked by `slides01_check.py` to `slides03_check.py`. M4–M11 hold v2 content, built for the old calendar |
+| Lecture slides | **M1 to M6 rebuilt on the coffee-chain case, under review**: M1 44 frames, M2 37, M3 30, M4 33, M5 21 (one lecture block; block A is Exam I), M6 34. Each checked by `slidesNN_check.py`. M7–M11 hold v2 content, built for the old calendar |
 | Syllabus | Draft 3 (8 Oct), matches `schedule.xlsx`, handouts H1–H6 in meeting order, no critique exercises. Undecided items marked `\tbd` (dates, weights, policies) |
 | Lab notebooks 0–10 | Not built |
 | Assignments A1–A4, autograder, locked RCT set | Not built |
@@ -115,7 +115,7 @@ syllabus's weekly table follows it, with an "Out / due" column.
 
 ## 5. Work remaining, in suggested order
 
-1. **Slides, M4 to M11** (M1 to M3 are done and under review). Rebuild each deck to match its v4.1 notes and its
+1. **Slides, M7 to M11** (M1 to M6 are done and under review). Rebuild each deck to match its v4.1 notes and its
    schedule row, one deck at a time, stopping for the instructor's review after each. Lecture slides carry the
    intuition and the lecture's own running case; proofs stay in the notes. Slides and notes share the method, not the
    example (Section 6). M1 and M2 set the pattern: title, road map, block A, block boundary, block B, summary;
@@ -123,8 +123,9 @@ syllabus's weekly table follows it, with an "Out / due" column.
    - Exam meetings (M5, M11) have only block B of lecture.
    - M9 needs a new deck. New material for other decks:
      - M3: TARNet slide (done, on the coffee chain's 14 CRM fields; instructor to confirm the case);
-     - M5: isotonic calibration;
-     - M6: capacity and the critical fractile, fairness as a priced constraint, the predict-then-optimise spectrum;
+     - M5: isotonic calibration (done, on the coffee chain);
+     - M6: capacity and the critical fractile, fairness as a priced constraint, the predict-then-optimise spectrum (done, on
+       the Region 2 push: two stores for capacity, North and South districts for fairness);
      - M8: DML II with sensitivity bounds;
      - M10: a warning slide on staggered timing;
      - M11: synthetic control only.
@@ -161,10 +162,8 @@ syllabus's weekly table follows it, with an "Out / due" column.
   stay; the `% [RELEASE ...]` comments in the source are for the instructor and do not print. Short references to
   another meeting, where a topic continues, may stay in the text.
 
-- **Carried frames are a starting point.** The v2 decks for M4 to M6 still hold 38 frames taken from the old decks
-  (M1 to M3 have been reworked), each marked in the source with a comment such as
-  `% [CARRIED VERBATIM from old-decks/lecture03.tex:121]`. Start from these frames; do not copy them from
-  `plan/old-decks/` a second time. Once a frame is reworked, delete its comment.
+- **Carried frames.** The frames taken from the old decks into the v2 decks for M1 to M6 have all been reworked or
+  deleted in the rebuilds. For M7 to M11, reuse `plan/old-decks/` only where a topic matches, and rework what you take.
 - **M9 and M11 decks are replaced, not revised.** The current M9 deck teaches instrumental variables (hotel example) and
   the current M11 deck is mostly staggered DiD. Both topics are now handouts (H4, H6). Write new decks to the M9 and
   M11 notes. The old frames stay in git history (commit `5522695`, the v4.1 state), so no separate copy is needed.
@@ -182,7 +181,7 @@ syllabus's weekly table follows it, with an "Out / due" column.
 - **Source decks.** `plan/old-decks/lecture01.tex` to `lecture09.tex` are reference material only: do not build or
   edit them.
 - **No critique frames.** Reading-and-critique exercises are dropped for now. Delete the v2 critique frames when
-  rebuilding those decks: C1 and C2 are gone with the M2 and M3 rebuilds; C3 to C6 remain in the M5, M7, M9 and M11 decks, along
+  rebuilding those decks: C1 to C3 are gone with the M2, M3 and M5 rebuilds; C4 to C6 remain in the M7, M9 and M11 decks, along
   with their "Today's plan" rows.
 - **Block order follows the notes.** Where the v2 deck or the old schedule ordered topics differently, the notes win,
   and `schedule.xlsx` and the syllabus are updated to match (as in M2: transport ends block A, CUPED moves to block B).
