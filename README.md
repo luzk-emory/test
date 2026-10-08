@@ -5,6 +5,9 @@ documents that record the decisions. It is a git repository: each document has o
 git commits and tags, not in versioned copies (rules for AI assistants are in `AGENTS.md`). The pre-git material is in
 `../_archive-2026-10-07.zip`.
 
+**Start here:** `plan/revision-plan.md` is the brief for the fall 2026 revision: its purpose, how generative AI enters
+the course, the schedule, the status of each component and the work remaining, in order.
+
 ## Layout
 
 ```
@@ -12,7 +15,8 @@ meetings/m01 ... m11/   notes.tex (technical notes), slides.tex (lecture slides)
                         coursenotes.sty (a synced copy, so each folder compiles on its own), figure files
 shared/                 coursenotes.sty (master copy), notation.tex, build.sh, build_all.sh, checks/
 pdf/                    combined notes, combined answer keys, notation sheet (generated; not tracked by git)
-plan/                   schedule.xlsx, design-plan.md (the v4 design and decisions), CHANGELOG.md
+plan/                   revision-plan.md (the brief for the whole revision), schedule.xlsx,
+                        design-plan.md (the v4 notes design and decisions), CHANGELOG.md
 syllabus/               syllabus.tex (needs updating, see below)
 cases/                  case studies A to C, student and instructor versions (drafts)
 reviews/                pass-1 review report (2026-10-07)
