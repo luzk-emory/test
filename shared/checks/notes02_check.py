@@ -68,7 +68,11 @@ check("one-sided MDE 2.486 x 0.287 = 0.71", "0.71", 2.486 * 0.287)
 deff = 1 + 499 * 0.01
 check("zone DEFF = 5.99", "5.99", deff); check("20 zones x 500 = 10,000", "10000", 20 * 500)
 check("effective n ~1,670", "1670", 10000 / deff, tol=5)
-check("ITT/uptake 1.84/0.40 = 4.60", "4.60", 1.84 / 0.40)
+# Step 6: one-sided noncompliance, 15% of offered customers used the discount
+check("cost per offer 0.15 x 10 = 1.50", "1.50", 0.15 * 10)
+check("ratio 1.84/0.15 = 12.27", "12.27", 1.84 / 0.15)
+check("ratio minus cost per user 12.27 - 10", "2.27", 1.84 / 0.15 - 10)
+check("same test rescaled (1.84 - 1.50)/0.15", "2.27", (1.84 - 1.50) / 0.15)
 check("recommendation ~8,200 per arm is 8,175 rounded", "8200", round(n_text, -2))
 # exercise
 deff2 = 1 + 399 * 0.005
