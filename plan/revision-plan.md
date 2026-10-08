@@ -1,7 +1,8 @@
 # Course revision plan (fall 2026): where things stand and what comes next
 
-This is the brief for any new working session. It sits above `design-plan.md`, which covers only the v4 notes. Read it
-together with `README.md` (layout, build, checks) and `AGENTS.md` (working rules).
+This is the brief for any new working session. It sits above `design-plan.md`, which records the design of the v4
+notes and handouts. Read it together with `README.md` (layout, build, checks) and `AGENTS.md` (working rules).
+Status as of 8 October 2026.
 
 ## 1. Purpose of the revision
 
@@ -91,27 +92,34 @@ blocks A and B (50 minutes each) and lab C (60 minutes).
 - At most two graded deadlines in any 72 hours.
 - Nothing due on an exam day or the weekend before an exam.
 
-The full calendar is in the spreadsheet.
+The full calendar is in the spreadsheet. Its Schedule sheet lists, for each meeting, the lecture blocks, the lab,
+what is released (case parts, assignments, the lab's notebook), what is due, the bonus reading and the handout. The
+syllabus's weekly table follows it, with an "Out / due" column.
 
 ## 4. Status by component
 
 | Component | State |
 |---|---|
-| Technical notes M1–M11, handouts H1–H6 | **Done (v4.1).** Pass 1 review done |
-| Notation sheet, style, build and check scripts | Done |
-| Schedule, labs, assignments, deadlines, bonus reading | Planned in `schedule.xlsx`; judgement calls below still open |
-| Lecture slides | **M1 and M2 rebuilt, under review; M1 sets the pattern.** M3–M11 hold v2 content, built for the old calendar |
-| Syllabus | Draft 3 (8 Oct), generated from `schedule.xlsx`; undecided items marked `\tbd` |
+| Technical notes M1–M11 | **Done (v4.1, commit `5522695`).** Pass 1 review done. Since then (8 Oct): M2 gains Section 1.9, noncompliance (Assumptions 1.11–1.12, Results 1.13–1.16), and its Step 6 now uses 15% redemption |
+| Handouts H1–H6 | **Done.** Renumbered in meeting order on 8 Oct (H1 interference, M2, to H6 staggered adoption, M10). H4 (IV) refocused on classical IV, with a new worked example, so it no longer repeats M2 Section 1.9 |
+| Notation sheet, style, build and check scripts | Done. `run_all.sh` runs the notes, handout, slide and case checks |
+| Schedule, labs, assignments, deadlines, bonus reading | Planned in `schedule.xlsx` (Release and Due columns since 8 Oct); judgement calls in Section 7 still open |
+| Lecture slides | **M1 (44 frames) and M2 (36 frames) rebuilt on the coffee-chain case, under review**, checked by `slides01_check.py` and `slides02_check.py`. M3–M11 hold v2 content, built for the old calendar |
+| Syllabus | Draft 3 (8 Oct), matches `schedule.xlsx`, handouts H1–H6 in meeting order, no critique exercises. Undecided items marked `\tbd` (dates, weights, policies) |
 | Lab notebooks 0–10 | Not built |
 | Assignments A1–A4, autograder, locked RCT set | Not built |
-| Lecture cases A–C | Drafts. Case B's M9 part (generative AI) and Case C's M11 part (synthetic control) rewritten 8 Oct; their old IV and staggered-DiD parts kept at the end as bonus |
-| Reading-and-critique exercises | Dropped for now (instructor, 8 Oct); may return later |
+| Lecture cases A–C | Drafts. Rewritten 8 Oct: Case A Part M2-R6 (noncompliance), Case B's M9 part (generative AI), Case C's M11 part (synthetic control); their old IV and staggered-DiD parts kept at the end as bonus. Checked by `case_check.py`. Other parts' release times to be retimed with each deck |
+| Reading-and-critique exercises | Dropped for now (instructor, 8 Oct); may return later. Frames C2–C6 remain in the v2 decks for M3, M5, M7, M9 and M11 |
+| Releases and tags | Pull request luzk-emory/test#3 merged into `main` (up to the H4 refocus). The renumbering, the schedule columns and this update are on `claude/slides-rebuild`, not yet merged. No git tags yet; `v4.1` (commit `5522695`) is to be tagged when the instructor asks |
+| `plan/old-decks/map.md` | Missing: the old decks are in `main`, but the frame-by-frame map was not committed |
 
 ## 5. Work remaining, in suggested order
 
-1. **Slides, all 11 meetings.** Rebuild each deck to match its v4.1 notes and its schedule row. Lecture slides carry
-   the intuition and the lecture's own running case; proofs stay in the notes. Slides and notes share the method, not
-   the example (Section 6).
+1. **Slides, M3 to M11** (M1 and M2 are done and under review). Rebuild each deck to match its v4.1 notes and its
+   schedule row, one deck at a time, stopping for the instructor's review after each. Lecture slides carry the
+   intuition and the lecture's own running case; proofs stay in the notes. Slides and notes share the method, not the
+   example (Section 6). M1 and M2 set the pattern: title, block A, block boundary, block B, summary; Results with the
+   notes' numbers and titles in the notes' order; a `slidesNN_check.py` for every number.
    - Exam meetings (M5, M11) have only block B of lecture.
    - M9 needs a new deck. New material for other decks:
      - M3: TARNet slide;
@@ -120,11 +128,12 @@ The full calendar is in the spreadsheet.
      - M8: DML II with sensitivity bounds;
      - M10: a warning slide on staggered timing;
      - M11: synthetic control only.
-   - Close Experiments II (M2) with noncompliance in an RCT (ITT, compliance types, the LATE), on the coffee-chain case
-     (Case A, Part M2-R6) and matching M2 notes Section 1.9. Classical IV stays in Handout H4 (M7, bonus).
-   - Tested slides from the instructor's other course (the Starbucks causal module) are in `plan/old-decks/`, with a
-     frame-by-frame map (`plan/old-decks/map.md`). Reuse them where a topic matches. See Section 6.
-2. **Syllabus.** Regenerate from `schedule.xlsx`: calendar, assessment weights, AI policy per assignment, bonus reading.
+   - Done on 8 Oct: M2 closes with noncompliance in an RCT (ITT, compliance types, the LATE), on Case A Part M2-R6,
+     matching M2 notes Section 1.9. Classical IV stays in Handout H4 (M7, bonus).
+   - Tested slides from the instructor's other course (the Starbucks causal module) are in `plan/old-decks/`. Reuse them
+     where a topic matches (Section 6). The frame-by-frame map (`plan/old-decks/map.md`) still needs to be committed.
+2. **Syllabus.** Draft 3 matches `schedule.xlsx`. Remaining: settle the items marked `\tbd` (dates, weights, policies;
+   see the open calls in Section 7) and keep it in step with the spreadsheet when either changes.
 3. **Labs 0–10.** Data and tasks are specified in the spreadsheet's Labs tab. The heaviest preparation is Lab 8
    (cached LLM outputs, gold labels) and Lab 6 (agent harness).
 4. **Assignments.**
@@ -138,14 +147,16 @@ The full calendar is in the spreadsheet.
    - A pricing handout, "From elasticity to price": pricing from θ̂(x), coupon menus, capacity. Source is old deck L9.
      Handouts are numbered in meeting order (H1 with M2 to H6 with M10), so if it is written, it takes its meeting's
      place and the later handouts renumber.
+   - Tag releases when the instructor asks (for example `v4.1` at commit `5522695`).
    - Seed the M8 simulation.
    - Confirm three citations (listed in `README.md`).
 
 ## 6. Notes for the slide rebuild
 
-- **Carried frames are a starting point.** The v2 decks for M1 to M6 already hold 69 frames taken from the old decks,
-  each marked in the source with a comment such as `% [CARRIED VERBATIM from old-decks/lecture01.tex:121]`. Start from
-  these frames; do not copy them from `plan/old-decks/` a second time. Once a frame is reworked, delete its comment.
+- **Carried frames are a starting point.** The v2 decks for M3 to M6 still hold 50 frames taken from the old decks
+  (M1 and M2 have been reworked), each marked in the source with a comment such as
+  `% [CARRIED VERBATIM from old-decks/lecture03.tex:121]`. Start from these frames; do not copy them from
+  `plan/old-decks/` a second time. Once a frame is reworked, delete its comment.
 - **M9 and M11 decks are replaced, not revised.** The current M9 deck teaches instrumental variables (hotel example) and
   the current M11 deck is mostly staggered DiD. Both topics are now handouts (H4, H6). Write new decks to the M9 and
   M11 notes. The old frames stay in git history (commit `5522695`, the v4.1 state), so no separate copy is needed.
@@ -162,15 +173,27 @@ The full calendar is in the spreadsheet.
     carries it, consistent with the case that meeting's existing slides use, and get the instructor's agreement.
 - **Source decks.** `plan/old-decks/lecture01.tex` to `lecture09.tex` are reference material only: do not build or
   edit them.
-- **No critique frames.** Reading-and-critique exercises are dropped for now. Delete the v2 critique frames (C1 to C6,
-  in the M2, M3, M5, M7, M9 and M11 decks) when rebuilding those decks.
+- **No critique frames.** Reading-and-critique exercises are dropped for now. Delete the v2 critique frames when
+  rebuilding those decks: C1 is gone with the M2 rebuild; C2 to C6 remain in the M3, M5, M7, M9 and M11 decks, along
+  with their "Today's plan" rows.
+- **Block order follows the notes.** Where the v2 deck or the old schedule ordered topics differently, the notes win,
+  and `schedule.xlsx` and the syllabus are updated to match (as in M2: transport ends block A, CUPED moves to block B).
+- **Checks and release tables.** Each rebuilt deck gets `shared/checks/slidesNN_check.py`, run by `run_all.sh`, and
+  the lecture case's release table is updated to the new frames.
 
 ## 7. Judgement calls
 
-Decided on 8 October: noncompliance in an RCT (ITT, compliance types, the LATE) closes M2, lecture and notes, while
-classical IV stays in Handout H4 with M7 as bonus reading; A3 is due Friday of Week 5, so nothing is due the weekend
-before Exam II; reading-and-critique exercises are dropped for now; M9 keeps the hotel case (Case B)
-and M11 keeps the retail case (Case C), both rewritten, with the old IV and staggered-DiD parts kept as bonus.
+Decided on 8 October:
+- Noncompliance in an RCT (ITT, compliance types, the LATE) closes M2, lecture and notes. Classical IV stays in
+  Handout H4 with M7 as bonus reading, and H4 no longer repeats the M2 material.
+- M2 Step 6 uses 15% redemption (¥1.50 per offer).
+- A3 is due Friday of Week 5, so nothing is due the weekend before Exam II.
+- Reading-and-critique exercises are dropped for now.
+- M9 keeps the hotel case (Case B) and M11 keeps the retail case (Case C), both rewritten, with the old IV and
+  staggered-DiD parts kept as bonus.
+- Handouts are numbered in meeting order: H1 interference (M2), H2 neural estimators (M3), H3 sequential decisions
+  (M6), H4 instrumental variables (M7), H5 regression discontinuity (M8), H6 staggered adoption (M10).
+- `schedule.xlsx` splits the old Misc column into Release and Due.
 
 Still open (decide before building the affected pieces):
 

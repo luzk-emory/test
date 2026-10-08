@@ -26,7 +26,7 @@ reviews/                pass-1 review report (2026-10-07)
 
 | Material | Version | State |
 |---|---|---|
-| Technical notes, M1–M11 | v4.1 (git tag `v4.1`) | Current. Pass 1 (arithmetic, wording) done; pass 2 (independent proof check) not yet |
+| Technical notes, M1–M11 | v4.1 (commit `5522695`, not yet tagged) | Current. Pass 1 (arithmetic, wording) done; pass 2 (independent proof check) not yet |
 | Handouts H1–H6 | v4.1 | Current, same review state as the notes |
 | Lecture slides | M1–M2 rebuilt (lecture case kept); M3–M11 v2 content | M1 and M2 aligned with the v4 notes, under review. **M3–M11 not yet revised** |
 | Schedule, labs, assignments, deadlines | `plan/schedule.xlsx` | Current source of truth |

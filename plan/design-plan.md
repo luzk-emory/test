@@ -1,16 +1,39 @@
-# Notes v4: revision plan
+# Notes v4: design record
 
-**SHBI-GB 7342, technical notes.** Written 2026-10-07 after comparing v3 (`notes01–11.tex`, generated
-2026-10-06 from the v3 schedule) with v2 (`meetings/mXX/notes-v2.tex`), `course-spine.md` and the three
-Codex reviews.
+**SHBI-GB 7342, technical notes and handouts.** Written 2026-10-07 after comparing v3 (`notes01–11.tex`, generated
+2026-10-06 from the v3 schedule) with v2 (`meetings/mXX/notes-v2.tex`), `course-spine.md` and the three Codex reviews
+(all pre-git; they are in `../_archive-2026-10-07.zip`). Updated 2026-10-08 to record what was built and what changed
+since. For the revision as a whole (slides, labs, assignments, syllabus) see `revision-plan.md`.
 
 **Decision in one line:** v4 keeps v3's look and its meeting structure, takes back v2's rigour
 (proofs, the estimand → identification → estimation spine, design-based inference, exercises), fixes
 the errors and conflicts listed in Section 2, and moves six bonus topics into stand-alone handouts.
 
-> **Handout numbers (8 October 2026).** Handouts were renumbered to follow the meetings. This document and earlier
-> records use the old numbers: old H1 (IV) is now H4, H2 (RD) is H5, H3 (staggered adoption) is H6, H4 (interference) is
-> H1, H5 (sequential decisions) is H3, and H6 (neural estimators) is H2.
+## 0. Status (8 October 2026)
+
+- **Built.** All eleven notes and six handouts, v4.1 (commit `5522695`, not yet tagged), with answer keys, a notation
+  sheet and a check script per document. Pass 1 review (arithmetic, wording, flow) is done; pass 2 (an independent
+  check of every proof) and pass 3 (a student read) are not.
+- **Size.** Notes run 6 to 10 pages (86 pages in all); handouts 5 to 6 pages (31 pages). Both came in shorter than the
+  estimates in Sections 4 and 6, mainly because proofs are light (Decision 2).
+- **Changed since v4.1 (8 Oct).**
+  - M2 gains Section 1.9, "Noncompliance: the ITT and the LATE": Assumptions 1.11 (exclusion) and 1.12 (monotonicity),
+    Results 1.13 (two effects of assignment), 1.14 (type shares), 1.15 (the LATE theorem) and 1.16 (one-sided
+    noncompliance). These were ported from the IV handout and restated for a randomised offer, since they need only
+    potential outcomes and the draw. M2 Step 6 now uses 15% redemption.
+  - The IV handout (now H4) covers classical IV only: from a randomised offer to an outside shifter, arguing for an
+    instrument, complier means, exclusion and monotonicity failures, 2SLS with strata, weak instruments and locality.
+    It cites M2 Results 1.13–1.15 instead of restating them, and has a new QuickBite worked example.
+  - Handouts are numbered in meeting order (H1 with M2 to H6 with M10). This document uses the new numbers. Older
+    records (`CHANGELOG.md` entries before the renumbering, the pass-1 review) use the old ones: old H1 (IV) is now H4,
+    H2 (RD) is H5, H3 (staggered adoption) is H6, H4 (interference) is H1, H5 (sequential decisions) is H3, and H6
+    (neural estimators) is H2.
+- **Where things are.** Notes and handouts are `meetings/mNN/notes.tex` and `meetings/mNN/handout-HN-topic.tex`; the
+  style is `shared/coursenotes.sty`; checks are in `shared/checks/`; changes are recorded in `plan/CHANGELOG.md`.
+  Sections 5 and 6 below give the names used in the original plan and what they became.
+
+Sections 1 to 3 describe the starting point and the plan as written on 7 October; every item in Section 2 was
+addressed in v4.
 
 ---
 
@@ -93,7 +116,7 @@ names are v2's where they exist.
 | v3 meeting | Source in v2 | Port | New |
 |---|---|---|---|
 | **1** Causal basics | m01; m07 (collider) | ATE averages ATT and ATU; ATE in response types; selection-bias decomposition; two sources of bias; identification under random assignment; unbiasedness over the design; OLS on a dummy; net value and break-even; collider bias in the simplest case | Backdoor adjustment gives the g-formula (proof from conditional exchangeability; the graphical criterion stated with a reference); d-separation examples; figure: chain, fork, collider |
-| **2** Experiments | m02; m09 (ITT) | Fisher test; Neyman variance; conservative estimator; superpopulation variance; inference on net value; transport by reweighting; sample size; CUPED; design effect | ITT and first stage identified by the draw (from v2 m09); SRM test; Holm's procedure (statement); peeking inflation (statement with simulation); pre-experiment checklist |
+| **2** Experiments | m02; m09 (ITT, LATE) | Fisher test; Neyman variance; conservative estimator; superpopulation variance; inference on net value; transport by reweighting; sample size; CUPED; design effect | ITT and first stage identified by the draw (from v2 m09); SRM test; Holm's procedure (statement); peeking inflation (statement with simulation); pre-experiment checklist. Added 8 Oct: noncompliance as Section 1.9 (type shares, the LATE theorem, one-sided noncompliance, from v2 m09) |
 | **3** CATE I–II | m03 | CATE identification; individual targeting rule; S-learner shrinkage; T-learner variances add; cost of ignoring heterogeneity; SE of the gap between segments | Value of targeting $\ge$ value of the best blanket rule (Jensen); $\E[Y^\ast \mid X] = \tau(X)$; DR pseudo-outcome is doubly robust; Robinson decomposition makes $\tau$ the R-loss minimiser; X-learner weights; TARNet (no proof) |
 | **4** Causal forests | m04 | Causal criterion ignores prognostic splits; outcome gap of a split; winner's curse; honest leaves unbiased; asymptotic normality (statement); price of a split | Forest estimate as a weighted local moment (derivation, link to R-learner); BLP: $\beta_1 = $ ATE and $\beta_2 = \Cov(\tau,\hat\tau)/\Var(\hat\tau)$ (proof); GATES on held-out data unbiased |
 | **5** Evaluation | m05 | Rates then scale; gain curves see only ranks; profit-curve peak; IPW value identity (with unequal $e$); row-contribution variance; selection value is optimistic; paired comparison | Policy-value identity $V(\pi) - V(0) = \E[\pi\tau]$; TOC, AUTOC and Qini as RATE weights; RATE $= 0$ under a random ranking |
@@ -104,9 +127,10 @@ names are v2's where they exist.
 | **10** Panel data | m10 | DiD identification; what the two single differences contain; scale dependence; linear differential trend; TWFE by the within transformation; TWFE = DiD with one date; event-study regression; collapsing to one change per unit | Before–after = effect + trend + regression to the mean (derivation); adoption-date notation; balanced-panel caveat for double demeaning |
 | **11** Synthetic control | m11 (SC part) | Factor-model rationale; three properties of the constraints; donor sensitivity; in-place and in-time placebos; design before the post-period; local-shock falsification | Permutation validity only under random selection of the treated unit (proof); held-out pre-period check as a numbered step; SC vs DiD as two weightings; synthetic DiD and matrix completion with formulas in Section 3 |
 
-Topics in v2 that v4 drops on purpose, because the v3 schedule dropped them from lectures: IV and RD as
+Topics in v2 that v4 drops on purpose, because the v3 schedule dropped them from lectures: classical IV and RD as
 lecture content (they move to handouts), staggered DiD (handout), v2 M3's misclassified modifier (moves to
-Meeting 9).
+Meeting 9). Noncompliance in an RCT is not dropped: it needs only potential outcomes and the draw, so it closes M2
+(8 Oct).
 
 ---
 
@@ -115,14 +139,14 @@ Meeting 9).
 The test is whether a reader can use the topic without the meeting it hangs off, and whether it needs
 more than three pages to do properly. Six pass.
 
-| Handout | Replaces bonus slot | Why stand-alone | Main source | Length |
-|---|---|---|---|---|
-| **H1 Instrumental variables** | M7 | A full design with its own assumptions, estimators and inference | v2 m09 (9 proofs: two effects of the instrument, type shares, LATE theorem, complier means, exclusion violation, defiers, 2SLS with strata, delta-method SE, Anderson–Rubin) plus its Section 3 | 10–12 pp |
-| **H2 Regression discontinuity** | M8 | Separate identification argument (continuity) and estimation toolkit | v2 m09 §3.1, expanded: sharp and fuzzy RD with proofs, local linear estimation, bandwidth and bias correction, density and covariate checks, business thresholds (loyalty tiers, free-shipping cut-offs, rating rounding); kinks in Section 3 | 8–10 pp |
-| **H3 Staggered adoption** | M10 | Needs its own notation, estimators and the TWFE decomposition | v2 m11 DiD part (never-treated and not-yet-treated identification, contamination, Goodman-Bacon, aggregation, inference) plus the design-based view of randomised adoption dates (Athey and Imbens 2022), imputation estimators and honest DiD | 10–12 pp |
-| **H4 Interference and marketplace experiments** | M2 | Changes the estimand itself; central to platform work | New, from v2 m02 §3 seeds: exposure mappings, direct and spillover estimands, cluster randomisation, two-sided marketplace bias, switchbacks, budget-split designs | 8–10 pp |
-| **H5 Sequential decisions** | M6 | Dynamic regimes and bandits are a separate framework | New: dynamic treatment regimes, sequential exchangeability, Q-learning, G-estimation and SNMMs, off-policy evaluation from bandit logs | 10–12 pp |
-| **H6 Neural and foundation-model estimators** | M3 and M9 | Both bonus slots point at the same literature | New: TARNet, CFR, DragonNet, CEVAE and its critique, causal transformer, Do-PFN, benchmark pitfalls (IHDP) | 8–10 pp |
+| Handout | Replaces bonus slot | Why stand-alone | Main source | Planned length | Built |
+|---|---|---|---|---|---|
+| **H1 Interference and marketplace experiments** | M2 | Changes the estimand itself; central to platform work | New, from v2 m02 §3 seeds: exposure mappings, direct and spillover estimands, cluster randomisation, two-sided marketplace bias, switchbacks, budget-split designs | 8–10 pp | 5 pp |
+| **H2 Neural and foundation-model estimators** | M3 and M9 | Both bonus slots point at the same literature | New: TARNet, CFR, DragonNet, CEVAE and its critique, causal transformer, Do-PFN, benchmark pitfalls (IHDP) | 8–10 pp | 5 pp |
+| **H3 Sequential decisions** | M6 | Dynamic regimes and bandits are a separate framework | New: dynamic treatment regimes, sequential exchangeability, Q-learning, G-estimation and SNMMs, off-policy evaluation from bandit logs | 10–12 pp | 5 pp |
+| **H4 Instrumental variables** | M7 | A full design with its own assumptions, estimators and inference | v2 m09 plus its Section 3. Since 8 Oct, classical IV only: the two effects of assignment, type shares and the LATE theorem moved to M2 Section 1.9; H4 keeps complier means, exclusion and monotonicity failures, 2SLS with strata, the delta-method SE and Anderson–Rubin, and adds arguing for an instrument | 10–12 pp | 6 pp |
+| **H5 Regression discontinuity** | M8 | Separate identification argument (continuity) and estimation toolkit | v2 m09 §3.1, expanded: sharp and fuzzy RD with proofs, local linear estimation, bandwidth and bias correction, density and covariate checks, business thresholds (loyalty tiers, free-shipping cut-offs, rating rounding); kinks in Section 3. The fuzzy case cites M2's LATE theorem | 8–10 pp | 5 pp |
+| **H6 Staggered adoption** | M10 | Needs its own notation, estimators and the TWFE decomposition | v2 m11 DiD part (never-treated and not-yet-treated identification, contamination, Goodman-Bacon, aggregation, inference) plus the design-based view of randomised adoption dates (Athey and Imbens 2022), imputation estimators and honest DiD | 10–12 pp | 5 pp |
 
 **Stay in Section 3 of their meeting** (they extend the meeting rather than stand alone): causal graphs
 in depth (M1), forest theory (M4), RATE inference (M5), synthetic DiD and matrix completion (M11, with
@@ -140,7 +164,9 @@ lists.
 
 ## 5. Design changes
 
-Keep v3's palette, fonts and boxes. Change `v3notes.sty` to `v4notes.sty` with:
+Keep v3's palette, fonts and boxes. Change `v3notes.sty` to `v4notes.sty` with the items below. (Built as
+`shared/coursenotes.sty`, copied into each meeting folder by `shared/build_all.sh`. Results and Assumptions share one
+counter per document.)
 
 1. **Numbered result boxes.** Propositions in the green box with numbers (1.1, 1.2, …) and labels for
    cross-reference. Assumptions in a blue-outlined box. Definitions in a light grey box.
@@ -155,17 +181,18 @@ Keep v3's palette, fonts and boxes. Change `v3notes.sty` to `v4notes.sty` with:
    distribution; M3 four response types; M4 forest weights; M5 gain and profit curves; M6 shadow price;
    M7 overlap histograms; M8 residual-on-residual scatter; M9 simulator pipeline diagram; M10 event-study
    plot; M11 treated vs synthetic path.
-7. **Exercises:** two per worked example (one computation, one judgement), with answers in a separate
-   instructor key (`notesXX-key.tex`).
-8. **A one-page course notation sheet**, shared by all notes and handouts.
+7. **Exercises:** two per worked example (one computation, one judgement), with answers in an instructor key.
+   (Built: the key compiles from the same source with `\def\KEY{}`; `shared/build.sh` writes both PDFs.)
+8. **A one-page course notation sheet**, shared by all notes and handouts (`shared/notation.tex`).
 
 ---
 
 ## 6. Work order and checks
 
 1. **Shared files:** `v4notes.sty`, notation sheet, a simulation script per worked example under
-   `notes-v4/checks/`.
-2. **Meetings 1–4** (Exam I scope), then **5–10** (Exam II scope), then **11**, then **handouts H1–H6**.
+   `notes-v4/checks/`. (Built as `shared/coursenotes.sty`, `shared/notation.tex` and `shared/checks/`, with one
+   `*_check.py` per document and `run_all.sh` to run them all.)
+2. **Meetings 1–4** (Exam I scope), then **5–10** (Exam II scope), then **11**, then **the six handouts**.
    Exam scope first so the examinable material is stable earliest.
 3. **For each note:** port the v2 propositions with proofs; rewrite to v3 style; generate every worked
    number from its script; add figure and exercises; write the key.
@@ -177,12 +204,15 @@ Keep v3's palette, fonts and boxes. Change `v3notes.sty` to `v4notes.sty` with:
    - a scan for em-dashes, undefined references and overfull lines;
    - consistency with `course-spine.md` Section 4 (the master change list) item by item.
 5. **Deliver** into `meetings/mXX/notes-v4.tex` beside v2, with a `CHANGES-v4.md` per meeting, as v2 did.
+   (Superseded when the course moved to git: each document has one file, `meetings/mNN/notes.tex`, its history is in
+   git, and changes are recorded in `plan/CHANGELOG.md`.)
 
-Estimated size: 11 notes at 8–11 pages and 6 handouts at 8–12 pages, about 160 pages in total.
+Estimated size: 11 notes at 8–11 pages and 6 handouts at 8–12 pages, about 160 pages in total. (Built: 86 pages of
+notes and 31 of handouts; see Section 0.)
 
 ---
 
-## 7. Decisions (settled 2026-10-07)
+## 7. Decisions (settled 2026-10-07; item 5 added 2026-10-08)
 
 1. **Worked examples reuse a business when the context is close.** Two recurring businesses carry most
    examples:
@@ -191,11 +221,15 @@ Estimated size: 11 notes at 8–11 pages and 6 handouts at 8–12 pages, about 1
    - **QuickBite**, a food-delivery platform (coupons, delivery fees, couriers, restaurant reviews, city
      launches): Meetings 2, 4, 5, 6, 8, 9 and 11.
    Handouts reuse them where natural (QuickBite for interference and IV; FitLife for RD and staggered
-   adoption).
+   adoption). Lecture slides keep their own running cases (`cases/`), so students see each method on two businesses.
 2. **Light proofs for key results.** Every identification result gets a short proof (a few lines, idea
    first). Estimation and asymptotic results are stated with a one-line reason and a reference.
 3. **Six handouts.** Synthetic DiD and matrix completion stay in the Meeting 11 notes (Section 3, with
    estimator definitions), since they extend the lecture directly.
 4. **Files:** one PDF per meeting, plus a second PDF where a meeting has a handout:
-   M2 + H4 interference, M3 + H6 neural estimators, M6 + H5 sequential decisions, M7 + H1 IV, M8 + H2 RD,
-   M10 + H3 staggered adoption. Answer keys compile from the same source (`\def\KEY{}`).
+   M2 + H1 interference, M3 + H2 neural estimators, M6 + H3 sequential decisions, M7 + H4 IV, M8 + H5 RD,
+   M10 + H6 staggered adoption. Handouts are numbered in meeting order (8 Oct). Answer keys compile from the same
+   source (`\def\KEY{}`).
+5. **Noncompliance in an RCT belongs to M2** (8 Oct). The ITT, compliance types and the LATE need only potential
+   outcomes and the draw, so they close M2 (Section 1.9) in the notes and the lecture. Classical IV, where the
+   instrument is an outside shifter that was not randomised, stays in Handout H4 with M7 as bonus reading.
