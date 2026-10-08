@@ -147,7 +147,7 @@ they are for projects and further study and are \emph{not} examined:
 \toprule
 \textbf{Handout} & \textbf{Topic} & \textbf{With meeting} \\
 \midrule
-H1 & Instrumental variables (beyond Meeting 2) & 2 \\
+H1 & Instrumental variables: outside shifters of treatment & 7 \\
 H2 & Regression discontinuity & 8 \\
 H3 & Staggered adoption & 10 \\
 H4 & Interference and marketplace experiments & 2 \\
@@ -317,12 +317,12 @@ Optional, for students with strong backgrounds.
 \textbf{M} & \textbf{Topic} & \textbf{Readings} \\
 \midrule
 1 & Causal graphs & Hern\'an and Robins, \emph{Causal Inference: What If}, chapters 1--3 and 6--8 \\
-2 & Spillover; instrumental variables & Hudgens and Halloran (2008); Johari et al.\ (2022) on two-sided marketplace experiments; Bojinov, Simchi-Levi and Zhao (2023) on switchbacks; Kohavi, Tang and Xu (2020) as the practitioner reference. Angrist, Imbens and Rubin (1996); Angrist and Pischke, \emph{Mastering 'Metrics}, chapter 3 \\
+2 & Spillover; noncompliance and the LATE & Hudgens and Halloran (2008); Johari et al.\ (2022) on two-sided marketplace experiments; Bojinov, Simchi-Levi and Zhao (2023) on switchbacks; Kohavi, Tang and Xu (2020) as the practitioner reference; Angrist, Imbens and Rubin (1996) on the LATE \\
 3 & More deep causal models & Shalit, Johansson and Sontag (2017); Shi, Blei and Veitch (2019); Curth and van der Schaar (2021); Louizos et al.\ (2017) read together with Rissanen and Marttinen (2021) \\
 4 & Forest theory & Athey and Imbens (2016); Wager and Athey (2018); Athey, Tibshirani and Wager (2019) \\
 5 & Evaluating prioritisation rules & Yadlowsky et al.\ on RATE; Chernozhukov, Demirer, Duflo and Fern\'andez-Val on generic machine-learning inference for heterogeneous effects \\
 6 & Policy learning; dynamic regimes & Kitagawa and Tetenov (2018); Athey and Wager (2021); Murphy (2003) \\
-7 & Design before analysis; limited overlap & Rubin (2008), ``For objective causal inference, design trumps analysis''; Crump, Hotz, Imbens and Mitnik (2009), ``Dealing with limited overlap'' \\
+7 & Instrumental variables & Angrist and Pischke, \emph{Mastering 'Metrics}, chapter 3; Handout H1 \\
 8 & Regression discontinuity & Cattaneo, Idrobo and Titiunik (2020) \\
 9 & Causal transformer & Melnychuk, Frauen and Feuerriegel (2022); Do-PFN (2025), \url{https://arxiv.org/abs/2506.06039} \\
 10 & Staggered DiD & Goodman-Bacon (2021); Callaway and Sant'Anna (2021); Sun and Abraham (2021); Roth, Sant'Anna, Bilinski and Poe (2023) \\
@@ -347,7 +347,7 @@ Dates are \tbd{to be set}; the rules above govern. Exams and proposal presentati
 \endhead
 \wk{Week 1 \quad \tbd{dates}}
 1 (Tue) & \textbf{Causal basics}\newline Coffee chain & Potential outcomes: the decision and its break-even lift; ATE, ATT, CATE; the fundamental problem; naive difference $=$ ATT $+$ selection bias; SUTVA. & Causal graphs: forks, chains, colliders; backdoor paths; randomisation as graph surgery; Simpson's paradox; identification vs estimation vs inference. & Lab 0 & \\
-2 (Thu) & \textbf{Experiments}\newline Coffee chain & Estimation: difference in means as OLS on a dummy; robust SEs; testing against the break-even; CUPED; balance and sample-ratio checks. & Design: power and MDE for a decision; randomisation unit and clustered SEs; interference; peeking and multiple metrics; transport. To close: noncompliance, ITT and the LATE. & Lab 1 & H4, H1 \\
+2 (Thu) & \textbf{Experiments}\newline Coffee chain & Estimation: difference in means as OLS on a dummy; robust SEs; testing against the break-even; CUPED; balance and sample-ratio checks. & Design: power and MDE for a decision; randomisation unit and clustered SEs; interference; peeking and multiple metrics; transport. To close: noncompliance in an experiment, the ITT and the LATE. & Lab 1 & H4 \\
 \wk{Week 2 \quad \tbd{dates}}
 3 (Tue) & \textbf{Conditional effects}\newline Coffee chain & Why the average misleads targeting; $\tau(x)$; effect modifiers vs prognostic variables; subgroups and interactions; multiple testing; GATE and BLP. & Meta-learners: S, T, X, DR, R; TARNet as a shared representation; choosing a model without ground truth. & Lab 2 & H6 \\
 4 (Thu) & \textbf{Causal trees and forests}\newline Coffee chain & Causal trees; honesty and sample splitting; the winner's curse; committing a discovery. & Forests as adaptive neighbours; local centring; CATE intervals and their limits; variable importance; BLP, calibration test, GATES. & Lab 3 & \\
@@ -355,7 +355,7 @@ Dates are \tbd{to be set}; the rules above govern. Exams and proposal presentati
 5 (Tue) & \textbf{Evaluating targeting policies}\newline Coffee chain & \textbf{Exam I} (Meetings 1--4) & Ranking vs calibration; isotonic recalibration; uplift and Qini curves; RATE; policy value on held-out data; selection vs evaluation data; comparing two policies. & Lab 4 & \\
 6 (Thu) & \textbf{Allocation and policy learning}\newline Coffee chain & Net value and thresholds; caps; budgets and the shadow price; coupon depths; lower-bound allocation; the price of fairness; capacity and the critical fractile. & Predict-then-optimise, decision-focused learning and policy learning; DR scores; empirical welfare maximisation; policy trees; holdouts; bandits. & Lab 5 & H5 \\
 \wk{Week 4 \quad \tbd{dates}}
-7 (Tue) & \textbf{Observational data}\newline Coffee chain & Adjustment: logs produced by a targeting rule; exchangeability, positivity, consistency; standardisation; good and bad controls; regression adjustment. & Propensity scores: matching and IPW; doubly robust AIPW; overlap, trimming and the estimand; the outcome-free design stage; the LaLonde benchmark; sensitivity. & Lab 6 & \\
+7 (Tue) & \textbf{Observational data}\newline Coffee chain & Adjustment: logs produced by a targeting rule; exchangeability, positivity, consistency; standardisation; good and bad controls; regression adjustment. & Propensity scores: matching and IPW; doubly robust AIPW; overlap, trimming and the estimand; the outcome-free design stage; the LaLonde benchmark; sensitivity. & Lab 6 & H1 \\
 8 (Thu) & \textbf{Double machine learning}\newline Hotel group & Why plug-in ML fails; the partially linear model; residualisation; orthogonality; cross-fitting; price elasticity. & Inference and repeated splits; nuisance learners; the interactive model; DML for CATE; overlap; sensitivity bounds. & \textbf{Proposal presentations}; Lab 7 take-home & H2 \\
 \wk{Week 5 \quad \tbd{dates}}
 9 (Tue) & \textbf{Generative AI in causal analysis}\newline \tbd{Hotel group} & Learned simulators: planting effects and confounding; estimator vs pipeline testbeds; backtests, support, compounding error; planted vs asserted truth. & LLM-generated variables: labels by role and bias direction; gold subsamples with PPI and DSL; embeddings as DML controls; leakage and overlap collapse. & Lab 8 & H6 \\

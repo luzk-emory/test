@@ -40,12 +40,12 @@ Meetings on Tuesday and Thursday. Each meeting has two 50-minute lectures (A, B)
 | M | Topic | Handout | Notes |
 |---|---|---|---|
 | 1 | Causal basics | | |
-| 2 | Experiments (closing with noncompliance and the LATE) | H4 Interference; H1 Instrumental variables | |
+| 2 | Experiments (closing with noncompliance and the LATE) | H4 Interference | |
 | 3 | Conditional effects | H6 Neural estimators | |
 | 4 | Causal trees and forests | | |
 | 5 | Evaluating targeting policies | | Exam I (M1–M4) |
 | 6 | Allocation and policy learning | H5 Sequential decisions | |
-| 7 | Observational data | | |
+| 7 | Observational data | H1 Instrumental variables | |
 | 8 | Double machine learning | H2 Regression discontinuity | Proposal presentations |
 | 9 | Generative AI in causal analysis | | |
 | 10 | Panel data and DiD | H3 Staggered adoption | |
@@ -96,7 +96,8 @@ After editing a number in the notes, update its check script, then rerun.
   generator and the testbed for a whole predict-then-optimise pipeline.
 - Proofs are light, for key results; identification theorems always get one.
 - Six handouts. Synthetic DiD and matrix completion stay in M11, Section 3.
-- Instrumental variables keeps its experimental core (noncompliance, ITT, LATE) at the end of M2 (8 Oct); H1 goes further.
+- Noncompliance in an RCT (ITT, compliance types, LATE) closes M2, lecture and notes (8 Oct). Classical IV (outside shifters,
+  2SLS, weak instruments) stays in Handout H1 with M7, as bonus reading.
 - Reading-and-critique exercises are dropped for now (8 Oct).
 - Slides and notes share estimands, assumptions, notation, Result statements and topic order, but not the example:
   lectures keep their own case.

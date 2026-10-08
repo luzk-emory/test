@@ -11,9 +11,10 @@ together with `README.md` (layout, build, checks) and `AGENTS.md` (working rules
 - **What changed from the previous version.**
   - Generative AI moves from a side topic to a full meeting (M9) plus a thread through the labs and assignments.
   - Exams sit at M5 and M11. Proposals are presented at M8.
-  - Regression discontinuity, staggered DiD and synthetic DiD leave the core lectures. They become bonus reading and
-    handouts. Instrumental variables keeps only its experimental core (noncompliance, ITT and the LATE), which closes
-    M2; Handout H1 goes further.
+  - Classical instrumental variables (outside shifters of treatment, 2SLS, weak instruments), regression discontinuity,
+    staggered DiD and synthetic DiD leave the core lectures. They become bonus reading and handouts.
+  - Noncompliance in an RCT (the ITT, compliance types and the LATE) is not classical IV: it needs only potential
+    outcomes and the draw, and it closes M2, in the lecture and in the notes.
   - The technical notes were rebuilt (v4) with proofs of the key results and a consistent house style.
 - **Writing standard.** Readable by someone not taking the course. No em-dashes. Must not read like AI-generated prose.
 
@@ -67,12 +68,12 @@ blocks A and B (50 minutes each) and lab C (60 minutes).
 | M | A | B | C (lab) | Notes / handout |
 |---|---|---|---|---|
 | 1 | Potential outcomes | Causal graphs | Lab 0 review | M1 |
-| 2 | Experiments: estimation | Experiments: design; to close, noncompliance and the LATE | Lab 1 (LLM readout) | M2, H4 interference, H1 IV |
+| 2 | Experiments: estimation | Experiments: design; to close, noncompliance and the LATE | Lab 1 (LLM readout) | M2, H4 interference |
 | 3 | CATE basics | Meta-learners, TARNet | Lab 2 | M3, H6 neural |
 | 4 | Causal trees | Causal forests | Lab 3 | M4 |
 | 5 | **Exam I (M1–M4)** | Evaluating targeting policies | Lab 4 (LLM as decision-maker) | M5 |
 | 6 | Allocation | Policy learning | Lab 5 | M6, H5 sequential |
-| 7 | Adjustment | Propensity scores, AIPW | Lab 6 (agent audit) | M7 |
+| 7 | Adjustment | Propensity scores, AIPW | Lab 6 (agent audit) | M7, H1 IV |
 | 8 | DML I | DML II | **Proposal presentations** (Lab 7 take-home) | M8, H2 RD |
 | 9 | GenAI I: simulators | GenAI II: LLM variables | Lab 8 | M9 |
 | 10 | Panel basics | DiD | Lab 9 (AI rollout) | M10, H3 staggered |
@@ -119,8 +120,8 @@ The full calendar is in the spreadsheet.
      - M8: DML II with sensitivity bounds;
      - M10: a warning slide on staggered timing;
      - M11: synthetic control only.
-   - Close Experiments II (M2) with noncompliance, ITT and the LATE, on the coffee-chain case (Case A, Part M2-R6).
-     Handout H1 goes further.
+   - Close Experiments II (M2) with noncompliance in an RCT (ITT, compliance types, the LATE), on the coffee-chain case
+     (Case A, Part M2-R6) and matching M2 notes Section 1.9. Classical IV stays in Handout H1 (M7, bonus).
    - Tested slides from the instructor's other course (the Starbucks causal module) are in `plan/old-decks/`, with a
      frame-by-frame map (`plan/old-decks/map.md`). Reuse them where a topic matches. See Section 6.
 2. **Syllabus.** Regenerate from `schedule.xlsx`: calendar, assessment weights, AI policy per assignment, bonus reading.
@@ -164,20 +165,19 @@ The full calendar is in the spreadsheet.
 
 ## 7. Judgement calls
 
-Decided on 8 October: IV, noncompliance and the LATE close M2 (H1 goes with M2); A3 is due Friday of Week 5, so nothing
-is due the weekend before Exam II; reading-and-critique exercises are dropped for now; M9 keeps the hotel case (Case B)
+Decided on 8 October: noncompliance in an RCT (ITT, compliance types, the LATE) closes M2, lecture and notes, while
+classical IV stays in Handout H1 with M7 as bonus reading; A3 is due Friday of Week 5, so nothing is due the weekend
+before Exam II; reading-and-critique exercises are dropped for now; M9 keeps the hotel case (Case B)
 and M11 keeps the retail case (Case C), both rewritten, with the old IV and staggered-DiD parts kept as bonus.
 
 Still open (decide before building the affected pieces):
 
-1. M2 notes and H1: if IV's core closes M2, the M2 notes need its Results (two effects of the draw, compliance types,
-   the LATE theorem) in Section 1, and H1 moves from `meetings/m07/` to M2.
-2. Staggered DiD: a warning slide in Panel II plus an optional extension in Lab 9.
-3. A2 and A3 pose the same decision (RCT-trained versus logs-trained), so both need an autograder and a locked set.
-4. Proposal due Sunday of Week 3.
-5. No panel-data assignment.
+1. Staggered DiD: a warning slide in Panel II plus an optional extension in Lab 9.
+2. A2 and A3 pose the same decision (RCT-trained versus logs-trained), so both need an autograder and a locked set.
+3. Proposal due Sunday of Week 3.
+4. No panel-data assignment.
    - As planned, DiD is tested on Exam II and practised in Labs 9 and 10.
    - Alternative: make A4 a DiD evaluation and fold the simulator into Lab 8.
-6. Final-project appendices: an LLM review of the draft plus responses, and a planted-effect validation of the design.
-7. Exam weights: Exam II covers more lectures than Exam I; consider weighting it more.
+5. Final-project appendices: an LLM review of the draft plus responses, and a planted-effect validation of the design.
+6. Exam weights: Exam II covers more lectures than Exam I; consider weighting it more.
 
