@@ -94,7 +94,7 @@
 \begin{itemize}
   \item Three lists, one launch
   \item A policy's value and gain; the policy-value identity
-  \item Estimating value on a randomised fold; the variance of a row contribution
+  \item Estimating value on a randomized fold; the variance of a row contribution
   \item Gain, profit and Qini curves; denominators
   \item RATE: one number for a ranking
 \end{itemize}
@@ -190,7 +190,7 @@ From the CFO's rules for the evaluation fold:
 \textbf{The rules say} & \textbf{Which buys} \\
 \midrule
 ``The evaluation fold was drawn at random from the Q2 export before any model was fitted.'' & The fold is a random sample of the base, and no model has seen it. \\[0.4em]
-``Its 50/50 coupon draw is intact.'' & $D \indep \{R(0), R(1)\} \mid X$ with $e(x) = 0.5$ \emph{known}: nothing about assignment has to be modelled. \\[0.4em]
+``Its 50/50 coupon draw is intact.'' & $D \indep \{R(0), R(1)\} \mid X$ with $e(x) = 0.5$ \emph{known}: nothing about assignment has to be modeled. \\[0.4em]
 ``Its outcomes are released only after each list is frozen: a file of the list's decision for every fold member, and a timestamped code snapshot.'' & The list cannot have been tuned to the fold's noise. \\
 \bottomrule
 \end{tabular}
@@ -202,7 +202,7 @@ The first two sentences make a list's value identified on the fold, as in Meetin
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Estimating Value from a Randomised Sample}
+\begin{frame}{Estimating Value from a Randomized Sample}
 
 \begin{result}{1.2}{Inverse-probability-weighted value}
 Suppose $D \indep \{R(0), R(1)\} \mid X$ with known $e(x) \in (0,1)$, and let $p_\pi(X) = e(X)$ if $\pi(X) = 1$ and $1 - e(X)$ otherwise. Then
@@ -232,7 +232,7 @@ control arm & $30$ & $-30/0.5 = -60$ & $-30/0.75 = -40$ \\
 \end{columns}
 
 \smallskip
-\small Normalising the weights within each arm (the H\'ajek version) is usually less variable.
+\small Normalizing the weights within each arm (the H\'ajek version) is usually less variable.
 \end{frame}
 
 % ====================================================================
@@ -373,7 +373,7 @@ For a group $S$ of $n_S$ units with $n_{dS}$ in arm $d$ and arm totals $B_{dS}$,
 Replace the outcome by net value: the \textbf{profit curve} is $P(\phi) = \phi\,\E[v(X) \mid S_\phi]$.
 
 \begin{result}{1.5}{Where the profit curve peaks}
-If units are ranked by their true net value $v$ (with a continuous distribution), $P$ is concave, its slope at $\phi$ is the net value of the marginal unit, and it is maximised where that net value is zero.
+If units are ranked by their true net value $v$ (with a continuous distribution), $P$ is concave, its slope at $\phi$ is the net value of the marginal unit, and it is maximized where that net value is zero.
 \end{result}
 
 \begin{columns}[T]
@@ -411,7 +411,7 @@ From $\phi = \tfrac14$ to $\tfrac12$ the forest's gain curve rises ($0.0875 \to 
 % ====================================================================
 \begin{frame}{RATE: One Number for a Ranking}
 
-The \textbf{targeting operator characteristic}, $\text{TOC}(q) = \E[\tau(X) \mid s(X) \text{ in the top } q] - \ATE$, measures how much better the top $q$ respond than average. The \textbf{rank-weighted average treatment effect} is $\text{RATE} = \int_0^1 w(q)\,\text{TOC}(q)\,dq$. With $w(q) = 1$ it is the \textbf{AUTOC}, which emphasises the top of the list; with $w(q) = q$ it is the \textbf{Qini coefficient}, which weighs the whole list. Averaged over the grid $q = \tfrac14, \tfrac12, \tfrac34, 1$:
+The \textbf{targeting operator characteristic}, $\text{TOC}(q) = \E[\tau(X) \mid s(X) \text{ in the top } q] - \ATE$, measures how much better the top $q$ respond than average. The \textbf{rank-weighted average treatment effect} is $\text{RATE} = \int_0^1 w(q)\,\text{TOC}(q)\,dq$. With $w(q) = 1$ it is the \textbf{AUTOC}, which emphasizes the top of the list; with $w(q) = q$ it is the \textbf{Qini coefficient}, which weighs the whole list. Averaged over the grid $q = \tfrac14, \tfrac12, \tfrac34, 1$:
 
 \begin{center}
 \small
@@ -473,10 +473,10 @@ A break-even threshold reads the scale: the doubled score adds 5{,}000 coupons t
 A miscalibrated score can be repaired without touching its ranking. On units not used to fit the score, let $\psi_i = D_iY_i/e(X_i) - (1 - D_i)Y_i/\{1 - e(X_i)\}$, or the doubly robust score $\phi_i$ of Meeting 3; either has conditional mean $\tau(X_i)$. With $e = 0.5$, $\psi_i = 2Y_i$ in the coupon arm and $-2Y_i$ in the control arm.
 
 \begin{result}{1.7}{Isotonic calibration}
-Let $s$ be a score fixed before the calibration sample, and let $\hat h$ minimise $\sum_i\{\psi_i - h(s(X_i))\}^2$ over non-decreasing functions $h$. Then $\hat h \circ s$ never reverses the order of $s$, and $\hat h$ is constant on blocks of consecutive scores, equal on each block to the block's average of $\psi_i$.
+Let $s$ be a score fixed before the calibration sample, and let $\hat h$ minimize $\sum_i\{\psi_i - h(s(X_i))\}^2$ over non-decreasing functions $h$. Then $\hat h \circ s$ never reverses the order of $s$, and $\hat h$ is constant on blocks of consecutive scores, equal on each block to the block's average of $\psi_i$.
 \end{result}
 
-\textbf{Pool-adjacent-violators} computes $\hat h$: start from each unit (or score bin) alone, and merge any neighbouring pair whose averages are out of order until none is.
+\textbf{Pool-adjacent-violators} computes $\hat h$: start from each unit (or score bin) alone, and merge any neighboring pair whose averages are out of order until none is.
 
 \medskip
 
@@ -515,7 +515,7 @@ The forest's score on the selection fold, six equal bins, lowest first; $\hat\mu
 \begin{frame}{Choosing and Evaluating Are Different Jobs}
 
 \begin{result}{1.8}{The chosen policy's selection value is optimistic}
-Let $\hat G_S(\pi_1), \dots, \hat G_S(\pi_K)$ be unbiased on a selection sample $S$ and $\hat\pi$ the maximiser. Then $\E[\hat G_S(\hat\pi)] \ge \E[G(\hat\pi)]$. On an evaluation sample $E$ independent of everything used to choose $\hat\pi$, $\E[\hat G_E(\hat\pi) \mid \hat\pi] = G(\hat\pi)$.
+Let $\hat G_S(\pi_1), \dots, \hat G_S(\pi_K)$ be unbiased on a selection sample $S$ and $\hat\pi$ the maximizer. Then $\E[\hat G_S(\hat\pi)] \ge \E[G(\hat\pi)]$. On an evaluation sample $E$ independent of everything used to choose $\hat\pi$, $\E[\hat G_E(\hat\pi) \mid \hat\pi] = G(\hat\pi)$.
 \end{result}
 
 \textbf{An exact case.} $K$ candidate lists are each worth \textyen 1.50 per member; each selection-fold estimate is $1.50 \pm 0.50$, equally likely and independently. The winner reports \textyen 2.00 unless all $K$ drew $-0.50$, which has probability $2^{-K}$:
@@ -567,7 +567,7 @@ A disappointing evaluation is a correct result, not a reason to return to step 3
 \begin{frame}{Comparing Two Lists: Pair the Rows}
 
 \begin{result}{1.9}{Paired comparison}
-For frozen policies $\pi_a, \pi_b$ evaluated on the same randomised sample, let $d_i = g_i(\pi_a) - g_i(\pi_b)$. Then $\bar d$ is unbiased for $G(\pi_a) - G(\pi_b)$ with standard error $\text{sd}(d_i)/\sqrt n$.
+For frozen policies $\pi_a, \pi_b$ evaluated on the same randomized sample, let $d_i = g_i(\pi_a) - g_i(\pi_b)$. Then $\bar d$ is unbiased for $G(\pi_a) - G(\pi_b)$ with standard error $\text{sd}(d_i)/\sqrt n$.
 \end{result}
 
 \textbf{On the 80 rows:} segment rule minus coupon everyone. The lists agree on the 40 lapsed rows, so $d_i = 0$ there. On active rows $d_i = -g_i(\text{everyone})$: $-40$ for the 16 coupon-arm buyers, $+60$ for the 15 control-arm buyers.
@@ -582,7 +582,7 @@ Treating the two estimates as independent gives $\sqrt{1.62^2 + 3.90^2} = 4.22$ 
 % [RELEASE R4: the evaluation fold is unlocked; values and SEs are computed for the four-group base]
 \begin{frame}{The Fold Is Unlocked}
 
-The four groups again. On an evaluation fold of 5{,}000 drawn from this base, each frozen list's estimate centres on its true gain (\textyen{} per member), with these SEs:
+The four groups again. On an evaluation fold of 5{,}000 drawn from this base, each frozen list's estimate centers on its true gain (\textyen{} per member), with these SEs:
 
 \begin{center}
 \small
@@ -630,7 +630,7 @@ Each one has a number today:
 
 \begin{itemize}
   \item \spinestep{Estimand.} A frozen list's gain over sending nothing, $G(\pi) = \E[\pi(X)\,v(X)]$: reach times average net value. The number to beat is the segment rule's \textyen 1.50 per member.
-  \item \spinestep{Identification.} A randomised fold with known $e$: weighting the rows where the coin agreed with the list recovers $V(\pi)$ and $G(\pi)$. Use the design's $e$.
+  \item \spinestep{Identification.} A randomized fold with known $e$: weighting the rows where the coin agreed with the list recovers $V(\pi)$ and $G(\pi)$. Use the design's $e$.
   \item \spinestep{Estimation.} Average the row contributions $\pm R/e$; their variance comes from the reward's second moments. In curves, estimate rates within a group, then scale. Gain curves and RATE judge a ranking; the profit curve prices a list and peaks where the marginal net value is zero.
   \item \spinestep{Inference.} Choose on the selection fold, freeze, and evaluate once: the winner's selection value is optimistic. Compare two lists with the paired SE.
   \item \textbf{Ranking is not calibration.} A budget reads only the order; a threshold reads the scale. Isotonic regression on the selection fold repairs the scale without changing the order.

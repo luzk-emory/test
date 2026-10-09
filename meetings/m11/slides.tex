@@ -127,7 +127,7 @@ It is \textbf{week 104}. Meeting 10 confirmed cohort 1: against the 89 stores no
 
 \medskip
 
-One more piece of evidence. The \textbf{flagship} went live in \textbf{week 20}, alone, 33 weeks before cohort 1, and has 84 weeks live. It was the vendor's \textbf{co-development store}: a vendor engineer worked on site for its first six months, and the assistant was tuned on the flagship's own catalogue and customers' questions.
+One more piece of evidence. The \textbf{flagship} went live in \textbf{week 20}, alone, 33 weeks before cohort 1, and has 84 weeks live. It was the vendor's \textbf{co-development store}: a vendor engineer worked on site for its first six months, and the assistant was tuned on the flagship's own catalog and customers' questions.
 
 \medskip
 
@@ -170,7 +170,7 @@ where $Y_{1t}(20) = Y_{1t}$ is observed and $Y_{1t}(\infty)$ must be constructed
 \begin{frame}{The Estimator}
 
 \begin{definition*}{1.1}{Synthetic control}
-Choose weights $w = (w_2, \dots, w_{J+1})$ to minimise $\sum_{t=1}^{T_0}\big(Y_{1t} - \sum_j w_jY_{jt}\big)^2$ subject to $w_j \ge 0$ and
+Choose weights $w = (w_2, \dots, w_{J+1})$ to minimize $\sum_{t=1}^{T_0}\big(Y_{1t} - \sum_j w_jY_{jt}\big)^2$ subject to $w_j \ge 0$ and
 $\sum_j w_j = 1$. The synthetic control is $\hat Y_{1t}(\infty) = \sum_j w_jY_{jt}$, and $\hatt_t = Y_{1t} - \hat Y_{1t}(\infty)$ for $t > T_0$.
 \end{definition*}
 
@@ -275,7 +275,7 @@ The week-4 effect is $13 + 11s$: \textbf{the same perfect pre-period fit support
 
 \begin{itemize}
   \item Non-negative weights summing to one make the synthetic store an \textbf{interpolation}: a point inside the donors' range. Here only $s = 0$ qualifies.
-  \item Unconstrained weights fit the pre-period with combinations that have no real-world analogue (``three A stores minus one B store minus half a C store'') and behave wildly afterwards.
+  \item Unconstrained weights fit the pre-period with combinations that have no real-world analog (``three A stores minus one B store minus half a C store'') and behave wildly afterwards.
   \item The constraints also make the solution \textbf{sparse and explainable}: ``half A, half B''.
 \end{itemize}
 \end{frame}
@@ -432,7 +432,7 @@ without A & B alone & $-10,\ -10,\ -10$ & 3.0 & \textcolor{warnred}{fit fails: n
 \begin{itemize}
   \item \textbf{Extreme treated units.} If the treated unit is the largest or fastest-growing, no convex combination reaches it; the pre-period gap is large and the method should not be used as is. Flagship units are exactly this case. Without donor A, the toy flagship is below every donor, and the ``effect'' is 3 with gaps of 10 every week.
   \item \textbf{Spillovers} to donors (customers lost to the flagship) bias the gap upwards. Exclude donors that share a catchment with it.
-  \item \textbf{Anticipation.} Date $T_0$ to the announcement or the start of training if behaviour changed then. If associates trained, or the engineer arrived, before week 20, the pre-period ends earlier.
+  \item \textbf{Anticipation.} Date $T_0$ to the announcement or the start of training if behavior changed then. If associates trained, or the engineer arrived, before week 20, the pre-period ends earlier.
   \item \textbf{Local shocks} coinciding with treatment look like effects.
 \end{itemize}
 

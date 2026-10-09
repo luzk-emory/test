@@ -4,7 +4,7 @@
 \handoutheader{H2}{Neural and Foundation-Model Estimators}{What deep learning adds to effect estimation, and what it cannot}{Meetings 3 (Conditional effects) and 9 (Generative AI)}
 
 \begin{decision}
-A vendor offers a deep-learning model that ``estimates each customer's response from their app behaviour and
+A vendor offers a deep-learning model that ``estimates each customer's response from their app behavior and
 reviews, and corrects for unobserved confounders''. Before buying it, a firm needs to know which parts of that
 claim are about estimation (where neural networks can help) and which are about identification (where no
 architecture can help without assumptions).
@@ -15,7 +15,7 @@ architecture can help without assumptions).
   \item explain how balancing a representation can hide an overlap failure;
   \item state why CEVAE-type models cannot recover hidden confounding without stated proxy structure;
   \item describe in-context (foundation-model) estimators and locate their identifying assumptions in the prior;
-  \item evaluate a neural estimator without being misled by benchmark artefacts.
+  \item evaluate a neural estimator without being misled by benchmark artifacts.
 \end{goals}
 
 %=====================================================================================
@@ -31,21 +31,21 @@ share structure, so that learning features from all the data helps both. They do
 \subsection{TARNet: a shared representation with two heads}
 
 TARNet maps $x$ through shared layers to a representation $\Phi(x)$ and then through two heads $h_0, h_1$, giving
-$\hat\mu_d(x) = h_d(\Phi(x))$. It minimises the \emph{factual} loss
+$\hat\mu_d(x) = h_d(\Phi(x))$. It minimizes the \emph{factual} loss
 $\sum_i \big(Y_i - h_{D_i}(\Phi(X_i))\big)^2$: each unit trains only its own arm's head.
 
 \begin{prop}{What the factual loss can learn}{factual}
-With unrestricted $\Phi$ and heads, the factual loss is minimised by any functions with $h_d(\Phi(x)) = \mu_d(x)$ at
+With unrestricted $\Phi$ and heads, the factual loss is minimized by any functions with $h_d(\Phi(x)) = \mu_d(x)$ at
 every $x$ where $\Pr(D = d \mid X = x) > 0$. At $x$ where arm $d$ is never observed, the loss does not depend on
 $h_d(\Phi(x))$.
 \end{prop}
 \begin{proof}
 The expected loss is $\sum_d \E\big[\ind{D=d}(Y - h_d(\Phi(X)))^2\big]$; for each $d$ and $x$ with positive
-probability of arm $d$, squared loss is minimised by the conditional mean $\mu_d(x)$. Where $\Pr(D=d \mid x) = 0$, the
+probability of arm $d$, squared loss is minimized by the conditional mean $\mu_d(x)$. Where $\Pr(D=d \mid x) = 0$, the
 term has weight zero.
 \end{proof}
 
-Outside overlap the network's prediction is decided by architecture and regularisation, not by data: it is an
+Outside overlap the network's prediction is decided by architecture and regularization, not by data: it is an
 extrapolation that looks like an estimate.
 
 \subsection{Counterfactual regression: balancing the representation}
@@ -53,7 +53,7 @@ extrapolation that looks like an estimate.
 CFR adds a penalty $\alpha \cdot \text{IPM}(\Phi \mid D=1,\ \Phi \mid D=0)$ that makes the distribution of $\Phi(X)$ similar
 in the two arms (an integral probability metric such as the Wasserstein distance or MMD). Shalit, Johansson and
 Sontag (2017) bound the estimation error of $\tau$ by the factual losses plus a constant times this distance, which
-motivates the penalty. The bound assumes $\Phi$ is invertible. A penalised network need not be, and then balancing has
+motivates the penalty. The bound assumes $\Phi$ is invertible. A penalized network need not be, and then balancing has
 a cost.
 
 \begin{prop}{Balancing can hide an overlap failure}{hide}
@@ -74,7 +74,7 @@ comparability. Check overlap on $X$ (propensity scores), not on the learned repr
 
 DragonNet adds a third head that predicts $D$ from $\Phi(x)$. By the balancing property of the propensity score
 (Meeting~7), conditioning on $e(X)$ suffices for adjustment, so a representation need only keep the information that
-predicts treatment and outcome; the propensity head pushes $\Phi$ to keep it. A \emph{targeted regularisation} term adds
+predicts treatment and outcome; the propensity head pushes $\Phi$ to keep it. A \emph{targeted regularization} term adds
 a one-parameter correction that makes the final estimate behave like the doubly robust (AIPW) estimator. The
 architecture's gains are in estimation efficiency; identification still rests on conditional independence and
 overlap.
@@ -138,7 +138,7 @@ Semi-synthetic benchmarks (IHDP, ACIC) simulate outcomes on real covariates so t
 (2021) show that rankings on them can reflect how the outcomes were simulated rather than real-world performance; for
 example, benchmarks whose effects are simple functions of features that the response surfaces also use reward
 architectures that share structure across arms. Evaluate on the decision instead: the value of the targeting policy a
-model implies, on held-out randomised data (Meeting~5), and the calibration test of Meeting~4.
+model implies, on held-out randomized data (Meeting~5), and the calibration test of Meeting~4.
 
 \begin{pitfall}[reading a deep-learning causal claim]
 Treating representation balance as overlap; treating a VAE's latent variable as a measured confounder; ranking models
@@ -166,7 +166,7 @@ The balance came from mapping chains onto small restaurants (Result~\ref{prop:hi
 baseline.
 
 \paragraph{Step 3: what the data support.} Report effects for (a) and (b), where overlap holds, and state that the logs say
-nothing about chains. To learn the chain effect, randomise the slot among chains for a few weeks.
+nothing about chains. To learn the chain effect, randomize the slot among chains for a few weeks.
 
 \begin{exercise}[computation]
 In Result~\ref{prop:nonid}, change model B so that $\Pr(D=1 \mid U) = 0.3 + 0.4U$. Find $\Pr(Y=1 \mid U)$ (as $a_0 + (a_1 - a_0)U$)
@@ -176,14 +176,14 @@ that reproduces $\Pr(Y=1 \mid D=1) = 0.6$ and $\Pr(Y=1 \mid D=0) = 0.4$ with no 
 $0.3a_1 + 0.7a_0 = 0.4$: $a_1 - a_0 = 0.5$ and $a_0 = 0.25$, so $a_1 = 0.75$. Both lie in $[0,1]$, so a confounder of this
 strength explains the whole association. A weaker link between $U$ and $D$ needs a stronger $U$--$Y$ link.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 The vendor says its foundation model ``was validated on 200 benchmark datasets with known effects''. List three
 questions you would ask before using its estimates for QuickBite's slot pricing.
 \end{exercise}
 \answer{(1) Were the benchmark datasets generated by a prior similar to the vendor's training prior (if so, validation is
 circular)? (2) Does the model's prior assume no unmeasured confounding, and is that plausible for slots sold by a sales
 team? (3) How does it behave where overlap fails, such as chains: does it flag non-identification or extrapolate? Also:
-can it be validated against a QuickBite randomised test?}
+can it be validated against a QuickBite randomized test?}
 
 %=====================================================================================
 \sectionthree
@@ -193,7 +193,7 @@ can it be validated against a QuickBite randomised test?}
 \reading{Shalit, Johansson and Sontag (2017), ``Estimating individual treatment effect: generalization bounds and
 algorithms'', \emph{ICML}}{TARNet and CFR, with the error bound that motivates balancing}{Sections 1--4}{3}
 \reading{Shi, Blei and Veitch (2019), ``Adapting neural networks for the estimation of treatment effects'',
-\emph{NeurIPS}}{DragonNet and targeted regularisation}{Sections 1--3}{3}
+\emph{NeurIPS}}{DragonNet and targeted regularization}{Sections 1--3}{3}
 \reading{Louizos et al.\ (2017), ``Causal effect inference with deep latent-variable models'', \emph{NeurIPS}}{The CEVAE
 proposal}{Sections 1--3}{3}
 \reading{Rissanen and Marttinen (2021), ``A critical look at the consistency of causal estimation with deep latent

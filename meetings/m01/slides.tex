@@ -70,7 +70,7 @@
 
 % ── Title ──
 \title[Meeting 1]{Meeting 1: The Coupon and the Coin}
-\subtitle{Causal basics: estimands, selection bias, randomisation and causal graphs}
+\subtitle{Causal basics: estimands, selection bias, randomization and causal graphs}
 \author{Zhikun Lu}
 \date{\today}
 
@@ -101,7 +101,7 @@
 \begin{enumerate}
   \setcounter{enumi}{6}
   \item Chains, forks and colliders; open and blocked paths
-  \item Backdoor paths and adjustment; standardisation
+  \item Backdoor paths and adjustment; standardization
   \item Simpson's paradox on a win-back campaign
   \item Data roles: what may be a control
   \item From the coin to an estimate: difference in means, OLS, the break-even test
@@ -124,7 +124,7 @@
     active/.style={box, fill=sbgreen!20, draw=sbgreen, very thick},
     inactive/.style={box, fill=gray!10, draw=gray!50}
 ]
-\node[active] (A) {\textbf{M1--M6}\\[2pt] A randomised control group\\[3pt] \emph{anything} may be unobserved};
+\node[active] (A) {\textbf{M1--M6}\\[2pt] A randomized control group\\[3pt] \emph{anything} may be unobserved};
 \node[inactive, right=of A] (B) {\textbf{M7--M8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
 \node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] A simulator learned from logs\\[3pt] the M7 assumption, made explicit};
 \node[inactive, right=of C] (D) {\textbf{M10--M11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
@@ -428,7 +428,7 @@ More customers help us estimate \textbf{averages}. They never reveal A's missing
 
 \medskip
 
-\small ``Would the outcome have differed if this person had been perceived as white?'' has no intervention that holds everything else fixed. Audit studies randomise a \emph{signal} instead: Bertrand and Mullainathan (2004) assigned names at random to comparable r\'esum\'es. The estimand is the effect of the signal on the reader's decision.
+\small ``Would the outcome have differed if this person had been perceived as white?'' has no intervention that holds everything else fixed. Audit studies randomize a \emph{signal} instead: Bertrand and Mullainathan (2004) assigned names at random to comparable r\'esum\'es. The estimand is the effect of the signal on the reader's decision.
 \end{frame}
 
 % ====================================================================
@@ -616,7 +616,7 @@ Same coupon, same customers. The sign is set by \textbf{who was chosen}. Keep (b
 $D \indep \{Y(0), Y(1)\}$ and $0 < \Pr(D=1) < 1$.
 \end{assumption}
 
-\begin{result}{1.9}{Identification by randomisation}
+\begin{result}{1.9}{Identification by randomization}
 Under SUTVA and random assignment, $\ATE = \E[Y \mid D=1] - \E[Y \mid D=0]$, and $\ATE = \ATT = \ATU$.
 \end{result}
 
@@ -877,9 +877,9 @@ Suppose a set $X$ of variables (i) contains nothing caused by $D$ and (ii) block
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Standardisation, and the Coin as Graph Surgery}
+\begin{frame}{Standardization, and the Coin as Graph Surgery}
 
-The formula in Result 1.11 is \textbf{standardisation}: compare within levels of $X$, then average with the population's weights. Using the treated units' weights instead gives the ATT.
+The formula in Result 1.11 is \textbf{standardization}: compare within levels of $X$, then average with the population's weights. Using the treated units' weights instead gives the ATT.
 
 \bigskip
 
@@ -926,7 +926,7 @@ An association can \textbf{reverse} when the data are split by a third variable.
 \toprule
 \textbf{The third variable is} & \textbf{Graph} & \textbf{Right comparison} \\
 \midrule
-a fork (common cause of $D$ and $Y$) & $D \leftarrow F \to Y$ & within its levels, then standardise \\
+a fork (common cause of $D$ and $Y$) & $D \leftarrow F \to Y$ & within its levels, then standardize \\
 a mediator & $D \to M \to Y$ & pooled; splitting is wrong \\
 a collider & $D \to C \leftarrow Y$ & pooled; splitting is wrong \\
 \bottomrule
@@ -971,14 +971,14 @@ Which comparison answers ``did the coupon help''?
 % ====================================================================
 \begin{frame}{The Segment Is a Fork}
 
-Activity drove who got a coupon and drives purchases, and the coupon cannot change a customer's Q2 segment. It is a fork: compare within segments and standardise (Result 1.11).
+Activity drove who got a coupon and drives purchases, and the coupon cannot change a customer's Q2 segment. It is a fork: compare within segments and standardize (Result 1.11).
 
 \bigskip
 
 \begin{center}
 \begin{tabular}{lll}
 \toprule
-\textbf{Estimand} & \textbf{Weights} & \textbf{Standardised effect} \\
+\textbf{Estimand} & \textbf{Weights} & \textbf{Standardized effect} \\
 \midrule
 ATE & all 10{,}000 members & $(5{,}000 \times 0.05 + 5{,}000 \times 0.20)/10{,}000 = 0.125$ \\
 ATT & the 5{,}000 coupon holders & $(1{,}000 \times 0.05 + 4{,}000 \times 0.20)/5{,}000 = 0.17$ \\
@@ -1087,7 +1087,7 @@ Do-not-disturb & 45 & 55 \\
 \hatt = \frac{155 + 105}{500} - \frac{145 + 55}{500} = 0.52 - 0.40 = \mathbf{0.12} \qquad \text{(true: } 0.10\text{)}
 \]
 
-\textbf{Nothing is broken.} Unbiasedness is a statement about all the draws the seed could make, not about this one. The collection of $\hatt$ over every possible draw is the \textbf{randomisation distribution}: its centre is $\tau_S$, and its spread is what a standard error estimates (Meeting 2).
+\textbf{Nothing is broken.} Unbiasedness is a statement about all the draws the seed could make, not about this one. The collection of $\hatt$ over every possible draw is the \textbf{randomization distribution}: its center is $\tau_S$, and its spread is what a standard error estimates (Meeting 2).
 \end{frame}
 
 % ====================================================================
@@ -1105,7 +1105,7 @@ In the least-squares fit of $Y_i = \alpha + \beta D_i + \varepsilon_i$, \quad $\
 \textbf{Data} & $\hat\beta$ & \textbf{Causal?} \\
 \midrule
 Marketing's pilot & $0.44$ & \textcolor{warnred}{no}: the assignment was a choice \\
-Q2 randomised test & $0.10$ & \textcolor{sbgreen}{yes}: the assignment was a coin \\
+Q2 randomized test & $0.10$ & \textcolor{sbgreen}{yes}: the assignment was a coin \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1133,7 +1133,7 @@ Back to the rollout decision. The Q2 coupon arm bought at $p_1 = 0.50$:
 & \textbf{Lift} & \textbf{Break-even} & \textbf{Net per coupon} \\
 \midrule
 Marketing's pilot & $0.44$ & $0.227$ & \textcolor{sbgreen}{$+$\textyen 6.40} \\
-Q2 randomised test & $0.10$ & $0.167$ & \textcolor{warnred}{$0.10 \times 30 - 5 = -$\textyen 2.00} \\
+Q2 randomized test & $0.10$ & $0.167$ & \textcolor{warnred}{$0.10 \times 30 - 5 = -$\textyen 2.00} \\
 \bottomrule
 \end{tabular}
 \end{center}

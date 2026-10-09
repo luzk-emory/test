@@ -14,7 +14,7 @@ a weighted combination of untreated units that tracks the treated unit before th
   \item justify it with a factor model and say why a long, close pre-period fit matters;
   \item design before the post-period: donor pool, fitting window, held-out check;
   \item use in-space and in-time placebos and leave-one-out, and say when a placebo rank is a $p$-value;
-  \item recognise its limits (extreme units, spillovers, anticipation) and relate it to DiD, synthetic DiD and matrix completion.
+  \item recognize its limits (extreme units, spillovers, anticipation) and relate it to DiD, synthetic DiD and matrix completion.
 \end{goals}
 
 %=====================================================================================
@@ -32,13 +32,13 @@ faster-growing, more seasonal), the average donor is a poor counterfactual, and 
 \subsection{The estimator}
 
 \begin{defn}{Synthetic control}{sc}
-Choose weights $w = (w_2, \dots, w_{J+1})$ to minimise $\sum_{t=1}^{T_0}\big(Y_{1t} - \sum_j w_jY_{jt}\big)^2$ subject to $w_j \ge 0$ and
+Choose weights $w = (w_2, \dots, w_{J+1})$ to minimize $\sum_{t=1}^{T_0}\big(Y_{1t} - \sum_j w_jY_{jt}\big)^2$ subject to $w_j \ge 0$ and
 $\sum_j w_j = 1$. The synthetic control is $\hat Y_{1t}(\infty) = \sum_j w_jY_{jt}$, and $\hatt_t = Y_{1t} - \hat Y_{1t}(\infty)$ for $t > T_0$.
 \end{defn}
 
 Pre-treatment covariates (population, income) can be matched along with pre-period outcomes. Non-negative weights summing to one make the
 synthetic unit an \emph{interpolation}: a point inside the donors' range. Unconstrained weights, as in a regression, can fit the pre-period
-exactly with combinations that have no real-world analogue and behave wildly afterwards. The constraints also make the solution sparse
+exactly with combinations that have no real-world analog and behave wildly afterwards. The constraints also make the solution sparse
 and explainable: ``the synthetic city is 51\% city F, 26\% city E and 22\% city D''.
 
 \subsection{Why a close pre-period fit is evidence}
@@ -80,7 +80,7 @@ random among the $J+1$ units, and there is no effect, then the probability that 
 $p$-value of $k/(J+1)$.
 \end{prop}
 \begin{proof}
-Under no effect and random choice of the treated unit, the $J+1$ ratios are exchangeable with respect to which unit is labelled treated, so each rank
+Under no effect and random choice of the treated unit, the $J+1$ ratios are exchangeable with respect to which unit is labeled treated, so each rank
 is equally likely for the treated unit.
 \end{proof}
 
@@ -96,7 +96,7 @@ date. \emph{Leave-one-out} refits without each positive-weight donor; if the est
   \item \textbf{Extreme treated units.} If the treated unit is the largest or fastest-growing, no convex combination reaches it; the pre-period gap is
   large and the method should not be used as is. Flagship units are exactly this case.
   \item \textbf{Spillovers} to donors (lost orders to the treated city) bias the gap upwards.
-  \item \textbf{Anticipation}: date $T_0$ to the announcement if behaviour changed then.
+  \item \textbf{Anticipation}: date $T_0$ to the announcement if behavior changed then.
   \item \textbf{Local shocks} coinciding with treatment look like effects. Where untreated units share the area but not the treatment, check them
   for a gap at the same date.
 \end{itemize}
@@ -187,13 +187,13 @@ Verify the synthetic value for quarter 12 from the weights, and the quarter-12 g
 \answer{$0.223 \times 16.4 + 0.264 \times 39.3 + 0.513 \times 21.3 = 3.66 + 10.38 + 10.93 = 24.96$ with the rounded weights ($24.97$ with
 unrounded ones); gap $27.4 - 24.97 = 2.43$.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 QuickBite's next launch will be in its largest city, which has twice the order rate of any other. Can synthetic control evaluate it? What would you
 propose?
 \end{exercise}
 \answer{Probably not: no convex combination of smaller cities reaches it, so the pre-period fit will be poor and the gap will mix the effect with the
 misfit. Options: match on log outcomes or per-capita rates if the shape, not the level, is what matters; use synthetic DiD (which allows a level shift)
-or augmented synthetic control; or randomise the launch within the city (by district, with staggered dates) so the comparison is designed rather
+or augmented synthetic control; or randomize the launch within the city (by district, with staggered dates) so the comparison is designed rather
 than constructed.}
 
 %=====================================================================================
@@ -218,7 +218,7 @@ $\mathbf Y(\infty) = \mathbf L + \boldsymbol\varepsilon$ with $\mathbf L$ of low
 \[
   \hat{\mathbf L} = \arg\min_{\mathbf L} \sum_{(i,t)\ \text{untreated}} (Y_{it} - L_{it})^2 + \lambda\,\|\mathbf L\|_\ast ,
 \]
-where $\|\cdot\|_\ast$, the sum of singular values, favours low rank. Treated cells' counterfactuals are read from $\hat{\mathbf L}$. Unit and time fixed effects are a
+where $\|\cdot\|_\ast$, the sum of singular values, favors low rank. Treated cells' counterfactuals are read from $\hat{\mathbf L}$. Unit and time fixed effects are a
 rank-two special case (DiD); synthetic control and horizontal regressions are other special patterns. It uses all the untreated cells, including
 treated units' pre-periods and donors' whole histories, and suits staggered adoption.
 

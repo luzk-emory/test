@@ -89,7 +89,7 @@
 \textbf{Block A: Experiments I, estimation}
 \begin{enumerate}
   \item What we are uncertain about: one draw of the coin
-  \item Analyse as drawn; check the draw before the outcome
+  \item Analyze as drawn; check the draw before the outcome
   \item Fisher's test and Neyman's variance; the conservative SE
   \item The same formula read for a population
   \item Test against the break-even; an interval on net value
@@ -132,7 +132,7 @@ No coupon & 500 & 200 & 0.40 \\
 
 \bigskip
 
-\textbf{Marketing:} \emph{``It was randomised, and it's significant. The coupon works. Roll it out.''}
+\textbf{Marketing:} \emph{``It was randomized, and it's significant. The coupon works. Roll it out.''}
 
 \medskip
 
@@ -196,7 +196,7 @@ Needs & nothing but the draw log & a sampling assumption \\
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Analyse as Drawn}
+\begin{frame}{Analyze as Drawn}
 
 Marketing proposes a ``cleaner'' comparison: drop members who never opened the app during the test, \emph{``they never saw the coupon''}.
 
@@ -219,7 +219,7 @@ The difference over \emph{all} drawn members is the effect of \textbf{assignment
 % ====================================================================
 \begin{frame}{Check the Draw Before Reading the Outcome}
 
-\textbf{Sample-ratio mismatch.} Compare the realised arm sizes with the planned allocation:
+\textbf{Sample-ratio mismatch.} Compare the realized arm sizes with the planned allocation:
 \[
 \chi^2 = \sum_d \frac{(n_d - \E n_d)^2}{\E n_d} \quad \text{(one degree of freedom)}.
 \]
@@ -245,7 +245,7 @@ A tiny $p$-value (in practice below about $0.001$) means the draw or the logging
 % ====================================================================
 \begin{frame}{Fisher: Could the Draw Alone Explain It?}
 
-\begin{result}{1.1}{Randomisation test of the sharp null}
+\begin{result}{1.1}{Randomization test of the sharp null}
 Under the sharp null $Y_i(1) = Y_i(0)$ for every $i$, the observed outcomes are both potential outcomes, so the distribution of any statistic over the $\binom{n}{n_1}$ equally likely draws is known exactly. The $p$-value is the share of draws giving a statistic at least as extreme as the observed one.
 \end{result}
 
@@ -299,7 +299,7 @@ True SD over draws $= \mathbf{0.026}$; the usual SE $= \mathbf{0.031}$.
   xtick={0,0.05,0.10,0.15,0.20}, xticklabel style={/pgf/number format/fixed, font=\scriptsize}]
 \addplot[thick, sbgreen] {exp(-(x-0.10)^2/(2*0.026^2))/(0.026*sqrt(2*pi))};
 \addplot[thick, dashed, noteblue] {exp(-(x-0.10)^2/(2*0.031^2))/(0.031*sqrt(2*pi))};
-\legend{true randomisation distribution (SD $0.026$), normal with the usual SE ($0.031$)}
+\legend{true randomization distribution (SD $0.026$), normal with the usual SE ($0.031$)}
 \end{axis}
 \end{tikzpicture}
 \end{center}
@@ -477,7 +477,7 @@ Campaign B has a higher lift than the base and \textbf{still loses}: its break-e
 \begin{frame}{End of Block A}
 
 \begin{itemize}
-  \item Analyse the arms as drawn; check the arm sizes before any outcome.
+  \item Analyze the arms as drawn; check the arm sizes before any outcome.
   \item Fisher asks whether the draw alone could explain the gap. Neyman says how far one draw lands; the usual SE is conservative for a fixed population (0.031 against a true 0.026).
   \item Test against the break-even, or better, put the interval on net value: Q2 works and does not pay, $-$\textyen 2.00 [$-$3.56, $-$0.44].
   \item Another population is another estimand, reached only by an assumption; move the break-even with it.
@@ -529,7 +529,7 @@ The test must tell $0.20$ from $0.10$: its \textbf{minimum detectable effect} (M
 Unit and allocation & member; 175 / 175 by a seeded draw \\
 Outcome and window & any purchase within 7 days, for every drawn member \\
 Decision threshold & test against $0.10$, not $0$; report net value \\
-Sample size, stopping rule & 175 per arm; analyse once, at the end \\
+Sample size, stopping rule & 175 per arm; analyze once, at the end \\
 Exposure logging, guardrails & coupon delivery logged; unsubscribe rate watched \\
 \bottomrule
 \end{tabular}
@@ -588,10 +588,10 @@ Two ways out: wait a quarter for more lapsed members, or \textbf{make each membe
 % ====================================================================
 \begin{frame}{Variance Reduction With a Pre-Treatment Covariate}
 
-Let $X$ be fixed before the draw (Q1 purchases) and analyse $Y^{\text{cv}} = Y - \theta(X - \bar X)$.
+Let $X$ be fixed before the draw (Q1 purchases) and analyze $Y^{\text{cv}} = Y - \theta(X - \bar X)$.
 
 \begin{result}{1.9}{CUPED}
-For any fixed $\theta$, $\hatt^{\text{cv}} = \hatt - \theta(\bar X_1 - \bar X_0)$ is unbiased over the draw. Within an arm, $\Var(Y - \theta X)$ is minimised at $\theta^\ast = \Cov(Y,X)/\Var(X)$, where it equals $\Var(Y)(1-\rho^2)$, $\rho = \mathrm{Corr}(Y, X)$.
+For any fixed $\theta$, $\hatt^{\text{cv}} = \hatt - \theta(\bar X_1 - \bar X_0)$ is unbiased over the draw. Within an arm, $\Var(Y - \theta X)$ is minimized at $\theta^\ast = \Cov(Y,X)/\Var(X)$, where it equals $\Var(Y)(1-\rho^2)$, $\rho = \mathrm{Corr}(Y, X)$.
 \end{result}
 
 \begin{itemize}
@@ -661,11 +661,11 @@ For a cluster of $m$ units with common variance $\sigma^2$ and pairwise correlat
 \text{DEFF} = 1 + 399 \times 0.01 = 4.99, \qquad \sqrt{4.99} = 2.23, \qquad 20{,}000/4.99 \approx 4{,}000 .
 \]
 
-A correlation of one per cent makes the correct SE 2.2 times the customer-level one: 20{,}000 customers carry the information of about 4{,}000. The coin was tossed 50 times, not 20{,}000.
+A correlation of one percent makes the correct SE 2.2 times the customer-level one: 20{,}000 customers carry the information of about 4{,}000. The coin was tossed 50 times, not 20{,}000.
 
 \medskip
 
-\small Compare store means, or cluster the SE by store. With fewer than about 40 clusters, use small-sample corrections or randomisation inference over store assignments.
+\small Compare store means, or cluster the SE by store. With fewer than about 40 clusters, use small-sample corrections or randomization inference over store assignments.
 \end{frame}
 
 % ====================================================================
@@ -705,7 +705,7 @@ The 5\% error rate holds for \textbf{one look} at a sample size fixed in advance
 
 \bigskip
 
-\small For the lapsed test: the stopping rule is ``analyse once, at the end'', and the primary metric is purchase within 7 days. A daily dashboard is a guardrail, not a decision rule.
+\small For the lapsed test: the stopping rule is ``analyze once, at the end'', and the primary metric is purchase within 7 days. A daily dashboard is a guardrail, not a decision rule.
 \end{frame}
 
 % ====================================================================
@@ -754,7 +754,7 @@ $D(1) \ge D(0)$ for every unit: nobody takes the treatment because they were \em
 
 \bigskip
 
-Neither assumption is checkable from the data. Exclusion is argued from the design: here, a notification that does not show the amount. Monotonicity is argued from behaviour; here it holds trivially, because nobody in the control arm can see a coupon.
+Neither assumption is checkable from the data. Exclusion is argued from the design: here, a notification that does not show the amount. Monotonicity is argued from behavior; here it holds trivially, because nobody in the control arm can see a coupon.
 \end{frame}
 
 % ====================================================================
@@ -883,7 +883,7 @@ Effect of seeing it? & member & 500/arm & ITT$/\pi$ & LATE $0.125$: \textcolor{w
 \bigskip
 
 \begin{pitfall}{what no standard error can fix}
-Excluding units on post-assignment behaviour; reading a test with a sample-ratio mismatch; analysing a store-randomised test with customer-level SEs; stopping when the dashboard turns green; reporting whichever of twenty metrics moved.
+Excluding units on post-assignment behavior; reading a test with a sample-ratio mismatch; analyzing a store-randomized test with customer-level SEs; stopping when the dashboard turns green; reporting whichever of twenty metrics moved.
 \end{pitfall}
 \end{frame}
 
@@ -892,7 +892,7 @@ Excluding units on post-assignment behaviour; reading a test with a sample-ratio
 
 \begin{itemize}
     \item \spinestep{Estimand.} The Q2 estimand is the region's average effect, a fixed number. Another list is another estimand, reached by a transport assumption; move the break-even with it.
-    \item \spinestep{Identification.} The draw, as in Meeting 1. Analyse as drawn: ``openers only'' undoes it. With noncompliance the draw still identifies the ITT; the LATE needs exclusion and monotonicity too.
+    \item \spinestep{Identification.} The draw, as in Meeting 1. Analyze as drawn: ``openers only'' undoes it. With noncompliance the draw still identifies the ITT; the LATE needs exclusion and monotonicity too.
     \item \spinestep{Uncertainty from the design.} Fisher: could the draw alone explain the gap? Neyman: how far one draw lands. The SE lives at the level the coin was tossed.
     \item \textbf{Significant is not profitable.} Put the interval on net value. Q2 works and does not pay.
     \item \textbf{Design for the question.} The MDE is 2.8 SEs and must fit inside the gap to break-even; CUPED buys precision with a pre-period column; fix the plan before the first coupon goes out.

@@ -93,10 +93,10 @@
 \begin{column}{0.48\textwidth}
 \textbf{Block A: Identification and adjustment}
 \begin{itemize}
-  \item The programme on trial; the break-even
+  \item The program on trial; the break-even
   \item Selection by the rule: pooled and within
   \item Exchangeability, overlap, consistency
-  \item Standardisation (the g-formula)
+  \item Standardization (the g-formula)
   \item Inverse-probability weighting
   \item The balancing property
   \item What regression adjustment estimates
@@ -123,13 +123,13 @@
 % ====================================================================
 
 % [RELEASE R1: the Q3 programme, sales' table and Lin's four sentences]
-\begin{frame}{The Programme on Trial}
+\begin{frame}{The Program on Trial}
 
 In Q3 the chain's \textbf{automated campaign engine} (Meeting 5) sent the \textbf{5{,}000} \textyen 10 coupons, half of the 10{,}000-member base. It chose members by a \textbf{score} built from recency, tier and spend, throttled by a daily contact cap.
 
 \bigskip
 
-The CFO wants the programme reviewed. Sales has pulled the Q3 logs:
+The CFO wants the program reviewed. Sales has pulled the Q3 logs:
 
 \begin{center}
 \begin{tabular}{lrr}
@@ -188,7 +188,7 @@ Treatment $D$ (coupon), outcome $Y$ (purchase), pre-treatment covariates $X$ (th
 
 \medskip
 
-\textbf{The CFO's question}, ``keep the programme as it ran?'', is about the members who got coupons: the \textbf{ATT}, held against $\tau^\ast = 0.133$.
+\textbf{The CFO's question}, ``keep the program as it ran?'', is about the members who got coupons: the \textbf{ATT}, held against $\tau^\ast = 0.133$.
 \end{frame}
 
 % ====================================================================
@@ -286,13 +286,13 @@ For the ATT a weaker pair suffices: $Y(0) \indep D \mid X$ and $e(x) < 1$. Recip
 
 \medskip
 
-Randomisation (Meetings 1 to 6) delivered the first two by design. Today they must be \textbf{argued}.
+Randomization (Meetings 1 to 6) delivered the first two by design. Today they must be \textbf{argued}.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{The Assumptions, Sentence by Sentence}
 
-From Lin's description of the Q3 programme:
+From Lin's description of the Q3 program:
 
 \begin{center}
 \small
@@ -318,9 +318,9 @@ From Lin's description of the Q3 programme:
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Standardisation}
+\begin{frame}{Standardization}
 
-\begin{result}{1.4}{Standardisation (the g-formula)}
+\begin{result}{1.4}{Standardization (the g-formula)}
 Under Assumptions 1.1--1.3, $\E[Y(d)] = \E_X[\mu_d(X)]$, so $\ATE = \E_X[\mu_1(X) - \mu_0(X)]$ and $\ATT = \E[Y - \mu_0(X) \mid D = 1]$.
 \end{result}
 
@@ -332,8 +332,8 @@ Within each $x$ the arms are comparable, so the within-cell difference is a caus
 
 \begin{itemize}
   \item The ATT form needs only $\mu_0$, evaluated at the \textbf{recipients'} $x$: exactly where non-recipients may be scarce.
-  \item With two segments, $\mu_0$ and $\mu_1$ are four cell means and standardisation is arithmetic.
-  \item With 14 fields, $\mu_d$ must be modelled (\textbf{g-computation}). The model fills in every $x$, including those where one arm is empty, and will not report where it is extrapolating.
+  \item With two segments, $\mu_0$ and $\mu_1$ are four cell means and standardization is arithmetic.
+  \item With 14 fields, $\mu_d$ must be modeled (\textbf{g-computation}). The model fills in every $x$, including those where one arm is empty, and will not report where it is extrapolating.
 \end{itemize}
 \end{frame}
 
@@ -348,7 +348,7 @@ The same two cell effects, $0.05$ and $0.20$, weighted three ways:
 \textbf{Estimand} & \textbf{Weights (active / lapsed)} & \textbf{Value} & \textbf{Answers} \\
 \midrule
 ATE & everyone: $0.5 / 0.5$ & $0.125$ & ``coupon everyone?'' \\
-ATT & recipients: $0.2 / 0.8$ & $\mathbf{0.17}$ & ``keep the programme as run?'' \\
+ATT & recipients: $0.2 / 0.8$ & $\mathbf{0.17}$ & ``keep the program as run?'' \\
 ATU & non-recipients: $0.8 / 0.2$ & $0.08$ & ``extend it to the rest?'' \\
 \bottomrule
 \end{tabular}
@@ -371,7 +371,7 @@ Couponing everyone is a different estimand \textbf{and a different break-even}, 
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Weighting Instead of Modelling}
+\begin{frame}{Weighting Instead of Modeling}
 
 \begin{result}{1.5}{The IPW identity}
 Under Assumptions 1.1--1.3, $\E[DY/e(X)] = \E[Y(1)]$ and $\E[(1-D)Y/(1-e(X))] = \E[Y(0)]$. Under the weaker ATT conditions,
@@ -447,7 +447,7 @@ $D \indep X \mid e(X)$; hence if exchangeability holds given $X$, it holds given
 % ====================================================================
 \begin{frame}{What Regression Adjustment Estimates}
 
-$Y = \alpha + \tau D + X^\top\beta + \varepsilon$ is standardisation with two restrictions: $\mu_0$ linear in $X$ (else residual confounding is attributed to $D$), and a constant effect (else the coefficient matches none of the three estimands).
+$Y = \alpha + \tau D + X^\top\beta + \varepsilon$ is standardization with two restrictions: $\mu_0$ linear in $X$ (else residual confounding is attributed to $D$), and a constant effect (else the coefficient matches none of the three estimands).
 
 \begin{result}{1.7}{Variance-weighted estimand}
 If $\mu_0(X) = X^\top\beta$ exactly and effects vary, the OLS coefficient on $D$ converges to $\E[\tau(X)\,e(X)(1-e(X))]/\E[e(X)(1-e(X))]$.
@@ -458,7 +458,7 @@ If $\mu_0(X) = X^\top\beta$ exactly and effects vary, the OLS coefficient on $D$
 \hatt_{\text{OLS}} = \tfrac12(0.05 + 0.20) = 0.125 .
 \]
 
-The right control, the wrong estimand: $0.125 < 0.133$ says \textcolor{warnred}{kill}; the ATT, $0.17$, says \textcolor{sbgreen}{keep}. The weights are largest where the rule was least decided ($e$ near $0.5$). Interacting $D$ with centred $X$, or standardising, targets the ATE or ATT instead.
+The right control, the wrong estimand: $0.125 < 0.133$ says \textcolor{warnred}{kill}; the ATT, $0.17$, says \textcolor{sbgreen}{keep}. The weights are largest where the rule was least decided ($e$ near $0.5$). Interacting $D$ with centered $X$, or standardizing, targets the ATE or ATT instead.
 \end{frame}
 
 % ====================================================================
@@ -495,7 +495,7 @@ A junior analyst: \emph{``Members who never open the app cannot see the coupon. 
 
 \bigskip
 
-Take a clean case: 1{,}000 members, coupon \textbf{randomised} 50/50, and a coupon with \textbf{no effect at all}.
+Take a clean case: 1{,}000 members, coupon \textbf{randomized} 50/50, and a coupon with \textbf{no effect at all}.
 \begin{itemize}
   \item Half the members have high intent and buy regardless; half have low intent and never buy.
   \item A member opens the app if they received a coupon \textbf{or} have high intent.
@@ -531,7 +531,7 @@ Among app openers:
 \Large ``Effect'' $= \textcolor{warnred}{-0.50}$ \quad for a true effect of $\mathbf{0}$.
 \end{center}
 
-The coupon was randomised: there was no confounding to fix. Opening the app is caused by the coupon \emph{and} by intent, so restricting to openers keeps every recipient but only the high-intent non-recipients (Meeting 1, collider result).
+The coupon was randomized: there was no confounding to fix. Opening the app is caused by the coupon \emph{and} by intent, so restricting to openers keeps every recipient but only the high-intent non-recipients (Meeting 1, collider result).
 
 \medskip
 
@@ -544,7 +544,7 @@ The coupon was randomised: there was no confounding to fix. Opening the app is c
 \begin{itemize}
   \item The engine's rule is the assignment mechanism: $e(x)$ is the rule. It confounds by construction: $-0.22$ pooled, $+0.05$ and $+0.20$ within segment.
   \item Exchangeability is a claim about how decisions were made; overlap is checkable.
-  \item Standardisation and IPW identify the same quantities from the outcome side and the assignment side. The CFO needs the ATT: $0.17 > 0.133$, \textyen 1.10 per coupon.
+  \item Standardization and IPW identify the same quantities from the outcome side and the assignment side. The CFO needs the ATT: $0.17 > 0.133$, \textyen 1.10 per coupon.
   \item The ATT rests on 1{,}538 effective non-recipients of 5{,}000. One number, $e(x)$, can stand in for all of $X$.
   \item Regression with the right control returns $0.125$: a variance-weighted average, and the wrong decision.
   \item Choose controls by timing and cause: the app-open column manufactures $-0.50$ from nothing.
@@ -682,7 +682,7 @@ Effective non-recipients & 203 of 5{,}000 & 2{,}225 of 4{,}950 \\
 
 \medskip
 
-Trimming stabilises the estimate but \textbf{changes the estimand}: the ATT for the 2{,}550 recipients in bands 1 to 3, a population twice as active as the programme's. It must be reported as such:
+Trimming stabilizes the estimate but \textbf{changes the estimand}: the ATT for the 2{,}550 recipients in bands 1 to 3, a population twice as active as the program's. It must be reported as such:
 
 \begin{center}
 \emph{``Members in the top score band, 98\% of whom received a coupon, are excluded.''}
@@ -700,7 +700,7 @@ Every choice so far was made without a purchase in sight, and should be (Rubin, 
   \item \textbf{Assignment mechanism:} $\hat e$ by band, from the coupon column.
   \item \textbf{Overlap:} band 4 rests on 50 non-recipients; trim at $[0.05, 0.95]$.
   \item \textbf{Estimand and estimator:} the ATT for bands 1 to 3 by H\'ajek IPW; band 4 reported on its own.
-  \item \textbf{Balance}, standardised mean difference of the lapsed share:
+  \item \textbf{Balance}, standardized mean difference of the lapsed share:
   \[
   \text{before: } \frac{0.80 - 0.20}{\sqrt{(0.16 + 0.16)/2}} = 1.50; \quad \text{after ATT weighting, both arms are } 80\% \text{ lapsed: } 0 .
   \]
@@ -738,7 +738,7 @@ The observational counterpart of the frozen partition (Meeting 4) and the frozen
 \midrule
 Pooled difference & nothing causal & $-0.22$ \\
 OLS on coupon and band dummies & variance-weighted: band 4 gets 49 of 1{,}366 & $0.120$ \\
-Standardisation by segment & ATT; band 4's $\mu_0$ learned mostly from band 3 & $0.17$ \\
+Standardization by segment & ATT; band 4's $\mu_0$ learned mostly from band 3 & $0.17$ \\
 H\'ajek IPW by band & ATT, all recipients (SE $0.022$) & $0.17$ \\
 H\'ajek IPW, trimmed & ATT, bands 1 to 3 (SE $0.011$) & $0.141$ \\
 \bottomrule
@@ -758,7 +758,7 @@ Each population has its own break-even, $\tau^\ast = 10\,\E[Y(1) \mid D=1]/30$:
 \toprule
 \textbf{Recipients} & \textbf{Members} & \textbf{Lift} & $\E[Y(1) \mid D=1]$ & $\tau^\ast$ & \textbf{Net per coupon} \\
 \midrule
-All (the programme) & 5{,}000 & 0.17 & 0.40 & 0.133 & \textcolor{sbgreen}{$+$\textyen 1.10} \\
+All (the program) & 5{,}000 & 0.17 & 0.40 & 0.133 & \textcolor{sbgreen}{$+$\textyen 1.10} \\
 Bands 1 to 3 (trimmed) & 2{,}550 & 0.141 & 0.496 & 0.165 & \textcolor{warnred}{$-$\textyen 0.73} \\
 Band 4 & 2{,}450 & 0.20 & 0.30 & 0.100 & \textcolor{sbgreen}{$+$\textyen 3.00} \\
 \bottomrule
@@ -768,7 +768,7 @@ Band 4 & 2{,}450 & 0.20 & 0.30 & 0.100 & \textcolor{sbgreen}{$+$\textyen 3.00} \
 \medskip
 
 \begin{itemize}
-  \item The programme's profit comes from band 4, the band trimming removes and the band with the thinnest comparison.
+  \item The program's profit comes from band 4, the band trimming removes and the band with the thinnest comparison.
   \item Band 4's lift has SE $\sqrt{0.21/2{,}450 + 0.09/50} = 0.043$; its 95\% interval starts at $0.115$, still above its break-even of $0.100$.
   \item The untrimmed ATT's interval, $0.17 \pm 1.96 \times 0.022$, starts at $0.127$, below $0.133$.
 \end{itemize}
@@ -779,7 +779,7 @@ Band 4 & 2{,}450 & 0.20 & 0.30 & 0.100 & \textcolor{sbgreen}{$+$\textyen 3.00} \
 % ====================================================================
 \begin{frame}{Silent Extrapolation, Loud Weights}
 
-Standardisation does not fail visibly where overlap is thin: \textbf{the outcome model extrapolates silently}. Weighting fails loudly, with large weights and a small effective sample.
+Standardization does not fail visibly where overlap is thin: \textbf{the outcome model extrapolates silently}. Weighting fails loudly, with large weights and a small effective sample.
 
 \medskip
 
@@ -790,7 +790,7 @@ Suppose 10 of band 4's 50 non-recipients had bought, not 5:
 \toprule
 & \textbf{5 bought (the logs)} & \textbf{10 bought} \\
 \midrule
-Standardisation by segment & 0.17 & 0.166 \\
+Standardization by segment & 0.17 & 0.166 \\
 H\'ajek IPW by band & 0.17 & 0.121 \\
 \bottomrule
 \end{tabular}
@@ -820,9 +820,9 @@ for working models $\tilde\mu_d$ and $\tilde e$. Under Assumptions 1.1--1.3, $\E
 \medskip
 
 \begin{itemize}
-  \item The first two terms are standardisation; the weighted residuals correct what the outcome model got wrong.
+  \item The first two terms are standardization; the weighted residuals correct what the outcome model got wrong.
   \item Given $X$, the error is a sum of \textbf{products}: the outcome model's error times the propensity model's relative error. Each product vanishes if either model is right.
-  \item With flexible models, the estimator's error depends on the product of the two models' errors; with cross-fitting (Meeting 8) it has a valid normal approximation where neither IPW nor standardisation alone does.
+  \item With flexible models, the estimator's error depends on the product of the two models' errors; with cross-fitting (Meeting 8) it has a valid normal approximation where neither IPW nor standardization alone does.
 \end{itemize}
 \end{frame}
 
@@ -854,7 +854,7 @@ Second row: the residuals have mean zero in each segment, so wrong weights multi
 % ====================================================================
 \begin{frame}{What Double Robustness Does Not Cover}
 
-\textbf{Modelling errors, not missing variables.} Double robustness protects against a wrong $\tilde\mu_d$ or a wrong $\tilde e$. If exchangeability fails, say store managers added unrecorded ``VIP'' members to the list, every estimator today is biased: standardisation, IPW, regression and AIPW alike.
+\textbf{Modeling errors, not missing variables.} Double robustness protects against a wrong $\tilde\mu_d$ or a wrong $\tilde e$. If exchangeability fails, say store managers added unrecorded ``VIP'' members to the list, every estimator today is biased: standardization, IPW, regression and AIPW alike.
 
 \bigskip
 
@@ -873,7 +873,7 @@ Second row: the residuals have mean zero in each segment, so wrong weights multi
 % ====================================================================
 \begin{frame}{How Well Does Adjustment Work? The LaLonde Lesson}
 
-\textbf{LaLonde (1986)} took a job-training experiment, replaced its randomised control group with survey respondents, and asked whether adjustment recovered the experimental answer.
+\textbf{LaLonde (1986)} took a job-training experiment, replaced its randomized control group with survey respondents, and asked whether adjustment recovered the experimental answer.
 
 \begin{itemize}
   \item The regressions of the time missed badly, sometimes with the wrong sign.
@@ -886,7 +886,7 @@ Second row: the residuals have mean zero in each segment, so wrong weights multi
 
 \medskip
 
-At the coffee chain, the defence of the Q3 review is not the choice among IPW, standardisation and AIPW. It is that the export holds every field the score read, past purchases among them, and that within a band the cap, not the members, decided who got a coupon.
+At the coffee chain, the defense of the Q3 review is not the choice among IPW, standardization and AIPW. It is that the export holds every field the score read, past purchases among them, and that within a band the cap, not the members, decided who got a coupon.
 \end{frame}
 
 % ====================================================================
@@ -900,7 +900,7 @@ If an unmeasured $U$ shifts the purchase rate by $\gamma$ and differs between re
 \toprule
 \textbf{Conclusion} & \textbf{Estimate} & \textbf{Break-even} & \textbf{$\gamma\delta$ that overturns it} \\
 \midrule
-Keep the programme as run & 0.17 & 0.133 & 0.037 \\
+Keep the program as run & 0.17 & 0.133 & 0.037 \\
 Coupon lapsed members & 0.20 & 0.100 & 0.100 \\
 Stop coupons to active members & 0.05 & 0.267 & 0.217 \\
 \bottomrule
@@ -926,7 +926,7 @@ Adjusting for post-treatment or collider variables; trimming without restating t
 Each one has appeared today:
 \begin{itemize}
   \item the app-open column turns a coupon with no effect into $-0.50$;
-  \item trimmed, the coupon loses \textyen 0.73 per recipient; for the programme as run it earns \textyen 1.10;
+  \item trimmed, the coupon loses \textyen 0.73 per recipient; for the program as run it earns \textyen 1.10;
   \item the design record was written with the purchase column locked;
   \item band 4's $\hat e = 0.98$ is the model working, and the overlap failing;
   \item with both working models wrong, AIPW returns the pooled $-0.22$, and no model fixes an unrecorded VIP list.
@@ -937,10 +937,10 @@ Each one has appeared today:
 \begin{frame}{Summary}
 
 \begin{itemize}
-  \item \spinestep{Estimand.} Keeping the programme as it ran needs the ATT, held against its own break-even ($0.133$). Couponing everyone is the ATE against $0.183$. A trimmed analysis estimates the ATT of a different population, with a different break-even.
+  \item \spinestep{Estimand.} Keeping the program as it ran needs the ATT, held against its own break-even ($0.133$). Couponing everyone is the ATE against $0.183$. A trimmed analysis estimates the ATT of a different population, with a different break-even.
   \item \spinestep{Identification.} The engine's rule is the assignment mechanism and $e(x)$ is the rule. Exchangeability is a claim about how decisions were made; overlap is checked in the coupon column; controls are chosen by timing and cause, not correlation.
   \item \spinestep{Design.} Reconstruct the rule, check overlap, fix the trimming rule and the estimand, check balance, write it down; only then open the outcomes.
-  \item \spinestep{Estimation.} Standardisation and IPW are one identification seen from two sides; regression returns a variance-weighted average; AIPW is right if either model is. Thin overlap makes standardisation extrapolate silently and weights explode visibly.
+  \item \spinestep{Estimation.} Standardization and IPW are one identification seen from two sides; regression returns a variance-weighted average; AIPW is right if either model is. Thin overlap makes standardization extrapolate silently and weights explode visibly.
   \item \spinestep{Inference.} Report the effective sample size; bootstrap with $\hat e$ re-estimated; ask how strong a hidden confounder would have to be.
   \item \textbf{Every estimate describes a population.} Say which: here the answer is ``keep for lapsed members, stop for active ones''.
 \end{itemize}

@@ -142,15 +142,15 @@ The team draws 200 simulated datasets with the same hotels, nights and signals a
 
 ### Part M9-R3. A pipeline testbed
 
-The RM vendor offers a new engine: a boosted-tree demand model fitted to the logs, and an optimiser that posts the rate with the highest **predicted** contribution, (rate − ¥200) × bookings, night by night. Wen's analyst builds a rival: price from the DML elasticity. Both are compared with the current RM rule.
+The RM vendor offers a new engine: a boosted-tree demand model fitted to the logs, and an optimizer that posts the rate with the highest **predicted** contribution, (rate − ¥200) × bookings, night by night. Wen's analyst builds a rival: price from the DML elasticity. Both are compared with the current RM rule.
 
 The team builds a **second simulator** from the same logs, with a neural network in place of boosted trees, and the same planted truth. On each simulator, an **oracle** knows the planted demand and posts the best rate. Regret is the oracle's contribution minus the pipeline's, per hotel-night.
 
 | Pipeline | Regret, boosted simulator | Regret, neural simulator | Nights priced above ¥1,920 |
 |---|---:|---:|---:|
 | Current RM rule | ¥1,450 | ¥1,520 | 5% |
-| Vendor: predict, then optimise | ¥380 | ¥2,240 | 14% |
-| DML elasticity, then optimise | ¥690 | ¥760 | 3% |
+| Vendor: predict, then optimize | ¥380 | ¥2,240 | 14% |
+| DML elasticity, then optimize | ¥690 | ¥760 | 3% |
 
 ¥1,920 is the 95th percentile of the rates in the logs.
 
@@ -160,7 +160,7 @@ The team builds a **second simulator** from the same logs, with a neural network
 1. Rank the pipelines on each simulator. Which pipeline has the smallest worst-case regret?
 2. Why does the vendor's pipeline do best on one simulator and worst on the other?
 3. 14% of the vendor's rates lie above ¥1,920, the 95th percentile of the logged rates, where the logs are thin. What do both simulators know about bookings there? What does that do to the regret numbers on those nights?
-4. The vendor's optimiser picks, every night, the rate its model likes most. Why does that make its errors larger than its demand model's average error?
+4. The vendor's optimizer picks, every night, the rate its model likes most. Why does that make its errors larger than its demand model's average error?
 5. What does the backtest support, and what not? Would you trust either simulator more after it?
 6. Recommend a pipeline to Wen, and the check you would run when it goes live.
 
@@ -179,7 +179,7 @@ Wen did not take the 8% rise on trust. In Q3 she tested it: at 40 hotels, a coin
 
 **Bookings.** On higher-rate weeks, midweek premium bookings were **12.4% lower** (SE 1.2%).
 
-Nobody can read 10,000 reviews, so a language model labels each one: complains about price or value, yes or no. A random 200 reviews per arm were also labelled by trained staff (the gold labels).
+Nobody can read 10,000 reviews, so a language model labels each one: complains about price or value, yes or no. A random 200 reviews per arm were also labeled by trained staff (the gold labels).
 
 | | Higher rate | Current rate |
 |---|---:|---:|
@@ -199,7 +199,7 @@ In the gold subsample:
 1. Estimate the effect of the rise on complaints using the model's labels. Does it trip the guardrail?
 2. From the gold subsample: the true complaint rate in each arm, and the effect. For each arm, the share of complaints the model catches and the share of non-complaints it flags.
 3. Is the model's error the same in both arms? Read a few reviews from higher-rate nights in your head: why might it differ?
-4. Suppose the error had been the same in both arms, with the current-rate arm's two shares. What would the model-labelled effect have been, given the gold effect? In which direction does error of that kind push an estimate?
+4. Suppose the error had been the same in both arms, with the current-rate arm's two shares. What would the model-labeled effect have been, given the gold effect? In which direction does error of that kind push an estimate?
 5. Prediction-powered inference (PPI): for each arm, take the model's rate on all 5,000 reviews and correct it by the average of (gold − model) in that arm's subsample. Give the corrected rates and the effect. Its standard error is about 0.023; the gold labels alone give about 0.037. Why is PPI unbiased, even though the model's error differs between arms? Why is it more precise than the gold labels alone?
 6. Does the guardrail trip?
 7. Convert the bookings result into an elasticity, with a 95% interval. Compare it with Meeting 8's −1.56 and the break-even of −1.32.
@@ -266,7 +266,7 @@ Nightly bookings have a standard deviation of about 20.
 From Wen's description of the test:
 - "The engine drew the coin within each hotel and month; resorts drew heads more often than airport hotels."
 - "Heads changed one thing: the rate members were shown."
-- "Managers honoured most heads and added the member rate on few tails."
+- "Managers honored most heads and added the member rate on few tails."
 - "A manager could block the member rate or add it by hand; none reversed the coin."
 
 **Tasks. In pairs, commit first**
@@ -307,7 +307,7 @@ The share of nights the member rate was shown is 0.70 on heads and 0.10 on tails
 3. Compute the ratio within each kind of hotel, then pooled across both, ignoring hotel type. Why do they differ?
 4. Which controls must the analysis include, which may it include, and which must it never include?
 5. Let $a$ be the email's direct effect on bookings per heads night, whatever its size. Write the complier elasticity as a function of $a$, using the hand log with the email (ITT 6.0). How large would $a$ have to be for the member rate to stop paying? Compare it with what the old-engine hotels measured.
-6. The permanent programme would keep sending the "Members' Week" email. Is the email's effect still a bias? Which number does Wen's decision need?
+6. The permanent program would keep sending the "Members' Week" email. Is the email's effect still a bias? Which number does Wen's decision need?
 
 ### Part B4. Candidate-instrument audit
 

@@ -8,21 +8,21 @@ A retail chain has rolled a generative-AI assistant out to its stores in stages.
 
 This is **AI as an intervention to evaluate**: the chain tests an AI product the way it would test any other change, and the vendor's own metric is the first thing to set aside.
 
-Each meeting follows the course spine (`course-spine.md`): estimand → identification → estimation. Here identification is **assumption-based, not design-based**. Say so out loud: go-live timing was not randomised.
+Each meeting follows the course spine (`course-spine.md`): estimand → identification → estimation. Here identification is **assumption-based, not design-based**. Say so out loud: go-live timing was not randomized.
 
 | Meeting | Estimand (vs ¥10,000 sales per store-week) | Identification | Estimation and uncertainty | Destination |
 |---|---|---|---|---|
 | M10 | $ATT = E[Y_{it}(53) - Y_{it}(\infty) \mid G = 53]$, weeks 53–78 | parallel untreated trends, no anticipation, no spillovers; the threat is the sign-off order | 2 × 2 DiD; TWFE (= 2 × 2 with one date); event study; one change per store, then clustered by region; drift $\delta^*$ | 11 (SE 1.22); ramp 8 → 14: **confirm, keep the schedule** |
 | M11 | flagship: $Y_{F,t}(20) - Y_{F,t}(\infty)$, one store | a donor trajectory fitted before week 20, frozen before the post-period; the flagship's treatment differs (co-development) | synthetic control; leave-one-out; in-place and in-time placebos (descriptive); comparison with DiD | flagship 15.9 (case givens) = a ceiling for a different treatment; M10's 11 is the forecast: **roll out; stagger at random** |
 
-The design-based alternative, randomising go-live dates (Athey and Imbens 2022), is not in the M11 notes; Handout H6 covers it ("The design-based alternative: randomise the dates"). It is what the memo's "two random halves" recommendation would make possible.
+The design-based alternative, randomizing go-live dates (Athey and Imbens 2022), is not in the M11 notes; Handout H6 covers it ("The design-based alternative: randomize the dates"). It is what the memo's "two random halves" recommendation would make possible.
 
 ### Why the numbers were kept
 
-Every exhibit uses the numbers in `meetings/m10` and `m11` unchanged: 120 stores, cohorts at weeks 53 and 79, ¥2,500 per store-week, 25% margin, the four cells, six quarters and three donors. The M10 cohort numbers are exact (11, SE 1.22; event-study coefficients 8 and 14) and checked by `shared/checks/slides10_check.py`. The real flagship's results (¥18,700, 15.9, leave-one-out 13.1 to 17.4, weight on 4 donors, rank 1 of 60) are case givens: no simulation script for them is in the repository. The AI story fits the same shape, including the ramp: associates learn the tool while its store catalogue fills in.
+Every exhibit uses the numbers in `meetings/m10` and `m11` unchanged: 120 stores, cohorts at weeks 53 and 79, ¥2,500 per store-week, 25% margin, the four cells, six quarters and three donors. The M10 cohort numbers are exact (11, SE 1.22; event-study coefficients 8 and 14) and checked by `shared/checks/slides10_check.py`. The real flagship's results (¥18,700, 15.9, leave-one-out 13.1 to 17.4, weight on 4 donors, rank 1 of 60) are case givens: no simulation script for them is in the repository. The AI story fits the same shape, including the ramp: associates learn the tool while its store catalog fills in.
 
 New numbers, all narrative:
-- the cost split (¥1,700 licence, ¥300 handsets, ¥500 champion allowance);
+- the cost split (¥1,700 license, ¥300 handsets, ¥500 champion allowance);
 - the vendor dashboard's ¥38,000 "AI-assisted sales" and the claim of "fifteen times the fee";
 - version 2 released in week 66.
 

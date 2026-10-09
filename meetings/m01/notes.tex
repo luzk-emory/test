@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\notesheader{1}{Causal Basics}{Estimands, selection bias, randomisation and causal graphs}
+\notesheader{1}{Causal Basics}{Estimands, selection bias, randomization and causal graphs}
 
 \begin{decision}
 A firm can send a coupon. It costs $c$ each time it is redeemed and each purchase earns margin $m$. The
@@ -14,10 +14,10 @@ data, and what can go wrong on the way.
   \item write a business question as an estimand in potential outcomes, and say which population it
   refers to;
   \item compute a treatment's net value and break-even, including the cost of ``sure things'';
-  \item decompose a naive comparison into an effect plus selection bias, and say why randomisation
+  \item decompose a naive comparison into an effect plus selection bias, and say why randomization
   removes the bias;
   \item read a causal graph: chains, forks, colliders and backdoor paths, and decide what to adjust for;
-  \item show that the difference in means is unbiased over the randomisation, and that it equals OLS on a
+  \item show that the difference in means is unbiased over the randomization, and that it equals OLS on a
   dummy.
 \end{goals}
 
@@ -164,7 +164,7 @@ $\ATT - \ATE = (1-\pi)(\ATT - \ATU)$.
 $D \indep \{Y(0), Y(1)\}$ and $0 < \Pr(D=1) < 1$.
 \end{assum}
 
-\begin{prop}{Identification by randomisation}{id}
+\begin{prop}{Identification by randomization}{id}
 Under SUTVA and random assignment, $\ATE = \E[Y \mid D=1] - \E[Y \mid D=0]$, and $\ATE = \ATT = \ATU$.
 \end{prop}
 \begin{proof}
@@ -173,7 +173,7 @@ makes both bias terms in Result~\ref{prop:twobias} zero.
 \end{proof}
 
 Independence is a property of the \emph{procedure}, not of the customers: a random number generator does
-not know anyone's potential outcomes. That is why randomisation removes confounding by variables nobody
+not know anyone's potential outcomes. That is why randomization removes confounding by variables nobody
 recorded, and why it can be audited (the seed, the draw log, no post-draw exclusions) rather than argued
 for. Independence holds over the distribution of possible draws. Any single draw can still be unbalanced by
 chance, and standard errors measure how much that matters.
@@ -233,18 +233,18 @@ $\E[Y(d)] = \sum_x \E[Y(d) \mid X=x]\Pr(X=x) = \sum_x \E[Y(d) \mid D=d, X=x]\Pr(
 replaces $Y(d)$ by $Y$.
 \end{proof}
 
-The formula is \emph{standardisation}: compare within levels of $X$, then average with the population's
-weights; using the treated units' weights instead gives the ATT. Randomisation is graph surgery: a coin
+The formula is \emph{standardization}: compare within levels of $X$, then average with the population's
+weights; using the treated units' weights instead gives the ATT. Randomization is graph surgery: a coin
 deletes every arrow into $D$, so no backdoor paths remain and no adjustment is needed.
 
 \paragraph{Simpson's paradox.} An association can reverse when data are split by a third variable. Which
 answer is right is decided by the graph: if the variable is a fork (a common cause of $D$ and $Y$), compare
-within its levels and standardise; if it is a mediator or a collider, the pooled comparison is right and
+within its levels and standardize; if it is a mediator or a collider, the pooled comparison is right and
 splitting is wrong.
 
-\subsection{Estimation: what the randomisation guarantees}
+\subsection{Estimation: what the randomization guarantees}
 
-In a completely randomised experiment exactly $n_1$ of $n$ units are treated, each subset equally likely.
+In a completely randomized experiment exactly $n_1$ of $n$ units are treated, each subset equally likely.
 Hold the potential outcomes fixed; the only randomness is the draw.
 
 \begin{prop}{Unbiasedness over the design}{unbiased}
@@ -256,7 +256,7 @@ $\E_D[\bar Y_1] = \frac1n\sum_i Y_i(1)$; likewise $\E_D[\bar Y_0] = \frac1n\sum_
 \end{proof}
 
 The proof uses nothing but the draw: no outcome model, no sampling assumption, no large-sample
-approximation. The collection of $\hatt$ values over all possible draws is the \emph{randomisation
+approximation. The collection of $\hatt$ values over all possible draws is the \emph{randomization
 distribution}; its spread is what a standard error estimates (Meeting~2).
 
 \begin{prop}{OLS on a dummy is the difference in means}{ols}
@@ -329,10 +329,10 @@ $0.75$. Selection bias $= 3/4 - 1/4 = 0.50$, and $\ATT + 0.50 = 0.75$ (Result~\r
 the ATE: $0.50 + 0.5 \times (0.25 - 0.50) = 0.375$ of bias, so $0.375 + 0.375 = 0.75$
 (Result~\ref{prop:twobias}).
 
-\paragraph{The decision.} Taken at face value, the naive $0.75$ makes the programme look like a clear success.
-In truth the members staff choose gain $0.25 < 0.30$, so the programme as run loses money; the members they
+\paragraph{The decision.} Taken at face value, the naive $0.75$ makes the program look like a clear success.
+In truth the members staff choose gain $0.25 < 0.30$, so the program as run loses money; the members they
 ignore gain $0.50$; and a blanket offer gains $0.375 > 0.30$. The selection that inflated the naive number also put the sessions in
-the wrong hands. A randomised offer would have shown this.
+the wrong hands. A randomized offer would have shown this.
 
 \paragraph{A Simpson reversal at FitLife.} The chain also invited members to a free group class, mostly
 new members, who renew less often.
@@ -351,7 +351,7 @@ Pooled & 78 / 250 & 0.312 & 149 / 260 & 0.573 \\
 \end{tabular}
 \end{center}
 Pooled, invited members renew far less; within each type they renew more (by $0.05$ and $0.06$). Member
-type is a fork: it drove invitations and renewal, and the class cannot change it. Standardising to all 510
+type is a fork: it drove invitations and renewal, and the class cannot change it. Standardizing to all 510
 members (Result~\ref{prop:backdoor}): $(260 \times 0.05 + 250 \times 0.06)/510 = 0.055$. To the invited
 members (the ATT): $(200 \times 0.05 + 50 \times 0.06)/250 = 0.052$.
 
@@ -369,7 +369,7 @@ members (the ATT): $(200 \times 0.05 + 50 \times 0.06)/250 = 0.052$.
 
 \begin{exercise}[computation]
 (a) Classify FitLife's eight members by response type and verify Result~\ref{prop:types}. (b) FitLife then
-randomises the session offer among 1{,}000 members and finds renewal rates $p_1 = 0.80$ and $p_0 = 0.45$.
+randomizes the session offer among 1{,}000 members and finds renewal rates $p_1 = 0.80$ and $p_0 = 0.45$.
 Give the bounds on the persuadable share (Section~3), and say what extra assumption would pin it down.
 \end{exercise}
 \answer{(a) Persuadables C, F, G (3/8); sure things A, B, D, H; lost cause E; no do-not-disturbs. So
@@ -377,24 +377,24 @@ $\Pr(\text{persuadable}) - \Pr(\text{do-not-disturb}) = 3/8 = \ATE$. (b)
 $\max(0, 0.80 - 0.45) = 0.35 \le \Pr(\text{persuadable}) \le \min(0.80, 0.55) = 0.55$. Monotonicity (no
 member is put off by the offer) collapses the bounds to $0.35$.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 An analyst proposes to compare renewal among invited and uninvited members ``who attended at least one
 class that month'', to compare like with like. Use the graph to explain what goes wrong.
 \end{exercise}
 \answer{Attendance is caused by the invitation and, through members' intention to renew, related to the
 outcome: it is a descendant of $D$ and a collider on the path invited $\to$ attended $\leftarrow$ renewed.
 Conditioning on it violates condition (i) of Result~\ref{prop:backdoor} and opens a non-causal path.
-Uninvited members who attended anyway are unusually committed, so the comparison is biased towards zero or
-below. Standardise on member type, which is pre-treatment, instead.}
+Uninvited members who attended anyway are unusually committed, so the comparison is biased toward zero or
+below. Standardize on member type, which is pre-treatment, instead.}
 
 %=====================================================================================
 \sectionthree
 
 \begin{extension}[Bounds on the persuadable share]
-Randomisation identifies $p_1$ and $p_0$, hence $\tau = \Pr(\text{P}) - \Pr(\text{DND})$, but not the
+Randomization identifies $p_1$ and $p_0$, hence $\tau = \Pr(\text{P}) - \Pr(\text{DND})$, but not the
 shares. Since $\Pr(\text{DND}) \ge 0$, $\Pr(\text{P}) \ge \tau$; since persuadables have $Y(1)=1$ and
 $Y(0)=0$, $\Pr(\text{P}) \le \min(p_1, 1-p_0)$. So $\max(0, p_1 - p_0) \le \Pr(\text{P}) \le \min(p_1, 1-p_0)$.
-The bounds collapse to $\tau$ under \emph{monotonicity} (no unit is harmed), an assumption about behaviour
+The bounds collapse to $\tau$ under \emph{monotonicity} (no unit is harmed), an assumption about behavior
 that the experiment cannot check. It reappears as monotonicity, ``no defiers'', in Meeting~2 (Assumption~1.12).
 \end{extension}
 
@@ -407,15 +407,15 @@ Result~\ref{prop:backdoor} delivers conditional exchangeability. When no such se
 Single-world intervention graphs (SWIGs) put potential outcomes on the graph and unify the two languages.
 \end{extension}
 
-\begin{extension}[Designs other than complete randomisation]
-Bernoulli randomisation flips an independent coin per unit, so $n_1$ is random and the difference in means
-is unbiased only conditional on both arms being non-empty. Stratified (blocked) designs randomise within
+\begin{extension}[Designs other than complete randomization]
+Bernoulli randomization flips an independent coin per unit, so $n_1$ is random and the difference in means
+is unbiased only conditional on both arms being non-empty. Stratified (blocked) designs randomize within
 strata of a pre-treatment covariate; the estimator is the stratum-weighted average of within-stratum
 differences, which is Result~\ref{prop:backdoor} applied where it is exact by construction.
 \end{extension}
 
 \begin{extension}[Attributes, audits, and causes of effects]
-Attributes such as race or loyalty are not interventions; audit studies randomise a \emph{signal} of the
+Attributes such as race or loyalty are not interventions; audit studies randomize a \emph{signal} of the
 attribute (a name on comparable résumés) and estimate the effect of the signal on a reader's decision.
 Reverse questions (``what caused this customer to leave?'') ask for causes of effects; they are best
 rewritten as forward questions, one per candidate cause.
@@ -424,17 +424,17 @@ rewritten as forward questions, one per candidate cause.
 \subsection*{Annotated reading}
 \begin{readinglist}
 \reading{Hern\'an and Robins, \emph{Causal Inference: What If} (2020, free online)}{Potential outcomes,
-randomisation, standardisation and graphs in one consistent notation}{Ch.\ 1--3, 6--8}{1}
+randomization, standardization and graphs in one consistent notation}{Ch.\ 1--3, 6--8}{1}
 \reading{Pearl, Glymour and Jewell, \emph{Causal Inference in Statistics: A Primer} (Wiley, 2016)}{The
 shortest rigorous route to d-separation and the backdoor and front-door criteria}{Ch.\ 1--3}{2}
 \reading{Cinelli, Forney and Pearl, ``A crash course in good and bad controls'', \emph{Sociological Methods
-\& Research} (2024)}{A catalogue of graphs showing when adjusting helps or hurts}{All}{1}
+\& Research} (2024)}{A catalog of graphs showing when adjusting helps or hurts}{All}{1}
 \reading{Imbens and Rubin, \emph{Causal Inference for Statistics, Social, and Biomedical Sciences}
 (Cambridge, 2015)}{The design-based view of experiments used in Meetings 1--2}{Ch.\ 1--4}{2}
 \reading{Holland, ``Statistics and causal inference'', \emph{JASA} (1986)}{The classic statement of the
 fundamental problem and ``no causation without manipulation''}{Sections 1--4}{1}
 \reading{Bertrand and Mullainathan, ``Are Emily and Greg more employable than Lakisha and Jamal?'',
-\emph{AER} (2004)}{How an audit study turns an attribute into a randomised signal}{Intro, design}{1}
+\emph{AER} (2004)}{How an audit study turns an attribute into a randomized signal}{Intro, design}{1}
 \end{readinglist}
 
 \end{document}

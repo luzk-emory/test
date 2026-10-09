@@ -105,8 +105,8 @@
 \begin{column}{0.48\textwidth}
 \textbf{Block B: Policy learning}
 \begin{itemize}
-  \item Predict-then-optimise, decision-focused learning and policy learning
-  \item Doubly robust scores for net value: empirical welfare maximisation
+  \item Predict-then-optimize, decision-focused learning and policy learning
+  \item Doubly robust scores for net value: empirical welfare maximization
   \item Policy learning is weighted classification
   \item Policy trees, regret and the size of the class
   \item Deploying so that it can still be checked: holdouts and bandits
@@ -263,7 +263,7 @@ The middle column pays the coupon to members who would have bought anyway. \text
 
 \smallskip
 
-Two models, two kinds of data: the benefit needs a \textbf{contrast}, $\tau(x)$, from the randomised test; the cost needs a \textbf{prediction}, $\mu_1(x)$ or $\mu_0(x)$, fitted on one arm. They are validated separately.
+Two models, two kinds of data: the benefit needs a \textbf{contrast}, $\tau(x)$, from the randomized test; the cost needs a \textbf{prediction}, $\mu_1(x)$ or $\mu_0(x)$, fitted on one arm. They are validated separately.
 \end{frame}
 
 % ====================================================================
@@ -295,7 +295,7 @@ The forest's list earns $500 \times 6.00 + 500 \times 3.50 = $ \textyen 4{,}750.
 % [RELEASE R3: finance's memo: ¥8,000 of expected cost, at most a 5% chance of overrunning it]
 \begin{frame}{A Budget: The Knapsack and Its Shadow Price}
 
-Finance limits \textbf{expected cost}. With unit costs $c_i > 0$, benefits $b_i = m\tau_i$ and budget $C$: maximise $\sum_i d_i(b_i - c_i)$ subject to $\sum_i d_i c_i \le C$. The relaxation allows $d_i \in [0,1]$. Order units by $r_i = b_i/c_i$; the \textbf{greedy} assignment treats them in that order until the budget runs out or $r_i \le 1$, treating a fraction of the first unit $j$ that does not fit.
+Finance limits \textbf{expected cost}. With unit costs $c_i > 0$, benefits $b_i = m\tau_i$ and budget $C$: maximize $\sum_i d_i(b_i - c_i)$ subject to $\sum_i d_i c_i \le C$. The relaxation allows $d_i \in [0,1]$. Order units by $r_i = b_i/c_i$; the \textbf{greedy} assignment treats them in that order until the budget runs out or $r_i \le 1$, treating a fraction of the first unit $j$ that does not fit.
 
 \begin{result}{1.4}{Greedy is optimal for the relaxation; the shadow price}
 Let $\lambda^\ast = r_j - 1$ if the budget binds before the ratio reaches 1, and $0$ otherwise. The greedy assignment solves the relaxation and equals the rule $d_i = \ind{b_i > (1 + \lambda^\ast)c_i}$ except at the fractional unit. Where the budget binds, the optimal value $V(C)$ is concave in $C$ with slope $\lambda^\ast$: an extra yuan of budget adds $\lambda^\ast$ of net value.
@@ -342,7 +342,7 @@ Executive & High & \textyen 1.50 & \textyen 4.75 & 0.32 & never: $r < 1$ \\
 % ====================================================================
 \begin{frame}{Several Coupon Depths}
 
-With actions $a = 1, \dots, K$ of benefit $b_i(a)$ and cost $c_i(a)$, the same argument gives: each unit takes the action maximising $b_i(a) - (1 + \lambda^\ast)c_i(a)$, or nothing if all are negative.
+With actions $a = 1, \dots, K$ of benefit $b_i(a)$ and cost $c_i(a)$, the same argument gives: each unit takes the action maximizing $b_i(a) - (1 + \lambda^\ast)c_i(a)$, or nothing if all are negative.
 
 \medskip
 
@@ -367,7 +367,7 @@ Upgrade & & \textyen 2.40 & \textyen 1.80 & \textyen 0.60 & $-$\textyen 0.30 \\
   \item \textbf{\textyen 8{,}000 budget} ($\lambda^\ast = 0.50$): the upgrade returns $2.40/1.80 = 1.33$ per yuan, below the 1.50 of analyst--high, so analyst--low keeps \textyen 5 off. The upgrade pays only when $\lambda^\ast < 0.33$.
 \end{itemize}
 
-Tight budgets push towards cheaper actions spread over more members. A contact cap (1{,}000 pushes a day) is one more constraint, with its own shadow price.
+Tight budgets push toward cheaper actions spread over more members. A contact cap (1{,}000 pushes a day) is one more constraint, with its own shadow price.
 \end{frame}
 
 % ====================================================================
@@ -380,11 +380,11 @@ A rule that never reads a group label $G$ can still treat groups at very differe
 Under a cap $\sum_i d_i \le B$ and $\sum_{i \in a} d_i/N_a \le \gamma\sum_{i \in b} d_i/N_b$, the relaxation is solved by ranking units by $v_i$ within each group and treating $i \in a$ if $v_i > \lambda^\ast + \eta^\ast/N_a$ and $i \in b$ if $v_i > \lambda^\ast - \gamma\eta^\ast/N_b$ (other groups at $\lambda^\ast$), where $\lambda^\ast, \eta^\ast \ge 0$ are the multipliers of the cap and the rate constraint. Where both bind, the optimal value $V(\gamma)$ rises with $\gamma$ at rate $\eta^\ast\,\text{rate}_b$.
 \end{result}
 
-The group the unconstrained rule favours faces a higher bar, the other a lower one, and $\eta^\ast$ sets the gap. The \textbf{price of fairness} $V(\infty) - V(\gamma)$ is the value given up: the value of the members swapped.
+The group the unconstrained rule favors faces a higher bar, the other a lower one, and $\eta^\ast$ sets the gap. The \textbf{price of fairness} $V(\infty) - V(\gamma)$ is the value given up: the value of the members swapped.
 
 \smallskip
 
-Which constraint to impose (parity of rates, of expected benefit, of outcomes) is a value judgement, not an estimation problem, and writing a protected label into the rule may itself be restricted. The multiplier tells management what a constraint costs.
+Which constraint to impose (parity of rates, of expected benefit, of outcomes) is a value judgment, not an estimation problem, and writing a protected label into the rule may itself be restricted. The multiplier tells management what a constraint costs.
 \end{frame}
 
 % ====================================================================
@@ -419,7 +419,7 @@ South ($b$), 4{,}000 & 160 at \textyen 5.00; 1{,}000 at \textyen 2.50 & below \t
 The budget constrains \textbf{expected} cost. With redemption $R_i \sim \text{Bernoulli}(s_i)$, $s_i = \mu_1(X_i)$, member $i$ costs $k + aR_i$: \textyen 6.50 or \textyen 1.50.
 
 \begin{result}{1.6}{Mean, variance and the reserve}
-If redemptions are independent, realised cost $K = \sum_i d_i(k + aR_i)$ has $\E[K] = \sum_i d_ic_i$ and $\Var(K) = a^2\sum_i d_is_i(1-s_i)$. Under the normal approximation, $\Pr(K > C) \le \alpha$ if and only if $\E[K] + z_\alpha\sqrt{\Var(K)} \le C$.
+If redemptions are independent, realized cost $K = \sum_i d_i(k + aR_i)$ has $\E[K] = \sum_i d_ic_i$ and $\Var(K) = a^2\sum_i d_is_i(1-s_i)$. Under the normal approximation, $\Pr(K > C) \le \alpha$ if and only if $\E[K] + z_\alpha\sqrt{\Var(K)} \le C$.
 \end{result}
 
 \textbf{Finance:} if every analyst is pushed, what is the chance of spending over \textyen 18{,}000? $\E[K] = 2{,}500(4.00) + 2{,}500(2.50) = $ \textyen 16{,}250,
@@ -490,7 +490,7 @@ Analyst--high, lift SE 0.06 & \textyen 2.00 & $0.06/\sqrt2 = 0.042$ & 1.66 & \te
 \end{tabular}
 \end{center}
 
-\small The guarantee is one-sided: it limits paying for losers, not leaving profitable but noisy cells off; $z_\alpha$ is a risk preference. Lists optimised on point estimates also suffer the \textbf{optimiser's curse}: cells chosen for high estimates tend to be estimated too high. Evaluate the frozen list on held-out data (Meeting 5).
+\small The guarantee is one-sided: it limits paying for losers, not leaving profitable but noisy cells off; $z_\alpha$ is a risk preference. Lists optimized on point estimates also suffer the \textbf{optimizer's curse}: cells chosen for high estimates tend to be estimated too high. Evaluate the frozen list on held-out data (Meeting 5).
 \end{frame}
 
 % ====================================================================
@@ -505,7 +505,7 @@ Net value $m\tau(x) - c(x)$ is linear in the outcome. When the payoff is not, th
 \end{itemize}
 
 \begin{result}{1.8}{A nonlinear payoff needs each arm's distribution}
-The promotion's net value at $x$ is $v(x) = \E[\pi(Y(1)) \mid X = x] - \E[\pi(Y(0)) \mid X = x] - c$. In a randomised experiment each term is identified from one arm, $\E[\pi(Y(d)) \mid X = x] = \E[\pi(Y) \mid D = d, X = x]$. So $v(x)$ depends on the conditional distributions of $Y(1)$ and $Y(0)$ separately; it does not depend on their joint distribution, and it is not a function of $\tau(x)$ alone unless $\pi$ is linear ($q = \infty$ gives $v = p\tau(x) - c$).
+The promotion's net value at $x$ is $v(x) = \E[\pi(Y(1)) \mid X = x] - \E[\pi(Y(0)) \mid X = x] - c$. In a randomized experiment each term is identified from one arm, $\E[\pi(Y(d)) \mid X = x] = \E[\pi(Y) \mid D = d, X = x]$. So $v(x)$ depends on the conditional distributions of $Y(1)$ and $Y(0)$ separately; it does not depend on their joint distribution, and it is not a function of $\tau(x)$ alone unless $\pi$ is linear ($q = \infty$ gives $v = p\tau(x) - c$).
 \end{result}
 \end{frame}
 
@@ -547,10 +547,10 @@ Same CATE, opposite decisions: Q's busy days run past capacity and cost vouchers
 Store Q sets its capacity $q$ (staff, stock) for a push day before demand is known, losing $c_u$ per order it cannot fill and $c_o$ per unit left idle. $F_1(\cdot \mid x)$ is the distribution function of $Y(1)$ given $X = x$.
 
 \begin{result}{1.9}{The critical fractile}
-The expected loss $c_u\E[(Y(1) - q)^+ \mid x] + c_o\E[(q - Y(1))^+ \mid x]$ is minimised at the $\kappa$-quantile of $F_1(\cdot \mid x)$, $\kappa = c_u/(c_u + c_o)$.
+The expected loss $c_u\E[(Y(1) - q)^+ \mid x] + c_o\E[(q - Y(1))^+ \mid x]$ is minimized at the $\kappa$-quantile of $F_1(\cdot \mid x)$, $\kappa = c_u/(c_u + c_o)$.
 \end{result}
 
-$c_u = 30 + 20 = $ \textyen 50 (margin plus voucher), $c_o = $ \textyen 10 (stock and labour wasted), so $\kappa = 50/60 = 0.83$. As $F_1(360) = 0.5 < 0.83 \le F_1(480) = 1$, plan for \textbf{480}. Expected loss:
+$c_u = 30 + 20 = $ \textyen 50 (margin plus voucher), $c_o = $ \textyen 10 (stock and labor wasted), so $\kappa = 50/60 = 0.83$. As $F_1(360) = 0.5 < 0.83 \le F_1(480) = 1$, plan for \textbf{480}. Expected loss:
 \begin{itemize}
   \item at 420, baseline plus the CATE: $\tfrac12 \times 50 \times 60 + \tfrac12 \times 10 \times 60 = $ \textcolor{warnred}{\textyen 1{,}800} a day;
   \item at 480, the 0.83-quantile: $\tfrac12 \times 10 \times 120 = $ \textcolor{sbgreen}{\textyen 600} a day.
@@ -565,7 +565,7 @@ $c_u = 30 + 20 = $ \textyen 50 (margin plus voucher), $c_o = $ \textyen 10 (stoc
 \begin{itemize}
   \item Net value $v(x) = m\tau(x) - c(x)$; without constraints, push iff $v(x) > 0$.
   \item A coupon paid on redemption charges sure things: same lift, \textyen 3.50 against \textyen 2.00.
-  \item A cap ranks by $v$; a budget ranks by $b/c$, and $\lambda^\ast = 0.50$ prices it. Tight budgets favour shallow coupons.
+  \item A cap ranks by $v$; a budget ranks by $b/c$, and $\lambda^\ast = 0.50$ prices it. Tight budgets favor shallow coupons.
   \item A rate constraint sets group-specific thresholds; in Region 2 it costs \textyen 470.
   \item The reserve covers Bernoulli luck (\textyen 184); a lower bound on $v$ covers noisy estimates.
   \item With a capacity, each arm's distribution matters: plan at the critical fractile, not at baseline plus the CATE.
@@ -591,17 +591,17 @@ $c_u = 30 + 20 = $ \textyen 50 (margin plus voucher), $c_o = $ \textyen 10 (stoc
     block/.style={draw, rounded corners, minimum width=4.2cm, minimum height=1.2cm, font=\small, align=center}
 ]
 \node[block, fill=bluetint, draw=noteblue] (est) at (0,0) {\textbf{Predict}\\$\hatt(x)$, $\hat c(x)$, $\widehat\SE(x)$};
-\node[block, fill=greentint, draw=sbgreen] (opt) at (7,0) {\textbf{Optimise}\\threshold, sort, knapsack,\\rate constraint, fractile};
+\node[block, fill=greentint, draw=sbgreen] (opt) at (7,0) {\textbf{Optimize}\\threshold, sort, knapsack,\\rate constraint, fractile};
 \draw[-{Stealth}, thick] (est) -- (opt) node[midway, above, font=\small]{plug in};
 \end{tikzpicture}
 \end{center}
 
 \bigskip
 
-Block A was \textbf{predict-then-optimise}: estimate $\tau$ (and $c$), then hand the estimates to an optimiser.
+Block A was \textbf{predict-then-optimize}: estimate $\tau$ (and $c$), then hand the estimates to an optimizer.
 
 \begin{itemize}
-  \item The estimates are trained for \textbf{accuracy}: a loss that penalises errors on every member.
+  \item The estimates are trained for \textbf{accuracy}: a loss that penalizes errors on every member.
   \item The decision is judged by \textbf{value}: only errors that change a decision cost anything.
 \end{itemize}
 
@@ -644,24 +644,24 @@ An estimation loss buys accuracy everywhere, including where the decision is nev
 \begin{frame}{Three Routes on One Spectrum}
 
 \begin{enumerate}
-  \item \textbf{Predict, then optimise} (plug-in). Fit $\hatt$ by an estimation loss and apply the optimiser. Modular and reusable, but accuracy is bought everywhere.
-  \item \textbf{Decision-focused learning.} Keep the optimiser; train $\hatt_\theta$ on the value of the decision it induces, $\frac1n\sum_i \pi_\theta(X_i)\Gamma_i$ ($\Gamma_i$: the score of the next frame). The objective jumps as decisions flip, so practice uses smooth surrogates (SPO+) or randomised optimisers. Worth it when the optimiser couples units: a budget, a capacity, a menu of coupon depths.
+  \item \textbf{Predict, then optimize} (plug-in). Fit $\hatt$ by an estimation loss and apply the optimizer. Modular and reusable, but accuracy is bought everywhere.
+  \item \textbf{Decision-focused learning.} Keep the optimizer; train $\hatt_\theta$ on the value of the decision it induces, $\frac1n\sum_i \pi_\theta(X_i)\Gamma_i$ ($\Gamma_i$: the score of the next frame). The objective jumps as decisions flip, so practice uses smooth surrogates (SPO+) or randomized optimizers. Worth it when the optimizer couples units: a budget, a capacity, a menu of coupon depths.
   \item \textbf{Policy learning.} Drop the estimate and search a class $\Pi$ of rules, such as depth-2 trees, for the one with the highest estimated value. A restricted class is easy to explain, audit and deploy.
 \end{enumerate}
 
 \medskip
 
-Route 2 is route 3 with the class $\Pi = \{\text{optimiser} \circ \hatt_\theta\}$.
+Route 2 is route 3 with the class $\Pi = \{\text{optimizer} \circ \hatt_\theta\}$.
 
 \medskip
 
-\textbf{The causal twist.} Textbook predict-then-optimise trains on observed labels (realised demand). Here the label, $\tau_i$, is never observed. A doubly robust score takes its place: a noisy draw whose conditional mean is the net value.
+\textbf{The causal twist.} Textbook predict-then-optimize trains on observed labels (realized demand). Here the label, $\tau_i$, is never observed. A doubly robust score takes its place: a noisy draw whose conditional mean is the net value.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Doubly Robust Scores for Net Value}
 
-\begin{result}{1.10}{Empirical welfare maximisation with doubly robust scores}
+\begin{result}{1.10}{Empirical welfare maximization with doubly robust scores}
 Let $\Gamma_i = m\,\phi_i - c(X_i)$, where $\phi_i$ is the cross-fitted doubly robust score of Meeting~3. Then $\E[\Gamma_i \mid X_i] = v(X_i)$, so $\frac1n\sum_i \pi(X_i)\Gamma_i$ is unbiased for the gain $G(\pi)$ of any fixed policy, and
 \[
 \hat\pi = \arg\max_{\pi \in \Pi} \frac1n\sum_{i=1}^n \pi(X_i)\,\Gamma_i .
@@ -730,10 +730,10 @@ For any policy $\pi$, with $\Gamma_i^- = \max(-\Gamma_i, 0)$,
 \[
   \sum_{i=1}^n \pi(X_i)\Gamma_i = \sum_{i=1}^n |\Gamma_i|\,\ind{\pi(X_i) = \ind{\Gamma_i > 0}} - \sum_{i=1}^n \Gamma_i^- .
 \]
-Maximising estimated value is minimising the misclassification of the sign of $\Gamma_i$, each unit weighted by $|\Gamma_i|$.
+Maximizing estimated value is minimizing the misclassification of the sign of $\Gamma_i$, each unit weighted by $|\Gamma_i|$.
 \end{result}
 
-Any classifier that accepts sample weights becomes a policy learner (\textbf{outcome-weighted learning}). An estimation loss penalises errors on every unit; this loss penalises only errors that flip a decision, weighted by how much is at stake.
+Any classifier that accepts sample weights becomes a policy learner (\textbf{outcome-weighted learning}). An estimation loss penalizes errors on every unit; this loss penalizes only errors that flip a decision, weighted by how much is at stake.
 
 \medskip
 
@@ -772,7 +772,7 @@ Under the \textyen 8{,}000 budget, $\lambda^\ast = 0.50$: member 3, an analyst--
 % ====================================================================
 \begin{frame}{Policy Trees}
 
-A \textbf{policy tree} takes $\Pi$ to be the trees of depth one or two, searched exhaustively, each leaf labelled push or not.
+A \textbf{policy tree} takes $\Pi$ to be the trees of depth one or two, searched exhaustively, each leaf labeled push or not.
 
 \bigskip
 
@@ -836,7 +836,7 @@ A deployed policy is a hypothesis about where value lies.
 % ====================================================================
 \begin{frame}{Bandits: Experimentation That Never Stops}
 
-A fixed test spends half its traffic on the worse arm until the end. A \textbf{multi-armed bandit} shifts traffic towards arms that look better as data arrive. \textbf{Thompson sampling} assigns each new unit to an arm with probability equal to the current posterior probability that the arm is best.
+A fixed test spends half its traffic on the worse arm until the end. A \textbf{multi-armed bandit} shifts traffic toward arms that look better as data arrive. \textbf{Thompson sampling} assigns each new unit to an arm with probability equal to the current posterior probability that the arm is best.
 
 \medskip
 
@@ -874,14 +874,14 @@ Then the objective is not separable and none of the sorting results holds.
 
 \bigskip
 
-\textbf{Check support before ranking.} If the push test had held no executive--low controls, a model would still print a $\hat\mu_0$ for them, and the optimiser would treat that number as data. It cannot tell a measured number from an extrapolated one (Meeting 3).
+\textbf{Check support before ranking.} If the push test had held no executive--low controls, a model would still print a $\hat\mu_0$ for them, and the optimizer would treat that number as data. It cannot tell a measured number from an extrapolated one (Meeting 3).
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Allocation Errors}
 
 \begin{pitfall}{allocation errors}
-Ranking by $\tau$ when costs differ by unit; spending the budget in order of effect rather than ratio; planning capacity at baseline plus the CATE; treating a fairness constraint as free; reporting the optimiser's own estimate of the list's value; deploying a rule with no holdout; ignoring spillovers when a list is scaled up.
+Ranking by $\tau$ when costs differ by unit; spending the budget in order of effect rather than ratio; planning capacity at baseline plus the CATE; treating a fairness constraint as free; reporting the optimizer's own estimate of the list's value; deploying a rule with no holdout; ignoring spillovers when a list is scaled up.
 \end{pitfall}
 
 \bigskip
@@ -903,7 +903,7 @@ Each has a number today:
 \begin{itemize}
   \item \spinestep{Estimand.} The net value of a list, $\sum_i d_i v(X_i)$ with $v(x) = m\tau(x) - c(x)$, under the business's constraints; for a learned rule, its gain $G(\pi)$. With a capacity, the expected payoff in each arm.
   \item \spinestep{Identification.} The push test's coin identifies $\tau(x)$ cell by cell; transport to Q4 rests on the same push, coupon and members; the sum rests on no interference. A nonlinear payoff needs each arm's distribution, never the joint.
-  \item \spinestep{Estimation.} The benefit is a contrast, the cost a one-arm prediction. A cap ranks by $v$, a budget by $b/c$ with shadow price $\lambda^\ast$, a rate constraint by group-specific thresholds, a capacity at the critical fractile. Policy learning maximises $\frac1n\sum_i \pi(X_i)\Gamma_i$: a weighted classification.
+  \item \spinestep{Estimation.} The benefit is a contrast, the cost a one-arm prediction. A cap ranks by $v$, a budget by $b/c$ with shadow price $\lambda^\ast$, a rate constraint by group-specific thresholds, a capacity at the critical fractile. Policy learning maximizes $\frac1n\sum_i \pi(X_i)\Gamma_i$: a weighted classification.
   \item \spinestep{Inference.} A reserve covers spending luck; a lower bound on $v$ covers noisy effects; a learned rule's own estimate is optimistic and its regret shrinks with $n$; a holdout keeps the deployed rule checkable.
   \item \textbf{Judge a model by the decisions it changes.} Equal accuracy can cost \textyen 0 or \textyen 5{,}000.
 \end{itemize}

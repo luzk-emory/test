@@ -36,7 +36,7 @@ For every regime, $\{Y(\mathbf d)\} \indep A_1 \mid H_1$ and $\{Y(\mathbf d)\} \
 has positive probability given the history at which it is prescribed.
 \end{assum}
 
-A \emph{sequential multiple-assignment randomised trial} (SMART), which re-randomises at each decision point, satisfies the
+A \emph{sequential multiple-assignment randomized trial} (SMART), which re-randomizes at each decision point, satisfies the
 assumption by design. In logs, it requires that every input to each decision be recorded.
 
 \begin{prop}{The sequential g-formula}{gformula}
@@ -69,7 +69,7 @@ $d_2^{\text{opt}}(h_2) = \arg\max_{a_2} Q_2(h_2, a_2)$, and its value $V_2(h_2) 
 $Q_1(h_1, a_1) = \E[V_2(H_2) \mid H_1 = h_1, A_1 = a_1]$ and $d_1^{\text{opt}}(h_1) = \arg\max_{a_1} Q_1(h_1, a_1)$.
 
 \begin{prop}{Q-learning finds the optimal regime}{qlearn}
-Under consistency and Assumption~\ref{asm:seqex}, the regime $(d_1^{\text{opt}}, d_2^{\text{opt}})$ maximises $V(\mathbf d)$ over all
+Under consistency and Assumption~\ref{asm:seqex}, the regime $(d_1^{\text{opt}}, d_2^{\text{opt}})$ maximizes $V(\mathbf d)$ over all
 regimes.
 \end{prop}
 \begin{proof}
@@ -90,7 +90,7 @@ effect of $a_t$ followed by the reference action thereafter. \emph{G-estimation}
 blipped-down outcome $Y - \sum_{s \ge t}\gamma_s(H_s, A_s; \psi)$, which estimates what $Y$ would have been with the reference
 action from $t$ on, is uncorrelated with $A_t - \Pr(A_t = 1 \mid H_t)$ given $H_t$. Under sequential exchangeability this
 estimating equation is unbiased if \emph{either} the propensity model \emph{or} a model for the blipped-down outcome's mean is
-correct: the dynamic analogue of double robustness. The optimal rule treats when the blip is positive (net of cost), and
+correct: the dynamic analog of double robustness. The optimal rule treats when the blip is positive (net of cost), and
 models only what matters for the decision.
 
 \subsection{Learning from bandit logs}
@@ -105,7 +105,7 @@ $\hat V_{\text{DR}}(\pi) = \frac1n\sum_i\big[\hat\mu(X_i, \pi(X_i)) + \ind{A_i =
 probabilities are correct, whatever the reward model $\hat\mu$, and usually far less variable.
 \end{prop}
 \begin{proof}
-Given $X_i$, $\E[\ind{A_i = \pi(X_i)}R_i/p_i \mid X_i] = \E[R(\pi(X_i)) \mid X_i]$ because the action was randomised with probability
+Given $X_i$, $\E[\ind{A_i = \pi(X_i)}R_i/p_i \mid X_i] = \E[R(\pi(X_i)) \mid X_i]$ because the action was randomized with probability
 $p_i$ (Meeting~5). For the DR estimator, the correction term has conditional mean $\E[R(\pi(X_i)) \mid X_i] - \hat\mu(X_i, \pi(X_i))$.
 \end{proof}
 
@@ -142,7 +142,7 @@ No week-1 coupon ($A_1 = 0$) & 0.25 & 1.6 & 0.9 & 0.3 \\
 $10 \times 0.4 - 5 = -$¥1) and $0.6$ orders after none ($+$¥1). So $d_2^{\text{opt}}$: send the week-2 coupon only to non-responders who
 did not get one in week 1. The best stage-2 action depends on the history.
 
-\paragraph{Step 2: stage 1.} With week-2 behaviour set optimally, value per customer (week-1 order counts as one order):
+\paragraph{Step 2: stage 1.} With week-2 behavior set optimally, value per customer (week-1 order counts as one order):
 \begin{align*}
   Q_1(A_1 = 1) &= 0.40 \times 10(1 + 1.5) + 0.60 \times 10 \times 0.5 - 5 = 10 + 3 - 5 = 8.0, \\
   Q_1(A_1 = 0) &= 0.25 \times 10(1 + 1.6) + 0.75 \times (10 \times 0.9 - 5) = 6.5 + 3 = 9.5 .
@@ -162,7 +162,7 @@ Verify the value of ``coupon both weeks'' (¥7.40) with the g-formula, and the n
 \answer{Value: $0.40 \times 10 \times 2.5 + 0.60 \times (10 \times 0.9 - 5) - 5 = 10 + 2.4 - 5 = 7.4$. Orders:
 $0.40 \times 2.5 + 0.60 \times 0.9 = 1.0 + 0.54 = 1.54$.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 An analyst estimates the week-1 coupon's effect by regressing weeks 2--4 orders on $A_1$, $A_2$ and the week-1 order indicator,
 Explain what the coefficient on $A_1$ measures and why it should not be read as the coupon's effect.
 \end{exercise}

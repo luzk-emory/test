@@ -13,10 +13,10 @@ rollout needs.
 
 \begin{goals}
   \item write potential outcomes that depend on others' treatments, using an exposure mapping;
-  \item distinguish direct, spillover and total (global) effects, and show what a unit-randomised test estimates;
+  \item distinguish direct, spillover and total (global) effects, and show what a unit-randomized test estimates;
   \item explain marketplace bias from shared supply, and compute it in a simple model;
   \item choose among cluster, two-stage, switchback and two-sided designs, and state what each assumes;
-  \item analyse each design with the right unit of inference.
+  \item analyze each design with the right unit of inference.
 \end{goals}
 
 %=====================================================================================
@@ -26,7 +26,7 @@ rollout needs.
 
 Without SUTVA, unit $i$'s outcome depends on the whole assignment vector $\mathbf{d} = (d_1, \dots, d_n)$:
 $Y_i(\mathbf{d})$. With $2^n$ potential outcomes per unit nothing is estimable without structure. An
-\emph{exposure mapping} supplies it: assume $Y_i(\mathbf{d}) = Y_i(d_i, h_i)$, where $h_i = h_i(\mathbf{d})$ summarises the
+\emph{exposure mapping} supplies it: assume $Y_i(\mathbf{d}) = Y_i(d_i, h_i)$, where $h_i = h_i(\mathbf{d})$ summarizes the
 treatment of the units that can affect $i$, such as the share treated among $i$'s friends, in $i$'s cluster, or in
 $i$'s city during the same hour.
 
@@ -39,10 +39,10 @@ For saturations $h, h' \in [0,1]$:
 \end{itemize}
 \end{defn}
 
-A rollout decision needs the GTE (or its net-value version). A unit-randomised test delivers something else.
+A rollout decision needs the GTE (or its net-value version). A unit-randomized test delivers something else.
 
-\begin{prop}{What a unit-randomised test estimates}{naive}
-Suppose a share $p$ of units is randomised to treatment and each unit's exposure is $h_i = p$ (every unit
+\begin{prop}{What a unit-randomized test estimates}{naive}
+Suppose a share $p$ of units is randomized to treatment and each unit's exposure is $h_i = p$ (every unit
 experiences the same treated share, as in a well-mixed market). Then the difference in means estimates
 $\text{DE}(p)$, and
 \[
@@ -50,13 +50,13 @@ $\text{DE}(p)$, and
 \]
 \end{prop}
 \begin{proof}
-Randomisation makes $\E[Y \mid D=d] = \E[Y(d,p)]$, so the difference is $\text{DE}(p)$. Add and subtract
+Randomization makes $\E[Y \mid D=d] = \E[Y(d,p)]$, so the difference is $\text{DE}(p)$. Add and subtract
 $\E[Y(1,p)]$ and $\E[Y(0,p)]$ in $\text{GTE} = \E[Y(1,1)] - \E[Y(0,0)]$.
 \end{proof}
 
 The sign of the gap depends on the mechanism. \emph{Competition} for a shared resource (couriers, inventory, ad
 slots, a seller's attention) makes control units worse off when others are treated, so $\E[Y(0,p)] < \E[Y(0,0)]$ and
-the test \emph{overstates} the GTE. \emph{Network effects} (a referral programme, a social feature) make controls
+the test \emph{overstates} the GTE. \emph{Network effects} (a referral program, a social feature) make controls
 better off, and the test \emph{understates} it.
 
 \subsection{Marketplace bias in a simple model}
@@ -64,7 +64,7 @@ better off, and the test \emph{understates} it.
 \begin{prop}{Shared supply}{supply}
 Let each customer request $q_1$ orders if treated and $q_0 < q_1$ if not, and let couriers complete at most $K$ orders
 per customer on average, allocated in proportion to requests. If $q_0 \le K < q_1$ and a share $p$ is treated, the
-completion rate is $c(p) = \min\{1, K/(pq_1 + (1-p)q_0)\}$, the unit-randomised test estimates
+completion rate is $c(p) = \min\{1, K/(pq_1 + (1-p)q_0)\}$, the unit-randomized test estimates
 $\text{DE}(p) = (q_1 - q_0)\,c(p)$, and the GTE is $K - q_0$.
 \end{prop}
 \begin{proof}
@@ -79,56 +79,56 @@ competition for couriers. Larger tests do not help; only the design does.
 
 \subsection{Designs that recover the total effect}
 
-\paragraph{Cluster randomisation.} Partition units into clusters (cities, delivery zones, graph communities) such
-that interference stays within a cluster, and randomise whole clusters.
+\paragraph{Cluster randomization.} Partition units into clusters (cities, delivery zones, graph communities) such
+that interference stays within a cluster, and randomize whole clusters.
 
-\begin{prop}{Cluster randomisation identifies the GTE}{cluster}
+\begin{prop}{Cluster randomization identifies the GTE}{cluster}
 If each unit's outcome depends only on the assignments within its own cluster, and clusters are assigned entirely to
 treatment or control at random, the difference in cluster-level mean outcomes is unbiased for the GTE (averaged over
 clusters).
 \end{prop}
 \begin{proof}
 In a treated cluster every unit has $(d_i, h_i) = (1,1)$; in a control cluster $(0,0)$. Clusters are the units of a
-completely randomised experiment with outcomes $\bar Y_g(1,1)$ and $\bar Y_g(0,0)$; apply Meeting~1's unbiasedness
+completely randomized experiment with outcomes $\bar Y_g(1,1)$ and $\bar Y_g(0,0)$; apply Meeting~1's unbiasedness
 result.
 \end{proof}
 
 The trade-off is bias against variance: bigger clusters contain more of the interference but leave fewer
 independent units, and the design effect (Meeting~2) widens the interval. Interference that crosses cluster
-borders (customers near a zone boundary) biases the estimate towards the unit-level answer.
+borders (customers near a zone boundary) biases the estimate toward the unit-level answer.
 
-\paragraph{Two-stage (randomised saturation) designs.} First randomise each cluster's saturation $h$ (say 0\%, 20\%,
-50\%, 80\%), then randomise units within clusters at that rate. Comparing treated and control units within clusters
+\paragraph{Two-stage (randomized saturation) designs.} First randomize each cluster's saturation $h$ (say 0\%, 20\%,
+50\%, 80\%), then randomize units within clusters at that rate. Comparing treated and control units within clusters
 estimates $\text{DE}(h)$ at each $h$; comparing controls across saturations estimates $\text{SE}_0(h, h')$. The full curve
 lets the platform predict a rollout at any share, not only at 100\%.
 
-\paragraph{Switchback designs.} When the whole market interacts (one city's couriers serve everyone), randomise
+\paragraph{Switchback designs.} When the whole market interacts (one city's couriers serve everyone), randomize
 \emph{time}: each block (an hour, a day) is treated or not, for the whole market. Treatment in one block can carry over
 into the next (orders queued, couriers repositioned). If carryover lasts at most $m$ periods, dropping the first $m$
 periods of each block (a \emph{washout}) leaves blocks whose outcomes depend only on their own assignment, and the
 block-level difference in means is unbiased. Longer blocks reduce carryover bias but leave fewer blocks; time-of-day
-patterns call for randomising within days or balancing blocks across hours.
+patterns call for randomizing within days or balancing blocks across hours.
 
-\paragraph{Two-sided randomisation.} In a market with buyers and sellers, randomise both sides and treat a transaction
+\paragraph{Two-sided randomization.} In a market with buyers and sellers, randomize both sides and treat a transaction
 only when both parties are treated (or apply the treatment by the transaction's side). Comparing the four cells
 separates demand-side from supply-side competition; Johari et al.\ (2022) show it can reduce bias from both at
 moderate cost in variance.
 
 \paragraph{Budget-split designs.} For advertising with budgets, split each advertiser's budget into two independent
-halves, one per arm, so the arms do not compete for the same budget. This removes cannibalisation through the
+halves, one per arm, so the arms do not compete for the same budget. This removes cannibalization through the
 budget, the dominant channel in ad marketplaces.
 
 \subsection{Inference}
 
-The unit of inference is the unit of randomisation: clusters for cluster designs (cluster-robust SEs or cluster-level
-means), blocks for switchbacks (randomisation inference over block assignments is natural, since there are few blocks
+The unit of inference is the unit of randomization: clusters for cluster designs (cluster-robust SEs or cluster-level
+means), blocks for switchbacks (randomization inference over block assignments is natural, since there are few blocks
 and outcomes are serially correlated). Two-stage designs need SEs at the cluster level for spillover contrasts.
-Interference also invalidates the usual SE of a unit-randomised test, because units' outcomes are correlated through
+Interference also invalidates the usual SE of a unit-randomized test, because units' outcomes are correlated through
 the shared resource.
 
 \begin{pitfall}[reading a marketplace test]
-Treating a unit-randomised lift as the rollout effect when units share supply; defining clusters by convenience
-rather than by where interference stops; analysing a switchback with hour-level SEs as if hours were independent.
+Treating a unit-randomized lift as the rollout effect when units share supply; defining clusters by convenience
+rather than by where interference stops; analyzing a switchback with hour-level SEs as if hours were independent.
 \end{pitfall}
 
 %=====================================================================================
@@ -139,7 +139,7 @@ without the discount and $0.40$ with it. Courier capacity completes at most $0.3
 dispatch serves requests in proportion to their number. Each completed order earns ¥8 of margin; the discount costs
 ¥3 per completed discounted order.
 
-\paragraph{Step 1: the user-randomised test (50/50).} Requests average $0.35$, so the completion rate is
+\paragraph{Step 1: the user-randomized test (50/50).} Requests average $0.35$, so the completion rate is
 $0.30/0.35 = 0.857$. Treated customers complete $0.40 \times 0.857 = 0.343$ orders a week and controls
 $0.30 \times 0.857 = 0.257$: an estimated lift of $0.086$, or 33\%. Net per treated customer:
 $8 \times 0.086 - 3 \times 0.343 = -$¥0.34. The test loses money even taken at face value, and the face value is itself
@@ -176,12 +176,12 @@ Suppose courier capacity rises to $0.35$ orders per customer. Recompute the 50/5
 \answer{Requests average $0.35 = K$, so completion is $1$: treated $0.40$, control $0.30$, estimated lift $0.10$. With
 everyone treated, requests $0.40$ are capped at $0.35$, so $\text{GTE} = 0.35 - 0.30 = 0.05$, half the test's estimate.}
 
-\begin{exercise}[judgement]
-The growth team proposes randomising by customer but ``only analysing customers in zones with spare courier
+\begin{exercise}[judgment]
+The growth team proposes randomizing by customer but ``only analyzing customers in zones with spare courier
 capacity''. When does this recover the GTE, and what would you need to check?
 \end{exercise}
 \answer{It recovers the GTE in those zones only if capacity stays slack under a full rollout (so no competition) and
-the spare-capacity zones are chosen before outcomes and without reference to treatment. Check utilisation under the
+the spare-capacity zones are chosen before outcomes and without reference to treatment. Check utilization under the
 test, whether treatment itself changes which zones look slack (a post-treatment selection), and whether those zones
 resemble the rollout population. The result transports only to zones that would also remain slack.}
 
@@ -190,7 +190,7 @@ resemble the rollout population. The result transports only to zones that would 
 
 \begin{extension}[Equilibrium effects and pricing]
 When treatment changes prices that clear the market (surge pricing, courier pay), effects pass through equilibrium.
-Wager and Xu (2021) show how small randomised perturbations to each unit's price can estimate marginal equilibrium
+Wager and Xu (2021) show how small randomized perturbations to each unit's price can estimate marginal equilibrium
 effects without large-scale tests.
 \end{extension}
 
@@ -202,7 +202,7 @@ and total effects with two-stage designs}{Sections 1--4}{3}
 Applied Statistics}}{Exposure mappings and design-based estimators}{Sections 1--3}{3}
 \reading{Johari, Li, Liskovich and Weintraub (2022), ``Experimental design in two-sided platforms: an analysis of
 bias'', \emph{Management Science}}{A marketplace model of when customer- or listing-side tests are biased, and
-two-sided randomisation}{Sections 1--5}{2}
+two-sided randomization}{Sections 1--5}{2}
 \reading{Bojinov, Simchi-Levi and Zhao (2023), ``Design and analysis of switchback experiments'', \emph{Management
 Science}}{Optimal block lengths under carryover}{Sections 1--4}{3}
 \reading{Holtz, Lobel, Lobel, Liskovich and Aral, ``Reducing interference bias in online marketplace experiments

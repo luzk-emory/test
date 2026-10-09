@@ -75,7 +75,7 @@ units closer to $c$ more (a triangular kernel $w_i = \max\{0, 1 - |R_i - c|/h\}$
 $\hat\tau$ is the RD estimate. Lines rather than means within the window remove the bias from the slope of $\E[Y \mid R]$ near $c$. High-order global
 polynomials are not recommended: they put large weight on far-away units and can produce spurious jumps.
 
-\paragraph{The bandwidth.} A small $h$ uses units closest to $c$ (less bias, more variance); a large $h$ the reverse. Data-driven bandwidths minimise
+\paragraph{The bandwidth.} A small $h$ uses units closest to $c$ (less bias, more variance); a large $h$ the reverse. Data-driven bandwidths minimize
 the estimated mean squared error. Because the MSE-optimal bandwidth leaves bias of the same order as the SE, conventional intervals undercover;
 use robust bias-corrected intervals (Calonico, Cattaneo and Titiunik, 2014), and show results across a range of bandwidths.
 
@@ -151,7 +151,7 @@ $0.052$. What is the fuzzy-RD effect, and for whom?
 \answer{$0.052/(0.65 - 0.05) = 0.087$: the effect of Gold on renewal for members at 100 visits who take Gold because they cross the threshold (compliers
 at the cut-off).}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 Marketing reveals that members get a reminder email (``you're 5 visits from Gold!'') at 95 visits. What does this do to the design?
 \end{exercise}
 \answer{Members who receive the reminder may add visits to qualify, so members just above 100 are more motivated than those just below: sorting

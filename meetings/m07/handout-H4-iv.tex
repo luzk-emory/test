@@ -1,18 +1,18 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\handoutheader{H4}{Instrumental Variables}{Outside shifters of treatment: instruments that nobody randomised}{Meeting 7 (Observational data)}
+\handoutheader{H4}{Instrumental Variables}{Outside shifters of treatment: instruments that nobody randomized}{Meeting 7 (Observational data)}
 
 \begin{decision}
 A firm suspects an unmeasured confounder that no adjustment can fix (Meeting 7), and it cannot run an experiment. Something
 outside its control may still shift the treatment: a rule, a manager's choice, a system outage, the weather. Meeting~2 showed
-what the ratio of two differences identifies when the shifter is a randomised offer. This handout is about shifters that
-nobody randomised: what must then be argued, what goes wrong when the argument fails, and how to tell a strong instrument
+what the ratio of two differences identifies when the shifter is a randomized offer. This handout is about shifters that
+nobody randomized: what must then be argued, what goes wrong when the argument fails, and how to tell a strong instrument
 from a weak one.
 \end{decision}
 
 \begin{goals}
-  \item say what changes when the instrument is not randomised, and argue independence and exclusion from the institution;
+  \item say what changes when the instrument is not randomized, and argue independence and exclusion from the institution;
   \item describe the compliers, the units whose effect the ratio measures;
   \item quantify what failures of exclusion and monotonicity do to the ratio;
   \item interpret two-stage least squares with covariates, and guard against weak instruments.
@@ -21,10 +21,10 @@ from a weak one.
 %=====================================================================================
 \sectionone
 
-\subsection{From a randomised offer to an outside shifter}
+\subsection{From a randomized offer to an outside shifter}
 
 The notation is Meeting~2's (Section~1.9): a binary instrument $Z$, a treatment $D$ with potential treatments $D(0), D(1)$,
-and potential outcomes $Y(d, z)$. Meeting~2 took $Z$ to be a randomised offer, so independence came from the draw. Here
+and potential outcomes $Y(d, z)$. Meeting~2 took $Z$ to be a randomized offer, so independence came from the draw. Here
 $Z$ is any variable that shifts $D$, and independence becomes an assumption.
 
 \begin{assum}{Independence}{ind}
@@ -110,7 +110,7 @@ $\text{ITT}(X) = \pi(X)\,\text{LATE}(X)$.
 \end{proof}
 
 Controls that determine the instrument's probability are required; controls that only predict $Y$ reduce variance; anything
-measured after assignment is never a control. With heterogeneous effects, 2SLS weights strata towards balanced instruments and
+measured after assignment is never a control. With heterogeneous effects, 2SLS weights strata toward balanced instruments and
 strong first stages. Running the two stages by hand reproduces the estimate but not its standard error; use an IV routine. With a
 continuous treatment (a log price) the same formula gives an elasticity, a weighted average of slopes over units whose treatment
 the instrument moved.
@@ -122,11 +122,11 @@ With $\hat\theta = \widehat{\text{ITT}}/\hat\pi$, approximately
 $\Var(\hat\theta) \approx \{\Var(\widehat{\text{ITT}}) - 2\theta\Cov(\widehat{\text{ITT}}, \hat\pi) + \theta^2\Var(\hat\pi)\}/\pi^2$.
 \end{prop}
 \begin{proof}
-Linearise $a/b$ at $(\text{ITT}, \pi)$: $a/b - \theta \approx \{(a - \text{ITT}) - \theta(b - \pi)\}/\pi$.
+Linearize $a/b$ at $(\text{ITT}, \pi)$: $a/b - \theta \approx \{(a - \text{ITT}) - \theta(b - \pi)\}/\pi$.
 \end{proof}
 
 With a precise first stage, $\SE(\hat\theta) \approx \SE(\widehat{\text{ITT}})/\pi$. The approximation fails when $\pi$ is small relative to its
-SE, measured by the first-stage $F = (\hat\pi/\SE(\hat\pi))^2$. A weak instrument's estimate is heavy-tailed, centred between the truth
+SE, measured by the first-stage $F = (\hat\pi/\SE(\hat\pi))^2$. A weak instrument's estimate is heavy-tailed, centered between the truth
 and the naive regression, and its nominal 95\% interval undercovers. $F > 10$ (Staiger and Stock) is a floor, not a certificate: Lee,
 McCrary, Moreira and Porter (2022) show a conventional 5\% $t$-test has correct size only for $F$ above about $104.7$.
 
@@ -161,7 +161,7 @@ LATE as the ATE; ignoring a direct effect of the instrument.
 \paragraph{Setting.} QuickBite wants the effect of its Plus membership ($D$) on orders ($Y$, orders in the following month).
 Each order earns ¥10 of margin; each Plus member costs ¥15 a month in waived delivery fees. Members choose to join, and heavy
 users join most, so comparing members with non-members is hopeless. In March, regional managers in 6 of the 12 cities chose
-to run an in-app campaign promoting Plus ($Z = 1$ for a customer in a campaign city). Nobody randomised the campaign: managers
+to run an in-app campaign promoting Plus ($Z = 1$ for a customer in a campaign city). Nobody randomized the campaign: managers
 in big cities were keener (4 of 6 big cities ran it, 2 of 6 small ones), and big-city customers order more.
 
 \begin{center}
@@ -220,14 +220,14 @@ report.
 and more after it. An effect of 15 orders a month per complier is implausible: any direct effect of the campaign of $\delta$ is multiplied by
 $1/0.02 = 50$. With $F$ between 10 and 100, report the ITT and first stage, plus an Anderson--Rubin set; do not headline the ratio.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 An analyst proposes using rainfall as an instrument for QuickBite's delivery fee (rain reduces courier supply, which raises the
 surge fee) to estimate the fee elasticity of orders. Assess each of the four assumptions.
 \end{exercise}
 \answer{Relevance: checkable, likely strong. Independence: rain is not chosen by anyone, but it is seasonal and regional; compare within
 city and season. Monotonicity: rain raises fees everywhere, plausibly. Exclusion: almost certainly fails, because rain raises demand for
 delivery directly (people stay in), so the ratio mixes the fee effect with the rain effect on demand, biasing the elasticity upward
-(towards zero or positive). A better instrument shifts the fee without shifting demand, such as randomised fee tests or courier-pay
+(toward zero or positive). A better instrument shifts the fee without shifting demand, such as randomized fee tests or courier-pay
 changes.}
 
 %=====================================================================================
@@ -235,14 +235,14 @@ changes.}
 
 \begin{extension}[Continuous treatments, flexible controls and describing compliers]
 With a continuous treatment and binary instrument, the Wald ratio is a weighted average of unit slopes over the range the instrument
-moved them (Angrist, Graddy and Imbens, 2000). With many controls, residualise $Y$, $D$ and $Z$ on $X$ with cross-fitted learners and compute
+moved them (Angrist, Graddy and Imbens, 2000). With many controls, residualize $Y$, $D$ and $Z$ on $X$ with cross-fitted learners and compute
 $\sum\tilde Z\tilde Y/\sum\tilde Z\tilde D$: the partially linear IV model of double machine learning. Abadie's $\kappa$-weighting identifies any feature of the
 compliers' joint distribution.
 \end{extension}
 
 \begin{extension}[Sensitivity to exclusion]
 Report the LATE as a function of the direct effect, $(\text{ITT} - \delta)/\pi$, over a range of $\delta$ argued from the institution, and the
-$\delta$ at which the decision flips. Conley, Hansen and Rossi (2012) formalise this as ``plausibly exogenous'' instruments.
+$\delta$ at which the decision flips. Conley, Hansen and Rossi (2012) formalize this as ``plausibly exogenous'' instruments.
 \end{extension}
 
 \subsection*{Annotated reading}

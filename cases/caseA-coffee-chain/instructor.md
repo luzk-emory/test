@@ -1,22 +1,22 @@
-# Case A: Lin's Coupon Programme: Instructor Version
+# Case A: Lin's Coupon Program: Instructor Version
 
 **Meetings 1–7. Instructor only: contains every answer and all future releases.** Distribute the student parts one at a time, on paper or as single-part files, never the full student file in advance.
 
 ## 1. What the case does
 
-One decision runs through seven meetings: *should this coffee chain send coupons, to whom, and was the programme it ran worth it?* Every meeting adds one reason the previous number was not yet the decision number.
+One decision runs through seven meetings: *should this coffee chain send coupons, to whom, and was the program it ran worth it?* Every meeting adds one reason the previous number was not yet the decision number.
 
 Each meeting follows the course spine (`course-spine.md`): **estimand → identification → estimation**, with uncertainty taken from the design.
 
 | Meeting | Estimand (and the number that decides it) | Assignment mechanism → identification | Estimation and uncertainty |
 |---|---|---|---|
-| M1 | sample ATE in the Q2 region; the pilot's ATT/ATU; net per coupon vs $p_1/3$ | the seed: complete randomisation, contrasted with marketing's selection | difference in means (= OLS on a dummy); spread over redraws |
-| M2 | sample ATE and net value (CI vs 0.167); ATE on other lists; a store-level offer | randomisation; transport via stable segment effects; cluster assignment | Fisher test; **Neyman variance, conservative**; net-value CI; CUPED; MDE; DEFF |
-| M3 | $\tau(x)$; the rule $\tau(x) > \mu_1(x)/3$; a list's ATE under target weights | randomisation within $x$; overlap by design; support only for pre-Q2 members | interaction model, S/T learners; SE of the segment gap |
-| M4 | leaf effects of a frozen partition vs each line's break-even | randomisation within the partition committed before half B | honest leaf means and SEs; winner's-curse arithmetic |
+| M1 | sample ATE in the Q2 region; the pilot's ATT/ATU; net per coupon vs $p_1/3$ | the seed: complete randomization, contrasted with marketing's selection | difference in means (= OLS on a dummy); spread over redraws |
+| M2 | sample ATE and net value (CI vs 0.167); ATE on other lists; a store-level offer | randomization; transport via stable segment effects; cluster assignment | Fisher test; **Neyman variance, conservative**; net-value CI; CUPED; MDE; DEFF |
+| M3 | $\tau(x)$; the rule $\tau(x) > \mu_1(x)/3$; a list's ATE under target weights | randomization within $x$; overlap by design; support only for pre-Q2 members | interaction model, S/T learners; SE of the segment gap |
+| M4 | leaf effects of a frozen partition vs each line's break-even | randomization within the partition committed before half B | honest leaf means and SEs; winner's-curse arithmetic |
 | M5 | gain of a frozen list vs ¥1.50 | known coin probability $e$ | IPW contributions; paired SE between lists |
-| M6 | net value under a cap, budget, risk and capacity; a learned policy's value | push-test randomisation; transport to Q4 | plug-in $v_i$; ranking; $\lambda^*$; reserve; value lower bound; DR scores and weighted classification |
-| M7 | ATT of the programme as run vs 0.133; each trimmed population against its own break-even | the engine's rule is the assignment mechanism: unconfoundedness given its inputs, overlap by band | **outcome-free design stage first**; standardisation; IPW; ESS; trimming; AIPW (double robustness); a first sensitivity check ($\gamma\delta$ against the break-even) |
+| M6 | net value under a cap, budget, risk and capacity; a learned policy's value | push-test randomization; transport to Q4 | plug-in $v_i$; ranking; $\lambda^*$; reserve; value lower bound; DR scores and weighted classification |
+| M7 | ATT of the program as run vs 0.133; each trimmed population against its own break-even | the engine's rule is the assignment mechanism: unconfoundedness given its inputs, overlap by band | **outcome-free design stage first**; standardization; IPW; ESS; trimming; AIPW (double robustness); a first sensitivity check ($\gamma\delta$ against the break-even) |
 
 All numbers match the current decks in `meetings/m01`–`m07`. The M3-R4 ladder, marked **(sim)** below, is the only simulation output left and is on hold; every M7 number is exact and checked by `shared/checks/slides07_check.py`.
 
@@ -68,7 +68,7 @@ Minutes are elapsed minutes in the meeting and approximate. **Retime when each d
 | M6-R1 | M6 A | 0–10 | `[RELEASE R1]` "The Q4 Push" | "The Unconstrained Rule" |
 | M6-R2 | M6 A | 15–25 | `[RELEASE R2]` "The Coupon Is Paid on Redemption" | the cost table, "The Sure-Thing Cost", "A Cap: Rank by Net Value" |
 | M6-R3 | M6 A | 30–45 | `[RELEASE R3]` "A Budget: The Knapsack and Its Shadow Price" | "Region 2: ¥8,000 of Expected Cost", "The Q4 List", "Uncertain Effects: The Conservative Rule" (task 5) |
-| M7-R1 | M7 A | 0–5 | `[RELEASE R1]` "The Programme on Trial" | "The Number That Decides It"; "The Assumptions, Sentence by Sentence" |
+| M7-R1 | M7 A | 0–5 | `[RELEASE R1]` "The Program on Trial" | "The Number That Decides It"; "The Assumptions, Sentence by Sentence" |
 | M7-R2 | M7 A | 12–25 | `[RELEASE R2]` "Two Kinds of Customer" | that frame's pooled and within lines; "The Rule Chose Members Unlikely to Buy"; "Which Average Does the CFO Need?"; "Weighting for the ATT, and How Many Members It Rests On" |
 | M7-R3 | M7 A | 40–45 | `[RELEASE R3]` "The App-Open Column" | "Conditioning on a Collider" |
 | M7-R4 | M7 B | 50–58 | `[RELEASE R4]` "The Real Logs" | "Reconstruct the Rule" to "Design Before Analysis" |
@@ -109,7 +109,7 @@ Minutes are elapsed minutes in the meeting and approximate. **Retime when each d
 - $\tau^* = 0.50/3 = 0.167$. Net $= 0.10 \times 30 - 5 = -¥2.00$ per coupon, **−¥20,000** against marketing's +¥64,000.
 - Line to leave them with: *it works; it does not pay.*
 - Task 4: coupon-arm buyers $155 + 105 = 260$ (0.52); control buyers $145 + 55 = 200$ (0.40); $\hat\tau = 0.12$ against a true 0.10.
-  - The draw is not broken. Randomisation is unbiased *over draws*, not exact in each one.
+  - The draw is not broken. Randomization is unbiased *over draws*, not exact in each one.
   - This is the workshop's 200-seed histogram, one draw at a time. M2 puts a number on the spread.
 
 ### M1-R5
@@ -137,7 +137,7 @@ Minutes are elapsed minutes in the meeting and approximate. **Retime when each d
 - A: $\tau = \tfrac23(0.05)+\tfrac13(0.20) = 0.10$; $p_1 = 0.633$; $\tau^* = 0.211$; net −¥3.33.
 - Base: 0.125 / 0.55 / 0.183 / −¥1.75.
 - B: $\tau = 0.15$; $p_1 = 0.467$; $\tau^* = 0.156$; net **−¥0.17**. B has a higher lift than the base and still loses, because the break-even moves with the mix.
-- The licence is *"same coupon, same app, same quarter"*: segment effects carry over.
+- The license is *"same coupon, same app, same quarter"*: segment effects carry over.
 
 ### M2-R3
 - The MDE must be at most the gap to break-even: $0.20 - 0.10 = 0.10$.
@@ -159,16 +159,16 @@ Minutes are elapsed minutes in the meeting and approximate. **Retime when each d
 - DEFF $= 1 + 399 \times 0.01 = 4.99$. 20,000 customers carry the information of about 4,000. The SE is $\sqrt{4.99} = 2.23$ times the customer-level SE.
 - Marketing would report the customer-level SE. Compare store means, or cluster by store.
 - Task 4:
-  - **Till push** → staff behaviour is store-level, so the store is the unit (as planned). Keep till scripts identical across arms.
-  - **Two-store customers** → spillover across stores. Randomise catchment clusters of nearby stores instead: fewer, larger units.
+  - **Till push** → staff behavior is store-level, so the store is the unit (as planned). Keep till scripts identical across arms.
+  - **Two-store customers** → spillover across stores. Randomize catchment clusters of nearby stores instead: fewer, larger units.
   - **Carry-over** → time-block designs need washout gaps. Each fix reduces the number of independent units and widens the SE.
 
 ### M2-R5
 A model memo:
-1. Randomised: a causal effect for the 1,000-member region.
+1. Randomized: a causal effect for the 1,000-member region.
 2. 0.10, 95% CI [0.039, 0.161]; net −¥2.00 per coupon [−¥3.56, −¥0.44].
 3. Coupon-everyone does not pay.
-4. Next: a lapsed-only test with CUPED (175 per arm fits), and the BOGO randomised by store.
+4. Next: a lapsed-only test with CUPED (175 per arm fits), and the BOGO randomized by store.
 
 ### M2-R6
 This part closes M2 with noncompliance and the LATE, the experimental core of instrumental variables (Handout H4 goes further). The draw $Z$ is the instrument and seeing the coupon is $D$.
@@ -199,7 +199,7 @@ This part closes M2 with noncompliance and the LATE, the experimental core of in
 - Stress *aligned predictions*: both columns come from the same row's $x$, whatever arm the row was in.
 - A lapsed customer's $\hat\tau = 0.20$ means about 200 extra purchases per 1,000 similar members, not knowledge of *which* 200.
 - Task 3: $\tau = 0.05 + 0.15L$, the same two effects. The sign of the interaction depends only on which group is coded 1.
-- Task 4: $0.8(0.05) + 0.2(0.20) = $ **0.08**. The coefficient on $D$ is the effect at the reference group, $X = 0$ (lapsed), so it is not an average. **Standardise with the target's weights**: M2's transport again, and M7's standardisation ahead.
+- Task 4: $0.8(0.05) + 0.2(0.20) = $ **0.08**. The coefficient on $D$ is the effect at the reference group, $X = 0$ (lapsed), so it is not an average. **Standardize with the target's weights**: M2's transport again, and M7's standardization ahead.
 
 ### M3-R2b
 - Active: $0.80 - 0.75 = 0.05$, $SE = \sqrt{0.16/200 + 0.1875/200} = 0.0417$. Lapsed: $0.30 - 0.10 = 0.20$, $SE = 0.0387$.
@@ -218,7 +218,7 @@ Ladder: interaction OLS RMSE 0.412, +¥4,100; S-lasso 0.409, −¥6,800; **S-boo
 
 ### M3-R6 (Lab 3 opener; new to this case)
 1. **Only comments written before the freeze date (the day before the draw).** A comment written after a coupon arrived can be caused by the coupon. A label built from it is post-treatment, M1's data-roles rule applied to text.
-2. With 80% accuracy both ways on a 50/50 base, the 5,000 labelled "drifting" are 4,000 lapsed + 1,000 active.
+2. With 80% accuracy both ways on a 50/50 base, the 5,000 labeled "drifting" are 4,000 lapsed + 1,000 active.
    - Lift $= 0.8(0.20) + 0.2(0.05) = 0.17$.
    - $\mu_1 = 0.8(0.30) + 0.2(0.80) = 0.40$, so break-even 0.133.
    - Net $= 0.17 \times 30 - 4.00 = +¥1.10$ per coupon.
@@ -289,7 +289,7 @@ The middle sentence (half B held until every partition is in) is the one broken 
 
 - Same lift, different sure-thing cost. **The prognostic field that was irrelevant for estimation returns on the cost side.**
 - Task 3, cap: analyst–low ranks first ($v = 3.50$), and any 1,000 of them earn **¥3,500**. Nobody in analyst–low buys without the push, so $v = 25\tau - 1.50$: the forest's groups are worth ¥6.00, ¥3.50 and ¥2.25. Its list (all 500 top, 500 middle) earns $500(6.00) + 500(3.50) = $ **¥4,750**. Without a cap only the sign of $v$ matters; a binding cap makes order within the positive set worth money, here ¥1,250. The cap binds on a one-day send; in R3 the send is spread over three days.
-- Task 4, all analysts: $2{,}500(4.00) + 2{,}500(2.50) = ¥16{,}250$ expected. To answer finance you need the variance of realised cost: each member costs 6.50 or 1.50.
+- Task 4, all analysts: $2{,}500(4.00) + 2{,}500(2.50) = ¥16{,}250$ expected. To answer finance you need the variance of realized cost: each member costs 6.50 or 1.50.
   - With independent redemptions, $SD = \sqrt{25[2{,}500(0.16) + 2{,}500(0.25)]} = ¥160$. Then $z = (18{,}000 - 16{,}250)/160 = 10.9$: **the chance is essentially zero**.
   - The 95th percentile is $16{,}250 + 1.645(160) = ¥16{,}513$.
   - Common demand shocks and estimated probabilities make real risk larger than this.
@@ -324,7 +324,7 @@ Among openers: $250/500 = 0.50$ vs $250/250 = 1.00$, an "effect" of **−0.50** 
 ### M7-R4
 - Task 1: $\hat e = 0.08, 0.32, 0.62, 0.98$; ATT weights $0.087, 0.47, 1.63, 49$. Each band's weighted non-recipients equal its recipients.
 - Task 2: **band 4**. Its 50 non-recipients stand in for 2,450 recipients and carry **49%** of the weight. ESS $= 5{,}000^2/\sum w^2 = $ **203 of 5,000** non-recipients.
-- Task 3: trimming at $[0.05, 0.95]$ drops band 4. The ATT then describes the **2,550** recipients in bands 1 to 3, **39%** of them active against 20% for the programme: a different population with a different break-even. ESS **2,225 of 4,950**; largest weight 1.63. Report it as such: band 4's members are excluded, and their effect is reported separately, with the 50 members it rests on.
+- Task 3: trimming at $[0.05, 0.95]$ drops band 4. The ATT then describes the **2,550** recipients in bands 1 to 3, **39%** of them active against 20% for the program: a different population with a different break-even. ESS **2,225 of 4,950**; largest weight 1.63. Report it as such: band 4's members are excluded, and their effect is reported separately, with the 50 members it rests on.
 - Task 4, **the outcome-free design stage** (Rubin's design before analysis), written down and dated before purchases open:
   - assignment mechanism: $\hat e$ by band, from the coupon column;
   - overlap: band 4 rests on 50 non-recipients; trim at $[0.05, 0.95]$;
@@ -337,11 +337,11 @@ Among openers: $250/500 = 0.50$ vs $250/250 = 1.00$, an "effect" of **−0.50** 
 ### M7-R4b
 - Pooled: **−0.22** (nothing causal).
 - OLS on coupon and band dummies: **0.120**, variance-weighted (band 4 gets 49 of 1,366 in weight).
-- Standardisation by segment: **0.17** (band 4's $\mu_0$ learned mostly from band 3).
+- Standardization by segment: **0.17** (band 4's $\mu_0$ learned mostly from band 3).
 - Hájek IPW by band, all recipients: **0.17** (SE 0.022). Its 95% interval starts at **0.127**, below 0.133. Band 4 supplies 93% of the untrimmed variance.
 - Trimmed (bands 1 to 3): **0.141** (SE 0.011). $E[Y(1) \mid D=1] = 0.496$, break-even **0.165**, net **−¥0.73** per coupon.
 - Band 4: **0.20** (SE $\sqrt{0.21/2{,}450 + 0.09/50} = 0.043$). Its interval starts at **0.115**, above its break-even **0.100**; net **+¥3.00** per coupon.
-- **Trimming changed the decision**: the programme's profit (+¥1.10 per coupon) comes from band 4, the band trimming removes and the band with the thinnest comparison.
+- **Trimming changed the decision**: the program's profit (+¥1.10 per coupon) comes from band 4, the band trimming removes and the band with the thinnest comparison.
 - Memo: keep coupons for lapsed members (bands 3 and 4); stop the 1,000 to active members (**−¥6.50** each); report band 4 on its own, with the 50 non-recipients its estimate rests on.
 
 ## 5. Rivergate take-home key
@@ -359,7 +359,7 @@ Among openers: $250/500 = 0.50$ vs $250/250 = 1.00$, an "effect" of **−0.50** 
 
 3. Unrecorded **motivation** (or recent performance trend) plausibly raised both sign-up and output. Within skill that biases the +10 and +6 **upward**. Exchangeability is a claim, not a fact, for a voluntary pilot.
 4. The 200 are 50/50, so the effect is $0.5(10) + 0.5(6) = $ **8** orders a week, an ATE on the rollout mix. The volunteers' ATT is $0.2(10) + 0.8(6) = 6.8$. Her decision needs the 8.
-5. Value per trainee over four weeks $= 8 \times 4 \times 80 = ¥2{,}560 > ¥1{,}800$: pays. High: ¥3,200. Low: $6 \times 320 = ¥1{,}920$, which clears ¥1,800 by only ¥120, so a modest upward bias in the +6 would erase it. A good memo trains the high-skill group and runs a randomised pilot for the low-skill group.
+5. Value per trainee over four weeks $= 8 \times 4 \times 80 = ¥2{,}560 > ¥1{,}800$: pays. High: ¥3,200. Low: $6 \times 320 = ¥1{,}920$, which clears ¥1,800 by only ¥120, so a modest upward bias in the +6 would erase it. A good memo trains the high-skill group and runs a randomized pilot for the low-skill group.
 
 Rivergate is a take-home table of its own: the M7 notes' worked example (Section 2), on which they show AIPW and double robustness, is FitLife, not Rivergate. AIPW is not part of the take-home.
 

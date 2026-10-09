@@ -13,7 +13,7 @@ have to be to change the decision.
 
 \begin{goals}
   \item state the partially linear model, its identifying assumptions and its estimand when effects vary;
-  \item derive the residual-on-residual (Frisch--Waugh--Lovell) form and explain why both sides must be residualised;
+  \item derive the residual-on-residual (Frisch--Waugh--Lovell) form and explain why both sides must be residualized;
   \item explain the two failures of plug-in machine learning and how orthogonality and cross-fitting fix them;
   \item compute a DML estimate and its (clustered) standard error, and diagnose overlap with a continuous treatment;
   \item use the interactive model for an ATE, and run an omitted-variable sensitivity analysis with benchmarking.
@@ -56,7 +56,7 @@ the $\varepsilon$ term vanishes.
 \end{proof}
 
 Note that $\ell \ne g$: predicting $Y$ from $X$ estimates $\ell = \theta r + g$, which already contains the part of the treatment $X$
-explains. That is why \emph{both} sides are residualised. Subtracting $\ell$ from $Y$ and regressing on raw $D$ discards the very
+explains. That is why \emph{both} sides are residualized. Subtracting $\ell$ from $Y$ and regressing on raw $D$ discards the very
 treatment variation the estimate needs.
 
 \begin{prop}{What $\theta$ estimates when effects vary}{vw}
@@ -74,7 +74,7 @@ Report which weighted average you have, and for whom.
 
 \subsection{Why plugging in machine learning fails}
 
-\paragraph{Regularisation bias.} Learners trade bias for variance. A covariate that strongly predicts $D$ but adds little to
+\paragraph{Regularization bias.} Learners trade bias for variance. A covariate that strongly predicts $D$ but adds little to
 predicting $Y$ may be shrunk out of an outcome model fitted on $(D, X)$, or under-used by a tree ensemble once $D$ is available.
 Its confounding is then attributed to $D$. A better prediction of $Y$ is not a better estimate of $\theta$.
 
@@ -95,7 +95,7 @@ on the other folds and predict this fold, giving out-of-fold residuals $\tilde Y
 With clustered data replace $\sum_i\tilde D_i^2\hat\varepsilon_i^2$ by $\sum_c(\sum_{i \in c}\tilde D_i\hat\varepsilon_i)^2$.
 \end{prop}
 \begin{proof}
-The estimator is the sample analogue of Result~\ref{prop:fwl}; the SE is the heteroskedasticity-robust (or cluster-robust) SE of
+The estimator is the sample analog of Result~\ref{prop:fwl}; the SE is the heteroskedasticity-robust (or cluster-robust) SE of
 the residual regression. Its validity rests on the bias calculation below and the rate conditions in Section~3.
 \end{proof}
 
@@ -107,12 +107,12 @@ scored, so the cross terms with $\nu$ and $\varepsilon$ vanish in expectation, l
 \]
 The first term is a \emph{product} of two errors: if each model is moderately wrong, the product is much smaller than either. This
 is \emph{Neyman orthogonality}: first-order errors in either nuisance do not move the estimating equation. The second term, the
-squared error of the treatment model, attenuates $\hat\theta$ towards zero and gets no product protection; it vanishes only if $\hat r$ is
+squared error of the treatment model, attenuates $\hat\theta$ toward zero and gets no product protection; it vanishes only if $\hat r$ is
 accurate. Diagnose it with the share of $\sum\tilde D^2$ that is model error, and fix it with a better treatment model or more data.
 
 Repeat the whole procedure over several random fold splits and report the median, adding the spread across splits to the SE. Choose
 each nuisance learner by its own cross-validated prediction error (that is legitimate: they are prediction problems), and report at
-least two. Disagreement means the answer depends on modelling choices.
+least two. Disagreement means the answer depends on modeling choices.
 
 \subsection{Overlap with a continuous treatment}
 
@@ -142,7 +142,7 @@ the residual outcome variance (after $D$ and $X$). Then the bias in the partiall
 \]
 \end{prop}
 \begin{proof}
-This is the omitted-variable-bias formula in partial-$R^2$ form (Cinelli and Hazlett, 2020) applied to the residualised regression; the
+This is the omitted-variable-bias formula in partial-$R^2$ form (Cinelli and Hazlett, 2020) applied to the residualized regression; the
 bound uses $|\text{corr}| \le 1$ for the part of $U$ not explained by $D$ and $X$.
 \end{proof}
 
@@ -208,7 +208,7 @@ variance and $0.32$ of the residual order variance. An omitted factor a third as
 conclusion. Unrecorded local events could plausibly be that strong.
 
 \paragraph{Recommendation.} Do not raise the fee. Because a moderately strong unrecorded confounder could overturn the conclusion,
-confirm it with a randomised fee test (a switchback by hour in a few zones, which respects courier interference; Handout H1).
+confirm it with a randomized fee test (a switchback by hour in a few zones, which respects courier interference; Handout H1).
 
 \begin{exercise}[computation]
 Using the DML estimate $-0.575$, what fee change does the model suggest, and why should you not compute an ``optimal fee'' from the constant-elasticity formula?
@@ -216,9 +216,9 @@ Using the DML estimate $-0.575$, what fee change does the model suggest, and why
 \answer{Since $\varepsilon + f/(6+f) < 0$ at $f = 4$, profit rises if the fee falls slightly: the local evidence supports a small cut, not a rise.
 The constant-elasticity optimum for a cost-plus structure would extrapolate the local slope to fees the system rarely charged (the
 treatment model leaves little variation far from current fees), so the formula's answer is outside the support. The supported action is a
-small, randomised test of a cut.}
+small, randomized test of a cut.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 A colleague suggests adding ``orders in the same zone in the previous 15 minutes'' and ``competitor fee in the same hour'' to $X$. Assess
 each.
 \end{exercise}
