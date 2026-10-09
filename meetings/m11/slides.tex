@@ -33,7 +33,7 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 
-% ── Colours: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
+% ── Colors: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
 \definecolor{sbgreen}{HTML}{00704A}
 \definecolor{noteblue}{HTML}{2060A0}
 \definecolor{warnred}{HTML}{B42318}
@@ -109,7 +109,7 @@
   \item Placebos, and when a rank is a $p$-value
   \item In-time placebos and leave-one-out
   \item Limits: extreme units, spillovers, anticipation, local shocks
-  \item Synthetic control or DiD?
+  \item Synthetic control versus difference-in-differences
   \item The flagship and the cohort: Dana's memo
 \end{itemize}
 \end{column}
@@ -123,11 +123,11 @@
 % [RELEASE R1: the flagship and the three candidate controls; hold back the next frame until it is attempted]
 \begin{frame}{One Store, Two Years Ahead}
 
-It is \textbf{week 104}. Meeting 10 confirmed cohort 1: against the 89 stores not yet on it, the Store Assistant added \textyen 11{,}000 of sales a store-week (SE 1{,}220). On Dana's desk: extend it to the \textbf{59 stores} still without it, at \textyen 2{,}500 per store-week. At a 25\% margin the break-even lift is $2{,}500/0.25 =$ \textyen 10{,}000 a store-week.
+It is week 104. Meeting 10 confirmed cohort 1. Against the 89 stores not yet on it, the Store Assistant added \textyen 11{,}000 of sales a store-week (SE 1{,}220). Dana now has to decide whether to extend it to the 59 stores still without it, at \textyen 2{,}500 per store-week. At a 25\% margin the break-even lift is $2{,}500/0.25 =$ \textyen 10{,}000 a store-week.
 
 \medskip
 
-One more piece of evidence. The \textbf{flagship} went live in \textbf{week 20}, alone, 33 weeks before cohort 1, and has 84 weeks live. It was the vendor's \textbf{co-development store}: a vendor engineer worked on site for its first six months, and the assistant was tuned on the flagship's own catalog and customers' questions.
+There is one more piece of evidence. The flagship went live in week 20, alone, 33 weeks before cohort 1, and has now been live for 84 weeks. It was the vendor's \textbf{co-development store}: a vendor engineer worked on site for its first six months, and the assistant was tuned on the flagship's own catalog and customers' questions.
 
 \medskip
 
@@ -135,7 +135,7 @@ Its after-minus-before difference is $+$\textyen 18{,}700 a week. \textbf{How mu
 
 \medskip
 
-A $2 \times 2$ needs a control. Which store?
+A $2 \times 2$ comparison needs a control. Which store would you use?
 \begin{itemize}
   \item the chain's other large-format store, in a different city;
   \item the average of the 59 never-treated stores, a different format with a different trend;
@@ -146,7 +146,7 @@ A $2 \times 2$ needs a control. Which store?
 % ====================================================================
 \begin{frame}{One Treated Unit}
 
-Unit $1$, the flagship, is treated after period $T_0 = 19$; the \textbf{donor pool} is units $j = 2, \dots, J+1$, here the $J = 59$ never-treated stores. In adoption-date notation the target is
+Unit $1$, the flagship, is treated after period $T_0 = 19$; the \textbf{donor pool} is units $j = 2, \dots, J+1$, here the $J = 59$ never-treated stores. Index potential outcomes by adoption date: $Y_{1t}(g)$ is the flagship's sales in week $t$ if it goes live in week $g$, and $g = \infty$ means never. The target is
 \[
 \tau_t = Y_{1t}(T_0 + 1) - Y_{1t}(\infty) = Y_{1t}(20) - Y_{1t}(\infty), \qquad t > T_0,
 \]
@@ -155,15 +155,15 @@ where $Y_{1t}(20) = Y_{1t}$ is observed and $Y_{1t}(\infty)$ must be constructed
 \medskip
 
 \begin{itemize}
-  \item \textbf{After minus before} (\textyen 18{,}700) keeps whatever the flagship's sales would have done anyway over two years.
-  \item \textbf{The other large-format store} faces another city's shocks and trend.
-  \item \textbf{The average donor} is a poor counterfactual for a unit unlike any donor: DiD against it carries the difference in trend into the estimate.
-  \item \textbf{Picking donors by hand} invites picking the ones that flatter the result.
+  \item After minus before (\textyen 18{,}700) keeps whatever the flagship's sales would have done anyway over two years.
+  \item The other large-format store faces another city's shocks and trend.
+  \item The average donor is a poor counterfactual for a unit unlike any donor. Difference-in-differences (DiD) against it carries the difference in trend into the estimate.
+  \item If you pick donors by hand, you can pick the ones that flatter the result.
 \end{itemize}
 
 \medskip
 
-\textbf{What was treated?} The assistant, plus an engineer on site, plus tuning on the flagship's own data: not the version the 59 stores would get. And the flagship was chosen first. Whatever its effect is, it is the effect of a different treatment, in a store picked for it.
+\textbf{What was treated?} The assistant, plus an engineer on site, plus tuning on the flagship's own data, which is not the version the 59 stores would get. And the flagship was chosen first. Whatever its effect is, it is the effect of a different treatment, in a store picked for it.
 \end{frame}
 
 % ====================================================================
@@ -253,7 +253,7 @@ The synthetic flagship is \textbf{half A and half B}: two named stores the compa
 % ====================================================================
 \begin{frame}{Interpolation, Not Extrapolation}
 
-Drop the constraints, as a regression of the flagship on the donors would. For every number $s$, the weights $w = (\tfrac12 - 5s,\ \tfrac12 + 3s,\ s)$ on (A, B, C) reproduce weeks 1 to 3 \textbf{exactly}:
+Drop the constraints, as a regression of the flagship on the donors would. For every number $s$, the weights $w = (\tfrac12 - 5s,\ \tfrac12 + 3s,\ s)$ on (A, B, C) reproduce weeks 1 to 3 exactly:
 
 \begin{center}
 \small
@@ -276,7 +276,7 @@ The week-4 effect is $13 + 11s$: \textbf{the same perfect pre-period fit support
 \begin{itemize}
   \item Non-negative weights summing to one make the synthetic store an \textbf{interpolation}: a point inside the donors' range. Here only $s = 0$ qualifies.
   \item Unconstrained weights fit the pre-period with combinations that have no real-world analog (``three A stores minus one B store minus half a C store'') and behave wildly afterwards.
-  \item The constraints also make the solution \textbf{sparse and explainable}: ``half A, half B''.
+  \item The constraints also make the solution sparse and explainable: ``half A, half B''.
 \end{itemize}
 \end{frame}
 
@@ -302,11 +302,11 @@ $\mu_j$ & $(80, 10)$ & $(100, 10)$ & $(100, 20)$ & $(90, 10)$ \\
 \end{tabular}
 \end{center}
 
-$\tfrac12\mu_A + \tfrac12\mu_B = (90, 10) = \mu_1$: matching the \textbf{path} matched the \textbf{characteristics}. The $\mu_j$ are never observed; a close fit over a period in which $\lambda_t$ moves is how we learn that they match.
+$\tfrac12\mu_A + \tfrac12\mu_B = (90, 10) = \mu_1$, so matching the path matched the characteristics. The $\mu_j$ are never observed; a close fit over a period in which $\lambda_t$ moves is how we learn that they match.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{A Long Pre-Period, Not Just a Close One}
+\begin{frame}{Why the Pre-Period Must Be Long}
 
 \textbf{A short fit is easy and uninformative.} Fit on week 1 alone: two convex combinations both match the flagship's 100.
 
@@ -328,14 +328,14 @@ One week cannot tell them apart. By week 3 the second is off by 6.7, because it 
 \medskip
 
 \begin{itemize}
-  \item If a weighted donor combination tracks the treated unit over a \textbf{long} pre-period, during which $\lambda_t$ moves, it must nearly match $\mu_1$, and so keeps tracking it afterwards.
+  \item If a weighted donor combination tracks the treated unit over a long pre-period, during which $\lambda_t$ moves, it must nearly match $\mu_1$, and so keeps tracking it afterwards.
   \item The real flagship has 19 pre-period weeks and 59 donors.
-  \item \textbf{DiD is the special case $\lambda_t$ constant}: then any level difference stays fixed and differencing removes it. Here the second characteristic, growth, has an influence $t$ that rises every week.
+  \item DiD is the special case $\lambda_t$ constant. Then any level difference stays fixed and differencing removes it. Here the second characteristic, growth, has an influence $t$ that rises every week.
 \end{itemize}
 \end{frame}
 
 % ====================================================================
-% [RELEASE R3: design freeze, placebos and the local-boom check; answered on this frame, "Rank 1 of 60" and "Limits"]
+% [RELEASE R3: design freeze, placebos and the local-boom check; answered on this frame, "Is Rank 1 of 60 a $p$-Value?" and "Limits"]
 \begin{frame}{Design Before the Post-Period}
 
 As in Meeting 7, the choices that shape the estimate can be fixed before post-period outcomes are seen.
@@ -349,7 +349,7 @@ As in Meeting 7, the choices that shape the estimate can be fixed before post-pe
 
 \medskip
 
-\textbf{In the three-donor example}, fit on weeks 1 and 2 only: growth of 10 again forces $w_C = 0$ and $w_A = w_B = \tfrac12$, which predicts week 3 as $\tfrac12(110) + \tfrac12(130) = 120$. The held-out gap is 0.
+In the three-donor example, fit on weeks 1 and 2 only: growth of 10 again forces $w_C = 0$ and $w_A = w_B = \tfrac12$, which predicts week 3 as $\tfrac12(110) + \tfrac12(130) = 120$. The held-out gap is 0.
 
 \medskip
 
@@ -359,7 +359,7 @@ Weights tuned after seeing the post-period gap are fitted to it. Without the con
 % ====================================================================
 \begin{frame}{Inference by Placebo}
 
-There is no standard error in the usual sense: one treated unit, one series.
+With one treated unit and one series, there is no standard error in the usual sense.
 
 \begin{result}{1.3}{When a placebo rank is a $p$-value}
 Apply the method to every unit in turn as if it were treated (\emph{in-space placebos}) and compute each unit's ratio
@@ -373,19 +373,19 @@ $p$-value of $k/(J+1)$.
 \begin{itemize}
   \item Each donor in turn plays the flagship, gets its own synthetic store from the other donors, and has its own ratio.
   \item The ratio discounts placebo stores whose pre-period fit was poor: a big post-period gap means little if the pre-period gap was big too.
-  \item With $J$ donors the smallest attainable $p$-value is $1/(J+1)$: $1/4 = 0.25$ with three donors, $1/60 = 0.017$ with 59.
+  \item With $J$ donors the smallest attainable $p$-value is $1/(J+1)$, which is $1/4 = 0.25$ with three donors and $1/60 = 0.017$ with 59.
 \end{itemize}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Rank 1 of 60: A $p$-Value?}
+\begin{frame}{Is Rank 1 of 60 a $p$-Value?}
 
-Treated as if live in week 20, each of the 59 donors gets its own synthetic control. The flagship's ratio ranks \textbf{first of 60}. \textbf{Is that $p = 1/60 = 0.017$?} Only if the flagship had been as likely as any donor to be the treated store: under no effect and a random choice, the 60 ratios are exchangeable, so each rank is equally likely for it.
+Treated as if live in week 20, each of the 59 donors gets its own synthetic control. The flagship's ratio ranks first of 60. That is $p = 1/60 = 0.017$ only if the flagship had been as likely as any donor to be the treated store. Under no effect and a random choice, the 60 ratios are exchangeable, so each rank is equally likely for it.
 
 \medskip
 
 \begin{itemize}
-  \item The flagship was \textbf{chosen first}, as the co-development store, almost certainly because it was expected to do well. Exchangeability fails.
+  \item The flagship was chosen first, as the co-development store, almost certainly because it was expected to do well. Exchangeability fails.
   \item The rank is then a \textbf{descriptive} measure of how unusual its gap is, not a $p$-value.
   \item A near-perfect pre-period fit makes the ratio very large or undefined: in the three-donor example the pre-period RMSPE is 0, and $13/0$ does not exist.
 \end{itemize}
@@ -423,7 +423,7 @@ without A & B alone & $-10,\ -10,\ -10$ & 3.0 & \textcolor{warnred}{fit fails: n
 \normalsize
 \textbf{Report the range over refits whose fit is still acceptable: $[11.7, 13.0]$.} A refit that cannot match the pre-period is evidence about the donor pool, not about the effect. If the estimate depends on one donor, argue for that donor directly.
 
-\textbf{The real flagship}, 59 donors: weight on 4 stores; $\hatt =$ \textyen 15{,}900 a week; leave-one-out range \textyen 13{,}100 to \textyen 17{,}400.
+The real flagship: four of 59 donors get weight, $\hatt =$ \textyen 15{,}900 a week, leave-one-out range \textyen 13{,}100 to \textyen 17{,}400.
 \end{frame}
 
 % ====================================================================
@@ -438,12 +438,12 @@ without A & B alone & $-10,\ -10,\ -10$ & 3.0 & \textcolor{warnred}{fit fails: n
 
 \medskip
 
-\textbf{A local-boom check.} Four small never-treated stores in the flagship's city share no staff or customers with it. Compare them with the other never-treated stores before and after week 20: they share any local shock but not the treatment, so a positive gap there is a local boom, not the assistant, and a reason to investigate.
+To check for a local boom, use the four small never-treated stores in the flagship's city, which share no staff or customers with it. Compare them with the other never-treated stores before and after week 20: they share any local shock but not the treatment, so a positive gap there is a local boom, not the assistant, and a reason to investigate.
 \end{frame}
 
 % ====================================================================
 % [RELEASE R4: synthetic control or DiD; answered on this frame and the next]
-\begin{frame}{Synthetic Control or DiD?}
+\begin{frame}{Synthetic Control Versus DiD}
 
 Dana's analyst prefers DiD: the flagship against the \textbf{equal-weighted} donors, weeks 1 to 3 against week 4.
 
@@ -522,7 +522,7 @@ placebo rank a $p$-value when the treated unit was chosen for a reason.
 
 \bigskip
 
-Each one has a number today:
+Each error has a number from the examples above.
 \begin{itemize}
   \item exact pre-period fits from three donors give any week-4 effect from 7.5 to 24: choose after looking, and you choose the answer;
   \item fitted on week 1 alone, $\tfrac12 A + \tfrac12 B$ and $\tfrac23 A + \tfrac13 C$ fit equally well and are 6.7 apart by week 3;
@@ -536,7 +536,7 @@ Each one has a number today:
 % [RELEASE R5: the memo; Dana's table is shown first, "The Recommendation" is held back until the memo is attempted]
 \begin{frame}{Dana's Table}
 
-Lift: sales in \textyen 000 per store-week; break-even 10. Margin: $0.25 \times$ lift $-$ \textyen 2{,}500, in \textyen{} per store-week.
+Lift is sales in \textyen 000 per store-week, with break-even at 10. Margin is $0.25 \times$ lift $-$ \textyen 2{,}500, in \textyen{} per store-week.
 
 \begin{center}
 \small
@@ -565,7 +565,7 @@ Cohort 1, DiD (Meeting 10) & 30 stores, two quarters & 11.0 & $+$250 \\
 
 \setbeamercolor{block title}{bg=sbgreen,fg=white}\setbeamercolor{block body}{bg=greentint,fg=black}
 \begin{block}{To Dana}
-Roll the assistant out to the remaining 59 stores. Budget about $+$\textyen 250 of margin a store-week over the first two quarters live ($0.25 \times 11{,}000 - 2{,}500$): $-$\textyen 500 in the first quarter, while staff learn it, and $+$\textyen 1{,}000 in the second. This assumes the 59 stores, whose regions signed off last, would see what cohort 1 saw. The flagship's \textyen 15{,}900 is one store, chosen first, with a vendor engineer on site and no interval: it bounds the upside of a different treatment and is not the forecast. Stagger the remaining rollout in two random halves six months apart, so that the next review has a clean comparison.
+Roll the assistant out to the remaining 59 stores. Budget about $+$\textyen 250 of margin a store-week over the first two quarters live ($0.25 \times 11{,}000 - 2{,}500$): $-$\textyen 500 in the first quarter, while staff learn it, and $+$\textyen 1{,}000 in the second. This assumes the 59 stores, whose regions signed off last, would see what cohort 1 saw. The flagship's \textyen 15{,}900 is one store, chosen first, with a vendor engineer on site and no interval. It bounds the upside of a different treatment and is not the forecast. Stagger the remaining rollout in two random halves six months apart, so that the next review has a clean comparison.
 \end{block}
 
 \medskip
@@ -581,8 +581,8 @@ Roll the assistant out to the remaining 59 stores. Budget about $+$\textyen 250 
 
 \begin{itemize}
   \item \spinestep{Estimand.} One treated unit's effect path, $\tau_t = Y_{1t}(T_0 + 1) - Y_{1t}(\infty)$ for $t > T_0$; $Y_{1t}(\infty)$ must be constructed.
-  \item \spinestep{Identification.} A factor model: weights that match the treated unit's characteristics track it after $T_0$ too. A close fit over a long pre-period, in which $\lambda_t$ moves, is the evidence that they match.
-  \item \spinestep{Estimation.} Non-negative weights summing to one, fitted on the pre-period: an interpolation inside the donors' range, sparse and explainable. Fix the donor pool, window, and predictors, and check on held-out pre-weeks, before opening the post-period.
+  \item \spinestep{Identification.} Under a factor model, weights that match the treated unit's characteristics track it after $T_0$ too. A close fit over a long pre-period, in which $\lambda_t$ moves, is the evidence that they match.
+  \item \spinestep{Estimation.} Non-negative weights summing to one, fitted on the pre-period, make an interpolation inside the donors' range that is sparse and explainable. Fix the donor pool, window, and predictors, and check on held-out pre-weeks, before opening the post-period.
   \item \spinestep{Inference.} No standard error. In-space placebos give a $p$-value of $k/(J+1)$ only if the treated unit was as likely as any donor to be treated; otherwise the rank is descriptive. Add in-time placebos and leave-one-out.
   \item \textbf{Know the limits, and the alternative.} Extreme units, spillovers, anticipation, and local shocks break it. DiD fixes equal weights and allows a level shift; synthetic control chooses weights and matches levels.
 \end{itemize}
