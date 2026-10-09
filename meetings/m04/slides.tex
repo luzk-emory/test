@@ -1,7 +1,7 @@
 % \documentclass[aspectratio=169, 11pt]{beamer}
 \documentclass[aspectratio=169, 11pt, handout]{beamer}
 
-% Meeting 4 lecture slides. Running case: Lin's coupon programme at a coffee chain (cases/caseA-coffee-chain,
+% Meeting 4 lecture slides. Running case: Lin's coupon program at a coffee chain (cases/caseA-coffee-chain,
 % Meeting 4 releases R1 to R5). The notes' worked example (QuickBite) is deliberately not reproduced here.
 % Shared with notes.tex: estimands, assumptions, notation, the statement of each Result, the order of topics.
 % Block A follows notes Sections 1.1 to 1.4; block B follows Sections 1.5 and 1.6.
@@ -33,7 +33,7 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 
-% ── Colours: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
+% ── Colors: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
 \definecolor{sbgreen}{HTML}{00704A}
 \definecolor{noteblue}{HTML}{2060A0}
 \definecolor{warnred}{HTML}{B42318}
@@ -116,7 +116,7 @@
   \item Local centering: the R-learner inside a forest
   \item Forest intervals and their limits
   \item Variable importance is not a test
-  \item Has the model found real heterogeneity? The calibration test and GATES
+  \item Testing for real heterogeneity with the calibration test and GATES
 \end{itemize}
 \end{column}
 \end{columns}
@@ -153,14 +153,14 @@ B (estimation) & locked until the segments are in & one number per segment \\
 
 \medskip
 
-The card is printed from half B's numbers only. Today explains why each part of the rule is there.
+The card is printed from half B's numbers only. Today you will see why each part of the rule is there.
 \end{frame}
 
 % ====================================================================
 % [RELEASE R2: the four-cell structure of Region 2]
 \begin{frame}{Region 2: Two Fields, Four Cells}
 
-Two CRM fields: \textbf{customer type} (executive or analyst, from the job-title field) and \textbf{spending history} (high or low). The population truth:
+Two CRM fields describe each member: customer type (executive or analyst, from the job-title field) and spending history (high or low). The table gives the population truth.
 
 \begin{center}
 \small
@@ -179,8 +179,8 @@ Analyst   & Low  & 25\% & 0.20 & 0.00 & $0.20$ \\
 \medskip
 
 \begin{itemize}
-  \item \textbf{Spending} is prognostic only: it moves the purchase rate by $0.30$ in each arm-and-type pair and leaves $\tau$ unchanged.
-  \item \textbf{Customer type} is the effect modifier: $\tau(\text{analyst}) = 0.20$, $\tau(\text{executive}) = 0.05$.
+  \item Spending is \textbf{prognostic} only: it moves the purchase rate by $0.30$ in each arm-and-type pair and leaves $\tau$ unchanged.
+  \item Customer type is the \textbf{effect modifier}: $\tau(\text{analyst}) = 0.20$, $\tau(\text{executive}) = 0.05$.
 \end{itemize}
 
 \medskip
@@ -323,7 +323,7 @@ Effect heterogeneity enters an outcome split at half weight, on top of the basel
 \end{tikzpicture}
 
 \vspace{0.3em}
-\raggedright\footnotesize Depth 1: spending (gap 0.30) beats type (0.225) and $D$ (0.125). Depth 2: type (0.225) beats $D$ (0.125) again. Until depth 3, $\hatt(x) = 0$.
+\raggedright\footnotesize At depth 1, spending (gap 0.30) beats type (0.225) and $D$ (0.125). At depth 2, type (0.225) beats $D$ (0.125) again. Until depth 3, $\hatt(x) = 0$.
 \end{column}
 \begin{column}{0.33\textwidth}
 \centering
@@ -340,7 +340,7 @@ Effect heterogeneity enters an outcome split at half weight, on top of the basel
 \end{tikzpicture}
 
 \vspace{0.3em}
-\raggedright\footnotesize Coupon arm: spending (0.30) beats type (0.15). No-coupon arm: they tie at 0.30, broken here on spending. Subtracting, $\hatt = 0.575 - 0.45 = 0.275 - 0.15 = 0.125$ everywhere.
+\raggedright\footnotesize In the coupon arm, spending (0.30) beats type (0.15). In the no-coupon arm they tie at 0.30, broken here on spending. Subtracting, $\hatt = 0.575 - 0.45 = 0.275 - 0.15 = 0.125$ everywhere.
 \end{column}
 \begin{column}{0.31\textwidth}
 \centering
@@ -401,7 +401,7 @@ Executive, no app & 0.01 & 0.167 & no coupon \\
 % ====================================================================
 \begin{frame}{Two Noisy Splits}
 
-A discovery sample with an overall lift of $0.10$. Two candidate splits, each into equal halves:
+A discovery sample has an overall lift of $0.10$. Two candidate splits each divide it into equal halves:
 
 \begin{center}
 \begin{tabular}{lrrr}
@@ -416,7 +416,7 @@ B & 0.09 & 0.11 & $0.0001$ \\
 
 \bigskip
 
-A wins. Suppose that in truth \emph{neither} split separates anything: all four leaves have lift $0.10$. On fresh data, split A gives $(0.08, 0.12)$:
+A wins. Suppose that in truth \emph{neither} split separates anything, and all four leaves have lift $0.10$. On fresh data, split A gives $(0.08, 0.12)$:
 
 \begin{center}
 \Large the gap: $0.16 \;\longrightarrow\; 0.04$
@@ -440,7 +440,7 @@ For $k = 2, 5, 20, 100$ candidates, $\E[\max_{j \le k} Z_j] = 0.56, 1.16, 1.87, 
 
 \medskip
 
-\textbf{By hand.} Twenty candidate segments, every one with true lift $0.125$, each estimated with SE $0.04$. The best-looking one shows, on average,
+\textbf{By hand.} Take 20 candidate segments, every one with true lift $0.125$, each estimated with SE $0.04$. The best-looking one shows, on average,
 \[
 0.125 + 1.87 \times 0.04 = \textcolor{warnred}{0.20},
 \]
@@ -463,7 +463,7 @@ The leaves were chosen for their large gaps. Their estimates carry the noise tha
 \end{column}
 \begin{column}{0.48\textwidth}
 \textbf{Reported on half B}\\[0.2em]
-Half B's noise is independent of the choice made on A. Within a leaf, B is a randomized experiment, and Meetings 1 and 2 apply.
+Half B's noise is independent of the choice made on A. Within a leaf, B is a randomized experiment, so its difference in means is unbiased with a valid SE, as in Meetings 1 and 2.
 \end{column}
 \end{columns}
 
@@ -498,11 +498,11 @@ The middle sentence is the one most often broken in practice, by an analyst who 
 % ====================================================================
 \begin{frame}{What Honesty Costs, and What a Split Costs}
 
-\textbf{Honesty's price is variance.} Each half does only one job. If a leaf's full-sample SE is $s$, honesty raises its variance from $s^2$ to $2s^2$.
+Honesty's price is variance, because each half does only one job. If a leaf's full-sample SE is $s$, honesty raises its variance from $s^2$ to $2s^2$.
 
 \smallskip
 
-\textbf{The alternative's price is bias.} Reporting the winner from the search adds a squared bias of about $(s\,\E[\max Z_j])^2$, which exceeds $s^2$ once four or more equal candidates are compared. With 20 candidates it is $1.87^2 s^2 = 3.50\,s^2$.
+The alternative's price is bias. Reporting the winner from the search adds a squared bias of about $(s\,\E[\max Z_j])^2$, which exceeds $s^2$ once four or more equal candidates are compared. With 20 candidates it is $1.87^2 s^2 = 3.50\,s^2$.
 
 \bigskip
 
@@ -636,7 +636,7 @@ The two executive lines say the same thing and can be printed as one. Their esti
 \begin{itemize}
   \item When a search chooses the segments, the data choose the estimand. Fix the partition before the estimation data are opened.
   \item A causal criterion ignores prognostic splits; outcome trees spend their depth on them. In Region 2, CART splits on spending and the causal tree on type.
-  \item The winner of a search is inflated by about $s\,\E[\max Z_j]$: twenty null segments at $0.125$ produce a best of about $0.20$.
+  \item The winner of a search is inflated by about $s\,\E[\max Z_j]$: 20 null segments at $0.125$ produce a best of about $0.20$.
   \item Honest estimates on data the partition never saw are unbiased. Variance doubles; the bias disappears.
   \item Region 2's card: analysts with low spend get the coupon; analysts with high spend are undecided; executives do not.
 \end{itemize}
@@ -756,7 +756,7 @@ The residuals are $\pm\tfrac12\tau(x)$. The $0.30$ spending gap is gone; only th
 
 \begin{itemize}
   \item What prognostic variables explain is removed before any split is chosen, so splits concentrate on effect modifiers.
-  \item It also protects the estimate when treatment probabilities vary with $x$, as they will in logged data (Meeting 7).
+  \item It also protects the estimate when treatment probabilities vary with $x$, as they will in logged data later in the course.
 \end{itemize}
 \end{frame}
 
@@ -861,7 +861,7 @@ More trees remove the simulation noise, $(1-\rho)/B$, and nothing else. The floo
 % ====================================================================
 \begin{frame}{Variable Importance Is Not a Test}
 
-A forest reports how often each field is used to split. Split counts describe the \textbf{algorithm}, not the effect:
+A forest reports how often each field is used to split. Split counts describe the algorithm, not the effect:
 
 \bigskip
 
@@ -877,7 +877,7 @@ Half A already showed the risk: app use entered Lin's tree with nothing behind i
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Has the Model Found Real Heterogeneity?}
+\begin{frame}{Testing for Real Heterogeneity}
 
 On held-out data, compute each member's doubly robust score $\phi_i$ (Meeting 3), which satisfies $\E[\phi_i \mid X_i] = \tau(X_i)$, and the model's prediction $\hatt(X_i)$, fitted on other data.
 
@@ -987,12 +987,19 @@ The checks that do test heterogeneity are on held-out data: $\beta_2$ and the ga
 \end{frame}
 
 % ====================================================================
+\begin{frame}{References}
+
+\small
+Wager, Stefan, and Susan Athey. 2018. ``Estimation and Inference of Heterogeneous Treatment Effects Using Random Forests.'' \emph{Journal of the American Statistical Association} 113 (523): 1228--1242. \url{https://doi.org/10.1080/01621459.2017.1319839}
+\end{frame}
+
+% ====================================================================
 \begin{frame}{Summary}
 
 \begin{itemize}
   \item \spinestep{Estimand.} When a search chooses the segments, the estimand is the leaf CATE $\tau_\ell$ of a partition committed before the estimation half is opened. Each line is held against its own break-even, $\tau^\ast = p_1/3$.
   \item \spinestep{Identification.} Inside each committed leaf, half B's own coupon draw identifies $\tau_\ell$ (Result 1.3). It fails as soon as the partition depends on half B.
-  \item \spinestep{Estimation.} Causal trees split on effect gaps and ignore prognostic splits (Result 1.1). Forests are adaptive neighbor weights with local centering: the R-learner, localized (Result 1.4).
+  \item \spinestep{Estimation.} Causal trees split on effect gaps and ignore prognostic splits (Result 1.1). Forests are adaptive neighbor weights with local centering, which makes them the R-learner, localized (Result 1.4).
   \item \spinestep{Inference.} The winner of a search is inflated by about $s\,\E[\max Z_j]$ (Result 1.2). Forest intervals are pointwise and wide. Real heterogeneity is tested on held-out data, by $\beta_2$ (Result 1.5) and GATES, not by variable importance.
   \item \textbf{Find on one half, judge on the other.} Region 2's card: coupon analysts with low spend; test analysts with high spend further; no coupon for executives.
 \end{itemize}

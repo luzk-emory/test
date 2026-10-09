@@ -35,3 +35,7 @@ request that resolves it.
 - [ ] syllabus/syllabus.tex:306 | 1 | School policy on AI use | instructor
 - [ ] syllabus/syllabus.tex:310 | 1 | Academic integrity, accommodations, attendance, late work | instructor
 - [ ] syllabus/syllabus.tex:407–412 | 1 | Lab tooling: language model and provider, student access and cost, agent harness, autograder and locked set, A3 simulator, computing environment | instructor, before the labs are built
+
+## Editorial pass findings
+
+- [ ] meetings/m04/notes.tex:100; meetings/m04/slides.tex:538, 567, 599 | 5 | The honest-estimation protocol labels its steps H1 Discover, H2 Estimate, H3 Recommend, which collide with the handout labels H1 to H6; the frame titles "H2: The Same Leaves on Half B" and "H3: The Card" also read as "Label: Title". Kept unchanged | rename to Step 1 to Step 3 or plain Discover / Estimate / Recommend (notes, slides, and Case A Parts M4-R3 to M4-R5 together); or keep
