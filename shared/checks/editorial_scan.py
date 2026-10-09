@@ -79,6 +79,11 @@ HISTORY = re.compile(r"from the spreadsheet|per the (syllabus|spreadsheet|draft)
                      r"has been (moved|replaced|added)|now (covers|includes|uses)|\bnew:|\(v[0-9]|\bversion [0-9]|"
                      r"\bdraft\b|\brevised\b|\\today|this (section|table|slide|document) (explains|summari[sz]es|outlines)|"
                      r"below we outline", I)
+OPENER = re.compile(r"\b(the key (insight|point|idea) is|here'?s the thing|this matters because|in short|put simply|"
+                    r"the bottom line)\b", I)
+FRAGMENT = re.compile(r"\bNot (because|that|just)\b[^.?!]{0,80}[.?!] +(Because|It'?s|That'?s)\b")
+XMEET = re.compile(r"(Result|Assumption|Section|[Ee]quation|Definition)s?[ ~]\(?[0-9]+(\.[0-9]+)?\)?[^.]{0,30}Meeting[ ~][0-9]+|"
+                   r"Meeting[ ~][0-9]+[^.]{0,30}(Result|Assumption|Section|[Ee]quation|Definition)s?[ ~][0-9]+\.[0-9]+")
 PLACEHOLDER = re.compile(r"\\tbd\{|\bTODO\b|\bTBD\b|\bXXX\b|\[insert|lorem ipsum", I)
 LABELS = re.compile(r"\bM[0-9]{1,2}\b(?!-R)|\bSession [0-9]|\bClass [0-9]|\bLecture [0-9]+[AB]?\b|\bLab [0-9]+[A-C]\b|"
                     r"\bBlock [0-9]", 0)
@@ -127,6 +132,10 @@ def scan(path):
         m = HISTORY.search(line)
         if m: add('R', f'production history / title residue: {m.group(0)}', n, line)
         if LABELS.search(line): add('R', 'label form', n, line)
+        m = OPENER.search(line)
+        if m: add('R', f'substitute device: opener "{m.group(0)}"', n, line)
+        if FRAGMENT.search(line): add('R', 'substitute device: dramatic fragment', n, line)
+        if XMEET.search(line): add('R', 'cross-meeting number', n, line)
         if k in CROSS and not re.match(r'\s*\\(node|draw|path|fill|coordinate)\b', line):
             m = re.search(CROSS[k], line, 0 if k in ('slides', 'notes') else I)
             if m: add('R', f'cross-artifact reference: {m.group(0)}', n, line)
@@ -137,10 +146,27 @@ def scan(path):
                 if later and not course_map: add('R', f'forward reference: {m.group(0)}', n, line)
         if k == 'slides' and re.search(r'\\begin\{frame\}\{[^}]*\?\}', line):
             add('R', 'question title: the frame must answer it', n, line)
+    # colons: at most one per paragraph of running prose
+    for pm in re.finditer(r'(?:[^\n]+\n?)+', s):
+        para = pm.group(0)
+        t = re.sub(r'\\begin\{(tabular|tabularx|longtable|equation\*?|align\*?)\}.*?\\end\{\1\}|\$\$.*?\$\$|\\\[.*?\\\]|\$[^$]*\$',
+                   ' ', para, flags=re.S)
+        t = '\n'.join(l for l in t.split('\n') if not l.lstrip().startswith(('|', '\\node', '\\draw')) and '&' not in l)
+        t = re.sub(r'\\(sub)*section\*?\{[^}]*\}|\\paragraph\{[^}]*\}|\\(sub)?title(\[[^]]*\])?\{[^}]*\}|'
+                   r'\\begin\{frame\}(\[[^]]*\])?\{[^}]*\}|\\notesheader\{[^}]*\}\{[^}]*\}\{[^}]*\}|^#.*$', ' ', t, flags=re.M)
+        t = re.sub(r'\*\*[^*\n]{1,60}:\*\*|\\textbf\{[^}]{1,60}\}:?|\\item\s*(\[[^]]*\])?\s*[^:.\n]{1,40}:|^\s*[-*]\s*[^:.\n]{1,40}:|'
+                   r'(Definition|Result|Assumption|Step|Part|Task|Note|Hint|Answer|Key)[^:\n]{0,40}:|\d+:\d+|https?:', ' ', t, flags=re.M)
+        if t.count(':') > 1:
+            add('R', f'substitute device: {t.count(":")} colons in one paragraph', s[:pm.start()].count('\n') + 1,
+                para.strip().split('\n')[0])
     # slides: bold outside tables and box titles, per frame (defined terms + at most one key phrase)
     if k == 'slides':
         for fm in re.finditer(r'\\begin\{frame\}(?:\[[^\]]*\])?\{([^}]*)\}(.*?)\\end\{frame\}', s, re.S):
             body = re.sub(r'\\begin\{(tabular|tabularx|longtable)\}.*?\\end\{\1\}', '', fm.group(2), flags=re.S)
+            body = '\n'.join(l for l in body.split('\n') if not re.match(r'\s*\\(node|draw|path)\b', l))
+            body = re.sub(r'\\textbf\{(Estimand|Identification|Estimation|Inference|Design|Uncertainty)[^}]*\}', '', body)
+            body = re.sub(r'\\Large *\\textbf\{[^}]*\}', '', body)
+            body = re.sub(r'\\begin\{block\}\{[^}]*\}', '', body)
             nb = len(re.findall(r'\\textbf\{', body))
             if nb > 2:
                 ln = s[:fm.start()].count('\n') + 1

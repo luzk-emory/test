@@ -137,6 +137,12 @@ These are defaults. The exceptions listed are the only exceptions; do not extend
 - **Bullets vs prose:** bullets for genuinely parallel items (assumptions, steps, options). Arguments are written as
   prose. Technical notes are primarily connected prose.
 - **No stacked hedges** ("may potentially", "could possibly suggest").
+- **Do not substitute other devices for banned ones.** In running prose:
+  - at most one colon per paragraph (colons in math, in tables, in labels such as "Definition 1.1:", and in the
+    lead-in label of a list item do not count);
+  - no dramatic fragments ("Not because X. Because Y.");
+  - no stock framing openers: "The key insight is", "Here's the thing", "This matters because", "In short", "Put
+    simply", "The bottom line".
 - **Headings** name the content. No "Title: Clever Subtitle" patterns.
 - **Technical vocabulary stays:** "robust standard errors", "significant" in the statistical sense, "leverage" as a
   regression diagnostic, "agent harness" and "test harness" as nouns.
@@ -151,9 +157,12 @@ These are defaults. The exceptions listed are the only exceptions; do not extend
 - Exceptions: direct quotations; titles of published works in reference lists; proper names; code identifiers and
   arguments that must match a library's API; and identifiers that never print (LaTeX labels, macro names, file names).
 - Serial (Oxford) comma.
-- Double quotation marks (``...'' in LaTeX); single quotes only inside double quotes.
+- Double quotation marks (``...'' in LaTeX; straight double quotes in the Markdown cases); single quotes only inside
+  double quotes.
 - Numbers: spell out one through nine in prose; numerals for 10 and above, and always for measurements, percentages,
   statistics, money, and anything with a unit. Percentages use "%" with numerals everywhere (12%, not 12 percent).
+  Numerals are always used in labels (Meeting 3, Lab 3, Week 2, Part M3-R2), in or next to math, in tables, and with
+  symbols.
 - "e.g.," and "i.e.," take a following comma.
 - Capitalization of titles and headings:
   - slide frame titles: Title Case;
@@ -185,7 +194,8 @@ entry. The body text never depends on it.
 Documents of the same type may call back to earlier meetings. Slides for Meeting 10 may refer to Meeting 1 ("Recall
 the selection-bias decomposition from Meeting 1"), and so may the technical notes. Rules:
 
-- Refer to the meeting and the concept, not a slide or page number.
+- Name the concept and the meeting ("the LATE theorem from Meeting 2"). Do not cite result, equation, section, slide,
+  or page numbers from another meeting.
 - Callbacks go backward only. Do not promise content in a later meeting by number; a brief preview by concept
   ("later in the course we relax this assumption") is fine. The one exception is the course-map frame in the Meeting 1
   deck, which lists the later meetings by number.
@@ -213,6 +223,8 @@ with a vaguer one ("as discussed elsewhere"). For example, Handouts H4 and H5 re
 
 Each document defines its own notation and abbreviations at first use, even if another document already defines them.
 Duplication of short definitions across documents is expected.
+
+The notation sheet is a standalone reference. No document other than the syllabus refers to it.
 
 ## 5. Notation, terminology, and labels
 
@@ -309,8 +321,14 @@ Fix logged issues to these standards:
 
 - Write for an intelligent reader outside the class: a manager or analyst with quantitative training.
 - Direct and concrete. Prefer a specific business example to an abstract claim.
-- Keep the author's existing voice. Fix what violates this guide; do not rewrite compliant sentences for stylistic
-  preference.
+- The current prose (the technical notes, handouts, cases, and rebuilt decks) was largely machine-drafted and is not
+  the voice reference. The voice reference is `plan/old-decks/lecture01.tex` to `lecture09.tex`, the instructor's own
+  tested decks. Move prose toward it: plain declarative sentences, varied length, concrete business examples, direct
+  address. For technical notes, follow the decks' word choice and directness in full paragraphs. Do not rewrite
+  sentences that already read this way.
+- The old decks set voice only. Where their spelling, punctuation, or formatting conflicts with this guide (they use
+  em-dashes and British spelling), the guide wins. `plan/old-decks/` stays excluded from the scan.
+- Voice changes are made in editorial passes, never in the spelling pass, and never change technical content.
 
 ## 10. Process
 
@@ -373,4 +391,6 @@ legitimate use (listed in the pull request description with a reason), or logged
 | Cross-artifact references | Per artifact type: slides naming notes, handouts, labs, case parts, worksheets or assignments; technical notes naming slides, labs, case parts or handouts in the body; handouts citing another meeting's Results or Sections; cases naming slides, notes, handouts, labs or frames |
 | Forward references | "Meeting N" with N later than the document's own meeting, except in the Meeting 1 course-map frame |
 | Question titles | Slide titles ending in "?": the frame must answer the question |
-| Bold on slides | Frames with more than two `\textbf` outside tables: defined terms plus at most one key phrase |
+| Bold on slides | Frames with more than two `\textbf`: defined terms plus at most one key phrase. Structural bold is ignored (table headers, box and block titles, spine labels, TikZ node labels, the next block's title on the "End of Block A" frame) |
+| Substitute devices | Paragraphs with more than one colon (math, tables, labels and list lead-ins excluded); dramatic fragments ("Not because X. Because Y."); stock framing openers |
+| Cross-meeting numbers | "Result", "Assumption", "Section" or "equation" numbers cited next to another meeting |
