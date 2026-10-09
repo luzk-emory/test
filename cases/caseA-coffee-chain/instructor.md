@@ -15,7 +15,7 @@ Each meeting follows the course spine (`course-spine.md`): **estimand → identi
 | M3 | $\tau(x)$; the rule $\tau(x) > \mu_1(x)/3$; a list's ATE under target weights | randomization within $x$; overlap by design; support only for pre-Q2 members | interaction model, S/T learners; SE of the segment gap |
 | M4 | leaf effects of a frozen partition vs each line's break-even | randomization within the partition committed before half B | honest leaf means and SEs; winner's-curse arithmetic |
 | M5 | gain of a frozen list vs ¥1.50 | known coin probability $e$ | IPW contributions; paired SE between lists |
-| M6 | net value under a cap, budget, risk and capacity; a learned policy's value | push-test randomization; transport to Q4 | plug-in $v_i$; ranking; $\lambda^*$; reserve; value lower bound; DR scores and weighted classification |
+| M6 | net value under a cap, budget, risk, and capacity; a learned policy's value | push-test randomization; transport to Q4 | plug-in $v_i$; ranking; $\lambda^*$; reserve; value lower bound; DR scores and weighted classification |
 | M7 | ATT of the program as run vs 0.133; each trimmed population against its own break-even | the engine's rule is the assignment mechanism: unconfoundedness given its inputs, overlap by band | **outcome-free design stage first**; standardization; IPW; ESS; trimming; AIPW (double robustness); a first sensitivity check ($\gamma\delta$ against the break-even) |
 
 All numbers match the current decks in `meetings/m01`–`m07`. The M3-R4 ladder, marked **(sim)** below, is the only simulation output left and is on hold; every M7 number is exact and checked by `shared/checks/slides07_check.py`.
@@ -33,7 +33,7 @@ Say the M5 → M7 link out loud: *the system that made the decisions in Q3 is ex
 ## 3. Release schedule
 
 Minutes are elapsed minutes in the meeting and approximate. **Retime when each deck is rebuilt.** The times below come from the v2 calendar:
-- they leave minutes 0–15 of block A in M2, M3, M5 and M7 for a critique case, and reading-and-critique exercises are now dropped, so those meetings gain about 15 minutes;
+- they leave minutes 0–15 of block A in M2, M3, M5, and M7 for a critique case, and reading-and-critique exercises are now dropped, so those meetings gain about 15 minutes;
 - they put Exam I in M6 block A, but it is now in M5 block A, so the M5 releases move to block B and M6 regains block A;
 - M1 to M7 are retimed to the current schedule (M5's releases all fall in block B, minutes 50–100).
 
@@ -58,7 +58,7 @@ Minutes are elapsed minutes in the meeting and approximate. **Retime when each d
 | M3-R6 | M3 C | 120–125 | Lab 3 opener | answers come out of the lab |
 | M4-R1 | M4 A | 0–5 | `[RELEASE R1]` "A Segment Card" | "What the CFO's Rule Buys" |
 | M4-R2 | M4 A | 5–15 | `[RELEASE R2]` "Region 2: Two Fields, Four Cells" | "The Number That Decides Each Line" |
-| M4-R3 | M4 A | 25–30 | `[RELEASE R3]` "Lin's Tree on Half A" | **half-B outcomes: nothing until every pair has submitted**; "Two Noisy Splits", "The Winner's Curse" and "What Honesty Costs" answer tasks 2–4 |
+| M4-R3 | M4 A | 25–30 | `[RELEASE R3]` "Lin's Tree on Half A" | **half-B outcomes: nothing until every pair has submitted**; "Two Noisy Splits", "The Winner's Curse", and "What Honesty Costs" answer tasks 2–4 |
 | M4-R4 | M4 A | 40–45 | `[RELEASE R4]` "H2: The Same Leaves on Half B" | that frame's table |
 | M4-R5 | M4 A | 45–50 | `[RELEASE R5]` "H3: The Card" | |
 | M5-R1 | M5 B | 50–55 | `[RELEASE R1]` "Three Lists, One Launch" | "Value and Gain" |
@@ -288,7 +288,7 @@ The middle sentence (half B held until every partition is in) is the one broken 
 | Exec–High | 4.75 | −3.25 | 1.25 − 3.00 − 1.50 |
 
 - Same lift, different sure-thing cost. **The prognostic field that was irrelevant for estimation returns on the cost side.**
-- Task 3, cap: analyst–low ranks first ($v = 3.50$), and any 1,000 of them earn **¥3,500**. Nobody in analyst–low buys without the push, so $v = 25\tau - 1.50$: the forest's groups are worth ¥6.00, ¥3.50 and ¥2.25. Its list (all 500 top, 500 middle) earns $500(6.00) + 500(3.50) = $ **¥4,750**. Without a cap only the sign of $v$ matters; a binding cap makes order within the positive set worth money, here ¥1,250. The cap binds on a one-day send; in R3 the send is spread over three days.
+- Task 3, cap: analyst–low ranks first ($v = 3.50$), and any 1,000 of them earn **¥3,500**. Nobody in analyst–low buys without the push, so $v = 25\tau - 1.50$: the forest's groups are worth ¥6.00, ¥3.50, and ¥2.25. Its list (all 500 top, 500 middle) earns $500(6.00) + 500(3.50) = $ **¥4,750**. Without a cap only the sign of $v$ matters; a binding cap makes order within the positive set worth money, here ¥1,250. The cap binds on a one-day send; in R3 the send is spread over three days.
 - Task 4, all analysts: $2{,}500(4.00) + 2{,}500(2.50) = ¥16{,}250$ expected. To answer finance you need the variance of realized cost: each member costs 6.50 or 1.50.
   - With independent redemptions, $SD = \sqrt{25[2{,}500(0.16) + 2{,}500(0.25)]} = ¥160$. Then $z = (18{,}000 - 16{,}250)/160 = 10.9$: **the chance is essentially zero**.
   - The 95th percentile is $16{,}250 + 1.645(160) = ¥16{,}513$.
@@ -366,7 +366,7 @@ Rivergate is a take-home table of its own: the M7 notes' worked example (Section
 ## 6. Grading a recommendation (any part)
 
 Score 0–2 on each of five dimensions:
-1. action, population and horizon stated;
+1. action, population, and horizon stated;
 2. arithmetic and units;
 3. the comparison named;
 4. the assumption that matters named;
@@ -379,7 +379,7 @@ A justified "test first" earns full marks.
 The case follows the decks as they are. The complete accepted change list, including the Codex-review corrections, is in `course-spine.md` §4. The issues listed here earlier are resolved in the rebuilt decks:
 
 1. **Population sizes** (resolved): the base is 10,000 members throughout M3–M7, and M7's Q3 export is the same 10,000 members with the 5,000 coupons of Meeting 3.
-2. **Retired assessments** (resolved): the rebuilt decks no longer name A1, A2 or proposal deadlines.
+2. **Retired assessments** (resolved): the rebuilt decks no longer name A1, A2, or proposal deadlines.
 3. **Simulation numbers** (resolved): none are left in the M3–M7 decks; M7's R4 and R4b numbers are exact counts.
 4. **M7 schematic** (resolved): the overlap figure on "Reconstruct the Rule" is drawn from the band counts.
 5. **Case framing** (resolved): M5 R1 introduces the automated campaign engine and the CFO's freeze rule; M7 R1 names the engine's rule. (M3 carries no pointer to the Lab 2 opener; slides carry no lab material.)

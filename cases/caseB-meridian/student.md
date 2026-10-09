@@ -1,6 +1,6 @@
 # Case B: Wen's Rate Decisions
 
-**Meridian Hotels, Meetings 8–9.** Fictional teaching case: the company, the people and all data are invented.
+**Meridian Hotels, Meetings 8–9.** Fictional teaching case: the company, the people, and all data are invented.
 
 This case is handed out one part at a time. When a task says *commit*, write your answer down before the class discusses it.
 
@@ -14,7 +14,7 @@ Throughout: the current midweek premium rate is **¥800** a night, and the varia
 
 **Wen** is commercial director of Meridian Hotels, a group of 80 properties.
 
-A revenue management (RM) system sets the rate for every hotel-night. It uses forecast demand, competitor rates, booking pace and the event calendar. **No human sets these rates night by night**: the system is an automated decision-maker, and it has been for three years.
+A revenue management (RM) system sets the rate for every hotel-night. It uses forecast demand, competitor rates, booking pace, and the event calendar. **No human sets these rates night by night**: the system is an automated decision-maker, and it has been for three years.
 
 On Wen's desk: sales proposes raising midweek premium rates by **8%** across the portfolio. Their evidence is the RM system's own reporting: nights with higher rates sell more rooms. Sales' reading: *demand is strong; the system is under-pricing.*
 
@@ -89,7 +89,7 @@ On some nights the RM system opens a **10% discount** for the final 48 hours. Tw
 **Tasks**
 1. Compare mean bookings on nights with and without the discount. Why is that not the effect?
 2. What does the partially linear model estimate here? Give the ATE and the ATT. Which one does a decision to open the discount every night need?
-3. The resort models are off: $\hat\mu_1 = 74$ and $\hat e = 0.8$. What do regression alone, weighting alone and AIPW give for mean bookings with the discount at resorts?
+3. The resort models are off: $\hat\mu_1 = 74$ and $\hat e = 0.8$. What do regression alone, weighting alone, and AIPW give for mean bookings with the discount at resorts?
 4. Compute the AIPW score of a resort night without the discount that booked 57 rooms. Why is it so far from 12?
 
 ### Part M8-R5. One more thing, says Wen
@@ -124,7 +124,7 @@ Meridian's data-science team has trained a **generative model of the logs**. Giv
 
 ### Part M9-R2. An estimator testbed
 
-The team draws 200 simulated datasets with the same hotels, nights and signals as the real logs, and runs each estimator on each. The truth is −1.50 because they planted it.
+The team draws 200 simulated datasets with the same hotels, nights, and signals as the real logs, and runs each estimator on each. The truth is −1.50 because they planted it.
 
 | Estimator | Override effect planted? | Mean estimate | Share of 95% intervals covering −1.50 |
 |---|---|---:|---:|
@@ -222,7 +222,7 @@ Back to Meeting 8's elasticity. Each hotel has a listing page, and each stay a r
 ### Part M9-R7. The memo
 
 Write the memo to Wen, in five sentences or fewer:
-1. the 8% rise: what Meeting 8, the testbed and the Q3 test together say;
+1. the 8% rise: what Meeting 8, the testbed, and the Q3 test together say;
 2. the vendor's engine: adopt, reject, or pilot, and how;
 3. the synthetic-guest report;
 4. whether the review guardrail tripped, and the number;
@@ -232,7 +232,7 @@ Write the memo to Wen, in five sentences or fewer:
 
 ## Bonus (not examined): the member-rate coin
 
-These parts were Meeting 9's case when it taught instrumental variables. The experimental core of IV (noncompliance, the ITT and the LATE) now closes Meeting 2; Handout H4 goes further. They use the same hotels, and Part M9-R3's backtest refers to Part B1's test.
+These parts were Meeting 9's case when it taught instrumental variables. The experimental core of IV (noncompliance, the ITT, and the LATE) now closes Meeting 2; Handout H4 goes further. They use the same hotels, and Part M9-R3's backtest refers to Part B1's test.
 
 ### Part B1. The member-rate test
 
@@ -311,7 +311,7 @@ The share of nights the member rate was shown is 0.70 on heads and 0.10 on tails
 
 ### Part B4. Candidate-instrument audit
 
-Analysts across the group propose other instruments for the rate. **In pairs:** mark each assumption ✓, ✗ or ?, with one reason.
+Analysts across the group propose other instruments for the rate. **In pairs:** mark each assumption ✓, ✗, or ?, with one reason.
 
 | Candidate | Relevance | Independence | Exclusion | Monotonicity |
 |---|---|---|---|---|

@@ -19,7 +19,7 @@ The design-based alternative, randomizing go-live dates (Athey and Imbens 2022),
 
 ### Why the numbers were kept
 
-Every exhibit uses the numbers in `meetings/m10` and `m11` unchanged: 120 stores, cohorts at weeks 53 and 79, ¥2,500 per store-week, 25% margin, the four cells, six quarters and three donors. The M10 cohort numbers are exact (11, SE 1.22; event-study coefficients 8 and 14) and checked by `shared/checks/slides10_check.py`. The real flagship's results (¥18,700, 15.9, leave-one-out 13.1 to 17.4, weight on 4 donors, rank 1 of 60) are case givens: no simulation script for them is in the repository. The AI story fits the same shape, including the ramp: associates learn the tool while its store catalog fills in.
+Every exhibit uses the numbers in `meetings/m10` and `m11` unchanged: 120 stores, cohorts at weeks 53 and 79, ¥2,500 per store-week, 25% margin, the four cells, six quarters, and three donors. The M10 cohort numbers are exact (11, SE 1.22; event-study coefficients 8 and 14) and checked by `shared/checks/slides10_check.py`. The real flagship's results (¥18,700, 15.9, leave-one-out 13.1 to 17.4, weight on 4 donors, rank 1 of 60) are case givens: no simulation script for them is in the repository. The AI story fits the same shape, including the ramp: associates learn the tool while its store catalog fills in.
 
 New numbers, all narrative:
 - the cost split (¥1,700 license, ¥300 handsets, ¥500 champion allowance);
@@ -80,7 +80,7 @@ Synthetic control now has all of block B.
 
 | Sentence | Supports / puts at risk |
 |---|---|
-| Region sign-off order, after privacy review | timing not chosen by the store; but parallel trends becomes a claim about **regions**. Review order may track a region's IT readiness, size or growth |
+| Region sign-off order, after privacy review | timing not chosen by the store; but parallel trends becomes a claim about **regions**. Review order may track a region's IT readiness, size, or growth |
 | Training weeks 51–52, off the floor | **no anticipation**, *if* pulling associates off the floor did not thin service. If it did, weeks 51–52 are depressed and the DiD is biased **up** |
 | Comparison = 89 not yet signed off | same format and calendar; their levels don't matter |
 | Handset-locked licences; no shared catchment | **no spillovers** |
@@ -206,7 +206,7 @@ These are the keys of the former Meeting 11 parts on staggered adoption, unchang
 
 ## 5. Deck edits needed for this case
 
-The M10 and M11 decks were rebuilt on 8 October with this case's story, numbers and release markers, and most frames named below no longer exist; the table applies only to old frames reused for the bonus parts.
+The M10 and M11 decks were rebuilt on 8 October with this case's story, numbers, and release markers, and most frames named below no longer exist; the table applies only to old frames reused for the bonus parts.
 
 The general corrections from the Codex review are also in `course-spine.md` §4:
 - no error bar at the base period;

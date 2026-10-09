@@ -95,7 +95,7 @@ Controlled projection copy for M8 is still required: do not project the residual
 
 ### M9-R1
 1. **Unconfoundedness given the signals**, with positivity and consistency: the M7 and M8 assumption. The simulator learned $\E[Y \mid D, X]$ and the distribution of $X$ from the logs; sampling from it at a new rate is the g-formula. Its "bookings at another rate" are causal only if the logs' rates were as good as random given the 47 signals. The overrides are exactly where that fails.
-2. **From the data:** the signals' joint distribution, the shape of demand across nights, the noise. **From the analyst:** the elasticity −1.50, the override effect (+12% demand, +10% rate) and its 8% share.
+2. **From the data:** the signals' joint distribution, the shape of demand across nights, the noise. **From the analyst:** the elasticity −1.50, the override effect (+12% demand, +10% rate), and its 8% share.
 3. **No.** A simulator learned from confounded logs inherits their confounding, and the truth inside it is planted by the team. It can test whether an estimator recovers a truth on data shaped like Meridian's. It cannot reveal Meridian's truth.
 
 ### M9-R2
@@ -170,7 +170,7 @@ These are the keys of the former Meeting 9 (instrumental variables), unchanged e
    Randomization buys only the first. Hold onto the second.
 
 ### B3
-1. ITT becomes 6.0, the ratio 10.0 and the elasticity $\ln(70/60)/\ln(0.92) = $ **−1.85**. Bias $= 1.2/0.60 = 2.0$ bookings: **the ratio divides the violation by the first stage.** Nothing in the test log shows it.
+1. ITT becomes 6.0, the ratio 10.0, and the elasticity $\ln(70/60)/\ln(0.92) = $ **−1.85**. Bias $= 1.2/0.60 = 2.0$ bookings: **the ratio divides the violation by the first stage.** Nothing in the test log shows it.
 2. The old-engine hotels' first stage is zero by construction, so their heads–tails gap of 1.2 is the email alone. Corrected ratio $(6.0 - 1.2)/0.60 = $ **8.0**.
    - The correction assumes the email works the same everywhere: a patch, not a proof.
    - The clean fix is design: send the email on both sides of the coin.

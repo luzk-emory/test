@@ -1,6 +1,6 @@
 # Case C: Dana's AI Assistant Rollout
 
-**A home-goods retail chain, Meetings 10–11.** Fictional teaching case: the company, the vendor, the people and all data are invented.
+**A home-goods retail chain, Meetings 10–11.** Fictional teaching case: the company, the vendor, the people, and all data are invented.
 
 This case is handed out one part at a time. When a task says *commit*, write your answer down before the class discusses it.
 
