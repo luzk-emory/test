@@ -26,4 +26,7 @@ what is current, how to build, and what is open.
   errors or undefined references.
 - Record substantive content changes in `plan/CHANGELOG.md`, and update the "Open items" in `README.md` when you
   close or open one.
-- Writing style: no em-dashes; direct, technically precise prose; follow `shared/notation.tex`.
+- Writing style, spelling, labels, self-containment, citations and the editorial checks: follow
+  `plan/editorial-guide.md` (US English; no em-dashes; direct, technically precise prose; notation per
+  `shared/notation.tex`). Run `python3 shared/checks/editorial_scan.py` on the student-facing files you edit, and log
+  unresolved issues in `plan/FLAGS.md`.

@@ -1,3 +1,10 @@
+# Editorial guide (2026-10-09)
+
+- New `plan/editorial-guide.md`: the editorial standard for student-facing materials, fitted to this repository (student-facing and excluded paths; carve-outs for answer keys, release markers, case instructor files and the schedule workbook; dash rules; US English with serial commas, converted first in a separate mechanical pass; labels Meeting N, Block A/B/C, Lab N, Handout HN and case part IDs; slide exceptions for the Summary and End of Block A frames and for bold; self-containment with the Meeting 1 course map and notes' reading-list exceptions; Chicago author-date references, with a References frame per deck; build and check rules). `AGENTS.md` points to it.
+- New `shared/checks/editorial_scan.py`: the automated checks of guide Section 11 (failures and review candidates), run on the student-facing files after removing answer blocks and LaTeX comments.
+- New `plan/FLAGS.md`: data-source and license questions (Dominick's, Rossmann, the hotel reviews, the coupon RCT, Hillstrom and Proposition 99), the brand color and the inherited Case A example, and the open `\tbd` decisions in the syllabus.
+- No course material changed.
+
 # Calendar, labs and assignments (2026-10-09)
 
 - Dates: Tuesdays and Thursdays, 20 October to 1 December 2026; no meeting on Thursday 26 November (Thanksgiving). M11 (Exam II) and M12 (final presentations) are now Tuesdays. `schedule.xlsx` gains a Date column and a Thanksgiving row; the syllabus's week headers and meeting rows carry the dates.
