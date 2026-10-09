@@ -39,3 +39,5 @@ request that resolves it.
 ## Editorial pass findings
 
 - [ ] meetings/m04/notes.tex:100; meetings/m04/slides.tex:538, 567, 599 | 5 | The honest-estimation protocol labels its steps H1 Discover, H2 Estimate, H3 Recommend, which collide with the handout labels H1 to H6; the frame titles "H2: The Same Leaves on Half B" and "H3: The Card" also read as "Label: Title". Kept unchanged | rename to Step 1 to Step 3 or plain Discover / Estimate / Recommend (notes, slides, and Case A Parts M4-R3 to M4-R5 together); or keep
+- [ ] meetings/m01/notes.tex:124; meetings/m01/slides.tex:420 | 4 | The box title of Assumption 1.5, "SUTVA", is never spelled out inside the box; the editorial pass spelled it out in the text before the box in both files instead of editing the box wording | leave; or spell out the box title in both files at once
+- [ ] meetings/m01/slides.tex:978 | 6 | "the coupon cannot change a customer's Q2 segment" in the Q3 win-back frame. Probably intended (the segment is fixed before the campaign) | keep; or say "pre-campaign segment"
