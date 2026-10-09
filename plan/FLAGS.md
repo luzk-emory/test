@@ -24,7 +24,7 @@ request that resolves it.
 - [ ] syllabus/syllabus.tex:44 | 1 | Instructor email and office hours | instructor
 - [ ] syllabus/syllabus.tex:45 | 1 | Teaching assistant and office hours | instructor
 - [ ] syllabus/syllabus.tex:46 | 1 | Companion text: chapter mapping | instructor
-- [ ] syllabus/syllabus.tex:82 | 1 | "and Meeting 9" is still marked open, but Meeting 9 keeping the hotel case was decided on 8 October | remove the marker in the next editorial pass
+- [x] syllabus/syllabus.tex:82 | 1 | "and Meeting 9" is still marked open, but Meeting 9 keeping the hotel case was decided on 8 October | remove the marker in the next editorial pass (done: "Meetings 8 and 9")
 - [ ] syllabus/syllabus.tex:120 | 1 | Prerequisites | instructor
 - [ ] syllabus/syllabus.tex:162 | 1 | Assessment weights carried over from the previous draft | instructor
 - [ ] syllabus/syllabus.tex:171 | 1 | Split of the 40 exam points between Exam I and Exam II | instructor
