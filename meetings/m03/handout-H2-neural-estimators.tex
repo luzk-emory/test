@@ -11,7 +11,7 @@ architecture can help without assumptions).
 \end{decision}
 
 \begin{goals}
-  \item describe TARNet, counterfactual regression (CFR) and DragonNet, and what each one's loss targets;
+  \item describe TARNet, counterfactual regression (CFR), and DragonNet, and what each one's loss targets;
   \item explain how balancing a representation can hide an overlap failure;
   \item state why CEVAE-type models cannot recover hidden confounding without stated proxy structure;
   \item describe in-context (foundation-model) estimators and locate their identifying assumptions in the prior;
@@ -51,7 +51,7 @@ extrapolation that looks like an estimate.
 \subsection{Counterfactual regression: balancing the representation}
 
 CFR adds a penalty $\alpha \cdot \text{IPM}(\Phi \mid D=1,\ \Phi \mid D=0)$ that makes the distribution of $\Phi(X)$ similar
-in the two arms (an integral probability metric such as the Wasserstein distance or MMD). Shalit, Johansson and
+in the two arms (an integral probability metric such as the Wasserstein distance or MMD). Shalit, Johansson, and
 Sontag (2017) bound the estimation error of $\tau$ by the factual losses plus a constant times this distance, which
 motivates the penalty. The bound assumes $\Phi$ is invertible. A penalized network need not be, and then balancing has
 a cost.
@@ -81,13 +81,13 @@ overlap.
 
 \subsection{Hidden confounders and the causal effect VAE}
 
-The causal effect variational autoencoder (CEVAE) posits a latent $Z$ that causes $X$, $D$ and $Y$, fits a VAE to the
+The causal effect variational autoencoder (CEVAE) posits a latent $Z$ that causes $X$, $D$, and $Y$, fits a VAE to the
 observed $(X, D, Y)$, and computes effects as if $Z$ were the only confounder. The claim is that the proxies $X$ let
 the model recover $Z$.
 
 \begin{prop}{The observed distribution does not pin down the effect}{nonid}
 Two models can generate the same joint distribution of $(D, Y)$ with different effects. Example: model A has no
-confounder, $\Pr(D=1) = 0.5$ and $\Pr(Y=1 \mid D) = 0.4 + 0.2D$, so $\tau = 0.2$. Model B has a binary $U$ with
+confounder, $\Pr(D=1) = 0.5$, and $\Pr(Y=1 \mid D) = 0.4 + 0.2D$, so $\tau = 0.2$. Model B has a binary $U$ with
 $\Pr(U=1) = 0.5$, $\Pr(D=1 \mid U) = 0.2 + 0.6U$, and $\Pr(Y=1 \mid U) = \tfrac13 + \tfrac13 U$ independent of $D$, so
 $\tau = 0$. Both give $\Pr(Y=1 \mid D=1) = 0.6$ and $\Pr(Y=1 \mid D=0) = 0.4$.
 \end{prop}
@@ -97,7 +97,7 @@ and $\Pr(Y=1 \mid D=0) = 0.2 \cdot \tfrac23 + 0.8 \cdot \tfrac13 = 0.4$.
 \end{proof}
 
 Any method fitted to the observed distribution, however flexible, cannot choose between A and B. Proxies help only
-under explicit structure. \emph{Proximal causal inference} (Miao, Geng and Tchetgen Tchetgen, 2018) shows
+under explicit structure. \emph{Proximal causal inference} (Miao, Geng, and Tchetgen Tchetgen, 2018) shows
 identification when two proxies play distinct roles: a negative-control \emph{exposure} (related to $U$, with no
 effect on $Y$) and a negative-control \emph{outcome} (related to $U$, unaffected by $D$), plus a completeness
 condition. CEVAE leaves that structure implicit, and Rissanen and Marttinen (2021) show it can be inconsistent when
@@ -108,7 +108,7 @@ an identification claim and ask for the assumptions.
 
 With treatments over time (a sequence of offers), past treatments affect future covariates that affect future
 treatments: \emph{time-varying confounding}. Sequence models (recurrent networks, the causal transformer of
-Melnychuk, Frauen and Feuerriegel, 2022) estimate counterfactual trajectories, using balancing representations at
+Melnychuk, Frauen, and Feuerriegel, 2022) estimate counterfactual trajectories, using balancing representations at
 each step. The identifying assumption is sequential conditional independence (Handout H3), the same as for
 G-computation, which remains the transparent baseline.
 
@@ -149,7 +149,7 @@ on one semi-synthetic benchmark; accepting a foundation model's estimate without
 \sectiontwo
 
 \paragraph{Setting.} QuickBite wants to estimate the effect of a ``featured restaurant'' slot on a restaurant's weekly
-orders from two years of logs. Restaurants are described by menu text, photos and history. Three regions of covariate
+orders from two years of logs. Restaurants are described by menu text, photos, and history. Three regions of covariate
 space matter: (a) small new restaurants, (b) mid-sized ones, (c) large chains. The slot was sold mostly to chains: in
 region (c) every restaurant was featured.
 
@@ -190,19 +190,19 @@ can it be validated against a QuickBite randomized test?}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Shalit, Johansson and Sontag (2017), ``Estimating individual treatment effect: generalization bounds and
+\reading{Shalit, Johansson, and Sontag (2017), ``Estimating individual treatment effect: generalization bounds and
 algorithms'', \emph{ICML}}{TARNet and CFR, with the error bound that motivates balancing}{Sections 1--4}{3}
-\reading{Shi, Blei and Veitch (2019), ``Adapting neural networks for the estimation of treatment effects'',
+\reading{Shi, Blei, and Veitch (2019), ``Adapting neural networks for the estimation of treatment effects'',
 \emph{NeurIPS}}{DragonNet and targeted regularization}{Sections 1--3}{3}
 \reading{Louizos et al.\ (2017), ``Causal effect inference with deep latent-variable models'', \emph{NeurIPS}}{The CEVAE
 proposal}{Sections 1--3}{3}
 \reading{Rissanen and Marttinen (2021), ``A critical look at the consistency of causal estimation with deep latent
 variable models'', \emph{NeurIPS}}{When CEVAE fails, with simulations}{Sections 1--4}{2}
-\reading{Miao, Geng and Tchetgen Tchetgen (2018), ``Identifying causal effects with proxy variables of an unmeasured
+\reading{Miao, Geng, and Tchetgen Tchetgen (2018), ``Identifying causal effects with proxy variables of an unmeasured
 confounder'', \emph{Biometrika}}{The conditions under which proxies do identify effects}{Sections 1--3}{3}
-\reading{Curth, Svensson, Weatherall and van der Schaar (2021), ``Really doing great at estimating CATE?'', NeurIPS
+\reading{Curth, Svensson, Weatherall, and van der Schaar (2021), ``Really doing great at estimating CATE?'', NeurIPS
 Datasets and Benchmarks}{Why benchmark rankings mislead}{All}{2}
-\reading{Melnychuk, Frauen and Feuerriegel (2022), ``Causal transformer for estimating counterfactual outcomes'',
+\reading{Melnychuk, Frauen, and Feuerriegel (2022), ``Causal transformer for estimating counterfactual outcomes'',
 \emph{ICML}}{Sequence models for time-varying treatments}{Sections 1--4}{3}
 \reading{Robertson et al.\ (2025), ``Do-PFN: in-context learning for causal effect estimation'',
 \emph{NeurIPS}}{A foundation-model estimator trained on simulated causal worlds}{Sections 1--4}{3}

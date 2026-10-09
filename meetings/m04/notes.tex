@@ -27,7 +27,7 @@ same idea into an estimate for every customer.
 Units have covariates $X$, a randomized treatment $D$ with known $\Pr(D=1) = e$, and outcome $Y$. A
 \emph{partition} $\Pi = \{\ell_1, \dots, \ell_L\}$ divides covariate space into \emph{leaves}, and the
 \emph{leaf CATE} is $\tau_\ell = \E[Y(1) - Y(0) \mid X \in \ell]$. When the leaves are the output of a search, the
-estimand itself depends on the data that found it. Estimand, identification and estimation still apply, but
+estimand itself depends on the data that found it. Estimand, identification, and estimation still apply, but
 only in order: the partition must be fixed before the data used to estimate it are consulted. The leaf
 estimate on a sample $S$ is $\hatt_\ell(S) = \bar Y_{1,\ell}(S) - \bar Y_{0,\ell}(S)$.
 
@@ -71,7 +71,7 @@ $\max_j \hat T_j \ge \hat T_m$ for every $m$, so $\E[\hat T_{j^\ast}] \ge \max_m
 $\tau$, $\hat T_j = \tau + sZ_j$.
 \end{proof}
 
-$\E[\max Z_j]$ is $1.03$ for $k = 4$, $1.54$ for $k = 10$, $1.87$ for $k = 20$ and $2.25$ for $k = 50$; for large
+$\E[\max Z_j]$ is $1.03$ for $k = 4$, $1.54$ for $k = 10$, $1.87$ for $k = 20$, and $2.25$ for $k = 50$; for large
 $k$ it grows like $\sqrt{2\ln k}$. A tree search over fields and cut points compares hundreds of candidates. The winner's
 effect, reported on the data that chose it, is too high, and its standard error is too small because it ignores
 the search.
@@ -272,13 +272,13 @@ and correlated or high-cardinality fields absorb splits arbitrarily.}
 \begin{extension}[Generalized random forests]
 Any parameter defined by a local moment condition $\E[\psi(O;\theta) \mid X = x] = 0$ (a quantile, a local IV effect)
 can be estimated with forest weights by solving $\sum_i \alpha_i(x)\psi(O_i;\theta) = 0$. A gradient trick turns split
-selection into ordinary CART on pseudo-outcomes. The \texttt{grf} package implements causal, quantile, IV and survival
-forests, the calibration test and doubly robust GATEs (Athey, Tibshirani and Wager, 2019).
+selection into ordinary CART on pseudo-outcomes. The \texttt{grf} package implements causal, quantile, IV, and survival
+forests, the calibration test, and doubly robust GATEs (Athey, Tibshirani, and Wager, 2019).
 \end{extension}
 
 \begin{extension}[Honest criteria, inference on winners, shrinkage]
 Athey and Imbens's criterion subtracts the estimation variance a split will create, discouraging small leaves
-directly. When a winner must be reported from the data that chose it, conditional intervals (Andrews, Kitagawa
+directly. When a winner must be reported from the data that chose it, conditional intervals (Andrews, Kitagawa,
 and McCloskey, 2024) are valid given the selection; empirical Bayes shrinkage pulls noisy segments toward the
 mean and tempers the winner automatically.
 \end{extension}
@@ -289,12 +289,12 @@ mean and tempers the winner automatically.
 \emph{PNAS}}{Causal trees and honesty, with the splitting criterion}{Sections 1--4}{2}
 \reading{Wager and Athey (2018), ``Estimation and inference of heterogeneous treatment effects using random
 forests'', \emph{JASA}}{The asymptotic normality result and its conditions}{Sections 1--3}{3}
-\reading{Athey, Tibshirani and Wager (2019), ``Generalized random forests'', \emph{Annals of Statistics}}{Forests
+\reading{Athey, Tibshirani, and Wager (2019), ``Generalized random forests'', \emph{Annals of Statistics}}{Forests
 as weights for any moment condition}{Sections 1--2, 6}{3}
-\reading{Chernozhukov, Demirer, Duflo and Fern\'andez-Val (2025), ``Fisher--Schultz Lecture: Generic machine learning inference on
+\reading{Chernozhukov, Demirer, Duflo, and Fern\'andez-Val (2025), ``Fisher--Schultz Lecture: Generic machine learning inference on
 heterogeneous treatment effects in randomized experiments'', \emph{Econometrica}}{The calibration test and GATES with repeated
 splitting}{Sections 1--3}{2}
-\reading{Andrews, Kitagawa and McCloskey (2024), ``Inference on winners'', \emph{QJE}}{Valid intervals for the
+\reading{Andrews, Kitagawa, and McCloskey (2024), ``Inference on winners'', \emph{QJE}}{Valid intervals for the
 best-looking segment}{Sections 1--2}{3}
 \end{readinglist}
 

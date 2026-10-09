@@ -101,8 +101,8 @@ $S_d^2$. The gap is $S_\tau^2/n \ge 0$.
 
 The dropped term involves the joint distribution of $Y(1)$ and $Y(0)$, which no experiment reveals:
 conservatism is the price of not knowing individual effects. Example: 1{,}000 customers made of 300 sure
-things, 200 persuadables, 100 do-not-disturbs and 400 lost causes, split 500/500, have $\tau_S = 0.10$,
-$S_1^2 = 250/999$, $S_0^2 = 240/999$ and $S_\tau^2 = 290/999$. The true standard deviation over draws is
+things, 200 persuadables, 100 do-not-disturbs, and 400 lost causes, split 500/500, have $\tau_S = 0.10$,
+$S_1^2 = 250/999$, $S_0^2 = 240/999$, and $S_\tau^2 = 290/999$. The true standard deviation over draws is
 $0.026$; the usual SE is $0.031$ (Figure~1).
 
 \begin{prop}{Superpopulation variance}{superpop}
@@ -281,12 +281,12 @@ offer decision needs, and it needs neither exclusion nor monotonicity. Those are
 effect to receipt itself.
 
 Under monotonicity each unit is an \emph{always-taker} ($D(0) = D(1) = 1$), a \emph{never-taker}
-($D(0) = D(1) = 0$) or a \emph{complier} ($D(0) = 0$, $D(1) = 1$); \emph{defiers} ($D(0) = 1$, $D(1) = 0$) are
+($D(0) = D(1) = 0$), or a \emph{complier} ($D(0) = 0$, $D(1) = 1$); \emph{defiers} ($D(0) = 1$, $D(1) = 0$) are
 ruled out. These are Meeting~1's response types, written for receipt instead of the outcome, and as there, no
 unit's type is observed.
 
 \begin{prop}{Type shares}{shares}
-Under random assignment and monotonicity, $\pi_A = \Pr(D=1 \mid Z=0)$, $\pi_N = \Pr(D=0 \mid Z=1)$ and
+Under random assignment and monotonicity, $\pi_A = \Pr(D=1 \mid Z=0)$, $\pi_N = \Pr(D=0 \mid Z=1)$, and
 $\pi_C = \pi$.
 \end{prop}
 \begin{proof}
@@ -295,7 +295,7 @@ independence makes each arm's shares the population's. The rest are compliers, a
 \end{proof}
 
 \begin{prop}{The LATE theorem (Imbens and Angrist)}{late}
-Under random assignment, exclusion and monotonicity, with $\pi > 0$,
+Under random assignment, exclusion, and monotonicity, with $\pi > 0$,
 \[
   \frac{\text{ITT}}{\pi} = \frac{\E[Y \mid Z=1] - \E[Y \mid Z=0]}{\E[D \mid Z=1] - \E[D \mid Z=0]}
   = \E[Y(1) - Y(0) \mid \text{complier}] \equiv \text{LATE}.
@@ -404,7 +404,7 @@ those who engage, divide the ITT by the share who engage when offered (Result~\r
 \begin{extension}[More on randomization inference]
 Fisher tests extend to any statistic (rank sums, trimmed means) and to sharp nulls of a constant effect
 $\tau_0$; inverting them over $\tau_0$ gives a confidence set. Under complete randomization Neyman's
-variance can be tightened using bounds on $S_\tau^2$ (Aronow, Green and Lee, 2014).
+variance can be tightened using bounds on $S_\tau^2$ (Aronow, Green, and Lee, 2014).
 \end{extension}
 
 \begin{extension}[Stratified designs and ratio metrics]
@@ -430,17 +430,17 @@ sequential probability ratio test gives always-valid $p$-values that may be chec
 \begin{readinglist}
 \reading{Imbens and Rubin (2015), \emph{Causal Inference for Statistics, Social, and Biomedical
 Sciences}}{Fisher and Neyman inference in the design-based frame, with proofs; noncompliance in experiments}{Ch.\ 5--6, 9, 23--24}{2}
-\reading{Angrist, Imbens and Rubin (1996), ``Identification of causal effects using instrumental variables'',
+\reading{Angrist, Imbens, and Rubin (1996), ``Identification of causal effects using instrumental variables'',
 \emph{JASA}}{Compliance types and the LATE in potential outcomes}{Sections 1--4}{2}
-\reading{Kohavi, Tang and Xu (2020), \emph{Trustworthy Online Controlled Experiments}}{The practitioner's
+\reading{Kohavi, Tang, and Xu (2020), \emph{Trustworthy Online Controlled Experiments}}{The practitioner's
 checklist: SRM, guardrails, peeking, ratio metrics}{Ch.\ 3, 17, 21}{1}
-\reading{Deng, Xu, Kohavi and Walker (2013), ``Improving the sensitivity of online controlled experiments'',
+\reading{Deng, Xu, Kohavi, and Walker (2013), ``Improving the sensitivity of online controlled experiments'',
 \emph{WSDM}}{The original CUPED paper}{All}{1}
 \reading{Lin (2013), ``Agnostic notes on regression adjustments to experimental data'', \emph{Annals of
 Applied Statistics}}{Why the interacted adjustment never hurts asymptotically}{Sections 1--3}{3}
-\reading{Abadie, Athey, Imbens and Wooldridge (2023), ``When should you adjust standard errors for
+\reading{Abadie, Athey, Imbens, and Wooldridge (2023), ``When should you adjust standard errors for
 clustering?'', \emph{QJE}}{Cluster at the level of assignment, and why}{Sections 1--3}{2}
-\reading{Johari, Koomen, Pekelis and Walsh (2022), ``Always valid inference'', \emph{Operations
+\reading{Johari, Koomen, Pekelis, and Walsh (2022), ``Always valid inference'', \emph{Operations
 Research}}{Continuous monitoring without inflating errors}{Sections 1--4}{3}
 \reading{Handout H1, \emph{Interference and marketplace experiments}}{What to do when units affect each
 other}{All}{2}

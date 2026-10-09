@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\notesheader{1}{Causal Basics}{Estimands, selection bias, randomization and causal graphs}
+\notesheader{1}{Causal Basics}{Estimands, selection bias, randomization, and causal graphs}
 
 \begin{decision}
 A firm can send a coupon. It costs $c$ each time it is redeemed and each purchase earns margin $m$. The
@@ -16,7 +16,7 @@ data, and what can go wrong on the way.
   \item compute a treatment's net value and break-even, including the cost of ``sure things'';
   \item decompose a naive comparison into an effect plus selection bias, and say why randomization
   removes the bias;
-  \item read a causal graph: chains, forks, colliders and backdoor paths, and decide what to adjust for;
+  \item read a causal graph: chains, forks, colliders, and backdoor paths, and decide what to adjust for;
   \item show that the difference in means is unbiased over the randomization, and that it equals OLS on a
   dummy.
 \end{goals}
@@ -62,7 +62,7 @@ The law of total expectation applied to $Y(1) - Y(0)$, conditioning on $D$.
 \end{proof}
 
 \paragraph{Response types.} With a binary outcome each unit has one of four pairs $(Y(0), Y(1))$:
-\emph{lost cause} $(0,0)$, \emph{sure thing} $(1,1)$, \emph{persuadable} $(0,1)$ and \emph{do-not-disturb}
+\emph{lost cause} $(0,0)$, \emph{sure thing} $(1,1)$, \emph{persuadable} $(0,1)$, and \emph{do-not-disturb}
 $(1,0)$, with individual effects $0, 0, +1, -1$.
 
 \begin{prop}{The ATE in response types}{types}
@@ -398,7 +398,7 @@ The bounds collapse to $\tau$ under \emph{monotonicity} (no unit is harmed), an 
 that the experiment cannot check. It reappears as monotonicity, ``no defiers'', in Meeting~2 (Assumption~1.12).
 \end{extension}
 
-\begin{extension}[d-separation, the backdoor theorem and beyond]
+\begin{extension}[d-separation, the backdoor theorem, and beyond]
 The blocking rules of Section~1.4 (causal graphs) are \emph{d-separation}. If a graph is correct, every d-separation it
 implies appears as a conditional independence in the data, which gives a partial test (it can reject a
 graph, never confirm one). Pearl's backdoor theorem shows that a set satisfying (i) and (ii) in
@@ -424,10 +424,10 @@ rewritten as forward questions, one per candidate cause.
 \subsection*{Annotated reading}
 \begin{readinglist}
 \reading{Hern\'an and Robins, \emph{Causal Inference: What If} (2020, free online)}{Potential outcomes,
-randomization, standardization and graphs in one consistent notation}{Ch.\ 1--3, 6--8}{1}
-\reading{Pearl, Glymour and Jewell, \emph{Causal Inference in Statistics: A Primer} (Wiley, 2016)}{The
+randomization, standardization, and graphs in one consistent notation}{Ch.\ 1--3, 6--8}{1}
+\reading{Pearl, Glymour, and Jewell, \emph{Causal Inference in Statistics: A Primer} (Wiley, 2016)}{The
 shortest rigorous route to d-separation and the backdoor and front-door criteria}{Ch.\ 1--3}{2}
-\reading{Cinelli, Forney and Pearl, ``A crash course in good and bad controls'', \emph{Sociological Methods
+\reading{Cinelli, Forney, and Pearl, ``A crash course in good and bad controls'', \emph{Sociological Methods
 \& Research} (2024)}{A catalog of graphs showing when adjusting helps or hurts}{All}{1}
 \reading{Imbens and Rubin, \emph{Causal Inference for Statistics, Social, and Biomedical Sciences}
 (Cambridge, 2015)}{The design-based view of experiments used in Meetings 1--2}{Ch.\ 1--4}{2}

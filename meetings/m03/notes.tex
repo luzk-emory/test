@@ -13,7 +13,7 @@ by customer. Models that predict outcomes well can still target badly.
   \item define the CATE, identify it in an experiment, and state where it is not identified;
   \item turn a CATE into a targeting rule under per-unit and per-redemption costs;
   \item read an interaction model and test whether two segments really differ;
-  \item explain how S-, T-, X-, DR- and R-learners estimate the CATE, and what each one risks;
+  \item explain how S-, T-, X-, DR-, and R-learners estimate the CATE, and what each one risks;
   \item show why outcome prediction error cannot choose a targeting model, and name losses that can.
 \end{goals}
 
@@ -22,7 +22,7 @@ by customer. Models that predict outcomes well can still target badly.
 
 \subsection{The estimand}
 
-With treatment $D$, outcome $Y$ and pre-treatment covariates $X$, write $\mu_d(x) = \E[Y \mid D=d, X=x]$ and
+With treatment $D$, outcome $Y$, and pre-treatment covariates $X$, write $\mu_d(x) = \E[Y \mid D=d, X=x]$ and
 \[
   \tau(x) = \E[Y(1) - Y(0) \mid X = x],
 \]
@@ -35,7 +35,7 @@ A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum
 standardization with $T$'s weights.
 
 A variable is \emph{prognostic} if $\mu_0(x)$ varies with it and an \emph{effect modifier} if $\tau(x)$ does.
-The two are independent properties: a variable can be either, both or neither. In most business data
+The two are independent properties: a variable can be either, both, or neither. In most business data
 $\Var(\mu_0(X))$ is far larger than $\Var(\tau(X))$, which is why learners tuned to outcomes favor
 prognostic variables.
 
@@ -125,7 +125,7 @@ $\hatt(x) = \hat\mu_1(x) - \hat\mu_0(x)$.
 Both minimize a loss in $Y$ and get $\hatt$ as a by-product. The next two results say what that costs.
 
 \begin{prop}{Regularization shrinks heterogeneity in the S-learner}{shrink}
-In a balanced design with centered, orthogonal regressors $\tilde X$, $\tilde D = D - \tfrac12$ and
+In a balanced design with centered, orthogonal regressors $\tilde X$, $\tilde D = D - \tfrac12$, and
 $\tilde D\tilde X$, penalizing only the interaction by $\lambda\gamma^2$ gives
 $\hat\gamma_\lambda = \hat\gamma_{\text{OLS}} \cdot s/(s + \lambda)$ with $s = \sum_i (\tilde D_i \tilde X_i)^2$; the other
 coefficients are unchanged.
@@ -227,7 +227,7 @@ needs. Since $\tau_i$ is never observed, the error we want, $\E[(\hatt(X) - \tau
 simulations. On a held-out randomized fold, compare candidates by (i) the value of the policy each implies
 (Meeting~5); (ii) the R-loss; or (iii) the mean squared gap between $\hatt(X)$ and the DR pseudo-outcome $\phi$.
 When nuisance models are accurate, (ii) and (iii) rank candidates as their true CATE error would. Assign
-\emph{units}, not rows, to the samples used for fitting, choosing and assessing, so that no customer appears in two.
+\emph{units}, not rows, to the samples used for fitting, choosing, and assessing, so that no customer appears in two.
 
 \begin{pitfall}[targeting errors]
 Ranking by predicted purchase; declaring heterogeneity because one segment is significant; choosing a CATE
@@ -271,7 +271,7 @@ Long, high  & 0.93 & 0.90 & 0.03 & 0.018 & $[-0.005, 0.065]$ & $-5.87$ \\
 \end{tabular}
 \end{center}
 Each SE is $\sqrt{p_1(1-p_1)/500 + p_0(1-p_0)/500}$. The ATE is $0.1025$: offering it to everyone nets
-$600 \times 0.1025 - 80 = -$¥18.50 per member. Net values by segment are $-8$, $+52$, $-56$ and $-62$, so the
+$600 \times 0.1025 - 80 = -$¥18.50 per member. Net values by segment are $-8$, $+52$, $-56$, and $-62$, so the
 targeted rule (short, high usage only) earns $52/4 = $ ¥13 per member in the base against $0$ for the best
 blanket rule (offer to nobody): the value of targeting in Result~\ref{prop:rule}. With four segments, Bonferroni
 at $0.0125$ still accepts the short, high-usage segment ($p = 0.002$).
@@ -292,7 +292,7 @@ interaction in the effect. (A T-learner and an S-learner that interacts $D$ with
 model.)
 
 \paragraph{Step 5: the transformed outcome.} With $e = 0.5$, $Y^\ast = 2Y$ for offered and $-2Y$ for others. Every
-value is $-2$, $0$ or $2$, yet its segment mean is the segment effect: for short, high usage,
+value is $-2$, $0$, or $2$, yet its segment mean is the segment effect: for short, high usage,
 $0.5 \times 2 \times 0.70 - 0.5 \times 2 \times 0.48 = 0.22$ (Result~\ref{prop:tro}).
 
 \begin{exercise}[computation]
@@ -329,15 +329,15 @@ naive standard errors invalid; use sample splitting or the best-linear-projectio
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{K\"unzel, Sekhon, Bickel and Yu (2019), ``Metalearners for estimating heterogeneous treatment
-effects'', \emph{PNAS}}{The S-, T- and X-learners compared, with simulations}{Sections 1--4}{2}
+\reading{K\"unzel, Sekhon, Bickel, and Yu (2019), ``Metalearners for estimating heterogeneous treatment
+effects'', \emph{PNAS}}{The S-, T-, and X-learners compared, with simulations}{Sections 1--4}{2}
 \reading{Nie and Wager (2021), ``Quasi-oracle estimation of heterogeneous treatment effects'',
 \emph{Biometrika}}{The R-learner and why residualizing first protects the effect}{Sections 1--3}{3}
 \reading{Kennedy (2023), ``Towards optimal doubly robust estimation of heterogeneous causal effects'',
 \emph{Electronic Journal of Statistics}}{The DR-learner and its error bound}{Sections 1--3}{3}
 \reading{Gelman and Stern (2006), ``The difference between significant and not significant is not itself
 statistically significant'', \emph{American Statistician}}{The segment-comparison error in four pages}{All}{1}
-\reading{Handout H2, \emph{Neural and foundation-model estimators}}{TARNet, DragonNet, CEVAE and in-context
+\reading{Handout H2, \emph{Neural and foundation-model estimators}}{TARNet, DragonNet, CEVAE, and in-context
 estimators, with what each assumes}{All}{2}
 \end{readinglist}
 

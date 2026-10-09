@@ -154,7 +154,7 @@ Marketing's model ranks the \textbf{active} first; Lin's rule ranks the \textbf{
 % ====================================================================
 \begin{frame}{The CATE}
 
-With treatment $D$, outcome $Y$ and pre-treatment covariates $X$, write $\mu_d(x) = \E[Y \mid D=d, X=x]$.
+With treatment $D$, outcome $Y$, and pre-treatment covariates $X$, write $\mu_d(x) = \E[Y \mid D=d, X=x]$.
 
 \begin{defbox}{conditional average treatment effect (CATE)}
 \[
@@ -183,7 +183,7 @@ A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum
   \item It is an \textbf{effect modifier} if $\tau(x)$ varies with it: it predicts who responds.
 \end{itemize}
 
-The two are independent properties: a variable can be either, both or neither. Segment is both. Distance to the nearest store might be prognostic only: nearby members buy more, with or without a coupon.
+The two are independent properties: a variable can be either, both, or neither. Segment is both. Distance to the nearest store might be prognostic only: nearby members buy more, with or without a coupon.
 
 \bigskip
 
@@ -253,7 +253,7 @@ From Lin's documentation of the Q2 export:
 \toprule
 \textbf{The documentation says} & \textbf{Which buys} \\
 \midrule
-``The Q2 draw was 50/50 in every region, tier and store.'' & Independence within every $x$, and $e(x) = 0.5$: overlap everywhere by design. \\[0.5em]
+``The Q2 draw was 50/50 in every region, tier, and store.'' & Independence within every $x$, and $e(x) = 0.5$: overlap everywhere by design. \\[0.5em]
 ``All CRM fields were frozen the day before the draw.'' & $X$ is pre-treatment: no field carries part of the effect. \\[0.5em]
 ``Members who joined during Q2 were not in the draw.'' & The CATE is identified only for pre-Q2 members. For new joiners it is extrapolation. \\
 \bottomrule
@@ -471,7 +471,7 @@ Any supervised learner can fit one of these. The question is what each one risks
 Fit $\hat f(x, d) \approx \E[Y \mid X = x, D = d]$ with $D$ alongside $X$; then $\hatt(x) = \hat f(x,1) - \hat f(x,0)$. The interaction model is an S-learner fitted by OLS.
 
 \begin{result}{1.6}{Regularization shrinks heterogeneity in the S-learner}
-In a balanced design with centered, orthogonal regressors $\tilde X$, $\tilde D = D - \tfrac12$ and $\tilde D\tilde X$, penalizing only the interaction by $\lambda\gamma^2$ gives $\hat\gamma_\lambda = \hat\gamma_{\text{OLS}} \cdot s/(s + \lambda)$ with $s = \sum_i (\tilde D_i \tilde X_i)^2$; the other coefficients are unchanged.
+In a balanced design with centered, orthogonal regressors $\tilde X$, $\tilde D = D - \tfrac12$, and $\tilde D\tilde X$, penalizing only the interaction by $\lambda\gamma^2$ gives $\hat\gamma_\lambda = \hat\gamma_{\text{OLS}} \cdot s/(s + \lambda)$ with $s = \sum_i (\tilde D_i \tilde X_i)^2$; the other coefficients are unchanged.
 \end{result}
 
 \medskip
@@ -595,7 +595,7 @@ Each imputation uses the other arm's model, so the larger arm's model does most 
 % ====================================================================
 \begin{frame}{Learners That Target the Effect: The Transformed Outcome}
 
-S, T and X minimize a loss in $Y$ and get $\hatt$ as a by-product. The next three regress something whose conditional mean \emph{is} $\tau(x)$.
+S, T, and X minimize a loss in $Y$ and get $\hatt$ as a by-product. The next three regress something whose conditional mean \emph{is} $\tau(x)$.
 
 \begin{result}{1.8}{The transformed outcome}
 With known propensity $e(x)$, let $Y^\ast = Y\,\dfrac{D - e(X)}{e(X)(1-e(X))}$. Under Assumptions 1.1 and 1.2, $\E[Y^\ast \mid X] = \tau(X)$.
@@ -603,7 +603,7 @@ With known propensity $e(x)$, let $Y^\ast = Y\,\dfrac{D - e(X)}{e(X)(1-e(X))}$. 
 
 \medskip
 
-In the Q2 test $e = 0.5$, so $Y^\ast = 2Y$ for coupon members and $-2Y$ for the others. Every value is $-2$, $0$ or $2$, yet the segment means are the effects:
+In the Q2 test $e = 0.5$, so $Y^\ast = 2Y$ for coupon members and $-2Y$ for the others. Every value is $-2$, $0$, or $2$, yet the segment means are the effects:
 \[
 \text{lapsed: } 0.5 \times 2 \times 0.30 - 0.5 \times 2 \times 0.10 = 0.20, \qquad \text{active: } 0.80 - 0.75 = 0.05 .
 \]
@@ -801,7 +801,7 @@ Each one has appeared today:
 \begin{itemize}
   \item \spinestep{Estimand.} Targeting needs $\tau(x)$, not $\Pr(\text{buy} \mid x)$: coupon $x$ iff $\tau(x) > \mu_1(x)/3$. A list's average effect uses that list's weights. Targeting is worth $\E[\max\{V(X), 0\}] - \max\{\E[V(X)], 0\}$.
   \item \spinestep{Identification.} The Q2 draw identifies $\tau(x)$ within every $x$, but only on the test's support. A deterministic rule fails on overlap; assignment on something outside $X$ fails on independence.
-  \item \spinestep{Estimation.} S-learners shrink the effect; T-learners learn the baseline twice and their errors subtract; the X-learner borrows the larger arm. The transformed outcome, the DR pseudo-outcome and the R-loss target $\tau(x)$ itself; TARNet shares the baseline across arms.
+  \item \spinestep{Estimation.} S-learners shrink the effect; T-learners learn the baseline twice and their errors subtract; the X-learner borrows the larger arm. The transformed outcome, the DR pseudo-outcome, and the R-loss target $\tau(x)$ itself; TARNet shares the baseline across arms.
   \item \spinestep{Inference.} Test the gap between segments, not two significance labels, and count the segments examined.
   \item \textbf{Choose by the decision, not by the fit.} Ignoring all heterogeneity costs only $\tfrac14\Var(\tau(X))$ in outcome loss, and here \textyen 23{,}750 in value.
 \end{itemize}

@@ -70,7 +70,7 @@
 
 % ── Title ──
 \title[Meeting 1]{Meeting 1: The Coupon and the Coin}
-\subtitle{Causal basics: estimands, selection bias, randomization and causal graphs}
+\subtitle{Causal basics: estimands, selection bias, randomization, and causal graphs}
 \author{Zhikun Lu}
 \date{\today}
 
@@ -89,7 +89,7 @@
 \textbf{Block A: Potential outcomes}
 \begin{enumerate}
   \item Two worlds for every customer: the estimand before the data
-  \item ATE, ATT and ATU; the four response types
+  \item ATE, ATT, and ATU; the four response types
   \item The break-even effect and what each type costs
   \item One world is always missing; what $Y_i(d)$ assumes
   \item Naive comparison $=$ ATT $+$ selection bias
@@ -100,7 +100,7 @@
 \textbf{Block B: Causal graphs}
 \begin{enumerate}
   \setcounter{enumi}{6}
-  \item Chains, forks and colliders; open and blocked paths
+  \item Chains, forks, and colliders; open and blocked paths
   \item Backdoor paths and adjustment; standardization
   \item Simpson's paradox on a win-back campaign
   \item Data roles: what may be a control
@@ -673,7 +673,7 @@ From Lin's log of the Q2 test:
 \midrule
 ``The 500 recipients were drawn by a random number generator; the seed is in the log.'' & Independence: $D \indep \{Y(0), Y(1)\}$. Nobody chose. \\[0.5em]
 ``Nobody could opt in, and nobody was removed after the draw.'' & Independence survives: the arms are still the draw. \\[0.5em]
-``One coupon design, sent in the app, single-use and tied to the account.'' & Consistency: one version of treatment; codes cannot be passed on. \\[0.5em]
+``One coupon design, sent in the app, single-use, and tied to the account.'' & Consistency: one version of treatment; codes cannot be passed on. \\[0.5em]
 ``Store staff did not know who held a coupon.'' & No other treatment travels with the coupon. \\
 \bottomrule
 \end{tabular}
@@ -688,7 +688,7 @@ From Lin's log of the Q2 test:
 \begin{frame}{End of Block A}
 
 \begin{itemize}
-  \item An estimand names units, intervention, comparator, outcome and horizon, before any data. ATE, ATT and ATU average over different people.
+  \item An estimand names units, intervention, comparator, outcome, and horizon, before any data. ATE, ATT, and ATU average over different people.
   \item The coupon pays only above $\tau^\ast = c\,p_1/m$, and the expensive customer is the sure thing.
   \item Naive comparison $=$ ATT $+$ selection bias: marketing's $0.44 = 0.12 + 0.32$. More data does not shrink the bias.
   \item A coin sets both bias terms to zero, and its log can be audited.
@@ -1009,7 +1009,7 @@ Every column in the Q2 export has exactly one job. Decide it \textbf{before} you
 \texttt{member\_id} & Unit & One row per unit of assignment \\
 \texttt{coupon} & Treatment $D$ & Set by the draw; never predicted, never adjusted \\
 \texttt{purchase\_7d} & Outcome $Y$ & Measured after the draw, the same way in both arms \\
-\texttt{tier}, \texttt{recency}, \texttt{spend\_q1} & Pre-treatment $X$ & Fixed before the draw; may describe, split or adjust \\
+\texttt{tier}, \texttt{recency}, \texttt{spend\_q1} & Pre-treatment $X$ & Fixed before the draw; may describe, split, or adjust \\
 \texttt{redeemed}, \texttt{app\_opens\_q2} & Post-treatment & Caused partly by $D$: \textbf{never} a control \\
 \texttt{seed}, \texttt{draw\_time} & Audit & Proves the draw happened as described \\
 \bottomrule
