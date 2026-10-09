@@ -121,21 +121,21 @@
 % [RELEASE R1: a simulator of Meridian]
 \begin{frame}{Meeting 8 Left One Doubt}
 
-Wen, commercial director of Meridian Hotels (80 properties), was asked to raise midweek premium rates by \textbf{8\%}, from \textyen 800 a night. An occupied room costs \textyen 200, so its contribution rises from \textyen 600 to \textyen 664.
+Wen, commercial director of Meridian Hotels (80 properties), was asked to raise midweek premium rates by 8\%, from \textyen 800 a night. An occupied room costs \textyen 200, so its contribution rises from \textyen 600 to \textyen 664.
 
 \[
 \text{break-even elasticity} \;=\; \frac{\ln(600/664)}{\ln 1.08} \;=\; -1.32 .
 \]
 
 \begin{itemize}
-  \item Meeting 8's DML on 87{,}600 hotel-nights, with the 47 signals the RM system priced on: elasticity \textbf{$-1.56$}, past the break-even. \textbf{Do not raise.}
-  \item That estimate assumes the logged rates were as good as random given the 47 signals.
-  \item Managers \textbf{override} the system on about 8\% of nights, on local knowledge (a wedding block, a conference). The override is logged; the reason is not.
+  \item Meeting 8's double machine learning (DML) on 87{,}600 hotel-nights gave an elasticity of $-1.56$, past the break-even. \textbf{Do not raise.}
+  \item It assumes the logged rates were as good as random given the 47 pricing signals.
+  \item Managers override the revenue-management (RM) system on about 8\% of nights, on local knowledge (a wedding block, a conference). The override is logged; the reason is not.
 \end{itemize}
 
 \medskip
 
-Two generative-AI proposals arrive on Wen's desk. A \textbf{simulator} of Meridian, learned from the logs, to test estimators and pricing engines (block A). A \textbf{language model} that reads guest reviews and turns text into variables (block B). For each, the question is the course's: \emph{where does the truth come from, and how is it checked?}
+Two generative-AI proposals reach Wen. A \textbf{simulator} learned from Meridian's logs, to test estimators and pricing engines (Block A). A \textbf{language model} that reads guest reviews and turns text into variables (Block B). For each, the question is the course's: \emph{where does the truth come from, and how is it checked?}
 \end{frame}
 
 % ====================================================================
@@ -154,11 +154,11 @@ The g-formula (Meeting 7) computes $\E[Y(d)]$ by averaging $\mu_d(x)$ over $X$. 
 \end{tikzpicture}
 \end{center}
 
-Each piece can be any generative model: a parametric fit, a mixture, a normalizing flow, a variational autoencoder, a boosted tree with a fitted noise distribution.
+Each piece can be any generative model: a parametric fit, a mixture, a normalizing flow, a variational autoencoder (VAE), a boosted tree with a fitted noise distribution.
 
 \begin{itemize}
   \item Sample $x$, then $d$, then $y$: \textbf{synthetic logs}.
-  \item Sample $y$ for a \textbf{chosen} $d$: \textbf{potential outcomes}. The simulator can then evaluate any policy, including a nightly optimizer or a sequential rule that has no simple estimator.
+  \item Sample $y$ for a \emph{chosen} $d$: potential outcomes. The simulator can then evaluate any policy, including a nightly optimizer or a sequential rule that has no simple estimator.
 \end{itemize}
 
 \medskip
@@ -211,15 +211,15 @@ Premium & 90 & 190 \\
 \end{column}
 \begin{column}{0.55\textwidth}
 \begin{itemize}
-  \item \textbf{Simulator 1} never sees category. It fits demand to price: the pooled slope, $+2.0$ per unit of price.
-  \item \textbf{Simulator 2} conditions on category. Within each category the slope is $-1.0$.
+  \item Simulator 1 never sees category. It fits demand to price: the pooled slope, $+2.0$ per unit of price.
+  \item Simulator 2 conditions on category. Within each category the slope is $-1.0$.
 \end{itemize}
 \end{column}
 \end{columns}
 
 \medskip
 
-Simulator 1's synthetic nights look like the real ones: same means, same spread, the same positive association. Ask each what happens if every price rises by 10: Simulator 1 says demand rises by 20, Simulator 2 that it falls by 10.
+Simulator 1's synthetic nights look like the real ones: same means, same spread, the same positive association. Ask each what happens if every price rises by 10. Simulator 1 says demand rises by 20; Simulator 2 says it falls by 10.
 
 \medskip
 
@@ -230,8 +230,8 @@ Had category not been recorded, only Simulator 1 could be built, and every compa
 \begin{frame}{Planting the Truth}
 
 \begin{itemize}
-  \item \textbf{Planting an effect.} Keep $\hat p(x)$ and a control-outcome model; define the other outcomes from a chosen effect, often calibrated to reproduce a past randomized test. Meridian planted an elasticity of \textbf{$-1.50$} on every night: an 8\% rise multiplies a night's bookings by $1.08^{-1.50} = 0.891$.
-  \item \textbf{Planting confounding.} Add a latent $U$ that raises both the chance of treatment and the outcome, with chosen strengths, and hide it from the analyst. Meridian planted the \textbf{overrides}: on 8\% of nights an unrecorded local event raises demand by 12\%, and the manager raises the rate by 10\%.
+  \item \textbf{Planting an effect.} Keep $\hat p(x)$ and a control-outcome model; define the other outcomes from a chosen effect, often calibrated to reproduce a past randomized test. Meridian planted an elasticity of $-1.50$ on every night, so an 8\% rise multiplies a night's bookings by $1.08^{-1.50} = 0.891$.
+  \item \textbf{Planting confounding.} Add a latent $U$ that raises both the chance of treatment and the outcome, with chosen strengths, and hide it from the analyst. Meridian planted the overrides: on 8\% of nights an unrecorded local event raises demand by 12\%, and the manager raises the rate by 10\%.
 \end{itemize}
 
 \begin{center}
@@ -245,14 +245,14 @@ the 47 signals' joint distribution; the shape of demand across nights; how the R
 \end{tabular}
 \end{center}
 
-So the simulator \textbf{cannot} tell Wen the true elasticity of Meridian's guests: the one inside it was planted. It can test whether a method recovers a known truth on data shaped like Meridian's.
+So the simulator cannot tell Wen the true elasticity of Meridian's guests: the one inside it was planted. It can test whether a method recovers a known truth on data shaped like Meridian's.
 \end{frame}
 
 % ====================================================================
 % [RELEASE R2: the estimator testbed]
 \begin{frame}{An Estimator Testbed}
 
-Generate many datasets, run an estimator on each, compare with the planted truth. The team drew \textbf{200 datasets} with the real logs' hotels, nights, and signals. The truth is $-1.50$ because they planted it.
+Generate many datasets, run an estimator on each, compare with the planted truth. The team drew 200 datasets with the real logs' hotels, nights, and signals. The truth is $-1.50$ because they planted it.
 
 \begin{center}
 \small
@@ -260,7 +260,7 @@ Generate many datasets, run an estimator on each, compare with the planted truth
 \toprule
 \textbf{Estimator} & \textbf{Overrides planted?} & \textbf{Mean estimate} & \textbf{Coverage} \\
 \midrule
-Log--log OLS, no controls & no & $+0.42$ & 0.00 \\
+Log-log OLS, no controls & no & $+0.42$ & 0.00 \\
 OLS, hotel and six occupancy bands & no & $-1.18$ & 0.02 \\
 DML, boosted-tree nuisances & no & $-1.49$ & 0.94 \\
 DML, lasso nuisances & no & $-1.41$ & 0.71 \\
@@ -283,7 +283,7 @@ Coverage is the share of the 200 nominal 95\% intervals that contain $-1.50$. Th
 \toprule
 \textbf{Estimator} & \textbf{Bias}: mean $+ 1.50$ & \textbf{Coverage} \\
 \midrule
-Log--log OLS, no controls & $+1.92$ & 0.00 \\
+Log-log OLS, no controls & $+1.92$ & 0.00 \\
 OLS, hotel and six occupancy bands & $+0.32$ & 0.02 \\
 DML, boosted trees & $+0.01$ & 0.94 \\
 DML, lasso & $+0.09$ & 0.71 \\
@@ -294,9 +294,9 @@ DML, boosted trees, overrides planted & $+0.13$ & 0.38 \\
 
 \vspace{-0.5em}
 \begin{itemize}
-  \item \textbf{Boosted trees beat lasso} because the RM rule is a step function of bucketed signals with interactions. Lasso fits it with smooth linear terms, part of the rule stays in the residuals, and coverage falls to 0.71.
-  \item \textbf{With the overrides planted}, DML is pulled toward zero by 0.13. If the real overrides act like the planted ones, the truth is near $-1.56 - 0.13 = -1.69$: further past $-1.32$. The decision does not change.
-  \item \textbf{What it cannot tell}: whether the real overrides look like the planted ones. Their size was \emph{chosen}. Turning that dial and reporting the decision at each setting is a sensitivity analysis, not a measurement.
+  \item Boosted trees beat lasso because the RM rule is a step function of bucketed signals with interactions. Lasso fits it with smooth linear terms, part of the rule stays in the residuals, and coverage falls to 0.71.
+  \item With the overrides planted, DML is pulled toward zero by 0.13. If the real overrides act like the planted ones, the truth is near $-1.56 - 0.13 = -1.69$, further past $-1.32$. The decision does not change.
+  \item The testbed cannot tell you whether the real overrides look like the planted ones. Their size was \emph{chosen}. Turning that dial and reporting the decision at each setting is a sensitivity analysis, not a measurement.
 \end{itemize}
 \end{frame}
 
@@ -308,7 +308,7 @@ Businesses deploy \textbf{pipelines} (a model feeding an optimizer feeding a dec
   \item Generate synthetic logs, with planted effects and, if wanted, planted confounding.
   \item Run each candidate pipeline exactly as in production: fit, optimize, output a policy.
   \item Evaluate each policy on the simulator's potential outcomes, where its value is known.
-  \item Compute the \textbf{oracle} policy from the planted truth, and each pipeline's \textbf{regret}: oracle value minus pipeline value.
+  \item Compute the \textbf{oracle} policy from the planted truth, and each pipeline's \textbf{regret}, the oracle value minus the pipeline value.
 \end{enumerate}
 
 \begin{center}
@@ -384,7 +384,7 @@ Regret & & & \multicolumn{2}{c}{$\tfrac14(100 + 100) = $ \textyen 50} & \multico
 % [RELEASE R3: the pipeline testbed, the second simulator and the backtest]
 \begin{frame}{Three Pipelines on Two Simulators}
 
-The \textbf{vendor's engine} fits a boosted-tree demand model to the logs and posts, each night, the rate with the highest \emph{predicted} contribution. \textbf{DML pricing} prices from Meeting 8's DML elasticity. The \textbf{current RM rule} is the reference. A \textbf{second simulator} was fitted to the same logs with a neural network in place of boosted trees, and the same planted truth. Regret per hotel-night:
+The \textbf{vendor's engine} fits a boosted-tree demand model to the logs and posts, each night, the rate with the highest \emph{predicted} contribution. \textbf{DML pricing} prices from Meeting 8's DML elasticity. The \textbf{current RM rule} is the reference. A second simulator was fitted to the same logs with a neural network in place of boosted trees, and the same planted truth. Regret per hotel-night:
 
 \begin{center}
 \small
@@ -404,7 +404,7 @@ DML elasticity, then optimize & \textyen 690 & \textyen 760 & 3\% \\
 \normalsize
 \smallskip
 
-Ranks: boosted, vendor $<$ DML $<$ RM; neural, DML $<$ RM $<$ vendor. Worst-case regret: RM \textyen 1{,}520, vendor \textyen 2{,}240, \textbf{DML \textyen 760, the smallest}. The vendor's ranking flips between simulators; four checks decide which numbers to trust.
+Ranks: boosted, vendor $<$ DML $<$ RM; neural, DML $<$ RM $<$ vendor. Worst-case regret is RM \textyen 1{,}520, vendor \textyen 2{,}240, and \textbf{DML \textyen 760, the smallest}. The vendor's ranking flips between simulators, and four checks decide which numbers to trust.
 \end{frame}
 
 % ====================================================================
@@ -414,7 +414,7 @@ The simulator should reproduce, out of sample, the measured effects of past expe
 
 \bigskip
 
-Six months ago a randomized test offered loyalty members a rate 8\% lower on nights a coin chose. It measured \textbf{$+4.8$} extra member bookings per chosen night from the rate (SE 1.3). The team re-ran the test inside each simulator, with managers' overrides as logged:
+Six months ago a randomized test offered loyalty members a rate 8\% lower on nights a coin chose. It measured $+4.8$ extra member bookings per chosen night from the rate (SE 1.3). The team re-ran the test inside each simulator, with managers' overrides as logged:
 
 \begin{center}
 \begin{tabular}{lrrr}
@@ -430,7 +430,7 @@ Neural simulator & $+3.4$ & 1.4 & 1.1 \\
 \medskip
 
 \begin{itemize}
-  \item Neither simulator is rejected: both gaps are within about one SE. The backtest is \textbf{weak evidence} and does not separate them.
+  \item Neither simulator is rejected: both gaps are within about one SE. The backtest is weak evidence and does not separate them.
   \item It covers rates near the current ones. It says nothing above \textyen 1{,}920, where the pipelines differ most. A backtest earns trust only in the region it covers.
 \end{itemize}
 \end{frame}
@@ -500,12 +500,12 @@ Backtest & Both simulators pass near current rates; neither is tested where the 
 
 \medskip
 
-Every number on this slide rests on a truth the team planted. The simulator ranks methods; it does not measure Meridian's guests.
+Every number in this table rests on a truth the team planted. The simulator ranks methods; it does not measure Meridian's guests.
 \end{frame}
 
 % ====================================================================
 % [RELEASE R4: synthetic guests]
-\begin{frame}{Ask the Model Instead?}
+\begin{frame}{Synthetic Guests}
 
 A second vendor offers \textbf{synthetic guests}. A language model plays 10{,}000 guests; each is shown a Meridian hotel at \textyen 800 and at \textyen 864 and asked whether they would book.
 
@@ -527,7 +527,7 @@ The vendor's report: \emph{``Demand is inelastic. Raise rates.''} At $-0.9$ the 
 
 \bigskip
 
-In the simulator, the truth was planted by the team on top of Meridian's own logs. \textbf{Where does the truth come from here?}
+In the simulator, the team planted the truth on top of Meridian's own logs. Here nobody planted it: the elasticity is \textbf{whatever the model asserts}.
 \end{frame}
 
 % ====================================================================
@@ -549,8 +549,8 @@ Can test an estimator? & yes: the truth is known & no: the truth is unknown \\
 \medskip
 
 \begin{itemize}
-  \item \textbf{Documented problems}: too little variance, stereotyped subgroups, sensitivity to wording, agreement with published results that reflects memorization.
-  \item \textbf{Legitimate uses}: drafting survey questions or a test's design, choosing price points, setting a prior for a power calculation. It settles nothing causal unless validated out of sample against real experiments in a similar setting.
+  \item Documented problems: too little variance, stereotyped subgroups, sensitivity to wording, agreement with published results that reflects memorization.
+  \item Legitimate uses: drafting survey questions or a test's design, choosing price points, setting a prior for a power calculation. It settles nothing causal unless validated out of sample against real experiments in a similar setting.
   \item The \textbf{causal effect VAE (CEVAE)}, which infers a hidden confounder from proxies, is on the asserted side too: its identification rests on structure it does not state.
 \end{itemize}
 
@@ -588,13 +588,13 @@ The $-0.9$ is a hypothesis. What settles it is a design: a randomized rate test.
 Wen did not take the rise on trust. In Q3, at 40 hotels, \textbf{a coin chose each hotel-week's midweek premium rate}: the current one or 8\% higher.
 
 \begin{itemize}
-  \item \textbf{Bookings}, the main outcome: on higher-rate weeks, midweek premium bookings were \textbf{12.4\% lower} (SE 1.2\%).
-  \item \textbf{Guardrail}: stop the rise if the share of reviews complaining about price or value goes up by more than \textbf{5 points}.
+  \item Bookings, the main outcome: on higher-rate weeks, midweek premium bookings were 12.4\% lower (SE 1.2\%).
+  \item \textbf{Guardrail}: stop the rise if the share of reviews complaining about price or value goes up by more than 5 points.
 \end{itemize}
 
 \bigskip
 
-Nobody can read 10{,}000 reviews. A language model labels each one: complains about price or value, yes or no. Trained staff also labeled a \textbf{random 200 reviews per arm}: the gold labels.
+Nobody can read 10{,}000 reviews. A language model labels each one as complaining about price or value, or not. Trained staff also labeled a random 200 reviews per arm: the \textbf{gold labels}.
 
 \begin{center}
 \begin{tabular}{lrr}
@@ -609,7 +609,7 @@ Share the model labels ``complaint'' & 0.22 & 0.15 \\
 
 \smallskip
 
-On the model's labels the rise added $0.22 - 0.15 = 0.07$: \textbf{7 points}, which trips the guardrail.
+On the model's labels the rise added $0.22 - 0.15 = 0.07$, or 7 points, which trips the guardrail.
 \end{frame}
 
 % ====================================================================
@@ -693,11 +693,11 @@ On the gold reviews the model says $46/200 = 0.23$ and $30/200 = 0.15$: a gap of
 
 \bigskip
 
-\textbf{Had the error been non-differential}, with the current arm's rates in both arms, the model-labeled effect would be
+Had the error been non-differential, with the current arm's rates in both arms, the model-labeled effect would be
 \[
 (1 - \alpha_0 - \beta_0) \times 0.04 = \Bigl(\tfrac{26}{28} - \tfrac{4}{172}\Bigr) \times 0.04 = 0.905 \times 0.04 = 0.036 :
 \]
-\textbf{attenuated} toward zero. The model's actual $0.07$ is \textbf{inflated}: differential error manufactured about 0.03 of it.
+attenuated toward zero. The model's actual $0.07$ is \textbf{inflated}: differential error manufactured about 0.03 of it.
 
 \begin{center}
 \small
@@ -736,7 +736,7 @@ coded type & $0.9(-1.0) + 0.1(-2.0) = -1.1$ & $0.1(-1.0) + 0.9(-2.0) = -1.9$ & $
 \end{tabular}
 \end{center}
 
-The coded gap is $(1 - 2 \times 0.10) \times 1.0 = 0.8$: each coded group mixes in the other group's effect, so the heterogeneity shrinks toward zero. Code a modifier only from text fixed before treatment: the listing page as of the test, not the reviews it produced.
+The coded gap is $(1 - 2 \times 0.10) \times 1.0 = 0.8$. Each coded group mixes in the other group's effect, so the heterogeneity shrinks toward zero. Code a modifier only from text fixed before treatment: the listing page as of the test, not the reviews it produced.
 \end{frame}
 
 % ====================================================================
@@ -757,7 +757,7 @@ Effect modifier & groups mix: gap $\times (1 - 2q)$ & heterogeneity shrinks \\
 \end{tabular}
 \end{center}
 
-In every role, accuracy must be \textbf{measured} against gold labels, separately by arm or group, and the coded field must be built from text \textbf{fixed before treatment}.
+In every role, accuracy must be \textbf{measured} against gold labels, separately by arm or group, and the coded field must be built from text fixed before treatment.
 
 \medskip
 
@@ -809,7 +809,7 @@ $\widehat\SE = \sqrt{\widehat\Var(f)/5{,}000 + \widehat\Var(Y - f)/200}$ & 0.019
   \item The gold reviews are a subsample of the 5{,}000, not independent of them, so the SE is a slight approximation.
 \end{itemize}
 
-\textbf{The guardrail}: 3 points is below 5, but the interval reaches 7.5. \textbf{Not tripped, not cleared.}
+The guardrail is \textbf{neither tripped nor cleared}: 3 points is below 5, but the interval reaches 7.5.
 \end{frame}
 
 % ====================================================================
@@ -886,8 +886,8 @@ Text written or edited \textbf{after treatment} contains the treatment or its co
 \end{center}
 
 \begin{itemize}
-  \item \textbf{Listing pages as of each night} are written before the rate: they proxy for quality, a confounder. Legitimate.
-  \item \textbf{That night's reviews} are written after the stay, caused by the rate and by bookings: they encode the outcome. Controlling for them absorbs part of the effect, as a mediator would, and opens collider paths: the estimate moves to $-0.97$.
+  \item Listing pages as of each night are written before the rate. They proxy for quality, a confounder, so controlling for them is legitimate.
+  \item That night's reviews are written after the stay, caused by the rate and by bookings, so they encode the outcome. Controlling for them absorbs part of the effect, as a mediator would, and opens collider paths. The estimate moves to $-0.97$.
 \end{itemize}
 
 Reviews posted after a price change are post-treatment, however predictive they are.
@@ -927,7 +927,7 @@ With the reviews, almost no rate variation remains that the text cannot predict.
 \begin{frame}{Generative-AI Errors}
 
 \begin{pitfall}{generative-AI errors}
-Treating a simulator's realism as causal validity; ranking pipelines on one simulator class; reading a silicon sample as data; validating an LLM label on pre-treatment text only; gold labels from one arm; embeddings of post-treatment text.
+Treating a simulator's realism as causal validity; ranking pipelines on one simulator class; reading a silicon sample as data; validating a language-model label on pre-treatment text only; gold labels from one arm; embeddings of post-treatment text.
 \end{pitfall}
 
 \bigskip
@@ -956,9 +956,9 @@ It agrees with Meeting 8's $-1.56$ and with the testbed's override-adjusted $-1.
 \medskip
 
 \begin{itemize}
-  \item \textbf{The engine.} Pilot DML pricing, capped at the logged range, with 10\% of hotel-nights held out on the current rule. The vendor's engine only on the same terms: it won only on a simulator built like itself.
-  \item \textbf{The synthetic guests.} Not evidence: $-0.9$ is the model's prior, and the Q3 test contradicts it.
-  \item \textbf{The guardrail.} The model's labels said 7 points; the gold-corrected rise is 3 points, with an interval up to 7.5. Neither tripped nor cleared.
+  \item \textbf{The engine.} Pilot DML pricing, capped at the logged range, with 10\% of hotel-nights held out on the current rule. Run the vendor's engine only on the same terms, since it won only on a simulator built like itself.
+  \item \textbf{The synthetic guests.} They are not evidence. The $-0.9$ is the model's prior, and the Q3 test contradicts it.
+  \item \textbf{The guardrail.} The model's labels said 7 points; the gold-corrected rise is 3 points, with an interval up to 7.5. It is neither tripped nor cleared.
   \item \textbf{What could still overturn it.} Q3 ran at 40 hotels; the advice assumes it carries over to all 80.
 \end{itemize}
 \end{frame}
