@@ -1,3 +1,12 @@
+# Calendar, labs and assignments (2026-10-09)
+
+- Dates: Tuesdays and Thursdays, 20 October to 1 December 2026; no meeting on Thursday 26 November (Thanksgiving). M11 (Exam II) and M12 (final presentations) are now Tuesdays. `schedule.xlsx` gains a Date column and a Thanksgiving row; the syllabus's week headers and meeting rows carry the dates.
+- Labs renumbered 1 to 11, Lab N with Meeting N (old Lab 0 is Lab 1, and so on). Ten labs are graded, 1 point each, Lab 1 included; Lab 7 (observational methods, then the agent audit) is optional and ungraded, done at home, and its methods are graded in A3. Lab 8 (DML) runs in class. Lab 5 stays a separate CATE-evaluation lab (adds isotonic recalibration, freeze-then-evaluate and a paired comparison); Lab 6 adds an optional group constraint. Lab notebooks carry no fixed deadlines.
+- Proposal presentations move from M8 to M7, block C (Tue 10 Nov).
+- Assignments: A1 M1-M2 (22 Oct to 30 Oct); A2 M3-M6 (3 Nov to 15 Nov); A3 M7-M9 (10 Nov to 20 Nov): regression, IPW and AIPW (the Lab 7 methods), then DML, with a simulator of the coupon logs as the evaluation testbed (an LLM-coded feature to be decided); A4 M10-M11 (19 Nov to 29 Nov): DiD on the AI-assistant rollout and a synthetic control for the flagship. The hotel-simulator pipeline assignment is retired.
+- Final slides, abstract and report are due together on Tue 8 Dec, a week after the presentations; draft to peer pair Thu 3 Dec, peer review returned Sun 6 Dec.
+- Updated: `schedule.xlsx` (Schedule, Labs, Assignments, Deadlines, Judgment calls), the syllabus (meetings line, AI roles, how a meeting runs, assessment, assignments, labs, project milestones, deadline rules and table, AI-use policy, weekly schedule, tooling appendix), the brief (Sections 2, 3, 4, 5 and 7), README, and Case A's lab references (the M3-R6 opener is now Lab 3).
+
 # Slides rebuild (2026-10-08)
 
 ## Schedule and syllabus

@@ -24,9 +24,9 @@ All numbers match the current decks in `meetings/m01`–`m07`. The M3-R4 ladder,
 
 | Role | Where in this case |
 |---|---|
-| AI as a source of data | **M3-R6** (Lab 2 opener): a language model labels members from free text, and misclassification weakens the targeting field. |
+| AI as a source of data | **M3-R6** (Lab 3 opener): a language model labels members from free text, and misclassification weakens the targeting field. |
 | AI as the decision-maker | **M5-R1/R4**: the automated campaign engine proposes lists and its own cut-off; the CFO's freeze rule is the check. **M7**: the engine's live rule is now the confounder, and its send probabilities are the propensity score. |
-| AI as a tool / intervention | Not in this case. See Lab 1 and Case C. |
+| AI as a tool / intervention | Not in this case. See Lab 2 and Case C. |
 
 Say the M5 → M7 link out loud: *the system that made the decisions in Q3 is exactly what we must adjust for in the Q3 logs.*
 
@@ -55,7 +55,7 @@ Minutes are elapsed minutes in the meeting and approximate. **Retime when each d
 | M3-R2b | M3 A | 40–45 | `[RELEASE R2b]` | "Is the Gap Itself Noise?" |
 | M3-R3 | M3 B | 85–95 | `[RELEASE R3]` | the table on "Same RMSE, Opposite Decisions"; "Better Fit, Worse Effect" answers task 5 |
 | M3-R4 | on hold | | no deck frame | the rebuilt deck has no ladder until a seeded simulation produces checkable numbers |
-| M3-R6 | M3 C | 120–125 | Lab 2 opener | answers come out of the lab |
+| M3-R6 | M3 C | 120–125 | Lab 3 opener | answers come out of the lab |
 | M4-R1 | M4 A | 0–5 | `[RELEASE R1]` "A Segment Card" | "What the CFO's Rule Buys" |
 | M4-R2 | M4 A | 5–15 | `[RELEASE R2]` "Region 2: Two Fields, Four Cells" | "The Number That Decides Each Line" |
 | M4-R3 | M4 A | 25–30 | `[RELEASE R3]` "Lin's Tree on Half A" | **half-B outcomes: nothing until every pair has submitted**; "Two Noisy Splits", "The Winner's Curse" and "What Honesty Costs" answer tasks 2–4 |
@@ -216,7 +216,7 @@ This part closes M2 with noncompliance and the LATE, the experimental core of in
 ### M3-R4 (sim; on hold, no frame in the rebuilt deck)
 Ladder: interaction OLS RMSE 0.412, +¥4,100; S-lasso 0.409, −¥6,800; **S-boosted best RMSE 0.401**, +¥1,900; **T-boosted best list +¥9,300** (RMSE 0.406); oracle +¥16,200; marketing's purchase model −¥29,400. The best RMSE and the best list come from different learners.
 
-### M3-R6 (Lab 2 opener; new to this case)
+### M3-R6 (Lab 3 opener; new to this case)
 1. **Only comments written before the freeze date (the day before the draw).** A comment written after a coupon arrived can be caused by the coupon. A label built from it is post-treatment, M1's data-roles rule applied to text.
 2. With 80% accuracy both ways on a 50/50 base, the 5,000 labelled "drifting" are 4,000 lapsed + 1,000 active.
    - Lift $= 0.8(0.20) + 0.2(0.05) = 0.17$.
@@ -227,7 +227,7 @@ Ladder: interaction OLS RMSE 0.412, +¥4,100; S-lasso 0.409, −¥6,800; **S-boo
 4. The gap between groups shrinks from 0.15 to 0.09, a factor $1 - 2(0.2) = 0.6$. **Misclassification attenuates heterogeneity toward the average.** Here the decision survives but two-thirds of the value is gone.
 5. With accuracy $a$ in both directions: net per coupon $= 30(0.05 + 0.15a) - 10(0.80 - 0.50a) = 9.5a - 6.5$. It is zero at **$a = 0.684$**. At 70% the list earns about ¥0.15 a coupon; at 65% it loses ¥0.33.
 
-   Lab 2 then measures accuracy against gold labels and redoes this with estimated, not stipulated, segment effects.
+   Lab 3 then measures accuracy against gold labels and redoes this with estimated, not stipulated, segment effects.
 
 ### M4-R1
 The middle sentence (half B held until every partition is in) is the one broken most often, by an analyst who "just checks" B while tuning the tree. After one look, B is discovery data too.

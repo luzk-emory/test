@@ -283,7 +283,7 @@ Four learners, each fitted on the same training folds:
 
 **Task.** In pairs, predict and commit: which learner has the best out-of-fold outcome RMSE? Which list of 5,000 earns the most? Are they the same learner?
 
-### Part M3-R6. Lab 2 opener: a column written by a language model
+### Part M3-R6. Lab 3 opener: a column written by a language model
 
 Marketing has a new idea. Members leave free-text feedback in the app ("moved offices, not near a store any more", "too expensive now", "love the new oat latte"). The data science team proposes to have a **language model read each member's text and label them "drifting away: yes/no"**, then use the label as the targeting field in place of the CRM's lapsed flag.
 

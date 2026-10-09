@@ -45,14 +45,14 @@ Meetings on Tuesday and Thursday. Each meeting has two 50-minute lectures (A, B)
 | 4 | Causal trees and forests | | |
 | 5 | Evaluating targeting policies | | Exam I (M1–M4) |
 | 6 | Allocation and policy learning | H3 Sequential decisions | |
-| 7 | Observational data | H4 Instrumental variables | |
-| 8 | Double machine learning | H5 Regression discontinuity | Proposal presentations |
+| 7 | Observational data | H4 Instrumental variables | Proposal presentations |
+| 8 | Double machine learning | H5 Regression discontinuity | |
 | 9 | Generative AI in causal analysis | | |
 | 10 | Panel data and DiD | H6 Staggered adoption | |
 | 11 | Synthetic control (SDID, matrix completion in Section 3) | | Exam II (M5–M10) |
 | 12 | Final presentations | | |
 
-Four assignments; Labs 0–10; bonus reading is optional. Lecture cases (`cases/`): a coffee chain (Case A, M1–M7), Meridian
+Meetings on Tuesdays and Thursdays, 20 October to 1 December 2026 (no meeting on 26 November, Thanksgiving). Four assignments; Labs 1–11, one per meeting (Lab 7 optional); bonus reading is optional. Lecture cases (`cases/`): a coffee chain (Case A, M1–M7), Meridian
 Hotels (Case B, M8–M9) and a home-goods retail chain (Case C, M10–M11). The notes' worked examples deliberately use other
 businesses: FitLife (fitness chain) in M1, M3, M7, M10, H5, H6; QuickBite (food delivery) everywhere else.
 
