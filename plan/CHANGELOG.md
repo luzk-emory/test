@@ -1,3 +1,9 @@
+# Spelling pass (2026-10-09)
+
+- US spelling throughout the student-facing materials, the case instructor files, and the schedule workbook (553 lines in 36 files; 11 workbook cells), under `plan/editorial-guide.md` Section 3. Labels, references, file names, URLs, code, and published titles unchanged. Curly quotes in the Markdown cases straightened.
+- Serial commas: 274 added (cases 28, M1-M4 72, M5-M8 93, M9-M11 and syllabus 81), author lists included, as Chicago style does. No other wording changed.
+- `slides08_check.py` follows the new spelling of the Case B sentence it quotes.
+
 # Editorial guide (2026-10-09)
 
 - New `plan/editorial-guide.md`: the editorial standard for student-facing materials, fitted to this repository (student-facing and excluded paths; carve-outs for answer keys, release markers, case instructor files and the schedule workbook; dash rules; US English with serial commas, converted first in a separate mechanical pass; labels Meeting N, Block A/B/C, Lab N, Handout HN and case part IDs; slide exceptions for the Summary and End of Block A frames and for bold; self-containment with the Meeting 1 course map and notes' reading-list exceptions; Chicago author-date references, with a References frame per deck; build and check rules). `AGENTS.md` points to it.
