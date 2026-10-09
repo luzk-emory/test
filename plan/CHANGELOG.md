@@ -1,3 +1,12 @@
+# Editorial pass, Meetings 1 to 4 (2026-10-09)
+
+- Under `plan/editorial-guide.md`, for the M1 to M4 slides, notes and handouts H1 and H2. Formulas, numbers, results and the wording of Result, Assumption and Definition boxes unchanged; a math and number diff against the previous commit shows only notation-preserving edits (bold removed inside math, "one percent" written as $0.01$, small numbers in words).
+- Forward references to later meetings replaced by concept previews (26 scan hits to 0); cross-meeting Result numbers replaced by the named concept (2 to 0); cross-artifact references removed or restated (5 to 0; the H1 handout restates the two results it used to point to).
+- References: each deck has a References frame before Summary; reading lists in notes and handouts are Chicago author-date entries with their annotations kept; every in-text citation is in its document's list (4 failures to 0). Details that could not be verified are left out and logged in `plan/FLAGS.md`.
+- Slides: emphasis bold reduced to defined terms and one key phrase per frame (25 hits to 10, the rest structural); colons, fragments and framing openers rewritten (46 to 14, the rest lead-ins and labels); prose moved toward the old decks' voice.
+- Style: `readinglist` uses `xltabular`, so long lists break across pages and each document keeps a single list.
+- `editorial_scan.py`: the cross-artifact rule no longer matches "assignment" as a concept, reference entries, or reading-list rows.
+
 # Spelling pass (2026-10-09)
 
 - US spelling throughout the student-facing materials, the case instructor files, and the schedule workbook (553 lines in 36 files; 11 workbook cells), under `plan/editorial-guide.md` Section 3. Labels, references, file names, URLs, code, and published titles unchanged. Curly quotes in the Markdown cases straightened.
