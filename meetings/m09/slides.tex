@@ -170,7 +170,7 @@ Meridian's data-science team fitted one to the 87{,}600 hotel-nights: given a ni
 \begin{frame}{What the Simulator's Answer Rests On}
 
 \begin{result}{1.1}{A simulator's effects are g-formula effects}
-If $\hat p(x) = p(x)$ and $\hat p(y \mid d, x) = p(y \mid d, x)$, the simulator's average outcome under action $d$ is $\sum_x \E[Y \mid D=d, X=x]\,p(x)$. This equals $\E[Y(d)]$ if and only if the g-formula does, that is, under consistency, conditional exchangeability given $X$ and overlap.
+If $\hat p(x) = p(x)$ and $\hat p(y \mid d, x) = p(y \mid d, x)$, the simulator's average outcome under action $d$ is $\sum_x \E[Y \mid D=d, X=x]\,p(x)$. This equals $\E[Y(d)]$ if and only if the g-formula does, that is, under consistency, conditional exchangeability given $X$, and overlap.
 \end{result}
 
 \medskip
@@ -252,7 +252,7 @@ So the simulator \textbf{cannot} tell Wen the true elasticity of Meridian's gues
 % [RELEASE R2: the estimator testbed]
 \begin{frame}{An Estimator Testbed}
 
-Generate many datasets, run an estimator on each, compare with the planted truth. The team drew \textbf{200 datasets} with the real logs' hotels, nights and signals. The truth is $-1.50$ because they planted it.
+Generate many datasets, run an estimator on each, compare with the planted truth. The team drew \textbf{200 datasets} with the real logs' hotels, nights, and signals. The truth is $-1.50$ because they planted it.
 
 \begin{center}
 \small
@@ -561,7 +561,7 @@ The $-0.9$ is a hypothesis. What settles it is a design: a randomized rate test.
 \begin{frame}{End of Block A}
 
 \begin{itemize}
-  \item A learned simulator is a g-formula with distributions: its effects rest on consistency, conditional exchangeability and overlap in the logs it learned from.
+  \item A learned simulator is a g-formula with distributions: its effects rest on consistency, conditional exchangeability, and overlap in the logs it learned from.
   \item Realism is evidence about the data, not about causation. The analyst plants the effect ($-1.50$) and the confounding (the overrides).
   \item Estimator testbed: DML with boosted trees is unbiased here; planted overrides pull it 0.13 toward zero.
   \item Pipeline testbed: regret against the oracle counts only misclassified units, weighted by $|v|$. DML pricing has the smallest worst case, \textyen 760.

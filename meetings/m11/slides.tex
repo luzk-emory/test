@@ -462,7 +462,7 @@ Synthetic control, $\tfrac12 A + \tfrac12 B$ & 110 & 128 & & $\hatt_4 = 13$ \\
 \end{center}
 
 \begin{itemize}
-  \item With A, B and C, the comparison's pre-period path is $106.7, 120, 133.3$: gaps to the flagship of $-6.7, -10.0, -13.3$, widening by 3.3 a week. C grows twice as fast; DiD carries that difference in trend into the estimate.
+  \item With A, B, and C, the comparison's pre-period path is $106.7, 120, 133.3$: gaps to the flagship of $-6.7, -10.0, -13.3$, widening by 3.3 a week. C grows twice as fast; DiD carries that difference in trend into the estimate.
   \item With A and B only, the equal-weighted average tracks the flagship exactly, so the level shift DiD allows is zero and the two agree.
 \end{itemize}
 
@@ -582,9 +582,9 @@ Roll the assistant out to the remaining 59 stores. Budget about $+$\textyen 250 
 \begin{itemize}
   \item \spinestep{Estimand.} One treated unit's effect path, $\tau_t = Y_{1t}(T_0 + 1) - Y_{1t}(\infty)$ for $t > T_0$; $Y_{1t}(\infty)$ must be constructed.
   \item \spinestep{Identification.} A factor model: weights that match the treated unit's characteristics track it after $T_0$ too. A close fit over a long pre-period, in which $\lambda_t$ moves, is the evidence that they match.
-  \item \spinestep{Estimation.} Non-negative weights summing to one, fitted on the pre-period: an interpolation inside the donors' range, sparse and explainable. Fix the donor pool, window and predictors, and check on held-out pre-weeks, before opening the post-period.
+  \item \spinestep{Estimation.} Non-negative weights summing to one, fitted on the pre-period: an interpolation inside the donors' range, sparse and explainable. Fix the donor pool, window, and predictors, and check on held-out pre-weeks, before opening the post-period.
   \item \spinestep{Inference.} No standard error. In-space placebos give a $p$-value of $k/(J+1)$ only if the treated unit was as likely as any donor to be treated; otherwise the rank is descriptive. Add in-time placebos and leave-one-out.
-  \item \textbf{Know the limits, and the alternative.} Extreme units, spillovers, anticipation and local shocks break it. DiD fixes equal weights and allows a level shift; synthetic control chooses weights and matches levels.
+  \item \textbf{Know the limits, and the alternative.} Extreme units, spillovers, anticipation, and local shocks break it. DiD fixes equal weights and allows a level shift; synthetic control chooses weights and matches levels.
 \end{itemize}
 \end{frame}
 
