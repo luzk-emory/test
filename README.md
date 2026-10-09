@@ -28,7 +28,7 @@ reviews/                pass-1 review report (2026-10-07)
 |---|---|---|
 | Technical notes, M1–M11 | v4.1 (commit `5522695`, not yet tagged) | Current. Pass 1 (arithmetic, wording) done; pass 2 (independent proof check) not yet |
 | Handouts H1–H6 | v4.1 | Current, same review state as the notes |
-| Lecture slides | M1–M2 rebuilt (lecture case kept); M3–M11 v2 content | M1 and M2 aligned with the v4 notes, under review. **M3–M11 not yet revised** |
+| Lecture slides | M1–M11 rebuilt (8 Oct) | All aligned with the v4 notes and the current schedule, each checked by `shared/checks/slidesNN_check.py`; **under the instructor's review** |
 | Schedule, labs, assignments, deadlines | `plan/schedule.xlsx` | Current source of truth |
 | Syllabus | Draft 3 (8 Oct) | Matches `schedule.xlsx`. Undecided items are marked `\tbd` (dates, weights, policies) |
 | Cases A–C (lecture cases) | draft | M2-R6 (Case A), M9 (Case B) and M11 (Case C) rewritten 8 Oct to the current schedule; other release times to be retimed with each deck. Numbers in the rewritten parts are checked by `shared/checks/case_check.py` |
@@ -45,14 +45,14 @@ Meetings on Tuesday and Thursday. Each meeting has two 50-minute lectures (A, B)
 | 4 | Causal trees and forests | | |
 | 5 | Evaluating targeting policies | | Exam I (M1–M4) |
 | 6 | Allocation and policy learning | H3 Sequential decisions | |
-| 7 | Observational data | H4 Instrumental variables | |
-| 8 | Double machine learning | H5 Regression discontinuity | Proposal presentations |
+| 7 | Observational data | H4 Instrumental variables | Proposal presentations |
+| 8 | Double machine learning | H5 Regression discontinuity | |
 | 9 | Generative AI in causal analysis | | |
 | 10 | Panel data and DiD | H6 Staggered adoption | |
 | 11 | Synthetic control (SDID, matrix completion in Section 3) | | Exam II (M5–M10) |
 | 12 | Final presentations | | |
 
-Four assignments; Labs 0–10; bonus reading is optional. Lecture cases (`cases/`): a coffee chain (Case A, M1–M7), Meridian
+Meetings on Tuesdays and Thursdays, 20 October to 1 December 2026 (no meeting on 26 November, Thanksgiving). Four assignments; Labs 1–11, one per meeting (Lab 7 optional); bonus reading is optional. Lecture cases (`cases/`): a coffee chain (Case A, M1–M7), Meridian
 Hotels (Case B, M8–M9) and a home-goods retail chain (Case C, M10–M11). The notes' worked examples deliberately use other
 businesses: FitLife (fitness chain) in M1, M3, M7, M10, H5, H6; QuickBite (food delivery) everywhere else.
 
@@ -113,7 +113,7 @@ After editing a number in the notes, update its check script, then rerun.
 
 ## Open items
 
-1. Revise slides to match the v4 notes and the current schedule.
+1. Review the rebuilt slides (all eleven decks, 8 Oct) and settle the decisions flagged in `plan/CHANGELOG.md`.
 2. Syllabus: settle the items marked `\tbd` in `syllabus/syllabus.tex` (see `plan/revision-plan.md`, Section 7).
 3. Pass 2: independent check of every numbered Result. Pass 3: a student read, one meeting ahead.
 4. Seed the M8 simulation so its numbers are exactly reproducible (text uses $-0.575$; runs give $-0.574$ to $-0.578$).

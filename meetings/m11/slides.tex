@@ -1,6 +1,12 @@
 % \documentclass[aspectratio=169, 11pt]{beamer}
 \documentclass[aspectratio=169, 11pt, handout]{beamer}
 
+% Meeting 11 lecture slides (block B; block A is Exam II). Running case: Dana's AI assistant rollout at a home-goods
+% chain (cases/caseC-retail-ai, Meeting 11 parts R1 to R5; the bonus staggered parts B1 to B3 are not used). The notes'
+% worked example (QuickBite) is deliberately not reproduced here.
+% Shared with notes.tex: estimands, assumptions, notation, the statement of each Result, the order of topics.
+% Every number is checked by shared/checks/slides11_check.py.
+
 % ── Theme ──
 \usetheme{Madrid}
 \usecolortheme{default}
@@ -22,39 +28,56 @@
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{colortbl}
-\usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 
-% ── Colors ──
-\definecolor{sbgreen}{HTML}{00704A}  % course accent
-\definecolor{warnred}{HTML}{CC0000}
+% ── Colours: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
+\definecolor{sbgreen}{HTML}{00704A}
 \definecolor{noteblue}{HTML}{2060A0}
+\definecolor{warnred}{HTML}{B42318}
+\definecolor{extgrey}{HTML}{6B7280}
+\definecolor{boxgrey}{HTML}{F3F5F8}
+\definecolor{bluetint}{HTML}{EEF3FA}
+\definecolor{greentint}{HTML}{EEF6F2}
+\definecolor{redtint}{HTML}{FCF1F0}
 
-% ── Commands ──
+% ── Notation: same macros as the notes (shared/coursenotes.sty, shared/notation.tex) ──
 \newcommand{\E}{\mathbb{E}}
-\newcommand{\Var}{\mathrm{Var}}
-\newcommand{\Cov}{\mathrm{Cov}}
-\newcommand{\SE}{\mathrm{SE}}
-\newcommand{\Prob}{\mathrm{Pr}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\SE}{\operatorname{SE}}
 \newcommand{\indep}{\perp\!\!\!\perp}
+\newcommand{\hatt}{\hat{\tau}}
+\newcommand{\ATE}{\text{ATE}}
+\newcommand{\ATT}{\text{ATT}}
+\newcommand{\ATU}{\text{ATU}}
 
-\usepackage{soul}
-\newcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\marginpar{\tiny #2}}
-% Beamer frames are typeset inside boxes, where \marginpar raises "Not in outer par mode"
-% and \marginparwidth is 4pt. Same marker; the provenance note goes to the frame footnote.
-\renewcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\footnote[frame]{\tiny #2}}
-% Compact footnote layout so several provenance notes fit under one frame.
-\setbeamertemplate{footnote}{\noindent\raggedright\hspace*{0.6em}\tiny\insertfootnotemark\,\insertfootnotetext\par}
+% ── Boxes: same number, title and wording as the notes; proofs stay in the notes ──
+\newenvironment{result}[2]{%
+  \setbeamercolor{block title}{bg=sbgreen,fg=white}\setbeamercolor{block body}{bg=greentint,fg=black}%
+  \begin{block}{Result #1 (#2)}}{\end{block}}
+\newenvironment{assumption}[2]{%
+  \setbeamercolor{block title}{bg=noteblue,fg=white}\setbeamercolor{block body}{bg=bluetint,fg=black}%
+  \begin{block}{Assumption #1 (#2)}}{\end{block}}
+\newenvironment{defbox}[1]{%
+  \setbeamercolor{block title}{bg=extgrey,fg=white}\setbeamercolor{block body}{bg=boxgrey,fg=black}%
+  \begin{block}{Definition: #1}}{\end{block}}
+% Numbered definition (as in the M1 deck): the notes number Definition 1.1 with the Results
+\newenvironment{definition*}[2]{%
+  \setbeamercolor{block title}{bg=extgrey,fg=white}\setbeamercolor{block body}{bg=boxgrey,fg=black}%
+  \begin{block}{Definition #1 (#2)}}{\end{block}}
+\newenvironment{pitfall}[1]{%
+  \setbeamercolor{block title}{bg=warnred,fg=white}\setbeamercolor{block body}{bg=redtint,fg=black}%
+  \begin{block}{Pitfall: #1}}{\end{block}}
 
-% Version 2 (2026-09-29). Course spine: estimand -> identification -> estimation.
-% Case C re-skin: the floor-lead staffing model is now an AI assistant for store associates.
-% Changes from slides.tex: m11/CHANGES-v2.md.
+% Step labels for the course spine
 \newcommand{\spinestep}[1]{\textcolor{sbgreen}{\textbf{#1}}}
 
 % ── Title ──
-\title[Meeting 11]{Meeting 11: Staggered Rollouts and the Flagship Store}
-\subtitle{Applied Causal Inference for Business}
+\title[Meeting 11]{Meeting 11: The Flagship Store}
+\subtitle{Synthetic control: one treated unit, and a comparison built from many}
 \author{Zhikun Lu}
 \date{\today}
 
@@ -66,642 +89,111 @@
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Where Does the Counterfactual Come From?}
+\begin{frame}{Today}
 
-\begin{center}
-\begin{tikzpicture}[
-    node distance=0.45cm and 0.7cm,
-    box/.style={draw, rounded corners, minimum width=2.9cm, minimum height=1.5cm,
-                font=\scriptsize, align=center, text width=2.7cm},
-    active/.style={box, fill=sbgreen!20, draw=sbgreen, very thick},
-    inactive/.style={box, fill=gray!10, draw=gray!50}
-]
-\node[inactive] (A) {\textbf{M1--M6}\\[2pt] A randomised control group\\[3pt] \emph{anything} may be unobserved};
-\node[inactive, right=of A] (B) {\textbf{M7--M8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
-\node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] An external shifter of treatment\\[3pt] confounders allowed};
-\node[active, right=of C] (D) {\textbf{M10--M11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
-
-\draw[-{Stealth}, gray!50] (A) -- (B);
-\draw[-{Stealth}, gray!50] (B) -- (C);
-\draw[-{Stealth}, thick, sbgreen] (C) -- (D);
-\end{tikzpicture}
-\end{center}
-
-\bigskip
-
-\begin{center}
-\small Last time: one adoption date, one comparison, and parallel trends did the work.\\
-Today the stores adopted at \emph{different} times --- and the most tempting comparison is the wrong one.
-\end{center}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Today's Plan}
-
-\begin{center}
-\small
-\begin{tabular}{rp{11.6cm}}
-\toprule
-\textbf{Minutes} & \\
-\midrule
-0--15 & \textbf{Reading and critique C6} --- a real rollout readout; several flaws, to be ranked \\
-15--50 & \spinestep{Estimand:} extend the assistant? Two clocks; staggered adoption; which comparisons the panel offers, and why an already-treated control is contaminated \\
-60--110 & \spinestep{Identification:} group-time effects with \emph{eligible} controls only. \spinestep{Estimation:} aggregation, event studies; the flagship by synthetic control; the recommendation \\
-120--180 & \textbf{Workshop:} cohort contrasts against the truth (prediction and hand calculation without AI) \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-
-\textbf{Case:} Dana's AI assistant rollout, part 2 (Releases 1--5). \quad \textbf{Due 72 hours after today:} P4.
-
-\bigskip
-
-\textbf{Reading:} technical notes for Meetings 10 and 11, released after class.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Critique C6: Rank the Flaws}
-
-A real before-and-after readout of a store programme. The five questions, then one more step.
-
-\bigskip
-
-\begin{enumerate}
-    \item What is the claim?
-    \item What causal question does the decision need?
-    \item Who is the comparison group?
-    \item What else could produce this pattern? Mechanism and \textbf{direction} of each bias.
-    \item What would you do to find out?
-\end{enumerate}
-
-\bigskip
-
-\textbf{Then rank the flaws.} Ask how the stores were chosen, what they were compared with, and what the standard error assumed. Hand in your notes at minute 15.
-\end{frame}
-
-% ====================================================================
-\section{The Estimand: Extend It?}
-% ====================================================================
-
-% [RELEASE R1 — narrative, cost parameters, the analyst's two numbers]
-% [RELEASE R1 — narrative, cost parameters, the analyst's two numbers]
-\begin{frame}{The Store Assistant, Week 104}
-
-\textbf{Dana} runs store operations for a chain of \NUM{120}{case C: store count} stores.
-
-\bigskip
-
-The \textbf{flagship} went live with Store Assistant in week 20, alone. Since then the assistant has reached two \textbf{cohorts} of thirty stores, in weeks 53 and 79 --- each after two weeks of training off the floor. \NUM{59}{case C: never-treated store count} stores still run without it. In week 66 the vendor pushed \textbf{version 2} to every store then live; cohort 2 started on it.
-
-\bigskip
-\pause
-
-\textbf{On her desk:} extend the assistant to the remaining stores, at \textyen 2{,}500 per store-week.
-
-\bigskip
-
-Her analyst has two numbers, and they disagree:
-
-\begin{center}
-\small
-\begin{tabular}{lr}
-\toprule
-Two-way fixed effects on the full panel & $+$\textyen \NUM{6{,}100}{sim staffing-panel v1: static TWFE coefficient, all stores and weeks} per store-week \\
-Cohort 1, before vs after going live & $+$\textyen \NUM{14{,}300}{sim staffing-panel v1: cohort-1 raw before/after difference} per store-week \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{The Number That Decides It}
-
-The assistant costs \textyen 2{,}500 per store-week. Gross margin on incremental sales is \textbf{25\%}.
-
-\bigskip
-
-The model pays in a store-week only if it adds sales worth more than its cost:
-
-\[
-0.25 \times \Delta\text{sales} \;>\; 2{,}500 .
-\]
-
-\bigskip
-\pause
-
-\begin{alertblock}{Break-even lift}
-\[
-\Delta^{*} \;=\; \frac{2{,}500}{0.25} \;=\; \textbf{\textyen 10{,}000 per store-week}
-\]
-\end{alertblock}
-
-\bigskip
-
-One of the analyst's numbers is below it and one is above. Every estimate today is a weekly sales lift. The only question is \textbf{which side of \textyen 10{,}000} it lands on --- and for \emph{which} stores, \emph{how long} after adoption.
-\end{frame}
-
-% ====================================================================
-\section{Event Time}
-% ====================================================================
-
-\begin{frame}{Two Clocks}
-
-Your warm-up: every store-week has a \textbf{calendar} week $t$ and, once a store has adopted at $G_i$, an \textbf{event} week $t - G_i$.
-
-\begin{center}
-\small
-\begin{tabular}{lrrrrr}
-\toprule
-& \multicolumn{5}{c}{\textbf{Calendar week}} \\
-\cmidrule(lr){2-6}
-\textbf{Store} & 50 & 51 & 52 & 53 & 54 \\
-\midrule
-Cohort 1 ($G = 53$) & $-3$ & $-2$ & $-1$ & $\mathbf{0}$ & $1$ \\
-Cohort 2 ($G = 79$) & $-29$ & $-28$ & $-27$ & $-26$ & $-25$ \\
-Never treated ($G = \infty$) & --- & --- & --- & --- & --- \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-\pause
-
-Two things a single-adoption panel never made you say:
-
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\textbf{Building the comparison}
 \begin{itemize}
-    \item The effect may depend on \textbf{event time}: in week 1 associates are learning the assistant; by week 20 they rely on it. Calendar time has its own events: version 2 reached every live store in week 66.
-    \item In any calendar week, some stores are \emph{treated}, some \emph{not yet}, some \emph{never}. Which ones are the control group?
+  \item One treated store, and no store like it
+  \item The synthetic control estimator
+  \item Three donors, by hand
+  \item Interpolation, not extrapolation
+  \item Why a long, close pre-period fit is evidence
 \end{itemize}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Staggered Adoption: What the Panel Offers}
-
-\begin{center}
-\begin{tikzpicture}[scale=0.62]
-\draw[-{Stealth}] (0,0) -- (11,0) node[right, font=\scriptsize] {week};
-\foreach \y/\lab in {3/Flagship, 2/Cohort 1, 1/Cohort 2, 0.2/Never} {\node[anchor=east, font=\scriptsize] at (-0.2,\y) {\lab};}
-\fill[gray!30] (0,2.85) rectangle (2,3.15); \fill[sbgreen!60] (2,2.85) rectangle (10.4,3.15);
-\fill[gray!30] (0,1.85) rectangle (5.3,2.15); \fill[sbgreen!60] (5.3,1.85) rectangle (10.4,2.15);
-\fill[gray!30] (0,0.85) rectangle (7.9,1.15); \fill[sbgreen!60] (7.9,0.85) rectangle (10.4,1.15);
-\fill[gray!30] (0,0.05) rectangle (10.4,0.35);
-\node[font=\scriptsize] at (2,-0.4) {20}; \node[font=\scriptsize] at (5.3,-0.4) {53}; \node[font=\scriptsize] at (7.9,-0.4) {79}; \node[font=\scriptsize] at (10.4,-0.4) {104};
-\node[font=\scriptsize, sbgreen] at (8.6,3.5) {treated}; \node[font=\scriptsize, gray] at (1,3.5) {not yet};
-\end{tikzpicture}
-\end{center}
-
-Every $2 \times 2$ comparison in this panel is one of three kinds:
-
-\begin{center}
-\small
-\begin{tabular}{lll}
-\toprule
-\textbf{Treated group} & \textbf{Compared with} & \textbf{Status} \\
-\midrule
-A cohort, at adoption & never-treated stores & clean, if trends are parallel \\
-A cohort, at adoption & a \emph{later} cohort, not yet treated & clean, same condition \\
-A later cohort, at adoption & an \emph{earlier} cohort, already treated & \textcolor{warnred}{\textbf{contaminated}} \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\pause
-The third is the one the event clock warns about: the ``control'' is moving along \emph{its own} event path.
-\end{frame}
-
-% ====================================================================
-% [RELEASE R2 — three-store table; worksheet attempt before the next frame]
-\begin{frame}{Three Stores, Three Weeks}
-
-Weekly sales in \textyen 000. Store E adopts in week 2, store L in week 3, store N never.
-
-\begin{center}
-\begin{tabular}{lrrr}
-\toprule
-& \textbf{Week 1} & \textbf{Week 2} & \textbf{Week 3} \\
-\midrule
-E (adopts week 2) & 100 & \textbf{112} & \textbf{124} \\
-L (adopts week 3) & 200 & 204 & \textbf{216} \\
-N (never)         & 300 & 304 & 308 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\smallskip
-\small Bold cells are treated. A common trend of $+4$ per week runs through all three stores.
-
-\bigskip
-
-\textbf{In pairs}, compute four difference-in-differences and commit in writing:
-
-\begin{enumerate}\small
-    \item E against N, weeks 1$\to$2
-    \item E against N, weeks 1$\to$3
-    \item L against N, weeks 2$\to$3
-    \item L against \textbf{E}, weeks 2$\to$3 --- using the already-treated store as the control
-\end{enumerate}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{The Four Comparisons}
-
-\begin{center}
-\begin{tabular}{llrl}
-\toprule
-& \textbf{Comparison} & \textbf{DiD} & \textbf{What it measures} \\
-\midrule
-1 & E vs N, $1 \to 2$ & $(112 - 100) - (304 - 300) = \textcolor{sbgreen}{8}$ & E's effect at event time 0 \\
-2 & E vs N, $1 \to 3$ & $(124 - 100) - (308 - 300) = \textcolor{sbgreen}{16}$ & E's effect at event time 1 \\
-3 & L vs N, $2 \to 3$ & $(216 - 204) - (308 - 304) = \textcolor{sbgreen}{8}$ & L's effect at event time 0 \\
-4 & L vs E, $2 \to 3$ & $(216 - 204) - (124 - 112) = \textcolor{warnred}{0}$ & \textcolor{warnred}{nothing} \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-\pause
-
-The effect is \textbf{8 in the first treated week and 16 in the second}, for both stores. Three comparisons find it.
-
-\bigskip
-
-The fourth says the assistant did nothing for store L. It is not noise --- the numbers have no noise in them. It is the comparison.
-\end{frame}
-
-% ====================================================================
-\section{Identification: Contamination}
-% ====================================================================
-
-\begin{frame}{Why the Already-Treated Control Is Contaminated}
-
-Store E's effect is $\tau_E(0) = 8$ in its first treated week and $\tau_E(1) = 16$ in its second. Between weeks 2 and 3, E moves by the common trend \emph{plus} the growth in its own effect:
-\[
-\Delta Y_E = 4 + \bigl[\tau_E(1) - \tau_E(0)\bigr] = 4 + 8 = 12 .
-\]
-\pause
-Using E as the control for L subtracts all of that:
-\[
-\text{DiD}_4 = \underbrace{\bigl[4 + \tau_L(0)\bigr]}_{\Delta Y_L} - \underbrace{\bigl[4 + \tau_E(1) - \tau_E(0)\bigr]}_{\Delta Y_E}
-= \tau_L(0) - \bigl[\tau_E(1) - \tau_E(0)\bigr] = 8 - 8 = 0 .
-\]
-
-\begin{alertblock}{The pattern}
-An already-treated control removes the \textbf{change in its own effect}. Growing effects bias the comparison \emph{down}; fading effects, \emph{up}. Only a flat effect makes it harmless.
-\end{alertblock}
-
-\small Parallel trends was never violated: the trend is exactly $+4$ everywhere. The failure is in what was called a control.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{What Two-Way Fixed Effects Does With All Four}
-
-Run $Y_{it} = \alpha_i + \lambda_t + \beta D_{it} + \varepsilon_{it}$ on the nine cells. The coefficient is a \textbf{weighted average of the four $2 \times 2$ comparisons}, with weights set by group sizes and by how long each group spends treated (Goodman-Bacon 2021):
-
-\begin{center}
-\small
-\begin{tabular}{llrr}
-\toprule
-& \textbf{Comparison} & \textbf{Weight} & \textbf{DiD} \\
-\midrule
-& E vs N, all weeks & $1/3$ & $12$ \\
-& L vs N, all weeks & $1/3$ & $8$ \\
-& E vs L, L not yet treated & $1/6$ & $8$ \\
-& L vs E, E already treated & $1/6$ & $\textcolor{warnred}{0}$ \\
-\midrule
-& $\widehat\beta_{\text{TWFE}}$ & & $\tfrac{1}{3}(12) + \tfrac{1}{3}(8) + \tfrac{1}{6}(8) + \tfrac{1}{6}(0) = \mathbf{8}$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\small The first row's DiD is 12: it averages E's two treated weeks ($8$ and $16$) against week 1.
-
-\medskip
-\pause
-
-The true average over the three treated store-weeks is $(8 + 16 + 8)/3 = \mathbf{10.7}$. TWFE returns $\mathbf{8}$, one-sixth of its weight spent on a comparison that measures nothing.
-
-\medskip
-\begin{center}
-Against a break-even of $10$: \textcolor{warnred}{TWFE says no}; the truth says \textcolor{sbgreen}{yes, once the effect has grown}.
-\end{center}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{This Is Not a Small-Sample Curiosity}
-
-Last time's TWFE, with a single adoption date, \emph{was} the $2 \times 2$ DiD. Nothing was wrong with the estimator; the panel had only clean comparisons to offer.
-
-\bigskip
-
-With staggered adoption the same regression silently adds the contaminated ones. Its weight on them grows with
-
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{Testing it and using it}
 \begin{itemize}
-    \item the \textbf{spread} of adoption dates,
-    \item the share of the panel that is \emph{already treated} when later cohorts adopt,
-    \item and it bites hardest when effects \textbf{change with event time} --- which is exactly when Dana's question (``how long until it pays?'') is interesting.
+  \item Design before the post-period
+  \item Placebos, and when a rank is a $p$-value
+  \item In-time placebos and leave-one-out
+  \item Limits: extreme units, spillovers, anticipation, local shocks
+  \item Synthetic control or DiD?
+  \item The flagship and the cohort: Dana's memo
 \end{itemize}
-
-\bigskip
-\pause
-
-\begin{center}
-\textbf{So: estimate the effect one cohort and one period at a time, using only clean controls, and aggregate afterwards.}
-\end{center}
+\end{column}
+\end{columns}
 \end{frame}
 
 % ====================================================================
-\section{Identification and Estimation: Group-Time Effects}
+\section{Synthetic control}
 % ====================================================================
 
-\begin{frame}[shrink=6]{The Group-Time ATT}
-
-\begin{block}{Definition (Callaway and Sant'Anna 2021)}
-For a cohort that adopted at $g$, and a calendar period $t \geq g$,
-\[
-\text{ATT}(g, t) \;=\; \E\bigl[Y_t(g) - Y_t(\infty) \,\big|\, G = g\bigr] .
-\]
-\end{block}
-
-One number per cohort per period. Nothing is averaged yet.
-\pause
-\begin{block}{Identification}
-Under parallel trends between cohort $g$ and the never-treated (or the not-yet-treated) from a base week $b < g$ to $t$ --- the last week \emph{before any anticipation}, $g - 1$ in general, $g - 3$ here (next slide) ---
-\[
-\text{ATT}(g, t) = \bigl\{\E[Y_t \mid G = g] - \E[Y_{b} \mid G = g]\bigr\} - \bigl\{\E[Y_t \mid G = \infty] - \E[Y_{b} \mid G = \infty]\bigr\} .
-\]
-\end{block}
-
-Each is a $2 \times 2$ DiD with a \textbf{clean} control and a base period just before adoption.
-
-\smallskip
-\textbf{On the three stores:} $\text{ATT}(E, 2) = 8$, $\text{ATT}(E, 3) = 16$, $\text{ATT}(L, 3) = 8$ --- comparisons 1--3. The fourth never enters.
-\end{frame}
-
-% ====================================================================
-\begin{frame}[shrink=2]{Choose the Controls Before Computing Anything}
-
-For each target, which stores may stand in for $Y_{it}(\infty)$? Decide it from the calendar, before any outcome.
-
-\begin{center}
-\small
-\begin{tabular}{p{3.4cm}p{1.6cm}p{3.6cm}p{4.2cm}}
-\toprule
-\textbf{Target} & \textbf{Base week} & \textbf{Eligible controls} & \textbf{Excluded} \\
-\midrule
-Cohort 1, weeks 53--76 & 50 & never-treated \emph{and} cohort 2 & --- \\
-Cohort 1, weeks 77--104 & 50 & never-treated & cohort 2: training from 77, live from 79 \\
-Cohort 2, weeks 79--104 & 76 & never-treated & cohort 1: already treated \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-
-\textbf{Why base week $g - 3$, not $g - 1$:} weeks $g - 2$ and $g - 1$ are training weeks, with associates off the floor. Using them as ``before'' builds anticipation into the baseline (M10's audit, sentence 5).
-
-\bigskip
-
-\small Eligibility is necessary, not sufficient: each comparison still needs its parallel-trends argument.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Two Ways to Aggregate}
-
-Three group-time effects; Dana wants one or two numbers.
-
-\begin{center}
-\small
-\begin{tabular}{p{3.9cm}lp{3.3cm}}
-\toprule
-\textbf{Aggregation} & \textbf{On the three stores} & \textbf{Answers} \\
-\midrule
-By \textbf{event time}: average $\text{ATT}(g, g{+}e)$ over cohorts & $e = 0$: $\tfrac{1}{2}(8 + 8) = 8$; \; $e = 1$: $16$ & how does it evolve after adoption? \\[0.4em]
-\textbf{Overall}: average over all treated store-weeks & $\tfrac{1}{3}(8 + 16 + 8) = 10.7$ & what did it do, on average, so far? \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\medskip
-\pause
-
-The overall average depends on how long each cohort has been treated: with 52 post-weeks for cohort 1 and 26 for cohort 2 it leans toward the mature effect --- a fact about the panel, not the assistant.
-
-\medskip
-
-\textbf{For a rollout decision the event-time path is the object.} Dana's remaining stores start at $e = 0$; she needs the path and the break-even crossing.
-
-\smallskip
-\small TWFE's $8$ is neither aggregation: it is the event-time average with a contaminated comparison mixed in.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Event Studies}
-
-Plot the event-time aggregates $\text{ATT}(e)$ for $e = 0, 1, 2, \dots$ --- and, for $e < 0$, the same contrast for periods \emph{before} adoption.
-
-\begin{center}
-\begin{tikzpicture}[scale=0.6]
-\draw[-{Stealth}] (-4.5,0) -- (6,0) node[right, font=\scriptsize] {event time $e$};
-\draw[-{Stealth}] (0,-1.2) -- (0,3.2) node[above, font=\scriptsize] {$\text{ATT}(e)$};
-\draw[dashed, gray] (-4.5,2.2) -- (6,2.2); \node[font=\scriptsize, gray, anchor=west] at (-4.4,2.5) {break-even};
-\foreach \x/\y in {-4/0.1,-3/-0.15,-2/0.1} {\fill (\x,\y) circle (2pt); \draw (\x,\y-0.4) -- (\x,\y+0.4);}
-\draw (-1,0) circle (2pt); \node[font=\tiny, anchor=south] at (-1.3,0.45) {base: fixed at 0};
-\foreach \x/\y in {0/0.9,1/1.6,2/2.1,3/2.5,4/2.7,5/2.8} {\fill[sbgreen] (\x,\y) circle (2pt); \draw[sbgreen] (\x,\y-0.4) -- (\x,\y+0.4);}
-\draw[dotted] (-0.5,-1.2) -- (-0.5,3.2);
-\node[font=\scriptsize] at (-2.2,-0.9) {pre-adoption: should be $\approx 0$};
-\node[font=\scriptsize, sbgreen] at (3.3,0.6) {post-adoption path};
-\end{tikzpicture}\\
-{\scriptsize schematic --- replace with the sim's event-study figure. Bars: pointwise 95\%; the base period has none.}
-\end{center}
-
-\pause
-\begin{itemize}\small
-    \item Pre-period coefficients near zero: the \textbf{parallel-trends check} of M10, one period at a time.
-    \item The post-period path is Dana's object: where it crosses break-even, and whether it keeps rising.
-    \item Built from clean $2\times2$s, it contains no already-treated comparison. The TWFE event study does, and can show spurious pre-trends.
-\end{itemize}
-\end{frame}
-
-% ====================================================================
-% [RELEASE R3 — the cohort panel; keep separate from the flagship (R4)]
-\begin{frame}{The Cohort Panel}
-
-\begin{center}
-\small
-\begin{tabular}{lrrr}
-\toprule
-& \textbf{Stores} & \textbf{Adoption week} & \textbf{Post-weeks in the panel} \\
-\midrule
-Cohort 1 & 30 & 53 & 52 \\
-Cohort 2 & 30 & 79 & 26 \\
-Never treated & 59 & --- & --- \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\smallskip
-\small The flagship is held out of this panel. It gets its own hour.
-
-\bigskip
-\pause
-
-\textbf{Predict before you look.} In pairs, write down three numbers, in \textyen 000 per store-week:
-
-\begin{enumerate}
-    \item the static TWFE coefficient on the cohort panel
-    \item the event-time average at $e = 0$, cohorts against never-treated stores
-    \item the event-time average at $e = 12$
-\end{enumerate}
-
-\bigskip
-\begin{center}\small Commit before the next slide.\end{center}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{The Cohort Evidence}
-
-\begin{center}
-\small
-\begin{tabular}{lr}
-\toprule
-\textbf{Estimate} & \textbf{\textyen 000 / store-week} \\
-\midrule
-Static TWFE, cohort panel & \NUM{6.1}{sim v1: TWFE, cohorts + never, weeks 1--104} \\
-Share of TWFE weight on already-treated comparisons & \NUM{22\%}{sim v1: Bacon share on later-vs-earlier 2x2s} \\
-\midrule
-$\text{ATT}(e)$ at $e = 0$ \;/\; $e = 4$ \;/\; $e = 12$ & \NUM{7.4}{sim v1: CS aggregate, never-treated control, e=0} \;/\; \NUM{10.9}{sim v1: CS e=4} \;/\; \NUM{13.6}{sim v1: CS e=12} \\
-Largest pre-period coefficient, $e \in [-8, -1]$ & \NUM{0.6}{sim v1: max abs pre-period CS coefficient} \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\pause
-
-\begin{itemize}\small
-    \item Pre-periods are flat: the never-treated stores are a credible control \emph{on trends}.
-    \item The effect crosses \textyen 10{,}000 within the first month and plateaus by month six.
-    \item TWFE sits below break-even: a fifth of its weight is on contaminated comparisons.
-\end{itemize}
-\vspace{1.0em}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Who Adopted First?}
-
-Parallel trends is a claim about \textbf{who was chosen when}. From the case:
-
-\begin{center}
-\small
-\begin{tabular}{p{6.2cm}p{6.6cm}}
-\toprule
-\textbf{The case says} & \textbf{What it buys, and what it does not} \\
-\midrule
-``Cohorts were assigned by region, in the order the regional managers signed off.'' & Adoption timing is not a store's own choice --- but regions may differ in trend. \\[0.5em]
-``No store was moved between cohorts after the schedule was set.'' & Timing did not respond to a store's recent results. \\[0.5em]
-``The never-treated stores are the ones whose regions have not yet signed off.'' & Their trends can be checked in the pre-period. Their \emph{levels} do not matter. \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-\pause
-
-The flat pre-period coefficients support the second sentence. Nothing in the panel can rule out that the last regions to sign off are also the ones whose sales were about to turn. The M10 trend-sensitivity band is how you \textbf{price} that.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Learning, or Version 2?}
-
-The effect grows with event time. Two stories fit:
-
-\begin{center}
-\small
-\begin{tabular}{p{3.6cm}p{4.4cm}p{4.4cm}}
-\toprule
-& \textbf{Learning} & \textbf{Version 2} \\
-\midrule
-Runs on which clock? & event time: weeks since going live & calendar time: week 66 \\
-Cohort 1 & rises smoothly after week 53 & steps up at week 66 ($e = 13$) \\
-Cohort 2 & the same path as cohort 1 & starts higher: on version 2 from $e = 0$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-
-\textbf{Where to look:} $\text{ATT}(g, t)$ by \emph{calendar} week, cohort by cohort. Averaging cohorts at each event time mixes the two versions.
-
-\bigskip
-
-\small The cohorts also differ by region, so the two stories cannot be fully separated. Say so. And note what version 2 does \emph{not} break: the clean comparisons with never-treated stores --- the upgrade is part of ``the assistant''. What it questions is whether the treatment was one thing over time (M1).
-\end{frame}
-
-% ====================================================================
-\section{Estimation: The Flagship}
-% ====================================================================
-
-% [RELEASE R4 — the flagship's series and the donor pool; keep separate from R3]
+% [RELEASE R1: the flagship and the three candidate controls; hold back the next frame until it is attempted]
 \begin{frame}{One Store, Two Years Ahead}
 
-The flagship --- the vendor's co-development store, with an engineer on site and a custom-tuned assistant: a different version of the treatment --- went live in week 20, thirty-three weeks before anyone else, and has \NUM{84}{case04-staffing: flagship post-adoption weeks} post-adoption weeks.
+It is \textbf{week 104}. Meeting 10 confirmed cohort 1: against the 89 stores not yet on it, the Store Assistant added \textyen 11{,}000 of sales a store-week (SE 1{,}220). On Dana's desk: extend it to the \textbf{59 stores} still without it, at \textyen 2{,}500 per store-week. At a 25\% margin the break-even lift is $2{,}500/0.25 =$ \textyen 10{,}000 a store-week.
 
-\smallskip
+\medskip
 
-Its before/after difference is $+$\textyen \NUM{18{,}700}{sim staffing-panel v1: flagship raw before/after mean difference} per week. Dana's question: \emph{how much of that is the assistant?}
+One more piece of evidence. The \textbf{flagship} went live in \textbf{week 20}, alone, 33 weeks before cohort 1, and has 84 weeks live. It was the vendor's \textbf{co-development store}: a vendor engineer worked on site for its first six months, and the assistant was tuned on the flagship's own catalogue and customers' questions.
 
-\smallskip
-\pause
+\medskip
+
+Its after-minus-before difference is $+$\textyen 18{,}700 a week. \textbf{How much of that is the assistant?}
+
+\medskip
 
 A $2 \times 2$ needs a control. Which store?
+\begin{itemize}
+  \item the chain's other large-format store, in a different city;
+  \item the average of the 59 never-treated stores, a different format with a different trend;
+  \item a weighted average of never-treated stores, weighted so that it tracked the flagship before week 20.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{One Treated Unit}
+
+Unit $1$, the flagship, is treated after period $T_0 = 19$; the \textbf{donor pool} is units $j = 2, \dots, J+1$, here the $J = 59$ never-treated stores. In adoption-date notation the target is
+\[
+\tau_t = Y_{1t}(T_0 + 1) - Y_{1t}(\infty) = Y_{1t}(20) - Y_{1t}(\infty), \qquad t > T_0,
+\]
+where $Y_{1t}(20) = Y_{1t}$ is observed and $Y_{1t}(\infty)$ must be constructed.
+
+\medskip
 
 \begin{itemize}
-    \item The chain's other large-format store? Different city.
-    \item The average of all never-treated stores? A different format, a different trend.
-    \item \textbf{A weighted average of never-treated stores}, weighted so that it tracked the flagship \emph{before} adoption?
+  \item \textbf{After minus before} (\textyen 18{,}700) keeps whatever the flagship's sales would have done anyway over two years.
+  \item \textbf{The other large-format store} faces another city's shocks and trend.
+  \item \textbf{The average donor} is a poor counterfactual for a unit unlike any donor: DiD against it carries the difference in trend into the estimate.
+  \item \textbf{Picking donors by hand} invites picking the ones that flatter the result.
 \end{itemize}
 
-\smallskip
+\medskip
 
-The third is \textbf{synthetic control}: the M10 idea --- borrow the trend --- with the control group chosen by the data.
-
+\textbf{What was treated?} The assistant, plus an engineer on site, plus tuning on the flagship's own data: not the version the 59 stores would get. And the flagship was chosen first. Whatever its effect is, it is the effect of a different treatment, in a store picked for it.
 \end{frame}
 
 % ====================================================================
-\begin{frame}[shrink=9]{Synthetic Control}
+\begin{frame}{The Estimator}
 
-Treated unit $1$, adopts at $T_0$. Donor pool $j = 2, \dots, J{+}1$ of never-treated units.
+\begin{definition*}{1.1}{Synthetic control}
+Choose weights $w = (w_2, \dots, w_{J+1})$ to minimise $\sum_{t=1}^{T_0}\big(Y_{1t} - \sum_j w_jY_{jt}\big)^2$ subject to $w_j \ge 0$ and
+$\sum_j w_j = 1$. The synthetic control is $\hat Y_{1t}(\infty) = \sum_j w_jY_{jt}$, and $\hatt_t = Y_{1t} - \hat Y_{1t}(\infty)$ for $t > T_0$.
+\end{definition*}
 
-\begin{block}{The estimator (Abadie, Diamond and Hainmueller 2010)}
-Choose weights $w_j \geq 0$, $\sum_j w_j = 1$, to minimise the pre-period gap
-\[
-\sum_{t \leq T_0} \Bigl( Y_{1t} - \sum_j w_j Y_{jt} \Bigr)^{2},
-\]
-then estimate the effect in each post-period as $\;\widehat\tau_t = Y_{1t} - \sum_j w_j\, Y_{jt}$.
-\end{block}
+\medskip
 
-\pause
-Three things the constraints buy:
-\begin{itemize}\small
-    \item \textbf{Non-negative, summing to one:} the synthetic store lives inside the donors' range. No extrapolation.
-    \item \textbf{Sparse:} most weights come out zero. You can name the stores the comparison rests on.
-    \item \textbf{Pre-period fit is the credential.} A synthetic store that did not track the real one before adoption has no claim to track it after.
+\begin{itemize}
+  \item The comparison is built by a \textbf{rule fixed in advance}: track the flagship over weeks 1 to 19. No one picks the stores.
+  \item Pre-treatment covariates (floor area, catchment income) can be matched along with pre-period sales.
+  \item The weights are chosen on the pre-period only; the post-period enters only through $\hatt_t$.
+  \item One estimate per post-period week, $\hatt_{20}, \hatt_{21}, \dots$, usually averaged over the weeks of interest.
 \end{itemize}
-
-\scriptsize \textbf{Design first:} fix the donor pool, the fitting weeks and the criterion before looking at week 20 onwards. Then test the frozen weights on held-out pre-weeks: fit on weeks 1--14, check 15--19.
 \end{frame}
 
 % ====================================================================
-% [RELEASE R5 — three-donor worksheet; answer on the next frame]
+% [RELEASE R2: the three-donor table; tasks 1-2 are answered on the next frame, tasks 3-4 (leave-one-out) on "Leave-One-Out"]
 \begin{frame}{Three Donors, by Hand}
 
-Weekly sales in \textyen 000. The flagship adopts after week 3.
+Weekly sales in \textyen 000. In this small version the flagship goes live after week 3, so $T_0 = 3$.
 
 \begin{center}
 \begin{tabular}{lrrrr}
 \toprule
-& \textbf{Week 1} & \textbf{Week 2} & \textbf{Week 3} & \textbf{Week 4 (post)} \\
+& \textbf{Week 1} & \textbf{Week 2} & \textbf{Week 3} & \textbf{Week 4 (live)} \\
 \midrule
 Flagship & 100 & 110 & 120 & \textbf{141} \\
 Donor A  &  90 & 100 & 110 & 118 \\
@@ -713,181 +205,387 @@ Donor C  & 120 & 140 & 160 & 165 \\
 
 \bigskip
 
-\textbf{In pairs:}
+Find non-negative weights summing to one that reproduce the flagship's weeks 1 to 3 exactly. What is the week-4 effect?
 
-\begin{enumerate}
-    \item Find non-negative weights summing to one that reproduce the flagship's three pre-period values \emph{exactly}.
-    \item Use them to compute the week-4 effect.
-    \item Now remove donor B from the pool. What is the best you can do, and what is the effect?
-\end{enumerate}
+\medskip
+
+\small Hint: look at how fast each store grows before week 4.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{The Synthetic Flagship}
 
-$\tfrac{1}{2}\text{A} + \tfrac{1}{2}\text{B}$ gives $(100, 110, 120)$: an exact pre-period fit. In week 4 it gives $\tfrac{1}{2}(118) + \tfrac{1}{2}(138) = 128$.
-
+\begin{columns}[T]
+\begin{column}{0.50\textwidth}
+Before week 4, A and B grow by 10 a week, C by 20, the flagship by 10.
+\begin{itemize}
+  \item With weights summing to one, the synthetic store grows by $10 + 10\,w_C$ a week, so $w_C = 0$.
+  \item Week 1: $90\,w_A + 110\,(1 - w_A) = 100$ gives $w_A = w_B = \tfrac12$.
+\end{itemize}
+$\tfrac12 A + \tfrac12 B = (100, 110, 120)$: an exact pre-period fit. In week 4 it gives $\tfrac12(118) + \tfrac12(138) = 128$, so
 \[
-\widehat\tau_4 = 141 - 128 = \textcolor{sbgreen}{13}
+\hatt_4 = 141 - 128 = \textcolor{sbgreen}{13}\text{, or \textyen 13{,}000 of sales.}
 \]
+\end{column}
+\begin{column}{0.47\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.4cm, height=4.8cm, xlabel={week}, ylabel={sales, \textyen 000}, xmin=0.8, xmax=4.2, ymin=85, ymax=190, ytick={100,120,140,160},
+  xtick={1,2,3,4}, axis lines=left, tick label style={font=\scriptsize}, label style={font=\scriptsize},
+  legend cell align=left, legend style={draw=none, fill=none, font=\tiny, row sep=-3pt, at={(0.02,1.0)}, anchor=north west}]
+\addplot[thick, sbgreen, mark=*, mark size=1.3pt] coordinates {(1,100) (2,110) (3,120) (4,141)};
+\addplot[thick, dashed, noteblue, mark=square*, mark size=1.1pt] coordinates {(1,100) (2,110) (3,120) (4,128)};
+\addplot[thin, extgrey] coordinates {(1,90) (2,100) (3,110) (4,118)};
+\addplot[thin, extgrey, densely dotted] coordinates {(1,110) (2,120) (3,130) (4,138)};
+\addplot[thin, extgrey, dashdotted] coordinates {(1,120) (2,140) (3,160) (4,165)};
+\draw[extgrey] (axis cs:3.5,85) -- (axis cs:3.5,190);
+\legend{flagship, synthetic ($\tfrac12$A $+$ $\tfrac12$B), donor A, donor B, donor C}
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\end{columns}
 
-\bigskip
-\pause
+\smallskip
 
-\textbf{Without donor B.} The best convex fit of A and C is $0.76\,\text{A} + 0.24\,\text{C}$:
+The synthetic flagship is \textbf{half A and half B}: two named stores the comparison rests on.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Interpolation, Not Extrapolation}
+
+Drop the constraints, as a regression of the flagship on the donors would. For every number $s$, the weights $w = (\tfrac12 - 5s,\ \tfrac12 + 3s,\ s)$ on (A, B, C) reproduce weeks 1 to 3 \textbf{exactly}:
+
+\begin{center}
+\small
+\begin{tabular}{rrrrrrr}
+\toprule
+$s$ & $w_A$ & $w_B$ & $w_C$ & $\sum_j w_j$ & \textbf{Synthetic, week 4} & $\hatt_4$ \\
+\midrule
+$-0.5$ & 3 & $-1$ & $-0.5$ & 1.5 & 133.5 & 7.5 \\
+\rowcolor{greentint} 0 & 0.5 & 0.5 & 0 & 1 & 128 & 13 \\
+0.5 & $-2$ & 2 & 0.5 & 0.5 & 122.5 & 18.5 \\
+1 & $-4.5$ & 3.5 & 1 & 0 & 117 & 24 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The week-4 effect is $13 + 11s$: \textbf{the same perfect pre-period fit supports any answer}.
+
+\medskip
+
+\begin{itemize}
+  \item Non-negative weights summing to one make the synthetic store an \textbf{interpolation}: a point inside the donors' range. Here only $s = 0$ qualifies.
+  \item Unconstrained weights fit the pre-period with combinations that have no real-world analogue (``three A stores minus one B store minus half a C store'') and behave wildly afterwards.
+  \item The constraints also make the solution \textbf{sparse and explainable}: ``half A, half B''.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Why a Close Pre-Period Fit Is Evidence}
+
+\begin{result}{1.2}{The factor-model rationale}
+Suppose $Y_{jt}(\infty) = \delta_t + \lambda_t^\top\mu_j + \varepsilon_{jt}$ with common time effects $\delta_t$, unit characteristics $\mu_j$ whose influence
+$\lambda_t$ varies over time, and mean-zero noise. If weights match the unit characteristics, $\sum_j w_j\mu_j = \mu_1$, then
+$\E[\hat Y_{1t}(\infty)] = \E[Y_{1t}(\infty)]$ for every $t$, including $t > T_0$.
+\end{result}
+
+\textbf{In the three-donor example}, weeks 1 to 3 fit $\delta_t = 0$, $\lambda_t = (1, t)$, and $\mu_j = $ (level, weekly growth):
+
+\begin{center}
+\small
+\begin{tabular}{lcccc}
+\toprule
+& \textbf{A} & \textbf{B} & \textbf{C} & \textbf{Flagship} \\
+\midrule
+$\mu_j$ & $(80, 10)$ & $(100, 10)$ & $(100, 20)$ & $(90, 10)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+$\tfrac12\mu_A + \tfrac12\mu_B = (90, 10) = \mu_1$: matching the \textbf{path} matched the \textbf{characteristics}. The $\mu_j$ are never observed; a close fit over a period in which $\lambda_t$ moves is how we learn that they match.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{A Long Pre-Period, Not Just a Close One}
+
+\textbf{A short fit is easy and uninformative.} Fit on week 1 alone: two convex combinations both match the flagship's 100.
+
+\begin{center}
+\small
+\begin{tabular}{lrrrc}
+\toprule
+& \textbf{Week 1} & \textbf{Week 2} & \textbf{Week 3} & $\sum_j w_j\mu_j$ \\
+\midrule
+Flagship & 100 & 110 & 120 & $(90, 10)$ \\
+$\tfrac12 A + \tfrac12 B$ & 100 & 110 & 120 & $(90, 10)$ \\
+$\tfrac23 A + \tfrac13 C$ & 100 & 113.3 & 126.7 & $(86.7, 13.3)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+One week cannot tell them apart. By week 3 the second is off by 6.7, because it matched the level of one week, not the characteristics. Weights can fit noise the same way.
+
+\medskip
+
+\begin{itemize}
+  \item If a weighted donor combination tracks the treated unit over a \textbf{long} pre-period, during which $\lambda_t$ moves, it must nearly match $\mu_1$, and so keeps tracking it afterwards.
+  \item The real flagship has 19 pre-period weeks and 59 donors.
+  \item \textbf{DiD is the special case $\lambda_t$ constant}: then any level difference stays fixed and differencing removes it. Here the second characteristic, growth, has an influence $t$ that rises every week.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+% [RELEASE R3: design freeze, placebos and the local-boom check; answered on this frame, "Rank 1 of 60" and "Limits"]
+\begin{frame}{Design Before the Post-Period}
+
+As in Meeting 7, the choices that shape the estimate can be fixed before post-period outcomes are seen.
+
+\begin{enumerate}
+  \item \textbf{Donor pool.} Never-treated stores similar in the drivers of sales; exclude any store affected by the treatment (spillovers) or hit by its own large shock (a refit, a closure, a new competitor).
+  \item \textbf{Fitting window and predictors.} Weeks 1 to 19, weekly sales, and any covariates, fixed in writing.
+  \item \textbf{Held-out check.} Fit on weeks 1 to 14 and check that the frozen synthetic store predicts weeks 15 to 19. If it does not, it has no claim on week 20 onwards.
+  \item Only then open weeks 20 onwards.
+\end{enumerate}
+
+\medskip
+
+\textbf{In the three-donor example}, fit on weeks 1 and 2 only: growth of 10 again forces $w_C = 0$ and $w_A = w_B = \tfrac12$, which predicts week 3 as $\tfrac12(110) + \tfrac12(130) = 120$. The held-out gap is 0.
+
+\medskip
+
+Weights tuned after seeing the post-period gap are fitted to it. Without the constraints, three donors already gave exact pre-period fits with any effect from 7.5 to 24.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Inference by Placebo}
+
+There is no standard error in the usual sense: one treated unit, one series.
+
+\begin{result}{1.3}{When a placebo rank is a $p$-value}
+Apply the method to every unit in turn as if it were treated (\emph{in-space placebos}) and compute each unit's ratio
+$r_j = \text{RMSPE}^{\text{post}}_j/\text{RMSPE}^{\text{pre}}_j$ of root mean squared gaps after and before $T_0$. If the treated unit was chosen at
+random among the $J+1$ units, and there is no effect, then the probability that its ratio ranks first is $1/(J+1)$, so rank $k$ gives an exact
+$p$-value of $k/(J+1)$.
+\end{result}
+
+\medskip
+
+\begin{itemize}
+  \item Each donor in turn plays the flagship, gets its own synthetic store from the other donors, and has its own ratio.
+  \item The ratio discounts placebo stores whose pre-period fit was poor: a big post-period gap means little if the pre-period gap was big too.
+  \item With $J$ donors the smallest attainable $p$-value is $1/(J+1)$: $1/4 = 0.25$ with three donors, $1/60 = 0.017$ with 59.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Rank 1 of 60: A $p$-Value?}
+
+Treated as if live in week 20, each of the 59 donors gets its own synthetic control. The flagship's ratio ranks \textbf{first of 60}. \textbf{Is that $p = 1/60 = 0.017$?} Only if the flagship had been as likely as any donor to be the treated store: under no effect and a random choice, the 60 ratios are exchangeable, so each rank is equally likely for it.
+
+\medskip
+
+\begin{itemize}
+  \item The flagship was \textbf{chosen first}, as the co-development store, almost certainly because it was expected to do well. Exchangeability fails.
+  \item The rank is then a \textbf{descriptive} measure of how unusual its gap is, not a $p$-value.
+  \item A near-perfect pre-period fit makes the ratio very large or undefined: in the three-donor example the pre-period RMSPE is 0, and $13/0$ does not exist.
+\end{itemize}
+
+\medskip
+
+\textbf{In-time placebo.} Move the go-live date back to week 10 and refit on weeks 1 to 9. Nothing happened in weeks 10 to 19, so the synthetic store should track the flagship there with gaps near zero. A clear gap means the method finds ``effects'' where there are none, and the week-20 gap cannot be trusted either.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Leave-One-Out}
+
+Refit without each donor in turn. In the three-donor example:
+
+\begin{center}
+\small
+\begin{tabular}{lllrl}
+\toprule
+\textbf{Pool} & \textbf{Weights} & \textbf{Pre-period gaps} & $\hatt_4$ & \\
+\midrule
+A, B, C & $\tfrac12 A + \tfrac12 B$ & $0,\ 0,\ 0$ & 13.0 & \\
+without C & $\tfrac12 A + \tfrac12 B$ & $0,\ 0,\ 0$ & 13.0 & C carried no weight \\
+without B & $0.76\,A + 0.24\,C$ & $2.8,\ 0.4,\ -2.0$ & 11.7 & pre-period RMSPE 2.0 \\
+without A & B alone & $-10,\ -10,\ -10$ & 3.0 & \textcolor{warnred}{fit fails: not reportable} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\small
+\begin{itemize}
+  \item Without B, the best weight on A is $\sum_t (C_t - F_t)(C_t - A_t) / \sum_t (C_t - A_t)^2 = 3{,}800/5{,}000 = 0.76$: synthetic $97.2, 109.6, 122.0$, then $129.3$ in week 4.
+  \item Without A, no mix of B and C gets below 110 in week 1; the best is B alone.
+\end{itemize}
+
+\normalsize
+\textbf{Report the range over refits whose fit is still acceptable: $[11.7, 13.0]$.} A refit that cannot match the pre-period is evidence about the donor pool, not about the effect. If the estimate depends on one donor, argue for that donor directly.
+
+\textbf{The real flagship}, 59 donors: weight on 4 stores; $\hatt =$ \textyen 15{,}900 a week; leave-one-out range \textyen 13{,}100 to \textyen 17{,}400.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Limits}
+
+\begin{itemize}
+  \item \textbf{Extreme treated units.} If the treated unit is the largest or fastest-growing, no convex combination reaches it; the pre-period gap is large and the method should not be used as is. Flagship units are exactly this case. Without donor A, the toy flagship is below every donor, and the ``effect'' is 3 with gaps of 10 every week.
+  \item \textbf{Spillovers} to donors (customers lost to the flagship) bias the gap upwards. Exclude donors that share a catchment with it.
+  \item \textbf{Anticipation.} Date $T_0$ to the announcement or the start of training if behaviour changed then. If associates trained, or the engineer arrived, before week 20, the pre-period ends earlier.
+  \item \textbf{Local shocks} coinciding with treatment look like effects.
+\end{itemize}
+
+\medskip
+
+\textbf{A local-boom check.} Four small never-treated stores in the flagship's city share no staff or customers with it. Compare them with the other never-treated stores before and after week 20: they share any local shock but not the treatment, so a positive gap there is a local boom, not the assistant, and a reason to investigate.
+\end{frame}
+
+% ====================================================================
+% [RELEASE R4: synthetic control or DiD; answered on this frame and the next]
+\begin{frame}{Synthetic Control or DiD?}
+
+Dana's analyst prefers DiD: the flagship against the \textbf{equal-weighted} donors, weeks 1 to 3 against week 4.
+
 \begin{center}
 \small
 \begin{tabular}{lrrrr}
 \toprule
-& Week 1 & Week 2 & Week 3 & Week 4 \\
+& \textbf{Pre mean} & \textbf{Week 4} & \textbf{Change} & \textbf{Estimate} \\
 \midrule
-Synthetic ($0.76$A $+$ $0.24$C) & 97.2 & 109.6 & 122.0 & 129.3 \\
-Gap to flagship & $2.8$ & $0.4$ & $-2.0$ & $\widehat\tau_4 = 11.7$ \\
+Flagship & 110 & 141 & 31 & \\
+Equal weights on A, B, C & 120 & 140.3 & 20.3 & DiD $= 10.7$ \\
+Equal weights on A, B & 110 & 128 & 18 & DiD $= 13$ \\
+Synthetic control, $\tfrac12 A + \tfrac12 B$ & 110 & 128 & & $\hatt_4 = 13$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\smallskip
-\small (Weight on A: $\sum_t (C_t - F_t)(C_t - A_t) / \sum_t (C_t - A_t)^2 = 3800/5000 = 0.76$.)
+\begin{itemize}
+  \item With A, B and C, the comparison's pre-period path is $106.7, 120, 133.3$: gaps to the flagship of $-6.7, -10.0, -13.3$, widening by 3.3 a week. C grows twice as fast; DiD carries that difference in trend into the estimate.
+  \item With A and B only, the equal-weighted average tracks the flagship exactly, so the level shift DiD allows is zero and the two agree.
+\end{itemize}
 
-\bigskip
-\pause
-
-\textbf{Without donor A.} No convex combination of B and C gets below $110$ in week 1. The best is B alone: pre-period gaps of $10$ every week, and $\widehat\tau_4 = 141 - 138 = 3$. \textcolor{warnred}{Not a usable fit.}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Donor Sensitivity}
+\begin{frame}{Two Weighted Comparisons}
 
-The estimate rests on named stores. So ask what happens when each is removed.
+\begin{columns}[c]
+\begin{column}{0.50\textwidth}
+Both methods compare the flagship with a weighted average of donors. They differ in what they choose and what they allow.
+
+\medskip
+
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+& \textbf{Weights} & \textbf{Level gap} \\
+\midrule
+DiD & equal, fixed & allowed \\
+Synthetic control & chosen to fit & none \\
+\bottomrule
+\end{tabular}
+\end{column}
+\begin{column}{0.47\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=5.8cm, height=4.4cm, xlabel={week}, ylabel={sales, \textyen 000}, xmin=0.8, xmax=4.2, ymin=95, ymax=175, ytick={100,120,140},
+  xtick={1,2,3,4}, axis lines=left, tick label style={font=\scriptsize}, label style={font=\scriptsize},
+  legend cell align=left, legend style={draw=none, fill=none, font=\tiny, row sep=-3pt, at={(0.02,1.0)}, anchor=north west}]
+\addplot[thick, sbgreen, mark=*, mark size=1.3pt] coordinates {(1,100) (2,110) (3,120) (4,141)};
+\addplot[thick, dashed, noteblue, mark=square*, mark size=1.1pt] coordinates {(1,100) (2,110) (3,120) (4,128)};
+\addplot[thick, warnred, mark=triangle*, mark size=1.3pt] coordinates {(1,106.667) (2,120) (3,133.333) (4,140.333)};
+\draw[extgrey] (axis cs:3.5,95) -- (axis cs:3.5,175);
+\legend{flagship, synthetic control, {equal weights, A, B, C}}
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\end{columns}
+
+\medskip
+
+\begin{itemize}
+  \item When the treated unit's path is parallel to the average donor's they agree; when it is not, DiD carries the difference into the estimate and synthetic control corrects it.
+  \item Synthetic control matches levels, so it needs the treated unit inside the donors' range; DiD does not, but needs parallel trends.
+  \item Synthetic DiD (weights chosen, and a level shift allowed) and matrix completion sit between the two and handle several treated units.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Five Synthetic-Control Errors}
+
+\begin{pitfall}{synthetic-control errors}
+Choosing donors after seeing the post-period; a short pre-period; a flagship outside the donors' range; donors that receive spillovers; calling a
+placebo rank a $p$-value when the treated unit was chosen for a reason.
+\end{pitfall}
+
+\bigskip
+
+Each one has a number today:
+\begin{itemize}
+  \item exact pre-period fits from three donors give any week-4 effect from 7.5 to 24: choose after looking, and you choose the answer;
+  \item fitted on week 1 alone, $\tfrac12 A + \tfrac12 B$ and $\tfrac23 A + \tfrac13 C$ fit equally well and are 6.7 apart by week 3;
+  \item without donor A the flagship is outside the range, and the ``effect'' of 3 comes with gaps of 10 in every pre-period week;
+  \item a donor that loses customers to the flagship pushes the gap up;
+  \item rank 1 of 60 is $p = 1/60 = 0.017$ only if the flagship was as likely as any donor to go first, and it was chosen first.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+% [RELEASE R5: the memo; Dana's table is shown first, "The Recommendation" is held back until the memo is attempted]
+\begin{frame}{Dana's Table}
+
+Lift: sales in \textyen 000 per store-week; break-even 10. Margin: $0.25 \times$ lift $-$ \textyen 2{,}500, in \textyen{} per store-week.
 
 \begin{center}
 \small
-\begin{tabular}{lrrl}
+\begin{tabular}{llrr}
 \toprule
-\textbf{Donor pool} & \textbf{Pre-period fit} & $\widehat\tau_4$ & \\
+\textbf{Source} & \textbf{What it estimates} & \textbf{Lift} & \textbf{Margin} \\
 \midrule
-A, B, C & exact & 13.0 & \\
-drop C  & exact & 13.0 & C carried no weight \\
-drop B  & gaps up to 2.8 & 11.7 & modest change, fit still acceptable \\
-drop A  & gaps of 10 & 3.0 & \textcolor{warnred}{fit fails; number not reportable} \\
+Flagship, after minus before & trend and effect, mixed & 18.7 & \textcolor{warnred}{not an effect} \\
+Flagship, synthetic control & one store, chosen first & 15.9 & $+$1{,}475 \\
+\quad leave-one-out range & & 13.1 to 17.4 & $+$775 to $+$1{,}850 \\
+Cohort 1, DiD (Meeting 10) & 30 stores, two quarters & 11.0 & $+$250 \\
+\quad first; second quarter & & 8.0; 14.0 & $-$500; $+$1{,}000 \\
 \bottomrule
 \end{tabular}
 \end{center}
-
-\pause
-\textbf{Two rules.} Report the \textbf{leave-one-out range} over refits whose pre-period fit is still acceptable --- here $[11.7, 13.0]$. A refit that cannot match the pre-period is not evidence about the effect; it is evidence that the donor pool is thin.
-
-\smallskip
-Real flagship, 59 donors: weight on \NUM{4}{sim v1: donors with SC weight above 0.05} stores; point estimate \NUM{15.9}{sim v1: SC post-period mean gap}; leave-one-out range \NUM{[13.1, 17.4]}{sim v1: leave-one-out SC effects, acceptable pre-RMSPE only}.
-\vspace{0.8em}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{What One Store Can and Cannot Tell You}
-
-\textbf{No standard error.} One treated unit; the ``sample'' is a single series. The interval you are used to does not exist here. What exists instead:
-
-\begin{itemize}\small
-    \item \textbf{In-place placebos.} Treat each donor as if adopted at week 20, fit its synthetic control, and compare post/pre gap ratios. If the flagship's is not among the most extreme, the gap is what the method produces by chance. On the real panel the flagship ranks \NUM{1}{sim v1: rank of flagship post/pre RMSPE ratio among 60 in-place placebos} of 60 --- a \emph{descriptive} ranking: it would be a $p$-value of $1/60$ only if the flagship had been as likely as any donor to go first.
-    \item \textbf{In-time placebos.} Move the adoption date earlier, refit, and check that no ``effect'' appears before week 20.
-    \item \textbf{A local-boom check.} The same comparison on never-treated stores in the flagship's own city, around week 20.
-\end{itemize}
-
-\pause
-\begin{alertblock}{And two things no placebo fixes}
-The flagship was chosen \emph{first}, almost certainly because it was expected to do well. And a shock that hit its format harder than the donors' would look exactly like an effect.
-\end{alertblock}
-
-\end{frame}
-
-% ====================================================================
-\section{The Recommendation}
-% ====================================================================
-
-\begin{frame}{Dana's Table}
-
-Two bodies of evidence, kept apart until now. In \textyen 000 per store-week; break-even $10$.
-
-\begin{center}
-\scriptsize
-\begin{tabular}{llrl}
-\toprule
-\textbf{Source} & \textbf{What it estimates} & \textbf{Lift} & \textbf{Reading} \\
-\midrule
-Cohort 1, raw before/after & trend + effect, mixed & \NUM{14.3}{sim v1: cohort-1 raw} & \textcolor{warnred}{not causal} \\
-TWFE, full panel & weighted mix incl.\ contaminated $2\times2$s & \NUM{6.1}{sim v1: TWFE} & \textcolor{warnred}{biased down} \\
-Group-time ATT, $e = 0$ & first week, clean controls & \NUM{7.4}{sim v1: CS e=0} & below break-even \\
-Group-time ATT, $e \geq 12$ & mature effect, both cohorts & \NUM{13.6}{sim v1: CS e=12} & \textcolor{sbgreen}{above} \\
-Flagship, synthetic control & one hand-picked store, 84 weeks & \NUM{15.9}{sim v1: SC gap} & \textcolor{sbgreen}{above; best case} \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\pause
-\small The cohorts say the assistant pays after a ramp of about a month. The flagship says a well-run store can beat the cohort average --- and is the only estimate with no interval. They agree on the \textbf{sign} and the \textbf{ramp}; they should not be pooled. The flagship is a ceiling, not a draw from the same population.
-\vspace{1.0em}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{The Cohort Recommendation}
-
-\begin{block}{To Dana}
-Roll the assistant out to the remaining stores. In \textbf{margin}, budget the first month at about $-$\textyen 650 per store-week ($0.25 \times$ \NUM{7.4}{sim v1: CS e=0} thousand $-$ 2{,}500) and a steady state of about $+$\textyen 900 per store-week ($0.25 \times$ \NUM{13.6}{sim v1: CS e=12} thousand $-$ 2{,}500).
-\end{block}
-
-\pause
-\textbf{Three sentences the memo must contain.}
-\begin{enumerate}\small
-    \item It rests on the never-treated stores tracking the cohorts' trends: a differential drift of \textyen \NUM{240}{(13.6 - 10)/15: sim CS e=12; 15 weeks from base g-3 to e=12} per store-week \emph{per week}, over the 15 weeks from base to $e = 12$, would erase the mature margin.
-    \item The remaining 59 stores are those whose regions signed off last. If sign-off tracked expected sales, the cohorts overstate what those stores will see.
-    \item The flagship: one store, chosen first, a vendor engineer on site, no interval --- a ceiling, not the forecast.
-\end{enumerate}
-\textbf{Do:} roll out the rest in two \textbf{random} halves, six months apart --- the next review is then identified by design.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Key Takeaways}
 
 \begin{itemize}
-    \item \spinestep{Estimand.} $\text{ATT}(g, t)$ and its event-time path: a rollout decision needs the path and its break-even crossing, not one average.
-    \item \spinestep{Identification.} An already-treated control subtracts the change in its own effect. Choose \emph{eligible} controls and base weeks from the calendar before computing anything. Parallel trends is still an assumption; randomising the order would make it design.
-    \item \spinestep{Estimation.} TWFE averages every $2\times2$ the panel offers, contaminated ones included. Estimate cohort-by-period effects with clean controls, then aggregate on purpose.
-    \item \textbf{Synthetic control is DiD with a data-chosen control group.} Freeze the donor design; its credential is the pre-period fit; its placebo rank is descriptive; it has no standard error.
-    \item \textbf{Keep flagship and cohort evidence distinct.} One bounds the upside; the other forecasts.
+  \item The cohort estimate has an interval: $11.0 \pm 1.96 \times 1.22$ gives $[8.6, 13.4]$, which includes the break-even; the second quarter, 14.0, clears it. The flagship has only a range.
+  \item The cohort had the treatment the 59 stores would get; the flagship had a different one, in a store picked first.
+  \item \textbf{The flagship bounds the upside; the cohort is the forecast.} Do not pool them.
 \end{itemize}
-
-\bigskip
-
-\textbf{Next:} the workshop. \quad \textbf{Then:} final slides and a 150-word abstract, 24 hours before M12.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Workshop: Cohort Contrasts Against the Truth}
+\begin{frame}{The Recommendation}
 
-\small Prediction and hand calculation without AI; AI allowed, with disclosure, in the implementation step.
-\normalsize
+\setbeamercolor{block title}{bg=sbgreen,fg=white}\setbeamercolor{block body}{bg=greentint,fg=black}
+\begin{block}{To Dana}
+Roll the assistant out to the remaining 59 stores. Budget about $+$\textyen 250 of margin a store-week over the first two quarters live ($0.25 \times 11{,}000 - 2{,}500$): $-$\textyen 500 in the first quarter, while staff learn it, and $+$\textyen 1{,}000 in the second. This assumes the 59 stores, whose regions signed off last, would see what cohort 1 saw. The flagship's \textyen 15{,}900 is one store, chosen first, with a vendor engineer on site and no interval: it bounds the upside of a different treatment and is not the forecast. Stagger the remaining rollout in two random halves six months apart, so that the next review has a clean comparison.
+\end{block}
 
-Simulated panel with known effects. Sixty minutes, scripted.
+\medskip
 
-\begin{center}
-\scriptsize
-\begin{tabular}{rlp{8.2cm}}
-\toprule
-\textbf{Min} & \textbf{Slot} & \textbf{Prompt} \\
-\midrule
-7  & Predict & TWFE vs event-time average at $e = 6$: which is larger, and why? \\
-10 & Hand calculation & Cohort 2 vs never-treated at $e = 0$; then cohort 2 vs \textbf{cohort 1} at the same $e$. \\
-5  & Demonstration & $\text{ATT}(g, t)$ for every $(g, t)$; the two aggregations. \\
-15 & Implement & Event study on clean controls; read off the break-even crossing. \\
-10 & \textbf{Perturbation} & Swap the never-treated control for the already-treated cohort; record $\Delta\,\text{ATT}(e)$ at $e = 0, 6, 12$. \\
-8  & \textbf{Comparison} & TWFE, event-time aggregate, overall aggregate --- against the true path in the simulation. \\
-5  & Interpret & One sentence: which number goes in Dana's memo, and why the other two do not. \\
-\bottomrule
-\end{tabular}
-\end{center}
+\begin{itemize}
+  \item \textbf{Margin, not sales.} Budgeting the flagship's lift would promise $+$\textyen 1{,}475 a store-week, almost six times the cohort's $+$\textyen 250.
+  \item \textbf{Why random halves.} Going live by sign-off order is what made both Meeting 10's comparison and the flagship's assumption-based. A random order makes the second half a comparison group by design.
+\end{itemize}
+\end{frame}
 
-\small \textbf{Consolidation (3 min):} the already-treated contrast is biased by the \emph{growth} of the control's own effect; TWFE inherits a share of that bias; the event-time aggregate on clean controls recovers the path.
+% ====================================================================
+\begin{frame}{Summary}
+
+\begin{itemize}
+  \item \spinestep{Estimand.} One treated unit's effect path, $\tau_t = Y_{1t}(T_0 + 1) - Y_{1t}(\infty)$ for $t > T_0$; $Y_{1t}(\infty)$ must be constructed.
+  \item \spinestep{Identification.} A factor model: weights that match the treated unit's characteristics track it after $T_0$ too. A close fit over a long pre-period, in which $\lambda_t$ moves, is the evidence that they match.
+  \item \spinestep{Estimation.} Non-negative weights summing to one, fitted on the pre-period: an interpolation inside the donors' range, sparse and explainable. Fix the donor pool, window and predictors, and check on held-out pre-weeks, before opening the post-period.
+  \item \spinestep{Inference.} No standard error. In-space placebos give a $p$-value of $k/(J+1)$ only if the treated unit was as likely as any donor to be treated; otherwise the rank is descriptive. Add in-time placebos and leave-one-out.
+  \item \textbf{Know the limits, and the alternative.} Extreme units, spillovers, anticipation and local shocks break it. DiD fixes equal weights and allows a level shift; synthetic control chooses weights and matches levels.
+\end{itemize}
 \end{frame}
 
 \end{document}

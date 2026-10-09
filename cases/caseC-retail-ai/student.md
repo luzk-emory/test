@@ -68,6 +68,7 @@ From Dana's rollout file:
 2. Which of the three goes against the break-even? Split each of the other two into that number plus something else, and name the something else.
 3. Write the estimand using potential outcomes $Y_{it}(g)$, where $g$ is the week a store goes live ($g = \infty$ if it never does). Then state the assumption that makes (c) that effect. For each rollout-file sentence, say what it supports, or what it puts at risk.
 4. Commit: why might cohort 1's region have signed off first?
+5. On the four cells, regress sales on store-group effects and the treatment indicator only, without period effects. What coefficient do you get, and which earlier number is it? What changes when period effects are added?
 
 ### Part M10-R3. Six quarters
 
@@ -86,29 +87,22 @@ Store-level changes (after minus before) have standard deviations of about **6**
 3. Suppose cohort 1's region drifts up by $\delta$ per quarter relative to the comparison, too slowly to see before going live. The DiD compares Q5–Q6 with Q3–Q4. What drift would erase the margin over break-even? Would the pre-period have shown it?
 4. Parallel in yuan or parallel in percent? Compute the effect both ways. Which scale do the pre-period gaps support?
 5. Convert both intervals from task 2 into **yuan of margin per store-week**. Does the store-level interval exclude a loss?
-6. On the four cells of Part R2, regress sales on store-group effects and the treatment indicator only, without period effects. What coefficient do you get, and which earlier number is it? What changes when period effects are added?
+6. Using the six quarters, compute the TWFE coefficient with store and quarter effects, and the event-study coefficients with Q4 as the base. Suppose each coefficient has SE 1.22 and the three pre-period coefficients are independent. Fit a linear drift to them by least squares: what drift can the pre-period rule out? Find $\delta^*$ for the four-cell DiD, for TWFE on six quarters, and for the Q6 coefficient.
 
-### Part M10-R4. The store-week panel
+### Part M10-R4. Store-weeks
 
-| | Stores | On the assistant |
-|---|---:|---|
-| Cohort 1 | 30 | from week 53 |
-| Cohort 2 | 30 | not before week 79; comparison today |
-| Never scheduled | 59 | comparison |
-| Flagship | 1 | held out |
-| Store-weeks, weeks 1–78 | 9,282 | |
+The panel has 119 stores × 78 weeks = 9,282 store-weeks. Suppose a store's weekly sales shocks, net of its own level and the chain's week, follow an AR(1) with autocorrelation 0.8.
 
-**Task. In pairs, predict and commit:**
-- the two-way fixed-effects (TWFE) estimate with store and week effects, weeks 1–78;
-- its standard error treating store-weeks as independent, and clustered by store;
-- the event-study coefficients for Q5 and Q6.
+**Tasks**
+1. A store's change $\Delta_i$ is its 26-week after-mean minus its 26-week before-mean. Compute $\mathrm{Var}(\Delta_i)$ relative to $\sigma^2(1/26 + 1/26)$, which is what independent weeks imply.
+2. By what factor is a standard error that treats store-weeks as independent too small? Using the store-level SE from Part R3, what would that SE be, and would its 95% interval clear the break-even?
 
 ### Part M10-R5. The analyst's draft
 
 Seven sentences from the draft memo. **In pairs:** for each, say what is wrong, or that nothing is.
 
-1. "Cohort 1 sales rose by ¥16,100 per store-week after going live."
-2. "On 9,282 store-weeks the effect is significant at $p < 0.001$ (SE 0.3)."
+1. "Cohort 1 sales rose by ¥15,000 per store-week after going live."
+2. "On 9,282 store-weeks the effect is significant at $p < 0.001$ (SE 0.47)."
 3. "We control for weekly staff hours, which differ across stores."
 4. "Stores that closed during the period were dropped."
 5. "The pre-period is weeks 1–52."
@@ -123,7 +117,7 @@ Then write Dana's memo in five sentences: the number, its interval, the assumpti
 
 ### Part M11-R1. One store, two years ahead
 
-It is now **week 104**. Meeting 10 confirmed cohort 1: against never-treated stores, the assistant added **¥12,400** a store-week (SE 1,200) in its first two quarters. On Dana's desk: extend it to the **59 stores** still without it, at ¥2,500 per store-week.
+It is now **week 104**. Meeting 10 confirmed cohort 1: against the 89 stores not yet on it, the assistant added **¥11,000** a store-week (SE 1,220) in its first two quarters. On Dana's desk: extend it to the **59 stores** still without it, at ¥2,500 per store-week.
 
 There is one more piece of evidence. The **flagship** store went live in **week 20**, alone, thirty-three weeks before anyone else, and has 84 weeks live. It was the vendor's **co-development store**. For its first six months a vendor engineer worked on site, and the vendor tuned the assistant on the flagship's own catalogue and customers' questions.
 
@@ -152,8 +146,6 @@ The flagship goes live after week 3.
 **Tasks. In pairs**
 1. Find non-negative weights summing to one that reproduce the flagship's three pre-period values exactly.
 2. Use them to estimate the week-4 effect.
-3. Remove donor B from the pool. What is the best you can do, and what is the effect? Then remove donor A instead.
-4. Which of these estimates would you report, and what range?
 
 ### Part M11-R3. Before the post-period, and after
 
@@ -162,6 +154,7 @@ The flagship goes live after week 3.
 2. Treated as if live in week 20, each of the 59 donors gets its own synthetic control. The flagship's post/pre gap ratio ranks 1st of 60. Is that a p-value of 1/60? What would have to be true for it to be one?
 3. The flagship's city also has four small never-treated stores that share no staff or customers with it. How would you use them to check whether a local demand boom, not the assistant, explains the flagship's rise? What result would worry you?
 4. Move the go-live date back to week 10 and refit on weeks 1–9. What should the synthetic store show in weeks 10–19, and what would it mean if it showed a gap?
+5. Return to the three donors of Part R2. Remove donor B from the pool. What is the best you can do, and what is the effect? Then remove donor A instead. Which of these estimates would you report, and what range?
 
 ### Part M11-R4. Synthetic control or DiD?
 

@@ -1,6 +1,12 @@
 % \documentclass[aspectratio=169, 11pt]{beamer}
 \documentclass[aspectratio=169, 11pt, handout]{beamer}
 
+% Meeting 3 lecture slides. Running case: Lin's coupon programme at a coffee chain (cases/caseA-coffee-chain,
+% Meeting 3 releases R1 to R3). The notes' worked example (FitLife) is deliberately not reproduced here.
+% Shared with notes.tex: estimands, assumptions, notation, the statement of each Result, the order of topics.
+% Block A follows notes Sections 1.1 to 1.4; block B follows Sections 1.5 and 1.6.
+% Every number is checked by shared/checks/slides03_check.py.
+
 % ── Theme ──
 \usetheme{Madrid}
 \usecolortheme{default}
@@ -22,38 +28,52 @@
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{colortbl}
-\usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 
-% ── Colors ──
-\definecolor{sbgreen}{HTML}{00704A}  % course accent
-\definecolor{warnred}{HTML}{CC0000}
+% ── Colours: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
+\definecolor{sbgreen}{HTML}{00704A}
 \definecolor{noteblue}{HTML}{2060A0}
+\definecolor{warnred}{HTML}{B42318}
+\definecolor{extgrey}{HTML}{6B7280}
+\definecolor{boxgrey}{HTML}{F3F5F8}
+\definecolor{bluetint}{HTML}{EEF3FA}
+\definecolor{greentint}{HTML}{EEF6F2}
+\definecolor{redtint}{HTML}{FCF1F0}
 
-% ── Commands ──
+% ── Notation: same macros as the notes (shared/coursenotes.sty, shared/notation.tex) ──
 \newcommand{\E}{\mathbb{E}}
-\newcommand{\Var}{\mathrm{Var}}
-\newcommand{\Cov}{\mathrm{Cov}}
-\newcommand{\SE}{\mathrm{SE}}
-\newcommand{\Prob}{\mathrm{Pr}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\SE}{\operatorname{SE}}
 \newcommand{\indep}{\perp\!\!\!\perp}
+\newcommand{\hatt}{\hat{\tau}}
+\newcommand{\ATE}{\text{ATE}}
+\newcommand{\ATT}{\text{ATT}}
+\newcommand{\ATU}{\text{ATU}}
 
-\usepackage{soul}
-\newcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\marginpar{\tiny #2}}
-% Beamer frames are typeset inside boxes, where \marginpar raises "Not in outer par mode"
-% and \marginparwidth is 4pt. Same marker; the provenance note goes to the frame footnote.
-\renewcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\footnote[frame]{\tiny #2}}
-% Compact footnote layout so several provenance notes fit under one frame.
-\setbeamertemplate{footnote}{\noindent\raggedright\hspace*{0.6em}\tiny\insertfootnotemark\,\insertfootnotetext\par}
+% ── Boxes: same number, title and wording as the notes; proofs stay in the notes ──
+\newenvironment{result}[2]{%
+  \setbeamercolor{block title}{bg=sbgreen,fg=white}\setbeamercolor{block body}{bg=greentint,fg=black}%
+  \begin{block}{Result #1 (#2)}}{\end{block}}
+\newenvironment{assumption}[2]{%
+  \setbeamercolor{block title}{bg=noteblue,fg=white}\setbeamercolor{block body}{bg=bluetint,fg=black}%
+  \begin{block}{Assumption #1 (#2)}}{\end{block}}
+\newenvironment{defbox}[1]{%
+  \setbeamercolor{block title}{bg=extgrey,fg=white}\setbeamercolor{block body}{bg=boxgrey,fg=black}%
+  \begin{block}{Definition: #1}}{\end{block}}
+\newenvironment{pitfall}[1]{%
+  \setbeamercolor{block title}{bg=warnred,fg=white}\setbeamercolor{block body}{bg=redtint,fg=black}%
+  \begin{block}{Pitfall: #1}}{\end{block}}
 
-% Version 2 (2026-09-28). Course spine: estimand -> identification -> estimation.
-% Changes from slides.tex: m03/CHANGES-v2.md.
+% Step labels for the course spine
 \newcommand{\spinestep}[1]{\textcolor{sbgreen}{\textbf{#1}}}
 
 % ── Title ──
 \title[Meeting 3]{Meeting 3: Coupon Whom?}
-\subtitle{Applied Causal Inference for Business}
+\subtitle{Conditional effects: who responds, how to estimate it, and why outcome accuracy is the wrong test}
 \author{Zhikun Lu}
 \date{\today}
 
@@ -65,98 +85,46 @@
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Where Does the Counterfactual Come From?}
+\begin{frame}{Today}
 
-\begin{center}
-\begin{tikzpicture}[
-    node distance=0.45cm and 0.7cm,
-    box/.style={draw, rounded corners, minimum width=2.9cm, minimum height=1.5cm,
-                font=\scriptsize, align=center, text width=2.7cm},
-    active/.style={box, fill=sbgreen!20, draw=sbgreen, very thick},
-    inactive/.style={box, fill=gray!10, draw=gray!50}
-]
-\node[active] (A) {\textbf{M1--M6}\\[2pt] A randomised control group\\[3pt] \emph{anything} may be unobserved};
-\node[inactive, right=of A] (B) {\textbf{M7--M8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
-\node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] An external shifter of treatment\\[3pt] confounders allowed};
-\node[inactive, right=of C] (D) {\textbf{M10--M11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
-
-\draw[-{Stealth}, gray!50] (A) -- (B);
-\draw[-{Stealth}, gray!50] (B) -- (C);
-\draw[-{Stealth}, gray!50] (C) -- (D);
-\end{tikzpicture}
-\end{center}
-
-\bigskip
-
-\begin{center}
-\small The coin still supplies the counterfactual. What changes today is the question:\\
-not \emph{does the coupon pay on average?} but \emph{for which customer does it pay?}
-\end{center}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\textbf{Block A: Conditional effects}
+\begin{itemize}
+  \item Two lists for 5{,}000 coupons
+  \item The CATE; prognostic variables and effect modifiers
+  \item Identification within every $x$: support versus confounding
+  \item From the CATE to a targeting rule; the value of targeting
+  \item The interaction model: both worlds on every row
+  \item Is the gap noise? Many segments and multiple testing
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{Block B: Meta-learners}
+\begin{itemize}
+  \item S- and T-learners, and what each risks
+  \item The X-learner
+  \item Learners that target the effect: transformed outcome, DR, R
+  \item A shared representation: TARNet
+  \item Why outcome accuracy cannot choose a model
+  \item Fit, choose, assess
+\end{itemize}
+\end{column}
+\end{columns}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Today's Plan}
-
-\begin{center}
-\small
-\begin{tabular}{rp{11.6cm}}
-\toprule
-\textbf{Minutes} & \\
-\midrule
-0--15 & \textbf{Reading and critique C2} --- on paper, no devices \\
-15--50 & \spinestep{Estimand:} two lists for 5{,}000 coupons; the CATE and the rule it feeds. \spinestep{Identification:} what the Q2 draw buys within every $x$ \\
-60--110 & \spinestep{Estimation:} the interaction model and its predictions; is the gap noise?; S- and T-learners; fit, choose, assess \\
-120--180 & \textbf{Lab 2:} structured outputs --- a language model codes a free-text field; check it against gold labels \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-
-\textbf{Case:} Lin's coupon programme, Meeting 3 (Releases 1--5, and the Lab 2 opener). \quad \textbf{Released today:} the design menu; P2.
-
-\bigskip
-
-\textbf{Reading:} technical notes for Meeting 3. The earlier M3 workshop exercises are now Notebook 3.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Critique C2: Five Questions, Every Time}
-
-Read the one-page case silently. Notes on your own, then pairs, then the room.
-
-\bigskip
-
-\begin{enumerate}
-    \item What is the claim?
-    \item What causal question does the decision need?
-    \item Who is the comparison group?
-    \item What else could produce this pattern? Give the mechanism and the \textbf{direction} of the bias.
-    \item What would you do to find out?
-\end{enumerate}
-
-\bigskip
-
-\small C2's flaw is a Meeting 2 idea. Question 2 is where to find it: what threshold does the decision need? Hand in your notes at minute 15.
-\end{frame}
-
-% ====================================================================
-\section{The Estimand: Whom to Coupon}
+\section{Block A: Conditional effects}
 % ====================================================================
 
-% [RELEASE R1 — the Q3 budget and the two proposed lists]
+% [RELEASE R1: the Q3 budget and the two proposed lists]
 \begin{frame}{Two Lists for 5{,}000 Coupons}
 
-M2 settled one question: \textbf{do not coupon everyone}. The CFO has approved \textbf{5{,}000 coupons} for Q3 --- half the base.
-
-\bigskip
-\pause
-
-Two lists are on Lin's desk.
+Meeting 2 settled one question: \textbf{do not coupon everyone}. The CFO has approved \textbf{5{,}000 coupons} for Q3, half the 10{,}000-member base. Two lists are on Lin's desk.
 
 \begin{center}
 \small
-\begin{tabular}{p{5.4cm}p{6.8cm}}
+\begin{tabular}{p{5.6cm}p{6.6cm}}
 \toprule
 \textbf{Marketing's data science team} & \textbf{Lin} \\
 \midrule
@@ -166,36 +134,163 @@ A purchase model on last year's transactions. Send to the 5{,}000 members most l
 \end{tabular}
 \end{center}
 
-\bigskip
-\pause
+On the two segments of Meeting 1:
 
-On the two segments of M1, marketing's model ranks the \textbf{active} members first (purchase rate $0.80$ with a coupon). Lin's rule ranks the \textbf{lapsed} first (lift $0.20$).
+\begin{center}
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Segment} (5{,}000 each) & \textbf{Buy without coupon} & \textbf{Buy with coupon} & \textbf{Lift} \\
+\midrule
+Active & 0.75 & 0.80 & 0.05 \\
+Lapsed & 0.10 & 0.30 & 0.20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Marketing's model ranks the \textbf{active} first; Lin's rule ranks the \textbf{lapsed} first.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The CATE}
+
+With treatment $D$, outcome $Y$ and pre-treatment covariates $X$, write $\mu_d(x) = \E[Y \mid D=d, X=x]$.
+
+\begin{defbox}{conditional average treatment effect (CATE)}
+\[
+\tau(x) = \E[Y(1) - Y(0) \mid X = x].
+\]
+It is a \textbf{function}; the ATE is its average, $\ATE = \E[\tau(X)]$.
+\end{defbox}
+
+Once identified, every outcome regression splits into a \textbf{baseline} and an \textbf{effect}:
+\[
+\mu_d(x) = \mu_0(x) + d\,\tau(x).
+\]
+
+A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum_x \Pr_T(X=x)\,\tau(x)$: standardisation with $T$'s weights.
+
+\medskip
+
+\small On the base, half active and half lapsed: $\tau_T = 0.5 \times 0.05 + 0.5 \times 0.20 = 0.125$, the ATE of Meeting 1.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Prognostic Variables and Effect Modifiers}
+
+\begin{itemize}
+  \item A variable is \textbf{prognostic} if $\mu_0(x)$ varies with it: it predicts the outcome level.
+  \item It is an \textbf{effect modifier} if $\tau(x)$ varies with it: it predicts who responds.
+\end{itemize}
+
+The two are independent properties: a variable can be either, both or neither. Segment is both. Distance to the nearest store might be prognostic only: nearby members buy more, with or without a coupon.
+
+\bigskip
+
+\textbf{Which dominates?} Across the base,
+\[
+\Var\bigl(\mu_0(X)\bigr) = 0.325^2 = 0.106, \qquad \Var\bigl(\tau(X)\bigr) = 0.075^2 = 0.0056 :
+\]
+about \textbf{nineteen times} as much variation in \emph{who buys} as in \emph{who is moved}.
+
+\medskip
+
+This is typical of business data, and it is why learners tuned to predict outcomes favour prognostic variables. Block B returns to it.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Identification of the CATE}
+
+\begin{assumption}{1.1}{Conditional independence}
+$\{Y(0), Y(1)\} \indep D \mid X$.
+\end{assumption}
+
+\begin{assumption}{1.2}{Overlap on the decision population}
+$0 < \Pr(D=1 \mid X=x) < 1$ for every $x$ at which a decision will be made.
+\end{assumption}
+
+\begin{result}{1.3}{Identification of the CATE}
+Under consistency and Assumptions 1.1--1.2, $\tau(x) = \mu_1(x) - \mu_0(x)$.
+\end{result}
+
+\medskip
+
+An experiment satisfies conditional independence by design, and overlap for every $x$ \emph{in the experiment}. Values of $x$ the experiment never saw have no identified CATE: any estimate there is the model's extrapolation.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Support or Confounding?}
+
+Keep the two failures apart. Four ways a coupon could have been assigned:
+
+\begin{center}
+\small
+\begin{tabular}{p{4.2cm}p{2.3cm}p{1.8cm}p{4.3cm}}
+\toprule
+\textbf{Assignment} & \textbf{Indep.\ given $X$} & \textbf{Overlap} & \textbf{What the data identify} \\
+\midrule
+50/50 draw among loyalty members only & \textcolor{sbgreen}{yes} & \textcolor{warnred}{members only} & $\tau(x)$ for members; for non-members, extrapolation \\[0.4em]
+Draw at 70\% for gold tier, 30\% for silver & \textcolor{sbgreen}{yes} & \textcolor{sbgreen}{yes} & $\tau(x)$ for every $x$; the pooled difference in means is biased for the ATE \\[0.4em]
+Coupon to every member who complained & trivially yes, given complaint & \textcolor{warnred}{no} & nothing: no complainer untreated, no other member treated \\[0.4em]
+A manager picks members ``likely to respond'' & \textcolor{warnred}{no} & may hold & nothing without the manager's information \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+A \textbf{deterministic} rule makes independence given its input automatic and useless: overlap fails, so no comparison is left (a support problem). Assignment on something outside $X$ can leave overlap intact while independence fails (a confounding problem).
+\end{frame}
+
+% ====================================================================
+\begin{frame}{What the Q2 Draw Buys}
+
+From Lin's documentation of the Q2 export:
+
+\begin{center}
+\small
+\begin{tabular}{p{6.0cm}p{6.6cm}}
+\toprule
+\textbf{The documentation says} & \textbf{Which buys} \\
+\midrule
+``The Q2 draw was 50/50 in every region, tier and store.'' & Independence within every $x$, and $e(x) = 0.5$: overlap everywhere by design. \\[0.5em]
+``All CRM fields were frozen the day before the draw.'' & $X$ is pre-treatment: no field carries part of the effect. \\[0.5em]
+``Members who joined during Q2 were not in the draw.'' & The CATE is identified only for pre-Q2 members. For new joiners it is extrapolation. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+
+The first two sentences make identification a fact about the procedure, as in Meeting 1. The third is about the \textbf{decision}: the Q3 list will include new members, and the test says nothing about them. Assumption 1.2 is stated on the decision population for this reason.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{From the CATE to a Targeting Rule}
+
+A treated unit generates margin $m$ per purchase, costs $c$ per purchase made while treated (a redeemed coupon) and $k$ per unit treated regardless (a phone call).
+
+\begin{result}{1.4}{Individual targeting rule}
+The expected net value of treating a unit with covariates $x$ is $V(x) = m\,\tau(x) - c\,\mu_1(x) - k$. Without a budget, the value-maximising rule treats $x$ if and only if $V(x) > 0$, and its value per unit is
+\[
+\E\big[\max\{V(X), 0\}\big] \;\ge\; \max\{\E[V(X)],\, 0\},
+\]
+the value of the best blanket rule. With a budget of $B$ treatments, treat the $B$ units with the largest positive $V(x)$.
+\end{result}
+
+At the coffee chain, $m = 30$, $c = 10$, $k = 0$: \quad coupon member $x$ $\iff$ $\tau(x) > \mu_1(x)/3$.
+
+\smallskip
+The rule needs \textbf{two numbers per member}: the lift and the purchase rate with the coupon.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{The Number That Decides It}
 
-From M1, per coupon sent to a customer with fields $x$:
-\[
-\text{net}(x) \;=\; \underbrace{30\,\tau(x)}_{\text{purchases caused}} \;-\; \underbrace{10\,\mu_1(x)}_{\text{coupons redeemed}},
-\qquad \mu_1(x) = \E[Y(1) \mid X = x] .
-\]
-
-\pause
-
-\begin{alertblock}{Coupon customer $x$ if and only if}
-\[
-\tau(x) \;>\; \frac{\mu_1(x)}{3}
-\]
-\end{alertblock}
-
-\pause
-
 \begin{center}
-\small
 \begin{tabular}{lrrrr}
 \toprule
-& $\tau(x)$ & $\mu_1(x)/3$ & \textbf{Net per coupon} & \textbf{5{,}000 coupons} \\
+& $\tau(x)$ & $\mu_1(x)/3$ & \textbf{$V(x)$ per coupon} & \textbf{5{,}000 coupons} \\
 \midrule
 Marketing's list (active) & 0.05 & 0.267 & \textcolor{warnred}{$-$\textyen 6.50} & \textcolor{warnred}{$-$\textyen 32{,}500} \\
 Lin's list (lapsed) & 0.20 & 0.100 & \textcolor{sbgreen}{$+$\textyen 3.00} & \textcolor{sbgreen}{$+$\textyen 15{,}000} \\
@@ -203,243 +298,31 @@ Lin's list (lapsed) & 0.20 & 0.100 & \textcolor{sbgreen}{$+$\textyen 3.00} & \te
 \end{tabular}
 \end{center}
 
+\bigskip
+
+\textbf{The value of targeting.} Per member of the base:
+\begin{itemize}
+  \item coupon everyone: $\E[V(X)] = 0.5(-6.50) + 0.5(3.00) = -$\textyen 1.75;
+  \item best blanket rule: coupon nobody, \textyen 0;
+  \item the rule: $\E[\max\{V(X), 0\}] = 0.5 \times 3.00 = $ \textyen 1.50, which is the \textyen 15{,}000 list.
+\end{itemize}
+An average below break-even can hide a profitable segment.
+
 \medskip
 
-The rule needs \textbf{two numbers per customer}. Every estimate today is a function of $x$; the question is which side of $\mu_1(x)/3$ it lands on, row by row.
-\end{frame}
-
-% [CARRIED VERBATIM from old-decks/lecture02.tex:726]
-\begin{frame}{The CATE: Definition}
-
-\begin{block}{Conditional Average Treatment Effect (CATE)}
-\[
-\tau(x) = \E[Y(1) - Y(0) \mid X = x] = \E[Y(1) \mid X = x] - \E[Y(0) \mid X = x]
-\]
-\end{block}
-
-The CATE is a \textbf{function}, not a single number. The ATE is its average:
-
-\[
-\tau = \E[\tau(X)]
-\]
-
-\pause
-\bigskip
-
-\textbf{Identification under randomization:}
-\[
-\tau(x) = \E[Y \mid D = 1, X = x] - \E[Y \mid D = 0, X = x]
-\]
-
-This means: within each subgroup defined by $X = x$, the difference in means estimates the CATE.
-\end{frame}
-
-% [MOVED TO NOTES: CATE in Practice]
-
-% [MOVED TO NOTES: A Taxonomy of Causal Estimands (Summary)]
-
-% ====================================================================
-\section{Identification: What Must Be True}
-% ====================================================================
-
-% [CARRIED VERBATIM from old-decks/lecture03.tex:154]
-\begin{frame}{Identification of the CATE}
- 
-How do we go from potential outcomes ($\tau(x) = \E[Y(1) - Y(0) \mid X = x]$) to something we can estimate from data?
- 
-\bigskip
- 
-\begin{block}{Theorem (Identification of the CATE)}
-Under (1) SUTVA, (2) independence: $D \indep (Y(1), Y(0)) \mid X$, and (3) overlap: $0 < \Prob(D = 1 \mid X = x) < 1$ for all $x$:
-\[
-\tau(x) = \E[Y \mid D = 1, X = x] \;-\; \E[Y \mid D = 0, X = x]
-\]
-\end{block}
- 
-\bigskip
- 
-\textbf{Proof.} By consistency: $\E[Y \mid D\!=\!1, X\!=\!x] = \E[Y(1) \mid D\!=\!1, X\!=\!x]$.
- 
-By independence: $\E[Y(1) \mid D\!=\!1, X\!=\!x] = \E[Y(1) \mid X\!=\!x]$.
- 
-Analogously for $D = 0$. Subtract. $\square$
- 
-\bigskip
- 
-This is the CATE analog of the ATE identification from M1.
-\end{frame}
-
-% [CARRIED VERBATIM from old-decks/lecture03.tex:181]
-\begin{frame}{The Overlap Assumption}
- 
-Independence says treatment is ``as good as random'' given $X$.
- 
-\bigskip
- 
-\textbf{Overlap} says: for every type of customer $x$, there must be \emph{some} treated and \emph{some} control observations.
- 
-\[
-0 < \Prob(D = 1 \mid X = x) < 1 \quad \text{for all } x
-\]
- 
-\bigskip
- 
-Without overlap, the CATE is still well-defined, but may not be properly identified/estimated from the data.
- 
-\bigskip
- 
-\textbf{Example:} the chain runs an A/B test only among loyalty members. For non-members, $\Prob(D = 1 \mid X = \text{non-member}) = 0$. We never observe a treated non-member, so any estimate of $\mu_1(\text{non-member})$ is extrapolation, not a data-driven comparison.
-\end{frame}
-
-% Worksheet: pairs decide independence and overlap for each scenario before the answers frame.
-% [CARRIED VERBATIM from old-decks/lecture03.tex:203]
-\begin{frame}{Discussion: Do the Assumptions Hold?}
- 
-For each scenario, decide: does \textbf{independence} hold? Does \textbf{overlap} hold? What can we learn?
- 
-\bigskip
- 
-\begin{enumerate}
-    \item \textbf{A/B test within loyal customers only}, random 50/50 within that group. Non-loyals are excluded.
- 
-    \medskip
- 
-    \item \textbf{Stratified A/B test:} gold-tier customers get the coupon with probability 70\%; silver-tier with probability 30\%. Assignment is random within each tier.
- 
-    \medskip
- 
-    \item \textbf{Coupons sent to customers who filed a complaint} in the past month; non-complainers get nothing.
- 
-    \medskip
- 
-    \item \textbf{Ride-hailing surge pricing} activated in high-demand zones; low-demand zones keep base price.
-\end{enumerate}
- 
-\bigskip
-\pause
- 
-\textcolor{gray}{\footnotesize Hint: for each, ask two questions. (a) Among the people you observe in treatment and control, is assignment independent of potential outcomes? (b) Are there subgroups where everyone (or no one) is treated?}
-\end{frame}
-
-% [REVISED from old-decks/lecture03.tex:232: independence vs overlap separated]
-\begin{frame}{Discussion: Answers}
-
-\begin{center}
-\small
-\begin{tabular}{p{3.2cm}p{2.2cm}p{1.9cm}p{4.6cm}}
-\toprule
-\textbf{Scenario} & \textbf{Indep.\ given $X$} & \textbf{Overlap} & \textbf{What can we learn?} \\
-\midrule
-A/B within loyals & \textcolor{sbgreen}{Yes} & \textcolor{warnred}{Loyals only} & $\tau(x)$ for loyals; non-loyal CATEs are extrapolation \\[0.5em]
-Stratified 70/30 & \textcolor{sbgreen}{Yes} & \textcolor{sbgreen}{Yes} & $\tau(x)$ for all $x$; but $e(x) \neq 0.5$, so the pooled $\bar{Y}_1 - \bar{Y}_0$ is biased for the ATE \\[0.5em]
-Coupons to complainers & trivially yes, given complaint & \textcolor{warnred}{No} & Nothing: no complainer is untreated, no non-complainer treated \\[0.5em]
-Surge in high-demand zones & only if demand is recorded & \textcolor{warnred}{No} & Nothing from these data: price is a function of demand \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-
-A \textbf{deterministic} rule makes independence given the rule's input automatic --- and useless, because overlap fails: there is no comparison left. Keep the two questions separate.
+\textbf{Ranking by ``most likely to buy'' is not the rule}, and here it is its opposite. With a cost per redemption, the bar $c\,\mu_1(x)/m$ \emph{rises} with the purchase rate: likely buyers must clear a higher bar. A response model ranks sure things first; the rule wants persuadables.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{What Must Be True, Sentence by Sentence}
-
-From Lin's description of the Q2 export:
-
-\bigskip
-
-\begin{center}
-\small
-\begin{tabular}{p{6.4cm}p{6.6cm}}
-\toprule
-\textbf{The case says} & \textbf{Which buys} \\
-\midrule
-``The Q2 draw was 50/50 in every region, tier and store.'' & Independence \emph{within} every $x$, and $e(x) = 0.5$: overlap everywhere by design. \\[0.5em]
-``All CRM fields were frozen the day before the draw.'' & $X$ is pre-treatment: no field can carry part of the effect. \\[0.5em]
-``Members who joined during Q2 were not in the draw.'' & The CATE is identified only for pre-Q2 members. For new joiners it is extrapolation. \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-\pause
-
-The first two sentences make identification a fact about the procedure, as in M1. The third is about the \textbf{decision}: the Q3 list will include new members, and the test says nothing about them.
-
-\medskip
-\small The notebook's data-roles table from M1 gets one more column today: \emph{inside or outside the support}.
-\end{frame}
-
-% ====================================================================
-\section{Estimation: The Interaction Model}
-% ====================================================================
-
-% [CARRIED VERBATIM from old-decks/lecture03.tex:255]
-\begin{frame}{From Identification to Estimation}
- 
-Identification gives us:
-\[
-\tau(x) = \underbrace{\E[Y \mid D = 1, X = x]}_{\mu_1(x)} \;-\; \underbrace{\E[Y \mid D = 0, X = x]}_{\mu_0(x)}
-\]
- 
-\bigskip
- 
-\textbf{Two functions to estimate.} How hard is this?
- 
-\bigskip
- 
-With two segments (active, lapsed): trivial. Compute within-group means.
- 
-\bigskip
- 
-With 10,000 customers and dozens of continuous features: we need a \textbf{model} for $\mu_1(x)$ and $\mu_0(x)$.
- 
-\bigskip
- 
-We start with the linear model, then generalize.
-\end{frame}
-
-% [CARRIED VERBATIM from old-decks/lecture03.tex:284]
-\begin{frame}{Constant vs.\ Heterogeneous Effect}
- 
-\textbf{Constant effect model} (CUPED/ANCOVA from M2):
-\[
-Y_i = \alpha + \tau D_i + \beta X_i + \varepsilon_i \quad \Longrightarrow \quad \tau(x) = \tau \text{ for all } x
-\]
-$X$ is treated as purely prognostic: affects the \emph{level} but not the \emph{effect}.
- 
-\bigskip
-\pause
- 
-\textbf{Heterogeneous effect model} (add an interaction):
-\[
-Y_i = \alpha + \tau D_i + \beta X_i + \gamma (D_i \times X_i) + \varepsilon_i
-\]
- 
-\[
-\Longrightarrow \quad \tau(x) = \tau + \gamma \, x
-\]
- 
-\bigskip
- 
-$\gamma \neq 0$ means $X$ changes the treatment effect. $\beta$ captures the baseline difference across types.
-\end{frame}
-
-% ====================================================================
-% [RELEASE R2 — four customers; pairs fill in the prediction columns before the \pause]
+% [RELEASE R2: four customers; the prediction columns are filled in before the table is shown]
 \begin{frame}{The Interaction Model: Both Worlds on Every Row}
 
-$X = 1$ active, $X = 0$ lapsed. Solving from the four cell means of M1:
+$Y = \alpha + \tau D + \beta X + \gamma (D \times X) + \varepsilon$, with $X = 1$ active and $X = 0$ lapsed. From the four cell means:
 \[
-\widehat\alpha = 0.10, \quad \widehat\tau = 0.20, \quad \widehat\beta = 0.65, \quad \widehat\gamma = -0.15
+\widehat\alpha = 0.10, \ \widehat\tau = 0.20, \ \widehat\beta = 0.65, \ \widehat\gamma = -0.15;
+\quad
+\widehat\mu_0(x) = \widehat\alpha + \widehat\beta x, \quad \widehat\mu_1(x) = \widehat\mu_0(x) + \widehat\tau + \widehat\gamma x .
 \]
-\[
-\widehat\mu_0(x) = \widehat\alpha + \widehat\beta x, \qquad \widehat\mu_1(x) = \widehat\alpha + \widehat\tau + (\widehat\beta + \widehat\gamma)x
-\]
-
-\pause
 
 \begin{center}
 \small
@@ -455,206 +338,207 @@ D & lapsed & 0 & 0 & 0.10 & 0.30 & $0.20 > 0.100$: \textcolor{sbgreen}{yes} \\
 \end{tabular}
 \end{center}
 
-\pause
-
-\textbf{Aligned predictions:} both columns come from the \emph{same} row's $x$, whichever arm the row was in. $Y$ fills one column for each customer; the model fills both.
-
-\smallskip
-ATE check: $\widehat\tau + \widehat\gamma\,\E[X] = 0.20 - 0.15 \times 0.5 = 0.125$ $\checkmark$
+\textbf{Aligned predictions:} both columns come from the \emph{same} row's $x$, whichever arm the row was in. $Y$ fills one column for each customer; the model fills both. With one binary $X$, the model reproduces the four cell means exactly.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Read the Model Through Its Predictions}
 
-\textbf{Coding sets the sign, not the substance.} With $X = 1$ active, $\tau(x) = 0.20 - 0.15x$. Recode $L = 1$ for lapsed: $\tau = 0.05 + 0.15L$. Same two effects.
+\textbf{Coding sets the sign, not the substance.} With $X = 1$ active, $\tau(x) = 0.20 - 0.15x$. Recode $L = 1$ for lapsed: $\tau(x) = 0.05 + 0.15L$. The same two effects.
 
 \bigskip
 
-\textbf{The coefficient on $D$ is not an average.} $\widehat\tau = 0.20$ is the effect at the reference group ($X = 0$, lapsed). To get the average for a population, \textbf{standardise with its weights}:
+\textbf{The coefficient on $D$ is not an average.} $\widehat\tau = 0.20$ is the effect at the reference group ($X = 0$, lapsed). The average for a population $T$ is $\widehat\tau + \widehat\gamma\,\E_T[X]$:
 
 \begin{center}
 \begin{tabular}{lrr}
 \toprule
-\textbf{Target population} & \textbf{Weights (active / lapsed)} & \textbf{Average effect} \\
+\textbf{Target population} & \textbf{Share active} & \textbf{Average effect} \\
 \midrule
-The whole base & 0.5 / 0.5 & $0.125$ \\
-A list that is 80\% active & 0.8 / 0.2 & $0.8(0.05) + 0.2(0.20) = 0.08$ \\
+The whole base & 0.5 & $0.20 - 0.15 \times 0.5 = 0.125$ \\
+A list that is 80\% active & 0.8 & $0.20 - 0.15 \times 0.8 = 0.08$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \bigskip
 
-\textbf{A row's $\widehat\tau(x)$ is a group average.} A lapsed member's $0.20$ means about 200 extra purchases per 1{,}000 similar members --- not knowing \emph{which} 200.
-
-\medskip
-
-\small Standardisation is M2's transport again; it returns in M7 as identification from logs.
+\textbf{A row's $\widehat\tau(x)$ is a group average.} A lapsed member's $0.20$ means about 200 extra purchases per 1{,}000 similar members, without knowing \emph{which} 200.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{From Two Segments to Fourteen Fields}
-
-With two segments the CATE is two differences in means:
-\begin{align*}
-\tau(\text{active}) &= \E[Y \mid D\!=\!1, X\!=\!1] - \E[Y \mid D\!=\!0, X\!=\!1] = 0.80 - 0.75 = 0.05 \\
-\tau(\text{lapsed}) &= \E[Y \mid D\!=\!1, X\!=\!0] - \E[Y \mid D\!=\!0, X\!=\!0] = 0.30 - 0.10 = 0.20
-\end{align*}
-
-Check: $\tau = 0.5 \times 0.05 + 0.5 \times 0.20 = 0.125$ $\checkmark$
-
-\bigskip
-\pause
-
-\textbf{The Q2 export has 14 CRM fields} --- recency, visit frequency, tier, spend, app use, store, \ldots\ There are more cells than customers. We need models for
-\[
-\mu_1(x) = \E[Y \mid D = 1, X = x], \qquad \mu_0(x) = \E[Y \mid D = 0, X = x],
-\]
-then $\widehat\tau(x) = \widehat\mu_1(x) - \widehat\mu_0(x)$ --- and the decision uses $\widehat\mu_1(x)$ as well.
-
-\bigskip
-
-Any supervised learner can fit a $\mu$. The question is what goes wrong when it does.
-\end{frame}
-
-% ====================================================================
-% [Case A: Part M3-R2b — the handout gives the counts; SEs on this frame after the attempt]
+% [RELEASE R2b: the segment counts behind the rates]
 \begin{frame}{Is the Gap Itself Noise?}
 
-Behind the segment rates: 200 members per arm in each segment of the Q2 test.
+Behind the segment rates: 200 members per arm in each segment of the Q2 test in the pilot region.
 
 \begin{center}
 \begin{tabular}{lrrrr}
 \toprule
 \textbf{Segment} & \textbf{Coupon} & \textbf{No coupon} & \textbf{Effect} & \textbf{SE} \\
 \midrule
-Active & 160/200 & 150/200 & $0.05$ & $\sqrt{\frac{0.16}{200} + \frac{0.1875}{200}} = 0.042$ \\
-Lapsed & 60/200 & 20/200 & $0.20$ & $\sqrt{\frac{0.21}{200} + \frac{0.09}{200}} = 0.039$ \\
+Active & 160/200 & 150/200 & $0.05$ & $\sqrt{0.16/200 + 0.1875/200} = 0.042$ \\
+Lapsed & 60/200 & 20/200 & $0.20$ & $\sqrt{0.21/200 + 0.09/200} = 0.039$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
+\begin{result}{1.5}{Standard error of a difference between segments}
+For segment effects estimated on disjoint randomised samples, $\SE(\hatt_a - \hatt_b) = \sqrt{\SE(\hatt_a)^2 + \SE(\hatt_b)^2}$.
+\end{result}
+
 \[
-\widehat\tau_L - \widehat\tau_A = 0.15, \qquad \SE = \sqrt{0.042^2 + 0.039^2} = 0.057, \qquad z = 2.64 .
+\hatt_L - \hatt_A = 0.15, \qquad \SE = \sqrt{0.042^2 + 0.039^2} = 0.057, \qquad z = 2.64 .
 \]
 
-\textbf{The heterogeneity is distinguishable from noise.} Test the \emph{gap}.
-
-\bigskip
-
-\begin{alertblock}{A common error}
-``Significant for lapsed, not for active'' is not evidence of a difference. Active's $0.05$ has interval $[-0.03, 0.13]$: ``not significant'' is not ``zero''.
-\end{alertblock}
+\textbf{Test the gap.} ``Significant for lapsed, not for active'' is not evidence of a difference: active's $0.05$ has interval $[-0.03, 0.13]$, and ``not significant'' is not ``zero''.
 \end{frame}
 
 % ====================================================================
-\section{Estimation: Handing the Job to ML}
+\begin{frame}{Many Segments, One False Positive}
+
+The gap's two-sided $p$-value is $0.008$. Whether that is convincing depends on how many gaps were looked at.
+
+\bigskip
+
+\begin{itemize}
+  \item With $K$ segments each tested at level $\alpha$, the chance of a false positive somewhere approaches $1 - (1-\alpha)^K$. For the 14 CRM fields at $\alpha = 0.05$: $1 - 0.95^{14} = 0.51$.
+  \item \textbf{Pre-specified}, segment was the one comparison: $p = 0.008 < 0.05$ stands.
+  \item \textbf{Found by searching} the 14 fields, Bonferroni asks for $p < 0.05/14 = 0.0036$, and $0.008$ fails. Holm's first step is the same test.
+  \item Report all segments examined. Segments found by searching need fresh data (Meeting 4).
+\end{itemize}
+
+\bigskip
+
+\textbf{Group effects.} For a grouping $G$, $\text{GATE}_k = \E[\tau(X) \mid G = k]$, estimated by the within-group difference in means. The two segment effects above are GATEs.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{End of Block A}
+
+\begin{itemize}
+  \item The CATE $\tau(x)$ is a function; a list's average effect uses that list's weights.
+  \item Prognostic variables move the level; effect modifiers move the effect. Here the level varies nineteen times as much.
+  \item The draw identifies $\tau(x)$ within every $x$, but only on the test's support.
+  \item Coupon $x$ iff $\tau(x) > \mu_1(x)/3$: Lin's list earns $+$\textyen 15{,}000, marketing's loses \textyen 32{,}500.
+  \item Test the gap between segments, and count the segments you looked at.
+\end{itemize}
+
+\vfill
+
+\begin{center}
+\Large \textbf{Block B: Meta-learners}\\[0.4em]
+\normalsize Fourteen fields instead of two: how to estimate $\tau(x)$, and how to choose an estimator.
+\end{center}
+\vfill
+\end{frame}
+
+% ====================================================================
+\section{Block B: Meta-learners}
 % ====================================================================
 
-% [MOVED TO NOTES: Limitations of the Linear Model]
+\begin{frame}{From Two Segments to Fourteen Fields}
 
-% [CARRIED VERBATIM from old-decks/lecture03.tex:365]
-\begin{frame}{S-Learner: The Natural First Attempt}
- 
-The interaction model is already a ``single model with $D$ as a feature.'' Just replace OLS with a flexible learner:
- 
+With two segments the CATE is two differences in means. The Q2 export has \textbf{14 CRM fields}: recency, visit frequency, tier, spend, app use, store, and more. There are more cells than members.
+
 \bigskip
- 
-\textbf{Algorithm:}
-\begin{enumerate}
-    \item Include $D$ as a \textbf{feature} alongside $X$
-    \item Fit a single model: $\hat{f}(x, d) \approx \E[Y \mid X = x, D = d]$
-    \item $\hat{\tau}(x) = \hat{f}(x, 1) - \hat{f}(x, 0)$
-\end{enumerate}
- 
+
+\textbf{Meta-learners} turn any prediction model into a CATE estimator:
+
+\begin{center}
+\small
+\begin{tabular}{lp{9.4cm}}
+\toprule
+\textbf{Learner} & \textbf{What it fits} \\
+\midrule
+S & one model of $Y$ on $(X, D)$ \\
+T & one model of $Y$ on $X$ per arm \\
+X & two arms, then each arm's imputed effects \\
+Transformed outcome, DR, R & a regression whose target \emph{is} $\tau(x)$ \\
+TARNet & a shared representation of $x$, two heads \\
+\bottomrule
+\end{tabular}
+\end{center}
+
 \bigskip
- 
-``S'' for ``single.'' Uses all $n$ observations.
- 
-\bigskip
- 
-Any base learner works: random forest, XGBoost, neural network, \ldots
- 
-\bigskip
- 
-This is the most direct generalization of what we just did with OLS.
+
+Any supervised learner can fit one of these. The question is what each one risks.
 \end{frame}
 
-% [CARRIED VERBATIM from old-decks/lecture03.tex:392]
-\begin{frame}{S-Learner: The Regularization Bias}
- 
-\begin{alertblock}{Problem}
-$D$ is one feature among many. A regularized model (LASSO, random forest, XGBoost) may \textbf{shrink its effect toward zero}.
-\end{alertblock}
- 
-\bigskip
- 
-The treatment signal competes with covariate signal for the model's ``attention.''
- 
-\bigskip
- 
-In the extreme: LASSO sets all interaction coefficients to zero $\Rightarrow$ $\hat{\tau}(x) = \hat{\tau}$ for all $x$. The model predicts $Y$ well (captures prognostic variation) but misses the heterogeneity entirely.
- 
-\bigskip
-\pause
- 
-\textbf{Can we do better?} What if we avoid the competition between $D$ and $X$ entirely?
+% ====================================================================
+\begin{frame}{S-Learner: One Model, $D$ as a Feature}
+
+Fit $\hat f(x, d) \approx \E[Y \mid X = x, D = d]$ with $D$ alongside $X$; then $\hatt(x) = \hat f(x,1) - \hat f(x,0)$. The interaction model is an S-learner fitted by OLS.
+
+\begin{result}{1.6}{Regularisation shrinks heterogeneity in the S-learner}
+In a balanced design with centred, orthogonal regressors $\tilde X$, $\tilde D = D - \tfrac12$ and $\tilde D\tilde X$, penalising only the interaction by $\lambda\gamma^2$ gives $\hat\gamma_\lambda = \hat\gamma_{\text{OLS}} \cdot s/(s + \lambda)$ with $s = \sum_i (\tilde D_i \tilde X_i)^2$; the other coefficients are unchanged.
+\end{result}
+
+\medskip
+
+Since $\tilde D = \pm\tfrac12$, $s = \tfrac14\sum_i \tilde X_i^2$: the interaction column has \textbf{a quarter of $X$'s variation}. A penalty that barely moves $\beta$ can erase $\gamma$.
+
+\medskip
+
+A lasso sets a small $\gamma$ exactly to zero, and the model reports the same effect for everyone. Trees do the same implicitly: a split on $D$ competes with prognostic splits and loses when the effect is small.
 \end{frame}
 
-% [CARRIED VERBATIM from old-decks/lecture03.tex:413]
+% ====================================================================
+\begin{frame}{How Much the Penalty Removes}
+
+The pilot region's segment test: 800 members, 200 per arm per segment. Centre both columns: $\tilde D = \pm\tfrac12$, $\tilde X = \pm\tfrac12$.
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+& \textbf{Column's sum of squares} & \textbf{Kept by a penalty $\lambda = 50$} \\
+\midrule
+$\tilde X$ (segment) & $800 \times \tfrac14 = 200$ & $200/250 = 0.80$ \\
+$\tilde D\tilde X$ (interaction) & $800 \times \tfrac1{16} = 50$ & $50/100 = 0.50$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+The same penalty keeps 80\% of a prognostic coefficient and half of the interaction:
+\[
+\hat\gamma: -0.15 \to -0.075, \qquad \hatt(\text{active}) = 0.125 - \tfrac12(0.075) = 0.0875, \qquad \hatt(\text{lapsed}) = 0.1625 .
+\]
+
+\medskip
+
+The gap between segments halves, from 0.15 to 0.075. As $\lambda$ grows, both effects go to the average, $0.125$, and the model no longer separates persuadables from sure things.
+\end{frame}
+
+% ====================================================================
 \begin{frame}{T-Learner: Separate the Arms}
- 
-\textbf{Idea:} don't make $D$ compete with $X$. Instead, fit two completely separate models:
- 
+
+Fit $\hat\mu_1$ on treated rows and $\hat\mu_0$ on control rows; $\hatt(x) = \hat\mu_1(x) - \hat\mu_0(x)$.
+
 \begin{center}
 \begin{tikzpicture}[
-    node distance=1.5cm and 2cm,
-    box/.style={draw, rounded corners, minimum width=2.8cm, minimum height=1cm, font=\small, align=center},
-    data/.style={box, fill=blue!10},
-    model/.style={box, fill=sbgreen!15},
-    result/.style={box, fill=orange!15, thick}
+    node distance=0.6cm and 1.4cm,
+    box/.style={draw, rounded corners, minimum width=2.6cm, minimum height=0.8cm, font=\small, align=center},
+    data/.style={box, fill=bluetint, draw=noteblue},
+    model/.style={box, fill=greentint, draw=sbgreen},
+    res/.style={box, fill=boxgrey, draw=extgrey, thick}
 ]
-\node[data] (treat) {Treated data\\$(X_i, Y_i)_{D_i=1}$};
-\node[data, below=0.8cm of treat] (ctrl) {Control data\\$(X_i, Y_i)_{D_i=0}$};
-\node[model, right=of treat] (m1) {Model $\hat{\mu}_1(x)$};
-\node[model, right=of ctrl] (m0) {Model $\hat{\mu}_0(x)$};
-\node[result, right=3cm of $(m1)!0.5!(m0)$] (cate) {$\hat{\tau}(x) = \hat{\mu}_1(x) - \hat{\mu}_0(x)$};
- 
-\draw[-{Stealth}] (treat) -- (m1);
-\draw[-{Stealth}] (ctrl) -- (m0);
-\draw[-{Stealth}] (m1) -- (cate);
-\draw[-{Stealth}] (m0) -- (cate);
+\node[data] (treat) {Treated rows};
+\node[data, below=of treat] (ctrl) {Control rows};
+\node[model, right=of treat] (m1) {$\hat{\mu}_1(x)$};
+\node[model, right=of ctrl] (m0) {$\hat{\mu}_0(x)$};
+\node[res, right=2.2cm of $(m1)!0.5!(m0)$] (cate) {$\hat{\tau}(x) = \hat{\mu}_1(x) - \hat{\mu}_0(x)$};
+\draw[-{Stealth}] (treat) -- (m1); \draw[-{Stealth}] (ctrl) -- (m0);
+\draw[-{Stealth}] (m1) -- (cate); \draw[-{Stealth}] (m0) -- (cate);
 \end{tikzpicture}
 \end{center}
- 
-\bigskip
- 
-``T'' for ``two.'' Each model focuses on its own arm. No regularization can shrink the treatment effect, because $D$ never appears as a feature.
-\end{frame}
 
-% [CARRIED VERBATIM from old-decks/lecture03.tex:444]
-\begin{frame}{T-Learner: The Variance Cost}
- 
-The T-learner solves the regularization bias. But it introduces a new problem:
- 
-\bigskip
- 
-\begin{alertblock}{Cost}
-Each model sees only \textbf{half} the data. The two models are trained \textbf{independently}: no information sharing.
-\end{alertblock}
- 
-\bigskip
- 
-If purchase history predicts outcomes similarly in both arms (prognostic variation), each model learns this pattern separately, wasting capacity.
- 
-\bigskip
- 
-Since the CATE is a \emph{difference}, the two fits' variances add, and their biases do not cancel unless they happen to be equal.
- 
-\bigskip
-\pause
- 
-The S-learner shared \emph{too much}. The T-learner shares \emph{nothing}. Is there a middle ground?
+\begin{result}{1.7}{Variances add in the T-learner}
+If $\hat\mu_1$ and $\hat\mu_0$ are fitted on disjoint samples, $\Var(\hatt(x)) = \Var(\hat\mu_1(x)) + \Var(\hat\mu_0(x))$ and $\text{bias}(\hatt(x)) = \text{bias}(\hat\mu_1(x)) - \text{bias}(\hat\mu_0(x))$.
+\end{result}
+
+No penalty can shrink the effect, because $D$ is never a feature. But each arm must learn the whole baseline, usually most of the signal, from half the data.
 \end{frame}
 
 % ====================================================================
@@ -667,8 +551,8 @@ Lapsed members. Truth: $\mu_1 = 0.30$, $\mu_0 = 0.10$, so $\tau = 0.20$. Two fit
 \toprule
 & $\widehat\mu_1$ & $\widehat\mu_0$ & \textbf{Error in each} & $\widehat\tau$ & \textbf{Error in $\tau$} \\
 \midrule
-T-learner A & 0.34 & 0.14 & $+0.04$, $+0.04$ & 0.20 & \textcolor{sbgreen}{0} \\
-T-learner B & 0.32 & 0.08 & $+0.02$, $-0.02$ & 0.24 & \textcolor{warnred}{$+0.04$} \\
+T-learner A & 0.35 & 0.15 & $+0.05$, $+0.05$ & 0.20 & \textcolor{sbgreen}{0} \\
+T-learner B & 0.33 & 0.07 & $+0.03$, $-0.03$ & 0.26 & \textcolor{warnred}{$+0.06$} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -679,104 +563,164 @@ B fits \emph{both} outcomes better and gets the effect \emph{worse}. The effect'
 \[
 \widehat\tau - \tau = (\widehat\mu_1 - \mu_1) - (\widehat\mu_0 - \mu_0) :
 \]
-the difference of two errors. It cancels in A and compounds in B.
+the difference of two errors. Variances always add; biases cancel in A and compound in B.
 
 \medskip
 
-\textbf{Outcome accuracy, arm by arm, does not grade an effect.} The next section shows the same thing at scale.
-\end{frame}
-
-% [CARRIED VERBATIM from old-decks/lecture03.tex:469]
-\begin{frame}{Effect Modifiers vs.\ Prognostic Variables}
- 
-To understand the tradeoff, distinguish two kinds of covariates:
- 
-\bigskip
- 
-\textbf{Effect modifier:} a covariate $X_j$ such that $\tau(x)$ varies with $X_j$.
-\begin{itemize}
-    \item Segment at the coffee chain: $\tau(\text{lapsed}) = 0.20 \neq 0.05 = \tau(\text{active})$
-    \item This is what we need for targeting
-\end{itemize}
- 
-\bigskip
- 
-\textbf{Prognostic variable:} a covariate $X_j$ that predicts the outcome level $\E[Y \mid X]$ but does not change the treatment effect.
-\begin{itemize}
-    \item Commute distance: closer customers buy more, but the coupon effect is the same
-    \item Helps with precision (CUPED, M2), not with targeting
-\end{itemize}
- 
-\bigskip
- 
-The S-learner is good at prognostic variables but can miss effect modifiers. The T-learner detects effect modifiers but wastes capacity re-learning prognostic structure in each arm.
+\textbf{For the effect, what matters is whether the two errors move together, not how large each one is.} Two arms fitted on different halves smooth the baseline differently, and the difference lands in $\hatt$.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Why This Bites at the Coffee Chain}
+\begin{frame}{X-Learner: Borrow the Other Arm}
 
-\textbf{Key fact:} most outcome variation is \emph{prognostic}.
-
-\bigskip
-
-On the two segments, the baseline gap between active and lapsed is $0.75 - 0.10 = 0.65$. The \emph{effect} gap is $0.20 - 0.05 = 0.15$. As variances across the base:
-\[
-\Var\bigl(\mu_0(X)\bigr) = 0.325^2 = 0.106, \qquad \Var\bigl(\tau(X)\bigr) = 0.075^2 = 0.0056 ,
-\]
-about \textbf{nineteen times} as much variation in \emph{who buys} as in \emph{who is moved}.
-
-\pause
-\bigskip
-
-\begin{itemize}
-    \item \textbf{S-learner} spends its capacity on the 0.65 gap. When $D$ explains a few percent of outcome variance, regularisation decides $D$'s interactions are not worth keeping.
-    \medskip
-    \item \textbf{T-learner} learns the 0.65 gap \emph{twice}, once per arm, each on half the data, and subtracts. Its errors in the big component land in the small one.
-\end{itemize}
+\begin{enumerate}
+  \item Fit $\hat\mu_0$ and $\hat\mu_1$, as in the T-learner.
+  \item Impute an effect for every row, using the \emph{other} arm's model:
+  \[
+  \tilde\tau_i = Y_i - \hat\mu_0(X_i) \ \text{(treated rows)}, \qquad \tilde\tau_i = \hat\mu_1(X_i) - Y_i \ \text{(control rows)}.
+  \]
+  \item Fit $\hatt_1$ to the treated rows' imputations and $\hatt_0$ to the control rows'.
+  \item Combine: $\hatt(x) = e(x)\,\hatt_0(x) + (1 - e(x))\,\hatt_1(x)$.
+\end{enumerate}
 
 \bigskip
 
-Both fit $Y$ well. Neither was asked to fit $\tau$.
+Each imputation uses the other arm's model, so the larger arm's model does most of the work. It helps when arms are unbalanced.
+
+\medskip
+
+\textbf{Example.} A campaign that keeps a 10\% holdout has $e = 0.9$. Then $\hatt = 0.9\,\hatt_0 + 0.1\,\hatt_1$: most weight goes to the control rows' imputations, which use $\hat\mu_1$, fitted on the 90\% treated arm.
 \end{frame}
 
-% [CARRIED VERBATIM from old-decks/lecture03.tex:590]
-\begin{frame}{Summary: All Are Outcome Modeling}
- 
+% ====================================================================
+\begin{frame}{Learners That Target the Effect: The Transformed Outcome}
+
+S, T and X minimise a loss in $Y$ and get $\hatt$ as a by-product. The next three regress something whose conditional mean \emph{is} $\tau(x)$.
+
+\begin{result}{1.8}{The transformed outcome}
+With known propensity $e(x)$, let $Y^\ast = Y\,\dfrac{D - e(X)}{e(X)(1-e(X))}$. Under Assumptions 1.1 and 1.2, $\E[Y^\ast \mid X] = \tau(X)$.
+\end{result}
+
+\medskip
+
+In the Q2 test $e = 0.5$, so $Y^\ast = 2Y$ for coupon members and $-2Y$ for the others. Every value is $-2$, $0$ or $2$, yet the segment means are the effects:
+\[
+\text{lapsed: } 0.5 \times 2 \times 0.30 - 0.5 \times 2 \times 0.10 = 0.20, \qquad \text{active: } 0.80 - 0.75 = 0.05 .
+\]
+
+Any regression of $Y^\ast$ on $X$ estimates the CATE. But each $Y^\ast_i$ is one outcome scaled up, so it is very noisy: among active members its standard deviation is $1.76$, against an effect of $0.05$.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The Doubly Robust Pseudo-Outcome}
+
+\begin{result}{1.9}{The doubly robust pseudo-outcome}
+Let
+\[
+\phi = \hat\mu_1(X) - \hat\mu_0(X) + \frac{D\,(Y - \hat\mu_1(X))}{\hat e(X)} - \frac{(1-D)(Y - \hat\mu_0(X))}{1 - \hat e(X)},
+\]
+with $\hat\mu_d$ and $\hat e$ fitted on other data. Then $\E[\phi \mid X] = \tau(X)$ if \emph{either} $\hat\mu_0 = \mu_0$ and $\hat\mu_1 = \mu_1$, \emph{or} $\hat e = e$.
+\end{result}
+
+The \textbf{DR-learner} regresses $\phi$ on $X$, with cross-fitting. The outcome models remove most of the noise; the weighted residuals correct their bias. With $\hat\mu_d = 0$, $\phi$ is $Y^\ast$.
+
 \begin{center}
-\begin{tabular}{p{2.5cm}p{4cm}p{4.5cm}}
+\small
+\begin{tabular}{lrrr}
 \toprule
-\textbf{Method} & \textbf{Strength} & \textbf{Weakness} \\
+\textbf{Segment} & \textbf{Effect} & \textbf{SD of $Y^\ast$} & \textbf{SD of $\phi$ (correct $\mu_d$, $e = 0.5$)} \\
 \midrule
-\textbf{Linear model} & Simple, interpretable & Linearity; must specify interactions \\[0.6em]
-\textbf{S-Learner} & All data; good at prognostics & Regularization shrinks effects \\[0.6em]
-\textbf{T-Learner} & Flexible; detects effect modifiers & High variance; no sharing \\[0.6em]
-\textbf{Multi-task} & Shares prognostic structure & More complex; needs large $n$ \\
+Active & 0.05 & 1.76 & 0.83 \\
+Lapsed & 0.20 & 0.87 & 0.77 \\
 \bottomrule
 \end{tabular}
 \end{center}
- 
-All four are \textbf{outcome modeling}: minimize prediction error for $Y$; the treatment effect falls out as a byproduct. None has a loss function that targets $\tau(x)$.  
- 
-\bigskip
- 
-An alternative: directly target $\tau(x)$. This is what causal trees and forests do (M4).
+
+The gain is largest where the baseline is high. In an experiment $e$ is known, so $\phi$ is unbiased even with poor outcome models.
 \end{frame}
 
 % ====================================================================
-\section{Estimation: Fit, Choose, Assess}
-% ====================================================================
+\begin{frame}{The R-Learner}
 
-% [RELEASE R3 — the two-model comparison; pairs compute both RMSEs before the reveal]
+\begin{result}{1.10}{The R-learner's target}
+Let $\ell(x) = \E[Y \mid X=x]$. Under Assumption 1.1, $Y - \ell(X) = (D - e(X))\,\tau(X) + \varepsilon$ with $\E[\varepsilon \mid D, X] = 0$, so $\tau$ minimises $\E\big[\{(Y - \ell(X)) - (D - e(X))\,t(X)\}^2\big]$ over functions $t$.
+\end{result}
+
+\medskip
+
+The \textbf{R-learner} minimises the sample version, the \textbf{R-loss}, with $\hat\ell$ and $\hat e$ fitted on other folds and a penalty on $t$. It regresses the outcome residual on the treatment residual, locally in $x$.
+
+\medskip
+
+\textbf{At the coffee chain.} $\ell(\text{lapsed}) = 0.10 + 0.5 \times 0.20 = 0.20$ and $\ell(\text{active}) = 0.75 + 0.5 \times 0.05 = 0.775$. Subtracting $\ell$ removes the $0.65$ baseline gap before the effect is fitted, so the prognostic variation no longer competes with the effect.
+
+\medskip
+
+The same idea drives causal forests (Meeting 4) and double machine learning (Meeting 8).
+\end{frame}
+
+% ====================================================================
+\begin{frame}{A Shared Representation: TARNet}
+
+Between sharing everything (S) and sharing nothing (T):
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=0.5cm and 1.1cm,
+    box/.style={draw, rounded corners, minimum height=0.8cm, font=\small, align=center},
+    inp/.style={box, fill=bluetint, draw=noteblue, minimum width=2.2cm},
+    rep/.style={box, fill=greentint, draw=sbgreen, minimum width=2.6cm},
+    head/.style={box, fill=boxgrey, draw=extgrey, minimum width=2.4cm}
+]
+\node[inp] (x) {14 CRM fields $x$};
+\node[rep, right=of x] (phi) {shared layers\\$\Phi(x)$};
+\node[head, above right=0.15cm and 1.3cm of phi] (h1) {head $h_1$: $\hat\mu_1(x)$};
+\node[head, below right=0.15cm and 1.3cm of phi] (h0) {head $h_0$: $\hat\mu_0(x)$};
+\draw[-{Stealth}] (x) -- (phi); \draw[-{Stealth}] (phi) -- (h1); \draw[-{Stealth}] (phi) -- (h0);
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+  \item The shared layers learn the baseline once, from every member: what predicts buying.
+  \item Each member trains only its own arm's head: coupon members $h_1$, the others $h_0$.
+  \item $\hatt(x) = h_1(\Phi(x)) - h_0(\Phi(x))$: the heads differ only where the effect does.
+\end{itemize}
+
+\medskip
+
+\textbf{A caution.} Variants that force $\Phi(X)$ to look alike in both arms can hide an overlap failure rather than fix it. In the Q2 test overlap holds by design; in logged data it may not (Meeting 7).
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Outcome Accuracy Cannot Choose a Targeting Model}
+
+\begin{result}{1.11}{The cost of ignoring all heterogeneity}
+Under a 50/50 design, the best predictor of $Y$ that imposes a constant effect, $g(x) + \bar\tau d$, has mean squared error exceeding that of the correct model $\mu_D(X)$ by exactly $\tfrac14\Var(\tau(X))$.
+\end{result}
+
+\medskip
+
+At the coffee chain, $\tfrac14\Var(\tau(X)) = \tfrac14 \times 0.0056 = 0.0014 = 0.0375^2$.
+
+\medskip
+
+A purchase's own variance is about $p(1-p)$, near $0.16$ here. A model can be nearly optimal by outcome loss while discarding all the heterogeneity a targeting decision needs.
+
+\medskip
+
+The error that matters, $\E[(\hatt(X) - \tau(X))^2]$, needs $\tau_i$, which is never observed. It can be computed only in a simulation.
+\end{frame}
+
+% ====================================================================
+% [RELEASE R3: the two-model comparison; both RMSEs are computed before the table is shown]
 \begin{frame}{Same RMSE, Opposite Decisions}
 
-Two models of the two-segment world, fitted to 10{,}000 members split 50/50:
+Two models of the two-segment world, each scored on a population with the four cell rates above:
 
 \begin{itemize}
     \item \textbf{Model I} (interaction): the four cell means exactly. $\widehat\tau(x) = 0.05$ or $0.20$.
     \item \textbf{Model A} (additive, no $D \times X$): $\widehat\mu = 0.1375 + 0.575x + 0.125D$. Every cell off by $\pm 0.0375$; $\widehat\tau(x) = 0.125$ for everyone.
 \end{itemize}
-
-\pause
 
 \begin{center}
 \small
@@ -790,143 +734,77 @@ Model A & $\sqrt{0.16188 + 0.0375^2} = 0.4041$ & 0.125 / 0.125 & a coin toss: \t
 \end{tabular}
 \end{center}
 
-\smallskip
-\small $0.16188$ is the irreducible part: the average of $p(1-p)$ over the four cells. Random ranking: $5{,}000 \times \tfrac12(-6.50 + 3.00)$.
+\small $0.16188$ is the irreducible part: the average of $p(1-p)$ over the four cells. The extra $0.0375^2$ is Result 1.11's $\tfrac14\Var(\tau(X))$. A random half of the base earns $5{,}000 \times \tfrac12(-6.50 + 3.00)$.
 
-\pause
 \medskip
 \normalsize
 
-The RMSEs differ by \textbf{0.4\%}. The decisions differ by \textbf{\textyen 23{,}750}. A purchase has a coin-flip's worth of noise in it; the heterogeneity that pays is a rounding error to an outcome loss.
+The RMSEs differ by \textbf{0.4\%}. The decisions differ by \textbf{\textyen 23{,}750}.
 \end{frame}
 
 % ====================================================================
-% [RELEASE R4 — the full Q2 export; predictions go on the board]
-\begin{frame}{The Q2 Export}
+\begin{frame}{Fit, Choose, Assess}
+
+Every \textbf{member} gets one of three roles, assigned before any per-visit or duplicated rows are created, so that no member appears in two:
 
 \begin{center}
 \small
-\begin{tabular}{lr}
+\begin{tabular}{llp{7.0cm}}
 \toprule
-Members in the Q2 draw, all three test regions & \NUM{10{,}000}{sim coupon-q2 v2: members in the export} \\
-CRM fields, frozen before the draw & 14 \\
-Coupon arm / control arm & 50\% / 50\% \\
-Coupons available for the Q3 list & 5{,}000 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-\pause
-
-Four learners, each fitted on the same training folds:
-
-\begin{center}
-\small
-(1) interaction OLS: $D$, 14 fields, $D \times$ each field \quad (2) S-learner, lasso\\
-(3) S-learner, boosted trees \quad (4) T-learner, boosted trees
-\end{center}
-
-\bigskip
-
-\textbf{In pairs, predict:} which has the best out-of-fold outcome RMSE? Which list of 5{,}000 earns the most? Are they the same learner?
-
-\begin{center}\small Commit before the next slide.\end{center}
-\end{frame}
-
-% ====================================================================
-% [RELEASE R5 — the ladder; the simulation's truth is shown only here]
-\begin{frame}{The Ladder}
-
-\begin{center}
-\scriptsize
-\begin{tabular}{lrr}
-\toprule
-\textbf{Learner} & \textbf{Outcome RMSE} & \textbf{Net, 5{,}000 coupons (\textyen)} \\
+\textbf{Role} & \textbf{Members} & \textbf{What happens there} \\
 \midrule
-Interaction OLS & \NUM{0.412}{sim v2: OOF RMSE, interaction OLS} & \NUM{$+$4{,}100}{sim v2: true net, top-5000 by tau-hat, interaction OLS} \\
-S-learner, lasso & \NUM{0.409}{sim v2: OOF RMSE, S-lasso} & \NUM{$-$6{,}800}{sim v2: true net, S-lasso list} \\
-S-learner, boosted & \textbf{\NUM{0.401}{sim v2: OOF RMSE, S-boosted}} & \NUM{$+$1{,}900}{sim v2: true net, S-boosted list} \\
-T-learner, boosted & \NUM{0.406}{sim v2: OOF RMSE, T-boosted} & \textbf{\NUM{$+$9{,}300}{sim v2: true net, T-boosted list}} \\
-\midrule
-\textit{List by the true $\tau(x)$} & --- & \textcolor{sbgreen}{\NUM{$+$16{,}200}{sim v2: true net, oracle list}} \\
-\textit{Marketing's purchase model} & --- & \textcolor{warnred}{\NUM{$-$29{,}400}{sim v2: true net, top-5000 by predicted purchase}} \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\end{frame}
-
-% ====================================================================
-\begin{frame}[shrink=6]{Fit, Choose, Assess}
-
-The best RMSE and the best list came from \textbf{different} learners, and every learner beat marketing's list: the \emph{question} was the bigger error. So how should one choose? Every row gets one of three roles:
-
-\begin{center}
-\small
-\begin{tabular}{llp{6.4cm}}
-\toprule
-\textbf{Role} & \textbf{Rows} & \textbf{What happens there} \\
-\midrule
-Fit & training folds & Each learner estimates $\widehat\mu_1, \widehat\mu_0$ \\
-Choose & validation fold & Pick one learner. \textcolor{warnred}{Not by outcome RMSE:} it is blind to $\tau$ \\
+Fit & training folds & Each learner estimates its nuisance models and $\hatt$ \\
+Choose & randomised validation fold & Pick one learner. \textcolor{warnred}{Not by outcome RMSE} \\
 Assess & held-out test & Touched once: the value of the chosen list \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\pause
 \medskip
 
-The difficulty is the middle row. $\tau_i$ is never observed, so ``RMSE of $\widehat\tau$'' cannot be computed on real data. Outcome RMSE can, and it measures the wrong thing: its gap from ignoring all heterogeneity is only $\Var(\tau(X))/4$ (notes).
+On the validation fold, compare candidates by
+\begin{enumerate}
+  \item the \textbf{value of the policy} each implies: the net value of its list (Meeting 5);
+  \item the \textbf{R-loss}; or
+  \item the mean squared gap between $\hatt(X)$ and the \textbf{DR pseudo-outcome} $\phi$.
+\end{enumerate}
 
-\medskip
-
-\textbf{What can be computed} on a randomised validation fold is the \emph{value of the list} a learner produces --- the lift among the customers it picks. That is M5.
-
-\medskip
-\small Split \textbf{members} into folds before creating any per-visit or duplicated rows, or the same member leaks across roles. Today the simulation lets us cheat and see the truth. Your data will not.
+When the nuisance models are accurate, (2) and (3) rank candidates as their true CATE error would.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Key Takeaways}
+\begin{frame}{Four Targeting Errors}
+
+\begin{pitfall}{targeting errors}
+\begin{itemize}
+  \item Ranking by predicted purchase.
+  \item Declaring heterogeneity because one segment is significant.
+  \item Choosing a CATE model by outcome RMSE.
+  \item Reporting the effect at the reference group as ``the'' effect.
+\end{itemize}
+\end{pitfall}
+
+\bigskip
+
+Each one has appeared today:
+\begin{itemize}
+  \item marketing's purchase model loses \textyen 32{,}500 on 5{,}000 coupons;
+  \item ``significant for lapsed, not for active'' says nothing about the gap; the gap's own test does;
+  \item Model A's RMSE is 0.4\% worse, and its list \textyen 23{,}750 worse;
+  \item the coefficient on $D$, $0.20$, is the lapsed effect, not the base's $0.125$ or the 80\%-active list's $0.08$.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Summary}
 
 \begin{itemize}
-    \item \spinestep{Estimand.} Targeting needs $\tau(x)$, not $\Prob(\text{buy} \mid x)$: coupon $x$ iff $\tau(x) > \mu_1(x)/3$. A list's average effect uses \emph{that list's} weights.
-    \item \spinestep{Identification.} The Q2 draw identifies $\tau(x)$ within every $x$ --- only on the test's support. New members are extrapolation. Deterministic rules fail on overlap.
-    \item \spinestep{Estimation.} Every learner here is outcome modelling: predict both potential outcomes on the same row, subtract. Test the \emph{gap} between segments, not two significance labels.
-    \item \textbf{S-learners shrink the effect; T-learners learn the baseline twice.} Both fail for the same reason: prognostic variation dwarfs the effect. A better fit to each arm can give a worse effect.
-    \item \textbf{Choose by the decision, not by the fit.} Outcome RMSE barely sees heterogeneity worth \textyen 23{,}750.
+  \item \spinestep{Estimand.} Targeting needs $\tau(x)$, not $\Pr(\text{buy} \mid x)$: coupon $x$ iff $\tau(x) > \mu_1(x)/3$. A list's average effect uses that list's weights. Targeting is worth $\E[\max\{V(X), 0\}] - \max\{\E[V(X)], 0\}$.
+  \item \spinestep{Identification.} The Q2 draw identifies $\tau(x)$ within every $x$, but only on the test's support. A deterministic rule fails on overlap; assignment on something outside $X$ fails on independence.
+  \item \spinestep{Estimation.} S-learners shrink the effect; T-learners learn the baseline twice and their errors subtract; the X-learner borrows the larger arm. The transformed outcome, the DR pseudo-outcome and the R-loss target $\tau(x)$ itself; TARNet shares the baseline across arms.
+  \item \spinestep{Inference.} Test the gap between segments, not two significance labels, and count the segments examined.
+  \item \textbf{Choose by the decision, not by the fit.} Ignoring all heterogeneity costs only $\tfrac14\Var(\tau(X))$ in outcome loss, and here \textyen 23{,}750 in value.
 \end{itemize}
-
-\medskip
-
-\small \textbf{Due 48 hours from now:} your pair's question and data idea, one page. Use the design menu. \quad \textbf{P2} (causal audit skill) is released tonight.
-\end{frame}
-
-% ====================================================================
-\begin{frame}[shrink=2]{Lab 2: A Column Written by a Language Model}
-
-Case A, Lab 2 opener: a model reads members' app feedback and labels them ``drifting away: yes/no''. Sixty minutes.
-
-\medskip
-
-\begin{center}
-\scriptsize
-\begin{tabular}{rlp{8.6cm}}
-\toprule
-\textbf{Min} & \textbf{Slot} & \textbf{Task} \\
-\midrule
-5  & Task and schema & Write the output schema: one typed field, allowed values, and a ``cannot tell'' option. Only comments written \emph{before} the Q2 draw may be coded. \\
-10 & Demonstration & Structured output against the schema through the course wrapper; a prompt that violates the schema and one that does not. \\
-30 & Build & Code the pre-draw comments. Measure accuracy against the 200 gold labels, separately for lapsed and active members. \\
-10 & Verify & Re-estimate the segment effects using the coded label. Compare with the CRM flag: how far did the gap shrink, and what does the coded list earn? \\
-5  & Interpret & One sentence: at your measured accuracy, would you target on the coded field? (Break-even accuracy, by hand: $0.684$.) \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\small \textbf{Close:} a model-coded covariate is a measurement with error. Misclassification pulls segment effects toward each other, and it is invisible unless you check against gold labels. The earlier M3 workshop (aligned predictions, penalty sweep, RMSE vs value) is Notebook 3.
 \end{frame}
 
 \end{document}

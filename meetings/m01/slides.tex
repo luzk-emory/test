@@ -82,6 +82,35 @@
 \end{frame}
 
 % ====================================================================
+\begin{frame}{Today}
+
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\textbf{Block A: Potential outcomes}
+\begin{enumerate}
+  \item Two worlds for every customer: the estimand before the data
+  \item ATE, ATT and ATU; the four response types
+  \item The break-even effect and what each type costs
+  \item One world is always missing; what $Y_i(d)$ assumes
+  \item Naive comparison $=$ ATT $+$ selection bias
+  \item Random assignment removes both bias terms
+\end{enumerate}
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{Block B: Causal graphs}
+\begin{enumerate}
+  \setcounter{enumi}{6}
+  \item Chains, forks and colliders; open and blocked paths
+  \item Backdoor paths and adjustment; standardisation
+  \item Simpson's paradox on a win-back campaign
+  \item Data roles: what may be a control
+  \item From the coin to an estimate: difference in means, OLS, the break-even test
+\end{enumerate}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ====================================================================
 \section{Block A: Potential outcomes}
 % ====================================================================
 
@@ -378,9 +407,6 @@ D & 0 & 0 & ? & 0 & lost cause or persuadable \\
 \end{tabular}
 \end{center}
 
-\small (Case handout: attempt before this frame; the last three columns are the answer.)
-\normalsize
-
 More customers help us estimate \textbf{averages}. They never reveal A's missing outcome.
 \end{frame}
 
@@ -392,7 +418,7 @@ More customers help us estimate \textbf{averages}. They never reveal A's missing
 \end{assumption}
 
 \begin{itemize}
-  \item \textbf{No interference fails} if members pass coupon codes to friends, or a discount at one store draws customers from the next (Handout H1).
+  \item \textbf{No interference fails} if members pass coupon codes to friends, or a discount at one store draws customers from the next.
   \item \textbf{Consistency fails} if ``the coupon'' is sometimes \textyen 10 off and sometimes a free pastry: the effect becomes a mixture over versions.
 \end{itemize}
 
@@ -991,14 +1017,10 @@ Every column in the Q2 export has exactly one job. Decide it \textbf{before} you
 \end{center}
 
 \textbf{And every row set has a job:} the test region is where the effect was \emph{measured}; the 10{,}000-member base is where the decision \emph{lands}.
-
-\medskip
-
-\small Your project data gets the same table, in writing, before any model is fitted.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Your Turn: Compare Only Customers Who Opened the App?}
+\begin{frame}{Compare Only Customers Who Opened the App?}
 
 \begin{center}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\small}]
@@ -1017,7 +1039,7 @@ A colleague proposes to rerun the Q2 comparison only among members who opened th
 
 \bigskip
 
-\textbf{In pairs:} use the graph to say what this comparison estimates, and why the randomisation no longer protects it.
+\textbf{No.} \texttt{app\_opens\_q2} is a collider: the coupon and plans to visit both cause it. Among openers, coupon holders and non-holders differ in plans to visit, which drive purchase, so the comparison mixes the effect with selection. The coin balanced the arms as drawn, not subgroups defined after the draw.
 \end{frame}
 
 % ====================================================================
@@ -1196,20 +1218,6 @@ Each one has appeared today: the Q2 lift of $0.10$ is positive but below its bre
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Exit Ticket}
-
-On paper, three sentences:
-
-\bigskip
-
-\begin{enumerate}
-    \item What comparison does the coupon decision need?
-    \item Why is marketing's $0.44$ misleading?
-    \item Give one reason not to roll the coupon out, even though the Q2 lift is positive.
-\end{enumerate}
-\end{frame}
-
-% ====================================================================
 \begin{frame}{Summary}
 
 \begin{itemize}
@@ -1218,14 +1226,6 @@ On paper, three sentences:
   \item \spinestep{Estimation.} The difference in means, the same number as OLS on a dummy, is unbiased over draws of the coin. Any one draw misses.
   \item \textbf{An effect can be real and unprofitable.} The expensive customer is the sure thing.
 \end{itemize}
-
-\medskip
-
-\textbf{Notes for Meeting 1:} Section 1 states every Result above with its proof. Section 2 is a second worked example, on a fitness chain, with its own numbers. Sections 1 and 2 are examinable.
-
-\medskip
-
-\textbf{Lab 0:} Python, probability and statistics review, ending with a potential-outcomes simulator that checks naive $=$ ATT $+$ selection bias.
 \end{frame}
 
 \end{document}

@@ -1,6 +1,12 @@
 % \documentclass[aspectratio=169, 11pt]{beamer}
 \documentclass[aspectratio=169, 11pt, handout]{beamer}
 
+% Meeting 10 lecture slides. Running case: Dana's AI assistant rollout at a home-goods retail chain
+% (cases/caseC-retail-ai, Meeting 10 parts). The notes' worked example (FitLife) is deliberately not reproduced here.
+% Shared with notes.tex: estimands, assumptions, notation, the statement of each Result, the order of topics.
+% Block A follows notes Sections 1.1 to 1.3; block B follows Sections 1.4 to 1.8.
+% Every number is checked by shared/checks/slides10_check.py.
+
 % ── Theme ──
 \usetheme{Madrid}
 \usecolortheme{default}
@@ -22,39 +28,55 @@
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{colortbl}
-\usepackage{graphicx}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 
-% ── Colors ──
-\definecolor{sbgreen}{HTML}{00704A}  % course accent
-\definecolor{warnred}{HTML}{CC0000}
+% ── Colours: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
+\definecolor{sbgreen}{HTML}{00704A}
 \definecolor{noteblue}{HTML}{2060A0}
+\definecolor{warnred}{HTML}{B42318}
+\definecolor{extgrey}{HTML}{6B7280}
+\definecolor{boxgrey}{HTML}{F3F5F8}
+\definecolor{bluetint}{HTML}{EEF3FA}
+\definecolor{greentint}{HTML}{EEF6F2}
+\definecolor{redtint}{HTML}{FCF1F0}
 
-% ── Commands ──
+% ── Notation: same macros as the notes (shared/coursenotes.sty, shared/notation.tex) ──
 \newcommand{\E}{\mathbb{E}}
-\newcommand{\Var}{\mathrm{Var}}
-\newcommand{\Cov}{\mathrm{Cov}}
-\newcommand{\SE}{\mathrm{SE}}
-\newcommand{\Prob}{\mathrm{Pr}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\SE}{\operatorname{SE}}
 \newcommand{\indep}{\perp\!\!\!\perp}
+\newcommand{\ind}[1]{\mathbf{1}\{#1\}}
+\newcommand{\hatt}{\hat{\tau}}
+\newcommand{\ATE}{\text{ATE}}
+\newcommand{\ATT}{\text{ATT}}
+\newcommand{\ATU}{\text{ATU}}
 
-\usepackage{soul}
-\newcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\marginpar{\tiny #2}}
-% Beamer frames are typeset inside boxes, where \marginpar raises "Not in outer par mode"
-% and \marginparwidth is 4pt. Same marker; the provenance note goes to the frame footnote.
-\renewcommand{\NUM}[2]{\sethlcolor{yellow}\hl{#1\,\textsuperscript{?}}\footnote[frame]{\tiny #2}}
-% Compact footnote layout so several provenance notes fit under one frame.
-\setbeamertemplate{footnote}{\noindent\raggedright\hspace*{0.6em}\tiny\insertfootnotemark\,\insertfootnotetext\par}
+% ── Boxes: same number, title and wording as the notes; proofs stay in the notes ──
+\newenvironment{result}[2]{%
+  \setbeamercolor{block title}{bg=sbgreen,fg=white}\setbeamercolor{block body}{bg=greentint,fg=black}%
+  \begin{block}{Result #1 (#2)}}{\end{block}}
+\newenvironment{assumption}[2]{%
+  \setbeamercolor{block title}{bg=noteblue,fg=white}\setbeamercolor{block body}{bg=bluetint,fg=black}%
+  \begin{block}{Assumption #1 (#2)}}{\end{block}}
+\newenvironment{defbox}[1]{%
+  \setbeamercolor{block title}{bg=extgrey,fg=white}\setbeamercolor{block body}{bg=boxgrey,fg=black}%
+  \begin{block}{Definition: #1}}{\end{block}}
+\newenvironment{pitfall}[1]{%
+  \setbeamercolor{block title}{bg=warnred,fg=white}\setbeamercolor{block body}{bg=redtint,fg=black}%
+  \begin{block}{Pitfall: #1}}{\end{block}}
 
-% Version 2 (2026-09-29). Course spine: estimand -> identification -> estimation.
-% Case C re-skin: the floor-lead staffing model is now an AI assistant for store associates.
-% Changes from slides.tex: m10/CHANGES-v2.md.
+% Step labels for the course spine
 \newcommand{\spinestep}[1]{\textcolor{sbgreen}{\textbf{#1}}}
 
 % ── Title ──
 \title[Meeting 10]{Meeting 10: Before, After, and Everyone Else}
-\subtitle{Applied Causal Inference for Business}
+\subtitle{Panel data and difference-in-differences: what untreated stores over time can and cannot stand in for}
 \author{Zhikun Lu}
 \date{\today}
 
@@ -66,105 +88,50 @@
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Where Does the Counterfactual Come From?}
+\begin{frame}{Today}
 
-\begin{center}
-\begin{tikzpicture}[
-    node distance=0.45cm and 0.7cm,
-    box/.style={draw, rounded corners, minimum width=2.9cm, minimum height=1.5cm,
-                font=\scriptsize, align=center, text width=2.7cm},
-    active/.style={box, fill=sbgreen!20, draw=sbgreen, very thick},
-    inactive/.style={box, fill=gray!10, draw=gray!50}
-]
-\node[inactive] (A) {\textbf{M1--M6}\\[2pt] A randomised control group\\[3pt] \emph{anything} may be unobserved};
-\node[inactive, right=of A] (B) {\textbf{M7--M8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
-\node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] An external shifter of treatment\\[3pt] confounders allowed};
-\node[active, right=of C] (D) {\textbf{M10--M11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
-
-\draw[-{Stealth}, gray!50] (A) -- (B);
-\draw[-{Stealth}, gray!50] (B) -- (C);
-\draw[-{Stealth}, thick, sbgreen] (C) -- (D);
-\end{tikzpicture}
-\end{center}
-
-\bigskip
-
-\begin{center}
-\small M9 needed an instrument someone designed. Today nobody designed anything.\\
-The comparison is the same stores \emph{before}, and other stores over the \emph{same weeks}.
-\end{center}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\textbf{Block A: Panel data I, basics}
+\begin{itemize}
+  \item The Store Assistant and its break-even lift
+  \item Adoption-date potential outcomes $Y_{it}(g)$ and the ATT
+  \item Before--after and its failures: trends, seasons, regression to the mean
+  \item Comparing across stores: the level gap
+  \item Unit and time fixed effects, and what they cannot remove
+  \item The within transformation
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{Block B: Panel data II, difference-in-differences}
+\begin{itemize}
+  \item Parallel trends and no anticipation; the $2 \times 2$ DiD and the ATT
+  \item Levels or logs
+  \item TWFE with one adoption date; event studies
+  \item Pre-trend tests, their limits, and the breakdown drift
+  \item Standard errors: one change per store; clustering
+  \item A warning on staggered timing; Dana's decision
+\end{itemize}
+\end{column}
+\end{columns}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Today's Plan}
-
-\begin{center}
-\small
-\begin{tabular}{rll}
-\toprule
-\textbf{Minutes} & \textbf{Block} & \\
-\midrule
-0--60 & A & \textbf{Exam II} (M6--M9) \\
-70--120 & B & Difference-in-differences: the $2 \times 2$, its assumption, its interval; then TWFE \\
-130--180 & C & \textbf{Lab 4:} an agent loop for experiment review \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-
-\textbf{Block B, on the spine:}
-\begin{enumerate}\small
-    \item \spinestep{Estimand:} the AI assistant's effect on cohort 1, written with go-live dates --- and the number that settles cohort 2
-    \item \spinestep{Identification:} parallel trends, no anticipation, no spillovers --- \emph{assumptions}, not design
-    \item \spinestep{Estimation:} the pre-period check, store- and region-level SEs, the drift that would change the decision; the within transformation and TWFE; auditing a report
-\end{enumerate}
-
-\bigskip
-
-\textbf{Case:} Dana's AI assistant rollout, part 1 (Releases 1--5). \quad \textbf{At home:} the panel core, with Notebook 10 (72 hours). \quad \textbf{Released:} P4; Lab 5 (self-paced).
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Exam II: M6--M9}
-
-\begin{center}
-\begin{tabular}{rl}
-\toprule
-0--3 & Instructions and questions about the paper \\
-3--58 & \textbf{55 minutes} of work \\
-58--60 & Papers collected; break until 70 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-
-\textbf{Examinable:} the slides of M6--M9 and Section~1 of each set of notes. Section~3 of the notes, anything marked \emph{Extension}, and regression discontinuity are not.
-
-\bigskip
-
-\textbf{The one habit that earns marks:} in every question, find the \emph{number that decides it} before computing anything, and say which comparison produced it --- and for whom.
-\end{frame}
-
-% ====================================================================
-\section{The Estimand: The Rollout}
+\section{Block A: Panel data I, basics}
 % ====================================================================
 
-% [RELEASE R1 — narrative, cost parameters, the analyst's two numbers; flagship held out]
-% [RELEASE R1 — narrative, cost parameters, the analyst's two numbers and the vendor's dashboard; flagship held out]
+% [RELEASE R1: the assistant, its cost, and the three numbers on Dana's desk]
 \begin{frame}{The Store Assistant}
 
-\textbf{Dana} runs store operations for a home-goods chain of 120 stores. \textbf{Store Assistant} is a generative-AI assistant on associates' handhelds: stock checks, product answers, add-on suggestions, in seconds.
+\textbf{Dana} runs store operations for a home-goods chain of 120 stores. \textbf{Store Assistant} is a generative-AI assistant on associates' handhelds: stock checks, product answers and add-on suggestions, in seconds.
 
 \medskip
 
-In week 53 the first \textbf{cohort of thirty stores} went live. A second cohort of thirty is scheduled for \textbf{week 79}. It is now week 78. {\small (The flagship went live much earlier, alone. It is held out today; M11 gives it its own hour.)}
+In week 53 the first \textbf{cohort of thirty stores} went live. A second cohort of thirty is scheduled for \textbf{week 79}. It is now week 78. The flagship store went live much earlier, on its own; it is held out today and returns in Meeting 11.
 
-\pause
 \medskip
 
-\textbf{On her desk:} confirm cohort 2 --- \textyen 2{,}500 per store-week (licence \textyen 1{,}700, handsets \textyen 300, the store's ``AI champion'' \textyen 500), thirty stores, from next week.
+\textbf{On her desk:} confirm cohort 2, at \textyen 2{,}500 per store-week (licence \textyen 1{,}700, handsets \textyen 300, each store's ``AI champion'' allowance \textyen 500).
 
 \begin{center}
 \small
@@ -183,38 +150,48 @@ Vendor dashboard: ``AI-assisted sales'' in cohort 1 stores & \textyen 38{,}000 \
 % ====================================================================
 \begin{frame}{The Number That Decides It}
 
-The assistant costs \textyen 2{,}500 per store-week. Gross margin on incremental sales is \textbf{25\%}.
-
-\bigskip
-
-The model pays in a store-week only if it adds sales worth more than its cost:
+Gross margin on incremental sales is \textbf{25\%}. The assistant pays in a store-week only if
 \[
-0.25 \times \Delta\text{sales} \;>\; 2{,}500 .
+0.25 \times \Delta\text{sales} \;>\; 2{,}500
+\qquad\Longleftrightarrow\qquad
+\Delta\text{sales} \;>\; \tau^\ast = \frac{2{,}500}{0.25} = \textbf{\textyen 10{,}000 per store-week}.
 \]
 
-\bigskip
-\pause
-
-\begin{alertblock}{Break-even lift}
-\[
-\Delta^{*} \;=\; \frac{2{,}500}{0.25} \;=\; \textbf{\textyen 10{,}000 per store-week}
-\]
-\end{alertblock}
+Every estimate today is a weekly sales lift per store, in \textyen 000; the question is which side of \textbf{10} it lands on.
 
 \bigskip
 
-Both of the analyst's numbers clear it easily. Every estimate today is a weekly sales lift. The only question is \textbf{which side of \textyen 10{,}000} it lands on.
+\textbf{The dashboard is not a third estimate.} It counts every sale in which an associate queried the assistant, including the customer who came in for the frying pan anyway. It is measured only in treated stores and has no counterfactual: usage, not impact (Meeting 1's sure things, in a vendor's report).
 
-\small \textbf{The dashboard is not a third estimate.} It counts sales in which the assistant was \emph{used} --- including the customer who came in for the frying pan anyway. Usage is not impact: M1's Sure Thing, in a vendor's report. And even at face value, \textyen 38{,}000 of sales is \textyen 9{,}500 of margin: 3.8 times the fee, not fifteen.
+\medskip
+
+Even on its own terms, ``fifteen times'' compares sales with cost: $38{,}000/2{,}500 = 15.2$. In margin, $0.25 \times 38{,}000 = 9{,}500$, which is $3.8$ times the fee.
 \end{frame}
 
 % ====================================================================
-% [RELEASE R2 — four-cell table; worksheet attempt before the next frame]
+\begin{frame}{Panel Data and Adoption Dates}
+
+Stores $i$ are observed in weeks $t$. Index potential outcomes by the \textbf{adoption date}: $Y_{it}(g)$ is store $i$'s sales in week $t$ if it first goes live in week $g$; $g = \infty$ means never.
+
+\smallskip
+
+With one adoption date, $t_0 = 53$: cohort 1 ($T_i = 1$) shows $Y_{it}(53)$, the comparison stores ($T_i = 0$) show $Y_{it}(\infty)$. For short, $Y_{it}(1) \equiv Y_{it}(53)$ and $Y_{it}(0) \equiv Y_{it}(\infty)$.
+
+\begin{defbox}{the target}
+\[
+\ATT = \E\bigl[Y_{\text{post}}(1) - Y_{\text{post}}(0) \mid T = 1\bigr], \qquad \text{post} = \text{weeks 53--78}.
+\]
+The first term is observed. The difficulty is $\E[Y_{\text{post}}(0) \mid T = 1]$: cohort 1's sales without the assistant.
+\end{defbox}
+
+\textbf{No coin chose the go-live dates}, as in Meetings 1--6, and no recorded rule, as in Meetings 7--8. The missing term must come from untreated stores over time, through a claim about what cohort 1 would have done. That claim is checkable only in part: identification here is assumption-based, and should be said so.
+\end{frame}
+
+% ====================================================================
+% [RELEASE R2: the four cells and the rollout file]
 \begin{frame}{Four Numbers}
 
-Mean weekly sales per store, \textyen 000. The comparison stores are the 89 not yet on the model.
-
-\bigskip
+Mean weekly sales per store, \textyen 000. The comparison stores are the 89 not yet on the assistant; the flagship is held out.
 
 \begin{center}
 \begin{tabular}{lrr}
@@ -227,87 +204,340 @@ Comparison (89 stores) & 151 & 155 \\
 \end{tabular}
 \end{center}
 
-\bigskip
+\medskip
 
-\textbf{In pairs}, compute and commit in writing:
+The analyst's two numbers come from two different cells of this table:
+\begin{itemize}
+  \item \textbf{before--after}, within cohort 1: $196 - 181 = 15$;
+  \item \textbf{across stores}, after going live: $196 - 155 = 41$.
+\end{itemize}
 
-\begin{enumerate}
-    \item cohort 1, after minus before
-    \item after adoption, cohort 1 minus the comparison stores
-    \item the change in cohort 1 minus the change in the comparison stores
-\end{enumerate}
+\medskip
 
-\bigskip
-
-Which of the three does Dana put against \textyen 10{,}000?
+Both clear 10. Each answers a different question, and each attributes to the assistant something the table shows was there without it. The next frames find what.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Before, Across, and Both}
+\begin{frame}{Before--After Keeps Everything Else That Changed}
+
+A treated unit's before--after change attributes to the treatment \textbf{everything else that changed}:
+
+\begin{itemize}
+  \item \textbf{trends}: the chain grows, prices rise;
+  \item \textbf{seasons}: ``before'' is the second half of one year, ``after'' the first half of the next;
+  \item \textbf{other events}: a chain-wide promotion, a competitor's closure, a new range;
+  \item \textbf{regression to the mean}: units chosen because they had a bad period recover anyway.
+\end{itemize}
+
+\bigskip
+
+The comparison stores never had the assistant, yet over the same weeks they moved from 151 to 155: \textbf{$+4$} that every store saw without it. If cohort 1 would have shared it, the 15 contains it.
+
+\medskip
+
+Before--after needs one assumption: \emph{nothing else changed}. Over half a year in retail it is never true.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Regression to the Mean}
+
+\begin{result}{1.1}{Before--after with selection on a bad period}
+Let $Y_{it}(0) = a_i + \lambda_t + u_{it}$ with transitory shocks $u_{it}$ independent over time with mean zero. If units are treated because their pre-period outcome was low, the before--after change among treated units is
+\[
+  \E[Y_{\text{post}} - Y_{\text{pre}} \mid T = 1] = \ATT + (\lambda_{\text{post}} - \lambda_{\text{pre}}) - \E[u_{\text{pre}} \mid T = 1],
+\]
+and the last term is positive.
+\end{result}
+
+\medskip
+
+Selection uses the pre-period outcome only, so the post-period shock still averages zero; selecting on a low pre-period outcome makes the pre-period shock negative on average.
+
+\medskip
+
+``Fix the worst-performing stores'' builds regression to the mean into the rollout. A comparison group fixes the trend term, but not this one unless it was selected the same way.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{A Pilot in the Worst Stores, by Numbers}
+
+Suppose Dana had piloted in the stores with the \textbf{worst Q4}. Each store's quarterly sales are its own level $a_i$, plus a chain-wide $\lambda_t$ that rises by \textbf{2} a quarter, plus a shock $u_{it}$ of $+4$ or $-4$, equally likely and independent across quarters. The assistant does \textbf{nothing}: $\ATT = 0$.
 
 \begin{center}
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Stores} & \textbf{Q4 shock} & \textbf{Mean Q5 shock} & \textbf{Mean change, Q4 to Q5} \\
+\midrule
+Pilot (a bad Q4) & $-4$ & 0 & $2 + 4 = 6$ \\
+Not piloted (a good Q4) & $+4$ & 0 & $2 - 4 = -2$ \\
+Not piloted, also a bad Q4 & $-4$ & 0 & $2 + 4 = 6$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+  \item Before--after on the pilot: $6 = 0 + 2 + 4$, the trend plus the recovery, from an assistant that does nothing.
+  \item Against the stores not piloted, which had the good quarter: $6 - (-2) = 8$. Worse: the comparison falls back as the pilot recovers.
+  \item Against stores selected the same way: $6 - 6 = 0$. Only a comparison chosen on the same bad quarter removes the recovery.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Across Stores Keeps the Level Gap}
+
+The other analyst number compares stores at one time: after going live, $196 - 155 = 41$.
+
+\bigskip
+
+But before anyone had the assistant, cohort 1 already sold $181 - 151 = \textbf{30}$ more per week. Its stores are larger, in better locations, or run differently. The cross-section credits the assistant with that gap.
+
+\bigskip
+
+This is Meeting 1's selection bias, $\E[Y(0) \mid T=1] - \E[Y(0) \mid T=0]$, and the panel lets us \emph{see} it, measured before treatment.
+
+\bigskip
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Comparison} & \textbf{Keeps} \\
+\midrule
+Before--after, within cohort 1 & what changed over time for every store \\
+Across stores, after going live & what differs between stores at every time \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+Fixed effects remove each of the two, one per index.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Fixed Effects}
+
+The two-way fixed-effects (TWFE) model:
+\[
+Y_{it} = \alpha_i + \lambda_t + \beta D_{it} + \varepsilon_{it}, \qquad D_{it} = \ind{\text{store } i \text{ is live in week } t}.
+\]
+
+\begin{itemize}
+  \item $\alpha_i$, the \textbf{unit effect}: each store's own level. It absorbs every stable characteristic, measured or not: floor area, location, catchment, format.
+  \item $\lambda_t$, the \textbf{time effect}: each week's shock common to all stores. It absorbs the chain's trend, the season and chain-wide events.
+  \item $\beta$ is then identified only by how a store's sales move, relative to the chain's week, when its $D_{it}$ switches.
+\end{itemize}
+
+\medskip
+
+Variables that never change within a store drop out. The model cannot say what floor area does to sales, and it does not need to: whatever floor area does, $\alpha_i$ holds it.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{What Fixed Effects Cannot Remove}
+
+$\alpha_i$ is constant over time; $\lambda_t$ is common to all stores. Confounders that change over time \textbf{differently across units} are in neither.
+
+\begin{center}
+\small
+\begin{tabular}{L{5.3cm}L{3.0cm}L{4.3cm}}
+\toprule
+\textbf{At the chain} & \textbf{Kind} & \textbf{What it does to $\hat\beta$} \\
+\midrule
+Cohort 1's region growing faster: a new housing estate & a differential trend & credits the assistant with the region's growth \\[0.4em]
+A region that signed off \emph{because} of a bad quarter & a transitory shock, $u_{it}$ & credits it with the recovery (Result 1.1) \\[0.4em]
+A store manager who adopts early and also works harder & store-specific and time-varying & credits it with the manager's effort \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+None is about levels, which $\alpha_i$ handles. Each is a reason the \textbf{timing} of adoption might be related to where a store's sales were heading.
+
+\medskip
+
+And no fixed effect fixes a bad \emph{control}: staff hours re-planned around the assistant are an outcome of the treatment, not a confounder (Meeting 7).
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The Within Transformation}
+
+\begin{result}{1.2}{TWFE by the within transformation}
+In a balanced panel, with $\ddot W_{it} = W_{it} - \bar W_{i\cdot} - \bar W_{\cdot t} + \bar W_{\cdot\cdot}$, the least-squares coefficient on $D$ is
+$\hat\beta = \sum_{i,t}\ddot D_{it}Y_{it}/\sum_{i,t}\ddot D_{it}^2$.
+\end{result}
+
+\medskip
+
+\begin{itemize}
+  \item Subtract each store's mean: $\alpha_i$ is gone. Subtract each week's mean: $\lambda_t$ is gone. Add back the grand mean, subtracted twice.
+  \item What is left of $D$ varies within store \emph{and} within week. $\hat\beta$ is the slope of $Y$ on it: Frisch--Waugh--Lovell again (Meeting 8).
+  \item Only variation within units over time identifies $\beta$.
+\end{itemize}
+
+\medskip
+
+\textbf{Balanced panels only.} If stores open or close mid-panel, one-pass demeaning is not the projection: run the regression with both sets of indicators.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The Four Cells, Two Ways}
+
+Treat the two group means as a balanced panel of two ``units'' over two periods.
+
+\begin{columns}[T]
+\begin{column}{0.40\textwidth}
+\textbf{Store effects only.} Subtracting each unit's mean leaves $D$ varying only in cohort 1 (0 before, 1 after), so
+\[
+\hat\beta = 196 - 181 = \textbf{15},
+\]
+the before--after. The time trend is still in it.
+\end{column}
+\begin{column}{0.56\textwidth}
+\textbf{Store and period effects.} Double-demeaned:
+\begin{center}
+\small
+\begin{tabular}{lrr|rr}
+\toprule
+& \multicolumn{2}{c|}{$\ddot Y$} & \multicolumn{2}{c}{$\ddot D$} \\
+& Before & After & Before & After \\
+\midrule
+Cohort 1 & $-2.75$ & $2.75$ & $-0.25$ & $0.25$ \\
+Comparison & $2.75$ & $-2.75$ & $0.25$ & $-0.25$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{column}
+\end{columns}
+
+\[
+\hat\beta = \frac{\sum \ddot D\,Y}{\sum \ddot D^{\,2}} = \frac{0.25\,(-181 + 196 + 151 - 155)}{4 \times 0.0625} = \frac{2.75}{0.25} = \textbf{11}.
+\]
+
+The time effects bring in the comparison's $+4$: $15 - 4 = 11$. The unit effects had already removed the level gap of 30. Whether 11 is the assistant's effect is a question about an assumption: Block B.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{End of Block A}
+
+\begin{itemize}
+  \item The target is the ATT; its missing term is cohort 1's sales without the assistant. Break-even: 10.
+  \item Before--after keeps trends, seasons, events and regression to the mean: 15 includes the $+4$ every store saw.
+  \item Across stores keeps the level gap: 41 includes the 30 that was there before.
+  \item Unit effects remove stable levels; time effects remove common shocks. Neither removes confounders that change differently across stores.
+  \item On the four cells, TWFE gives 11.
+\end{itemize}
+
+\vfill
+
+\begin{center}
+\Large \textbf{Block B: Panel data II, difference-in-differences}\\[0.4em]
+\normalsize When 11 is the effect, how to check it, how to price the doubt, and how wide it is.
+\end{center}
+\vfill
+\end{frame}
+
+% ====================================================================
+\section{Block B: Panel data II, difference-in-differences}
+% ====================================================================
+
+\begin{frame}{What Must Be True}
+
+\begin{assumption}{1.3}{Parallel trends}
+$\E[Y_{\text{post}}(0) - Y_{\text{pre}}(0) \mid T=1] = \E[Y_{\text{post}}(0) - Y_{\text{pre}}(0) \mid T=0]$.
+\end{assumption}
+
+\begin{assumption}{1.4}{No anticipation and no spillovers}
+$Y_{\text{pre}}(1) = Y_{\text{pre}}(0)$ for treated units, and comparison units' outcomes do not depend on whether treated units are treated.
+\end{assumption}
+
+\medskip
+
+\begin{itemize}
+  \item Parallel trends restricts \textbf{changes}, not levels: cohort 1 may be 30 bigger, provided the difference would have stayed 30.
+  \item It is untestable: cohort 1's post-period $Y(0)$ is never seen.
+  \item No anticipation fixes what ``pre'' means. If behaviour changed when adoption was announced, or while staff prepared for it, the pre-period must end before that.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{The Rollout File, Sentence by Sentence}
+
+\begin{center}
+\small
+\begin{tabular}{L{6.6cm}L{6.4cm}}
+\toprule
+\textbf{The file says} & \textbf{Which supports, or puts at risk} \\
+\midrule
+``Cohorts were assigned by region, in the order the regional managers signed off, after each region's data-privacy review.'' & Timing was not chosen by a store; but parallel trends becomes a claim about \emph{regions}. \\[0.4em]
+``Associates were trained on the assistant in weeks 51--52, in paid sessions held off the shop floor.'' & No anticipation, \emph{if} training did not thin service. If it did, weeks 51--52 are depressed and the DiD is biased up. \\[0.4em]
+``The comparison stores are the 89 whose regions had not yet signed off.'' & Same format and calendar; their levels do not matter. \\[0.4em]
+``Licences are tied to store handsets; no two stores share a catchment.'' & No spillovers. \\[0.4em]
+``Once the assistant took over stock checks, store managers re-planned their rotas.'' & A warning: staff hours are now caused by the assistant. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+\small The first sentence matters most: if a region's place in the sign-off order tracked where its sales were heading, parallel trends fails.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{Difference-in-Differences}
+
+\begin{result}{1.5}{DiD identifies the ATT}
+Under Assumptions 1.3--1.4,
+\[
+  \ATT = \{\E[Y_{\text{post}} \mid T=1] - \E[Y_{\text{pre}} \mid T=1]\} - \{\E[Y_{\text{post}} \mid T=0] - \E[Y_{\text{pre}} \mid T=0]\}.
+\]
+\end{result}
+
+\begin{center}
+\small
 \begin{tabular}{llr}
 \toprule
 \textbf{Comparison} & \textbf{Arithmetic} & \textbf{\textyen 000} \\
 \midrule
-Before/after & $196 - 181$ & \textcolor{warnred}{15} \\
+Before--after & $196 - 181$ & \textcolor{warnred}{15} \\
 Across stores & $196 - 155$ & \textcolor{warnred}{41} \\
 \textbf{Difference-in-differences} & $(196 - 181) - (155 - 151)$ & \textcolor{sbgreen}{\textbf{11}} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\pause
-\medskip
+\[
+15 = 11 + \underbrace{4}_{\text{what every store did anyway}}, \qquad 41 = 11 + \underbrace{30}_{\text{cohort 1 was bigger before}} .
+\]
 
-Each wrong number is the right one plus something else:
-\begin{align*}
-15 &= 11 + \underbrace{4}_{\text{what every store did anyway}} \\
-41 &= 11 + \underbrace{30}_{\text{cohort 1 stores were bigger before}}
-\end{align*}
-
-\pause
-
-Before/after keeps the \textbf{trend}. Across keeps the \textbf{level}. The DiD removes the level by differencing each group over time, and the trend by differencing the groups.
-
-\medskip
-
-\begin{center}
-Against \textyen 10{,}000: \textbf{11}. Not ``several times over'' --- by \textyen 1{,}000.
-\end{center}
+The before--after keeps the common \textbf{trend}; the cross-section keeps the \textbf{level gap}. The DiD removes both. Against 10: \textbf{11}, above by \textyen 1{,}000, not ``several times over''.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Three Steps for a Rollout}
+% [RELEASE R3: six quarters, and the store- and region-level spreads]
+\begin{frame}{Borrowing the Comparison's Trend}
 
-Index potential outcomes by the week a store goes live: $Y_{it}(g)$, with $g = \infty$ for a store that never does.
+Quarterly means, \textyen 000 (13 weeks each). Cohort 1 goes live at the start of Q5.
 
 \begin{center}
 \small
-\begin{tabular}{p{2.8cm}p{9.8cm}}
+\begin{tabular}{lrrrr|rr}
 \toprule
-\spinestep{Estimand} & $\text{ATT} = \E\bigl[Y_{it}(53) - Y_{it}(\infty) \mid G = 53\bigr]$, weeks 53--78: what the assistant did for cohort 1, against \textyen 10{,}000. \\[0.5em]
-\spinestep{Identification} & \textbf{No coin chose the go-live dates.} Identification comes from an \emph{assumption} about untreated trends: parallel trends, no anticipation, no spillovers. It can be checked in part, never proved. \\[0.5em]
-\spinestep{Estimation} & The $2 \times 2$ difference; TWFE for the full panel; SEs at the level the rollout was assigned --- the store, or the region. \\
+& Q1 & Q2 & Q3 & Q4 & Q5 & Q6 \\
+\midrule
+Cohort 1 & 176 & 178 & 180 & 182 & 192 & 200 \\
+Comparison & 146 & 148 & 150 & 152 & 154 & 156 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\bigskip
-
-M1--M6 had the design do step 2. M7--M9 argued it from a recorded rule or a coin. Today it rests on a claim about what \emph{would have} happened to trends.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Borrowing the Comparison's Trend}
-
-Quarterly means, \textyen 000. Cohort 1 adopts at the start of Q5.
-
-\begin{center}
-\begin{tikzpicture}[xscale=1.25, yscale=0.058]
+\begin{columns}[c]
+\begin{column}{0.52\textwidth}
+\begin{tikzpicture}[xscale=0.95, yscale=0.042]
 \draw[-{Stealth}] (0.5,140) -- (6.7,140) node[right, font=\scriptsize] {quarter};
 \draw[-{Stealth}] (0.5,140) -- (0.5,207);
-\foreach \x in {1,...,6} {\node[font=\scriptsize] at (\x,135) {Q\x};}
+\foreach \x in {1,...,6} {\node[font=\scriptsize] at (\x,134) {Q\x};}
 \foreach \y in {150,175,200} {\node[font=\scriptsize, anchor=east] at (0.5,\y) {\y}; \draw[gray!30] (0.5,\y) -- (6.5,\y);}
 \draw[dotted, thick] (4.5,140) -- (4.5,205);
 \draw[thick, gray!70!black] (1,146) -- (2,148) -- (3,150) -- (4,152) -- (5,154) -- (6,156);
@@ -317,218 +547,29 @@ Quarterly means, \textyen 000. Cohort 1 adopts at the start of Q5.
 \draw[thick, dashed, sbgreen!60] (4,182) -- (5,184) -- (6,186);
 \draw[{Stealth}-{Stealth}, warnred] (5.12,184) -- (5.12,192) node[midway, right, font=\scriptsize] {8};
 \draw[{Stealth}-{Stealth}, warnred] (6.12,186) -- (6.12,200) node[midway, right, font=\scriptsize] {14};
-\node[font=\scriptsize, sbgreen, anchor=west] at (1,171) {cohort 1};
-\node[font=\scriptsize, gray!70!black, anchor=west] at (1,154) {comparison};
-\node[font=\scriptsize, sbgreen!70, anchor=west] at (4.6,178.5) {cohort 1 had it not adopted};
 \end{tikzpicture}
-\end{center}
-
-\pause
-
-The dashed line is the comparison's path, \textbf{shifted up by the gap of 30}. That is the whole identifying move: cohort 1's own level, the comparison's trend.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{What Must Be True}
-
-\begin{alertblock}{Identifying assumption: parallel trends}
-Had cohort 1 not adopted, its sales would have changed by the same amount as the comparison stores':
-\[
-\E\bigl[Y_{\text{after}}(0) - Y_{\text{before}}(0) \mid \text{cohort 1}\bigr] \;=\; \E\bigl[Y_{\text{after}}(0) - Y_{\text{before}}(0) \mid \text{comparison}\bigr] .
-\]
-\end{alertblock}
-
-\bigskip
-\pause
-
-\textbf{Levels may differ. Trends may not.} Anything that shifts a store's level for good --- size, location, format --- cancels. Anything that moves a group's \emph{trend} does not.
-
-\bigskip
-
-Two more, less dramatic but not optional:
-\begin{itemize}
-    \item \textbf{No anticipation.} Cohort 1's ``before'' is not already affected by the assistant --- or by preparing for it.
-    \item \textbf{No spillovers.} The assistant in one store does not move a comparison store's sales.
-\end{itemize}
-\end{frame}
-
-% ====================================================================
-\begin{frame}[shrink=3]{The Assumptions, Sentence by Sentence}
-
-From Dana's rollout file:
-
-\bigskip
-
-\begin{center}
+\end{column}
+\begin{column}{0.44\textwidth}
 \small
-\begin{tabular}{p{6.8cm}p{6.2cm}}
-\toprule
-\textbf{The case says} & \textbf{Which buys --- or risks} \\
-\midrule
-``Cohorts were assigned by region, in the order the regional managers signed off, after each region's data-privacy review.'' & Timing not chosen by a store --- but parallel trends becomes a claim about \emph{regions}. \\[0.4em]
-``Associates were trained on the assistant in weeks 51--52, in paid sessions off the shop floor.'' & No anticipation, \emph{if} training did not thin the floor. \\[0.4em]
-``The comparison stores are the 89 whose regions had not yet signed off.'' & Same format and calendar; their levels do not matter. \\[0.4em]
-``Licences are tied to store handsets; no two stores share a catchment.'' & No spillovers. \\[0.4em]
-``Once the assistant took over stock checks, store managers re-planned their rotas.'' & A warning: staff hours are now \emph{caused} by the assistant. \\
-\bottomrule
-\end{tabular}
-\end{center}
+Green: cohort 1. Grey: comparison. Dashed: cohort 1 without the assistant, as parallel trends draws it, the comparison's path shifted up by the gap of \textbf{30}.
 
-\bigskip
-\pause
-
-\textbf{Hold onto the first sentence.} Why did cohort 1's region sign off first?
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Three Ways Parallel Trends Fails}
-
-\begin{center}
-\small
-\begin{tabular}{p{3.3cm}p{5.2cm}p{4.2cm}}
-\toprule
-\textbf{Failure} & \textbf{At the chain} & \textbf{Effect on the DiD} \\
-\midrule
-Different growth & cohort 1's region was growing faster anyway & credits the model with the region's growth \\[0.4em]
-A dip, then recovery & the region signed off \emph{because} of a bad quarter & credits the model with the rebound \\[0.4em]
-Composition & stores open or close in one group mid-panel & compares different stores before and after \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
-\pause
-
-None of these is about levels. Each is a reason the \textbf{order of sign-off} might be related to where sales were heading.
-
-\bigskip
-
-The first two leave traces \emph{before} adoption. The third is visible in the store counts. None is ruled out by the $2 \times 2$ itself.
-\end{frame}
-
-% ====================================================================
-\section{Estimation: Checking and Pricing}
-% ====================================================================
-
-% [RELEASE R3 — six quarters; worksheet attempt on the event-time row]
-\begin{frame}{Checking the Pre-Period}
-
-\begin{center}
-\small
-\begin{tabular}{lrrrr|rr}
-\toprule
-& \textbf{Q1} & \textbf{Q2} & \textbf{Q3} & \textbf{Q4} & \textbf{Q5} & \textbf{Q6} \\
-\midrule
-Cohort 1   & 176 & 178 & 180 & 182 & 192 & 200 \\
-Comparison & 146 & 148 & 150 & 152 & 154 & 156 \\
-\midrule
-Gap & 30 & 30 & 30 & 30 & 38 & 44 \\
-Gap minus Q4's gap & 0 & 0 & 0 & \textit{base} & \textcolor{sbgreen}{8} & \textcolor{sbgreen}{14} \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\pause
 \medskip
 
-\begin{itemize}
-    \item \textbf{Before adoption the gap does not move.} No differential growth, no dip. The pre-period is where the first two failures would show.
-    \item \textbf{After adoption it opens by 8, then 14.} The model ramps: below break-even in its first quarter, above in its second.
-    \item The four-cell DiD of 11 is the average of the two: a fact about the window, not the model.
-\end{itemize}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Store-Level Standard Errors}
-
-The panel is 119 stores $\times$ 78 weeks $=$ 9{,}282 store-weeks. A store's sales this week predict its sales next week.
-
-\bigskip
-
-Treating store-weeks as independent counts the same store 78 times: the standard error comes out \textbf{far too small}.
-
-\pause
-\bigskip
-
-\textbf{The fix, by hand.} Collapse each store to one number, its change $\Delta_i = \bar Y_{i,\text{after}} - \bar Y_{i,\text{before}}$:
-\[
-\widehat{\text{DiD}} = \bar\Delta_{\text{cohort 1}} - \bar\Delta_{\text{comparison}} = 15 - 4 = 11 .
-\]
-Now it is a two-sample comparison of 30 and 89 stores. With store-level standard deviations of 6 and 5:
-\[
-\SE = \sqrt{\tfrac{6^2}{30} + \tfrac{5^2}{89}} = \sqrt{1.20 + 0.28} = 1.22, \qquad 11 \pm 2.4 = [8.6,\; 13.4] .
-\]
-
-\pause
-
-\textbf{It straddles 10.} The unit of independence is the store, not the store-week. (If whole regions share shocks, not even the store is enough: next slide.)
-\end{frame}
-
-% ====================================================================
-\begin{frame}{When Regions Share Shocks}
-
-The first case sentence again: cohorts were assigned \textbf{by region}. Cohort 1 is 3 regions; the comparison stores are in 9.
-
-\bigskip
-
-A regional promotion, a local closure, a heatwave: shocks that hit every store in a region together. Then stores in a region are not independent either, and the store-level SE is \textbf{too small}.
-
-\pause
-\bigskip
-
-\textbf{The same fix, one level up.} Collapse to one change per region: 3 against 9. With region-level standard deviations of 3 and 2.5:
-\[
-\SE = \sqrt{\tfrac{3^2}{3} + \tfrac{2.5^2}{9}} = \sqrt{3.00 + 0.69} = 1.92, \qquad 11 \pm 2.23 \times 1.92 = [6.7,\; 15.3] ,
-\]
-using the $t$ distribution with $3 + 9 - 2 = 10$ degrees of freedom.
-
-\pause
-\medskip
-
-\begin{center}
-\textbf{Cluster at the level the treatment was assigned.} With twelve clusters the answer is honest and wide; the notes give the wild cluster bootstrap for this case.
-\end{center}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Flat Is Not Proof: Trend Sensitivity}
-
-Suppose cohort 1's region drifts up by $\delta$ per quarter relative to the comparison, too slowly to see before adoption. The DiD compares Q5--Q6 with Q3--Q4, two quarters apart, so it absorbs $2\delta$:
-
-\begin{center}
-\small
-\begin{tabular}{lrrrr}
-\toprule
-$\delta$ (\textyen 000 per quarter) & 0 & 0.25 & 0.5 & 1.0 \\
-\midrule
-DiD net of the drift, $11 - 2\delta$ & 11.0 & 10.5 & \textbf{10.0} & 9.0 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\pause
-\medskip
-
-\begin{alertblock}{The breakdown drift}
-$\delta^* = (11 - 10)/2 = 0.5$: \textyen 500 per store-week per quarter --- \textbf{\textyen 2{,}000 per store-week over a year}.
-\end{alertblock}
-
-\pause
-\medskip
-
-Would the pre-period have shown it? A drift of 0.5 moves the gap by 1.5 from Q1 to Q4, about one store-level standard error. \textbf{Flat pre-trends cannot rule it out.}
-
-\smallskip
-
-The report states $\delta^*$ and argues from the case whether a regional drift that large is plausible. It prices the doubt; it does not remove it.
+That is the whole identifying move: cohort 1's own level, the comparison's trend.
+\end{column}
+\end{columns}
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Parallel in Yuan, or in Percent?}
 
-Parallel trends is a claim in \textbf{some units}. The comparison grew by 4 on 151, which is $2.6\%$.
+\begin{result}{1.6}{Parallel trends depends on the scale}
+If parallel trends holds in levels with a common counterfactual change $\Delta \ne 0$ and the groups' pre-period means differ, it fails in logs (approximately, in percentage changes).
+\end{result}
 
-\bigskip
+\smallskip
+
+Here $\Delta = 4$ on pre-period means of 181 and 151: parallel in yuan means cohort 1 would have grown $4/181 = 2.2\%$ while the comparison grew $4/151 = 2.6\%$.
 
 \begin{center}
 \small
@@ -542,321 +583,265 @@ Same change in percent & $181 \times 155/151 = 185.8$ & $196 - 185.8 = 10.2$ \\
 \end{tabular}
 \end{center}
 
-\pause
-\bigskip
-
-When levels differ, the two cannot both hold. The choice moved the effect by \textyen 800, most of the margin over break-even.
-
-\bigskip
-
-Pick the scale in which the trends were parallel \emph{before} --- here yuan: the Q1--Q4 gaps are flat in yuan, and in percent they shrink from $20.5\%$ to $19.7\%$ --- and say so.
+The choice moves about \textyen 800 of a \textyen 1{,}000 margin. Choose the scale on which common shocks plausibly act, and check which one the pre-period supports: the Q1--Q4 gaps are flat in yuan (30 every quarter), while in percent they shrink from $20.5\%$ to $19.7\%$. Use yuan, and report the other: the decision is close.
 \end{frame}
 
 % ====================================================================
-\section{Estimation: Within and TWFE}
+\begin{frame}{With One Adoption Date, TWFE Is the DiD}
+
+\begin{result}{1.7}{With one adoption date, TWFE is the DiD}
+In a balanced panel with $n_1$ treated and $n_0$ comparison units, $\mathcal T_0$ pre- and $\mathcal T_1$ post-periods, and
+$\Delta_i = \bar Y_{i,\text{post}} - \bar Y_{i,\text{pre}}$, the TWFE coefficient is $\hat\beta = \bar\Delta_{T=1} - \bar\Delta_{T=0}$.
+\end{result}
+
+\medskip
+
+On all six quarters, $\mathcal T_0 = 4$ and $\mathcal T_1 = 2$, with 30 and 89 stores:
+
+\begin{center}
+\small
+\begin{tabular}{lrrr}
+\toprule
+& \textbf{Pre mean, Q1--Q4} & \textbf{Post mean, Q5--Q6} & $\bar\Delta$ \\
+\midrule
+Cohort 1 & 179 & 196 & 17 \\
+Comparison & 149 & 155 & 6 \\
+\midrule
+TWFE, store and quarter effects & & & $17 - 6 = \textbf{11}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+The group sizes change the demeaned values, not the coefficient. The regression adds convenience (many periods, standard errors, controls), not identification: it rests on Assumptions 1.3--1.4 exactly as the four cells do.
+\end{frame}
+
 % ====================================================================
+\begin{frame}{The Event Study}
 
-\begin{frame}{The Within Transformation}
+Replace $D_{it}$ by indicators $T_i\,\ind{t - t_0 = k}$ for each quarter relative to adoption, except a base $k = -1$ (Q4). In a balanced panel, $\hat\beta_k = (\bar Y_{1k} - \bar Y_{0k}) - (\bar Y_{1,-1} - \bar Y_{0,-1})$: each quarter's gap minus Q4's gap of 30.
 
-Your warm-up, as a model. Every store has its own level; every week has its own chain-wide shock:
-\[
-Y_{it} = \alpha_i + \lambda_t + \beta D_{it} + \varepsilon_{it}, \qquad D_{it} = \mathbf{1}\{\text{store } i \text{ live on the assistant in week } t\}.
-\]
+\begin{columns}[c]
+\begin{column}{0.52\textwidth}
+\begin{tikzpicture}
+\begin{axis}[width=\linewidth, height=4.2cm, xlabel={quarters relative to adoption, $k$}, ylabel={$\hat\beta_k$},
+  axis lines=left, xmin=-4.6, xmax=1.6, ymin=-4, ymax=18, xtick={-4,-3,-2,-1,0,1},
+  ytick={0,5,10,15}, tick label style={font=\scriptsize}, label style={font=\scriptsize}]
+\addplot[only marks, mark=*, sbgreen, error bars/.cd, y dir=both, y explicit]
+  coordinates {(-4,0) +- (0,2.385) (-3,0) +- (0,2.385) (-2,0) +- (0,2.385) (0,8) +- (0,2.385) (1,14) +- (0,2.385)};
+\addplot[only marks, mark=o, extgrey] coordinates {(-1,0)};
+\draw[dashed, extgrey] (axis cs:-4.6,0) -- (axis cs:1.6,0);
+\draw[thick, dashed, warnred] (axis cs:-4.6,10) -- (axis cs:1.6,10);
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.44\textwidth}
+\small
+$\hat\beta_{-4}, \hat\beta_{-3}, \hat\beta_{-2} = 0, 0, 0$; \ $\hat\beta_0 = 8$; \ $\hat\beta_1 = 14$.
 
-\pause
+\smallskip
+Bars: 95\% intervals, $\pm 1.96 \times 1.22$, using the store-level spread of the last part of this block. The base has none. Red: break-even.
+\end{column}
+\end{columns}
+
+\smallskip
 
 \begin{itemize}
-    \item Subtract each store's own mean: $\alpha_i$ disappears --- the \textbf{level} of 30.
-    \item Subtract each week's mean across stores: $\lambda_t$ disappears --- the \textbf{trend} of 4.
-    \item What is left of $D_{it}$ is variation within store \emph{and} within week. $\widehat\beta$ is the slope of what is left of $Y$ on it --- FWL again (M8).
+  \item \textbf{Pre-period coefficients are placebo checks}, near zero under parallel trends and no anticipation. Here exactly zero: no differential growth, no dip.
+  \item \textbf{Post-period coefficients trace the effect}: 8, below break-even, then 14. The DiD of 11 is their average.
 \end{itemize}
-
-\pause
-\bigskip
-
-This is \textbf{two-way fixed effects} (TWFE). The fixed effects are the DiD's two subtractions, written as a regression so that it runs on 9{,}282 rows with controls and standard errors attached.
-
-\small With store effects alone, the coefficient is cohort 1's own change, $15$: only cohort 1's cells vary in $D$. Week effects bring in the comparison's $+4$, giving $11$. One-pass demeaning is exact only in a \textbf{balanced} panel; with closures, run the regression with both sets of effects.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{With One Adoption Date, TWFE Is the $2 \times 2$}
+\begin{frame}{Flat Pre-Trends Are Weak Evidence}
 
-Double-demean the four cells: subtract row mean and column mean, add back the grand mean.
-
-\begin{center}
-\small
-\begin{tabular}{lrr|rr}
-\toprule
-& \multicolumn{2}{c|}{$\ddot Y$} & \multicolumn{2}{c}{$\ddot D$} \\
-& Before & After & Before & After \\
-\midrule
-Cohort 1 & $-2.75$ & $2.75$ & $-0.25$ & $0.25$ \\
-Comparison & $2.75$ & $-2.75$ & $0.25$ & $-0.25$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\vspace{-0.3em}
-\[
-\widehat\beta_{\text{TWFE}} = \frac{\sum \ddot D\,\ddot Y}{\sum \ddot D^{\,2}} = \frac{4 \times 0.25 \times 2.75}{4 \times 0.0625} = \textbf{11} = (196 - 181) - (155 - 151) .
-\]
-
-\pause
-
-\begin{alertblock}{With a single adoption date}
-TWFE \textbf{is} the four-cell difference-in-differences. Four cells, four parameters: the regression reproduces the table exactly. On all six quarters it is the post-period gap minus the pre-period gap, $41 - 30 = 11$.
-\end{alertblock}
-
-\small M11: when stores adopt on different dates, this equality breaks --- and not harmlessly.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{The Event-Study Regression}
-
-Replace the single $D_{it}$ by one indicator per quarter for cohort 1, leaving Q4 out as the base:
-\[
-Y_{it} = \alpha_i + \lambda_t + \sum_{k \neq 4} \beta_k\, \mathbf{1}\{i \in \text{cohort 1}\}\,\mathbf{1}\{t \in \text{Q}k\} + \varepsilon_{it} .
-\]
-
-\pause
-
-\begin{center}
-\small
-\begin{tabular}{lrrrrrr}
-\toprule
-& $\beta_1$ & $\beta_2$ & $\beta_3$ & \textit{base} & $\beta_5$ & $\beta_6$ \\
-\midrule
-Six-quarter table & 0 & 0 & 0 & --- & 8 & 14 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\bigskip
+Three reasons a flat pre-period does not prove parallel trends:
 
 \begin{itemize}
-    \item With one adoption date, each $\beta_k$ \textbf{is} the quarter-$k$ gap minus the Q4 gap: the last row of the six-quarter table.
-    \item The pre-period coefficients are the parallel-trends check; the post-period ones are the ramp.
-    \item One regression, both jobs --- and the base period is a choice to report.
+  \item \textbf{Power.} With few, noisy pre-periods a test can miss a drift large enough to explain the whole ``effect''.
+  \item \textbf{Selection on the test.} Reporting only analyses that pass it biases what gets reported.
+  \item \textbf{Timing.} A shock that coincides with adoption, such as a regional campaign launched the same week, leaves pre-trends untouched.
 \end{itemize}
+
+\medskip
+
+\textbf{How much drift can the pre-period rule out?} Under a linear drift of $\delta$ per quarter, $\beta_{-2} = -\delta$, $\beta_{-3} = -2\delta$, $\beta_{-4} = -3\delta$. Fitting $\delta$ to the three pre-period coefficients by least squares, treating them as independent with SE $1.22$ each:
+\[
+\hat\delta = -\frac{1 \cdot \hat\beta_{-2} + 2\,\hat\beta_{-3} + 3\,\hat\beta_{-4}}{1 + 4 + 9} = 0, \qquad
+\SE(\hat\delta) = \frac{1.22}{\sqrt{14}} = 0.33 .
+\]
+The 95\% interval is $[-0.64,\ 0.64]$: perfectly flat coefficients still allow a drift of \textyen 640 per store-week per quarter in either direction.
 \end{frame}
 
 % ====================================================================
-% [RELEASE R4 — the store-week panel; collect predictions before the ladder]
-\begin{frame}{The Store-Week Panel}
+\begin{frame}{Pricing the Doubt: The Breakdown Drift}
+
+\begin{result}{1.8}{Linear differential trend and the breakdown drift}
+If the counterfactual gap drifts linearly, $\E[Y_t(0) \mid T=1] - \E[Y_t(0) \mid T=0] = a + \delta t$, a DiD comparing post periods with mean
+$\bar t_{\text{post}}$ to pre periods with mean $\bar t_{\text{pre}}$ converges to $\ATT + \delta(\bar t_{\text{post}} - \bar t_{\text{pre}})$. Against a break-even $c$,
+the decision changes at the \emph{breakdown drift} $\delta^\ast = (\text{DiD} - c)/(\bar t_{\text{post}} - \bar t_{\text{pre}})$.
+\end{result}
 
 \begin{center}
 \small
-\begin{tabular}{lrl}
+\begin{tabular}{llrrr}
 \toprule
-& \textbf{Stores} & \textbf{On the model} \\
+\textbf{Estimate} & \textbf{Compares} & \textbf{DiD} & $\bar t_{\text{post}} - \bar t_{\text{pre}}$ & $\delta^\ast$ \\
 \midrule
-Cohort 1 & 30 & from week 53 \\
-Cohort 2 & 30 & not before week 79: comparison today \\
-Never scheduled & 59 & comparison \\
-Flagship & 1 & held out \\
-\midrule
-Store-weeks, weeks 1--78 & \multicolumn{2}{l}{$119 \times 78 = 9{,}282$} \\
+Four cells & Q5--Q6 with Q3--Q4 & 11 & $5.5 - 3.5 = 2$ & $(11 - 10)/2 = 0.5$ \\
+TWFE, six quarters & Q5--Q6 with Q1--Q4 & 11 & $5.5 - 2.5 = 3$ & $(11 - 10)/3 = 0.33$ \\
+Event study, $\hat\beta_1$ & Q6 with Q4 & 14 & $6 - 4 = 2$ & $(14 - 10)/2 = 2.0$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\bigskip
-
-\textbf{Predict before you look.} In pairs, write down:
-
-\begin{enumerate}
-    \item TWFE with store and week effects, weeks 1--78, \textyen 000
-    \item its standard error treating store-weeks as independent, and clustered by store
-    \item the event-study coefficients for Q5 and Q6
-\end{enumerate}
-
-\begin{center}\small Commit before the next slide.\end{center}
+The pre-period rules out drifts beyond $0.64$ only. The \textbf{average} margin does not survive a drift it cannot rule out (0.5 moves the Q1--Q4 gap by just $1.5$). The \textbf{second-quarter} effect needs a drift of 2.0, three times what the pre-period allows. Report $\delta^\ast$, and argue from the sign-off process whether a regional drift that large is plausible.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{The Ladder}
+% [RELEASE R4: store-weeks and serial correlation (the case part is to be rewritten to this frame's AR(1) numbers)]
+\begin{frame}{Store-Weeks Are Not Independent}
 
-\begin{center}
-\small
-\begin{tabular}{lr}
-\toprule
-\textbf{Estimate, weeks 1--78} & \textbf{\textyen 000 / store-week} \\
-\midrule
-Cohort 1, after minus before & \textcolor{warnred}{\NUM{16.1}{sim staffing-panel v1: cohort-1 mean, weeks 53--78 minus 27--52}} \\
-Cohort 1 minus comparison, after & \textcolor{warnred}{\NUM{42.3}{sim staffing-panel v1: post-period cross-section difference}} \\
-TWFE, store $+$ week effects & \NUM{12.4}{sim staffing-panel v1: TWFE on cohort 1 and 89 comparison stores, weeks 1--78} \\
-\quad SE, store-weeks independent \;/\; clustered by store & \NUM{0.3}{sim staffing-panel v1: iid OLS SE} \;/\; \NUM{1.2}{sim staffing-panel v1: store-clustered SE} \\
-Event study: largest $|\beta_k|$ before adoption; $\beta_5$; $\beta_6$ & \NUM{0.5}{sim staffing-panel v1: max abs pre-period quarter coefficient} ;\; \NUM{11.2}{sim staffing-panel v1: Q5 coefficient} ;\; \NUM{13.8}{sim staffing-panel v1: Q6 coefficient} \\
-\bottomrule
-\end{tabular}
-\end{center}
+The panel has $119 \times 78 = 9{,}282$ store-weeks. A store's sales this week predict its sales next week, and $D_{it}$ is constant within long blocks. A standard error that treats store-weeks as independent counts the same store many times.
 
-\pause
+\bigskip
 
-\begin{itemize}\small
-    \item Store and week effects took out the level and the trend, as on the four cells.
-    \item Clustering by store multiplied the SE by four. The interval now reaches down to break-even.
-    \item Pre-period coefficients are flat; the ramp is there, faster than the hand table's.
+\textbf{How much too small?} Suppose a store's weekly shocks, net of its level and the chain's week, have variance $\sigma^2$ and follow an AR(1) with autocorrelation $0.8$. Its change $\Delta_i$, after-mean minus before-mean over 26 weeks each, then has
+\[
+\Var(\Delta_i) = 6.70 \times \sigma^2\Bigl(\tfrac{1}{26} + \tfrac{1}{26}\Bigr),
+\]
+where $\sigma^2(\frac1{26} + \frac1{26})$ is what independence implies. The independent-weeks standard error is too small by $\sqrt{6.70} = 2.59$.
+
+\bigskip
+
+The fix does not need the AR(1), or any model of the correlation over time: give each store \textbf{one} number.
+\end{frame}
+
+% ====================================================================
+\begin{frame}{One Change per Store}
+
+\begin{result}{1.9}{Collapsing to one change per unit}
+If units are independent, $\bar\Delta_{T=1} - \bar\Delta_{T=0}$ has $\SE = \sqrt{s_1^2/n_1 + s_0^2/n_0}$ with $s_d$ the standard deviation of $\Delta_i$ in
+group $d$, whatever the correlation of a unit's outcomes over time.
+\end{result}
+
+\medskip
+
+Store-level changes have standard deviations of \textbf{6} in cohort 1 and \textbf{5} in the comparison:
+\[
+\SE = \sqrt{\tfrac{6^2}{30} + \tfrac{5^2}{89}} = \sqrt{1.20 + 0.28} = 1.22, \qquad 11 \pm 1.96 \times 1.22 = [8.6,\ 13.4] .
+\]
+
+\begin{itemize}
+  \item \textbf{It straddles 10.} In margin, $0.25 \times \text{lift} - 2{,}500$: from $-$\textyen 350 to $+$\textyen 850 per store-week.
+  \item The independent-weeks SE would be $1.22/2.59 = 0.47$, with interval $[10.1,\ 11.9]$: clear of break-even, falsely.
+  \item With one adoption date, this is asymptotically the TWFE SE clustered by store.
 \end{itemize}
 \end{frame}
 
 % ====================================================================
-\section{The Report}
-% ====================================================================
+\begin{frame}{Cluster Where Treatment Was Assigned}
 
-% [RELEASE R5 — the analyst's draft; audit attempt before the answers]
-% [RELEASE R5 — the analyst's draft; audit attempt before the answers]
-\begin{frame}{The Analyst's Draft}
-
-Seven sentences from the draft memo. \textbf{In pairs:} for each, say what is wrong, or that nothing is.
+Cohorts were assigned \textbf{by region}, and regions share shocks: a regional promotion, a local closure, a heatwave. Then stores in a region are not independent either. Cluster at the level at which treatment was assigned and shocks are shared.
 
 \bigskip
 
-\begin{enumerate}\small
-    \item ``Cohort 1 sales rose by \textyen 16{,}100 per store-week after going live.''
-    \item ``On 9{,}282 store-weeks the effect is significant at $p < 0.001$ (SE 0.3).''
-    \item ``We control for weekly staff hours, which differ across stores.''
-    \item ``Stores that closed during the period were dropped.''
-    \item ``The pre-period is weeks 1--52.''
-    \item ``Pre-period coefficients are flat, so parallel trends holds.''
-    \item ``The vendor's dashboard confirms the result: assisted sales of \textyen 38{,}000 per store-week.''
-\end{enumerate}
+Cohort 1 is in 3 regions; the comparison stores are in 9. Region-level changes have standard deviations of \textbf{3} and \textbf{2.5}:
+\[
+\SE = \sqrt{\tfrac{3^2}{3} + \tfrac{2.5^2}{9}} = \sqrt{3.00 + 0.69} = 1.92, \qquad 11 \pm 2.23 \times 1.92 = [6.7,\ 15.3],
+\]
+with the $t$ critical value for $3 + 9 - 2 = 10$ degrees of freedom. In margin: $-$\textyen 825 to $+$\textyen 1{,}325 per store-week.
 
 \bigskip
 
-\begin{center}\small Commit before the next slide.\end{center}
+With few clusters, use $t$ critical values with cluster-based degrees of freedom, or the wild cluster bootstrap. Twelve clusters give an honest interval, and a wide one.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{The Audit, Answered}
+\begin{frame}{A Warning: Staggered Timing}
+
+Cohort 2 goes live in week 79, the start of Q7. At the next review, stores will have \textbf{several adoption dates}, and TWFE with a single $D_{it}$ still runs. It no longer equals one clean DiD: it averages many two-by-two comparisons, some using \textbf{already-treated} stores as controls for later adopters.
+
+\bigskip
+
+\textbf{One such comparison:} cohort 2 against cohort 1, from Q6 to Q7. Suppose parallel trends holds exactly, cohort 2's first-quarter effect is 8, as cohort 1's was, and cohort 1's own effect is still growing, from 14 to 18. Then the comparison gives
+\[
+8 - (18 - 14) = 4, \qquad \text{not } 8 .
+\]
+The growth in the control's effect is subtracted.
+
+\bigskip
+
+If effects grow over time, such comparisons subtract part of the effect, some get \textbf{negative weight}, and the estimate can be badly biased, even of the wrong sign. Use a design built for staggered timing: compare each cohort only with not-yet-treated or never-treated stores, and report effects by cohort.
+\end{frame}
+
+% ====================================================================
+% [RELEASE R5: the analyst's draft memo]
+\begin{frame}{Six Errors, in Dana's File}
+
+\begin{pitfall}{DiD errors}
+Before--after on units chosen for a bad period; controls changed by the treatment; unit-period SEs; a base period inside an anticipation window; reading flat pre-trends as proof; TWFE with staggered adoption.
+\end{pitfall}
 
 \begin{center}
 \scriptsize
-\begin{tabular}{p{4.0cm}p{8.9cm}}
+\begin{tabular}{L{3.6cm}L{9.4cm}}
 \toprule
-\textbf{Sentence} & \textbf{Problem, and the fix} \\
+\textbf{Error} & \textbf{Where it would enter here, and the fix} \\
 \midrule
-1. Rose by 16.1 & Before/after: keeps the chain's own trend. Report the DiD. \\[0.3em]
-2. $p < 0.001$ on 9{,}282 rows & Store-weeks are not independent. Cluster by store: SE 1.2, and the interval reaches 10. \\[0.3em]
-3. Controls for staff hours & Managers re-planned rotas \emph{because of} the assistant: a post-treatment control (M7). It absorbs part of the effect. \\[0.3em]
-4. Closed stores dropped & Fine only if closures are unrelated to the rollout. Report closures by group; a balanced panel changes who is compared. \\[0.3em]
-5. Pre-period weeks 1--52 & Training ran in weeks 51--52, off the floor. If it thinned service, those weeks are not ``before''. End the base period at week 50 and check. \\[0.3em]
-6. Flat, so it holds & Flat pre-trends are consistent with parallel trends, not proof. Report $\delta^*$. \\[0.3em]
-7. The dashboard confirms & Usage, not impact: no comparison group, counts sales that would have happened anyway, and it is the vendor's number. It confirms nothing. \\
+Units chosen for a bad period & A pilot in the worst-Q4 stores shows $+6$ from nothing. Ask why the treated were chosen when they were. \\
+Controls changed by the treatment & Staff hours, after managers re-planned rotas around the assistant. Leave them out (Meeting 7). \\
+Unit-period SEs & SE 0.47 on 9{,}282 store-weeks. One change per store: 1.22; by region: 1.92. \\
+Base period in an anticipation window & Training ran in weeks 51--52, off the floor. End the pre-period at week 50 and check. \\
+Flat pre-trends as proof & They allow a drift of 0.64 per quarter. Report $\delta^\ast$: 0.5 for the average. \\
+TWFE with staggered adoption & The next review, with cohort 2 live. Compare with not-yet-treated or never-treated stores. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\pause
-\medskip
-
-\small Four are about \textbf{what was compared}; one about \textbf{the interval}; one about \textbf{what was assumed}; one about \textbf{whose number it is}. None is about the estimator.
+\small A seventh, outside the method: the vendor's ``assisted sales'' measure use, not effect.
 \end{frame}
 
 % ====================================================================
-\section{The Decision}
-% ====================================================================
-
-\begin{frame}{Dana's Table}
-
-In \textyen 000 per store-week; break-even $10$.
+\begin{frame}{Dana's Decision}
 
 \begin{center}
-\scriptsize
-\begin{tabular}{llrl}
+\small
+\begin{tabular}{lrrrr}
 \toprule
-\textbf{Estimate} & \textbf{What it contains} & \textbf{Lift} & \textbf{Reading} \\
+\textbf{Estimate} & \textbf{Lift (\textyen 000)} & \textbf{Margin (\textyen)} & $\delta^\ast$ & \textbf{95\% interval} \\
 \midrule
-After minus before & effect $+$ chain trend & \NUM{16.1}{sim v1: cohort-1 before/after} & \textcolor{warnred}{not causal} \\
-Cohort 1 minus comparison & effect $+$ level gap & \NUM{42.3}{sim v1: post cross-section} & \textcolor{warnred}{not causal} \\
-TWFE, store-clustered & average, 26 post-weeks & \NUM{12.4 (1.2)}{sim v1: TWFE; store-clustered SE} & \textcolor{sbgreen}{above}; interval touches 10 \\
-Event study, Q5 / Q6 & first / second quarter & \NUM{11.2}{sim v1: Q5} / \NUM{13.8}{sim v1: Q6} & ramp; Q6 clearly above \\
-Trend sensitivity & drift that erases the margin & \NUM{0.8}{(TWFE $-$ 10)/3: sim TWFE; pre and post midpoints three quarters apart} per quarter & state and argue \\
+First quarter live, $\hat\beta_0$ & 8 & $-500$ & & \\
+Second quarter live, $\hat\beta_1$ & 14 & $+1{,}000$ & 2.0 & $[11.6,\ 16.4]$ \\
+Average over weeks 53--78 & 11 & $+250$ & 0.5 & $[8.6,\ 13.4]$ \\
 \bottomrule
 \end{tabular}
+
+\scriptsize Margin per store-week $= 0.25 \times \text{lift} - 2{,}500$. Intervals clustered by store.
 \end{center}
-
-\pause
-\medskip
-
-\small The hand table and the panel agree on the \textbf{sign}, the \textbf{ramp} and a \textbf{thin} average margin. The average hides that the second quarter is where the money is.
-\vspace{1.0em}
-\end{frame}
-
-% ====================================================================
-\begin{frame}{The Recommendation}
 
 \begin{block}{To Dana}
-Confirm cohort 2 for week 79 and keep the regions on their schedule. The event study puts the lift at \NUM{11.2}{sim v1: Q5} then \NUM{13.8}{sim v1: Q6} thousand per store-week against a break-even of 10 --- in margin, about $+$\textyen 300 then $+$\textyen 950 per store-week.
+Confirm cohort 2 for week 79. The assistant loses margin in a store's first quarter and earns about \textyen 1{,}000 a store-week from its second; the second-quarter effect survives any drift the pre-period allows.
 \end{block}
 
-\pause
-
-\textbf{Four sentences the memo must contain.}
-\begin{enumerate}\small
-    \item The estimate assumes cohort 1's region would have tracked the comparison stores. Pre-period coefficients are flat; a regional drift of \textyen \NUM{800}{sim v1: trend-sensitivity breakdown, yuan per store-week per quarter} per store-week per quarter would erase the average margin.
-    \item Clustered by region, the interval is wider still and includes 10.
-    \item Cohort 2's regions signed off \emph{later}. If sign-off tracked expected sales, cohort 1 overstates what cohort 2 will see.
-    \item The vendor's ``assisted sales'' measure use, not effect, and are not part of the evidence.
-\end{enumerate}
-
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Key Takeaways}
-
+\small
 \begin{itemize}
-    \item \spinestep{Estimand.} Write it with go-live dates: $\E[Y_{it}(53) - Y_{it}(\infty) \mid G = 53]$. A vendor's usage metric is not an estimate of it.
-    \item \spinestep{Identification.} No design chose the dates: parallel trends, no anticipation and no spillovers are \emph{assumptions}. Tie them to why the treated were chosen \emph{when} they were. The pre-period checks; it does not prove --- report $\delta^*$.
-    \item \spinestep{Estimation.} Before/after keeps the trend; across keeps the level; the DiD removes both (15 and 41 against 11). With one adoption date, TWFE is the $2 \times 2$. The unit of independence is the store, or the region.
-    \item \textbf{Put the interval in margin.} \textyen 12{,}400 of sales, SE 1{,}200, is $-$\textyen 350 to $+$\textyen 850 a store-week.
+  \item It assumes cohort 1's regions would have tracked the comparison stores. Clustered by region, the average's interval includes 10.
+  \item Cohort 2's regions signed off later: if sign-off tracked expected gains, cohort 1 overstates what cohort 2 will see. Plan the next review for two cohorts.
 \end{itemize}
 \end{frame}
 
 % ====================================================================
-\begin{frame}{Take-Home Panel Core}
+\begin{frame}{Summary}
 
-Done at home (30--45 minutes), submitted with Notebook 10 within 72 hours. Everything you need is on these slides; nothing is left to the lab.
-
-\bigskip
-
-\begin{enumerate}\small
-    \item From the six-quarter table, compute each quarter's gap minus the Q4 gap, and the post-period average DiD. Say what the average hides.
-    \item Double-demean the four cells by hand and confirm $\widehat\beta_{\text{TWFE}} = 11$.
-    \item With store-level standard deviations of 6 and 5, compute the 95\% interval for the DiD. Does it clear 10?
-    \item Trend sensitivity: find $\delta^*$ for the post-average DiD, and for the Q6 gap alone (base Q3--Q4). Which conclusion is more robust, and why?
-    \item Rewrite the analyst's memo in five sentences: the number, its interval, the assumption, $\delta^*$, and the decision.
-\end{enumerate}
-
-\bigskip
-
-\textbf{Submit} with Notebook 10. \quad \textbf{IV or panel project pairs:} revised identification plan due 72 hours after today.
-\end{frame}
-
-% ====================================================================
-\begin{frame}{Lab 4: An Agent That Reviews an Experiment}
-
-The simulated experimentation platform from Lab 3. Fifty minutes.
-
-\medskip
-
-\begin{center}
-\scriptsize
-\begin{tabular}{rlp{8.6cm}}
-\toprule
-\textbf{Min} & \textbf{Slot} & \textbf{Task} \\
-\midrule
-5  & Task and specification & The agent's job: read an experiment's design document and draft readout, query the records, and return a verdict with its evidence. Write the verdict schema. \\
-10 & Demonstration & A loop: plan, call a tool, record what was found, decide whether to continue. \\
-25 & Build & Your loop, with the Lab 3 tools, on three experiments: one clean, one with a sample-ratio mismatch, one with a switched primary metric. \\
-7  & Verify & Against the known answers: did it flag the two problems, and leave the clean one alone? \\
-3  & Interpret & One sentence: which check the agent skipped, and how the evidence log showed it. \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\small \textbf{Close:} an agent's verdict is only as good as the checks it runs --- steps 1--3, automated. This is P4, released tonight. \textbf{Lab 5} (self-paced, evaluation-driven development) is released too. Model, access and platform details: the lab handout and syllabus appendix.
+\begin{itemize}
+  \item \spinestep{Estimand.} $\ATT = \E[Y_{\text{post}}(1) - Y_{\text{post}}(0) \mid T = 1]$, with adoption-date potential outcomes $Y_{it}(g)$, against a break-even of 10. A vendor's usage count is not an estimate of it.
+  \item \spinestep{Identification.} No coin chose the dates. Parallel trends (on a stated scale), no anticipation and no spillovers are assumptions, tied to why the treated adopted when they did. Fixed effects remove stable levels and common shocks, not differential trends or a dip before adoption.
+  \item \spinestep{Estimation.} Before--after keeps the trend (15), across keeps the level (41), the DiD removes both (11). With one adoption date, TWFE is the DiD; an event study traces the effect (8, then 14) and gives placebo pre-period coefficients.
+  \item \spinestep{Inference.} One change per store (SE 1.22, not 0.47); cluster where treatment was assigned (by region, $[6.7, 15.3]$). Report the breakdown drift (0.5 for the average, 2.0 for the second quarter) against what the pre-period rules out (0.64).
+  \item \textbf{With several adoption dates, TWFE can weight effects negatively.} Use a design built for staggered timing.
+\end{itemize}
 \end{frame}
 
 \end{document}

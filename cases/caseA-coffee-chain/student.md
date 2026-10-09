@@ -265,7 +265,7 @@ Two models of the two-segment world, each fitted to 10,000 members split 50/50:
 2. Compute each model's outcome RMSE. (Hint: with the true cell purchase rates $p$, the irreducible part is the average of $p(1-p)$ over the four cells.)
 3. Each model ranks members by predicted lift and sends 5,000 coupons. What does each list earn? (If a model ties everyone, it picks at random.)
 4. Commit: how much does RMSE differ, and how much does the decision differ?
-5. The same lesson, one row at a time. For lapsed members the truth is $\mu_1 = 0.30$, $\mu_0 = 0.10$. T-learner A predicts 0.34 and 0.14; T-learner B predicts 0.32 and 0.08. Which fits each outcome better? Which gets the effect right?
+5. The same lesson, one row at a time. For lapsed members the truth is $\mu_1 = 0.30$, $\mu_0 = 0.10$. T-learner A predicts 0.35 and 0.15; T-learner B predicts 0.33 and 0.07. Which fits each outcome better? Which gets the effect right?
 
 ### Part M3-R4. The Q2 export
 
@@ -283,7 +283,7 @@ Four learners, each fitted on the same training folds:
 
 **Task.** In pairs, predict and commit: which learner has the best out-of-fold outcome RMSE? Which list of 5,000 earns the most? Are they the same learner?
 
-### Part M3-R6. Lab 2 opener: a column written by a language model
+### Part M3-R6. Lab 3 opener: a column written by a language model
 
 Marketing has a new idea. Members leave free-text feedback in the app ("moved offices, not near a store any more", "too expensive now", "love the new oat latte"). The data science team proposes to have a **language model read each member's text and label them "drifting away: yes/no"**, then use the label as the targeting field in place of the CRM's lapsed flag.
 
@@ -308,7 +308,7 @@ Store managers will not run a black-box score. They want a **card**: at most fou
 
 Last year a consultant searched hundreds of segment definitions in a test like this one and reported a "hidden gem" segment with a spectacular lift. The rollout delivered a fraction of it.
 
-This time the CFO has set a rule. Lin's Region 2 test (a 50/50 draw, as in Q2) is split in two:
+This time the CFO has set a rule. Lin's Region 2 coupon test (4,000 members, a 50/50 draw, as in Q2) is split at random into two halves of 2,000:
 
 | Step | Data | Output |
 |---|---|---|
@@ -352,36 +352,41 @@ On half A, Lin's causal tree (all 14 fields, depth 2) returns four leaves:
 
 (Executives average a purchase rate of 0.50 with the coupon, hence their break-even.)
 
-**Task. In pairs, in writing, now:** submit the partition (four leaf definitions) and the card you would print. Half B's outcomes are released only after every pair has submitted.
+**Tasks**
+1. **In pairs, in writing, now:** submit the partition (four leaf definitions) and the card you would print. Half B's outcomes are released only after every pair has submitted.
+2. **Two noisy splits.** On a discovery sample with an overall lift of 0.10, split A shows leaf lifts (0.02, 0.18) and split B (0.09, 0.11), each on half the members. Score both with $\Delta = 0.5(\hat\tau_L - 0.10)^2 + 0.5(\hat\tau_R - 0.10)^2$. Which wins? Fresh data give split A (0.08, 0.12). What happened to the gap?
+3. By hand: 20 candidate segments all have a true lift of 0.125, each estimated with an SE of 0.04. The expected largest of 20 standard normal draws is 1.87. What lift does the best-looking segment show on average? Compare it with the analyst–high break-even.
+4. **A second split costs information.** A leaf has 250 members per arm, buying at 0.50 with the coupon and 0.30 without. Compute the SE of its lift. Split it into two halves with the same rates. What are the new SEs? What would all 500 per arm give, and what was gained by splitting?
 
 ### Part M4-R4. H2: the same leaves on half B
 
-| Leaf | Half-B lift | SE |
+Buyers / members in each arm:
+
+| Leaf | Coupon | No coupon |
 |---|---:|---:|
-| Analyst, low spend | 0.20 | 0.03 |
-| Analyst, high spend | 0.18 | 0.04 |
-| Executive, app user | 0.04 | 0.05 |
-| Executive, no app | 0.06 | 0.03 |
+| Analyst, low spend | 50 / 250 | 0 / 250 |
+| Analyst, high spend | 125 / 250 | 80 / 250 |
+| Executive, app user | 100 / 200 | 92 / 200 |
+| Executive, no app | 150 / 300 | 132 / 300 |
 
 **Tasks**
-1. Revise your card. Which lines changed, and in which direction did every leaf the search liked move?
-2. **Two noisy splits.** On a discovery sample with an overall lift of 0.10, split A shows leaf lifts (0.02, 0.18) and split B (0.09, 0.11), each on half the members. Score both with $\Delta = 0.5(\hat\tau_L - 0.10)^2 + 0.5(\hat\tau_R - 0.10)^2$. Which wins? Fresh data give split A (0.08, 0.12). What happened to the gap?
-3. **A second split costs information.** A leaf has 100 members per arm, buying at 0.30 with the coupon and 0.10 without. Compute the SE of its lift. Split it into two halves with the same rates. What are the new SEs, and what was gained?
-4. By hand: 20 candidate segments all have a true lift of 0.125, each estimated with an SE of 0.04. The expected largest of 20 standard normal draws is 1.87. What lift does the best-looking segment show on average? Compare it with the analyst–high break-even.
+1. Compute each leaf's half-B lift and its SE.
+2. Revise your card. Which lines changed, and in which direction did every leaf the search liked move? What happened to the leaf the search disliked?
 
 ### Part M4-R5. H3: the card
 
-Honest 95% intervals, from half B:
+Honest intervals from half B. The 98.75% intervals (lift ± 2.50 SE) hold all four lines at once with probability 0.95.
 
-| Segment | Honest 95% CI | Break-even |
-|---|---|---:|
-| Analyst, low spend | [0.14, 0.26] | 0.067 |
-| Analyst, high spend | [0.10, 0.26] | 0.167 |
-| Executive (the two leaves merged) | [−0.01, 0.12] | 0.117–0.217 |
+| Leaf | 95% interval | 98.75% interval | Break-even |
+|---|---|---|---:|
+| Analyst, low spend | [0.15, 0.25] | [0.14, 0.26] | 0.067 |
+| Analyst, high spend | [0.10, 0.26] | [0.07, 0.29] | 0.167 |
+| Executive, app user | [−0.06, 0.14] | [−0.08, 0.16] | 0.167 |
+| Executive, no app | [−0.02, 0.14] | [−0.04, 0.16] | 0.167 |
 
-A causal forest on the same data says that for 38% of analyst–high members the lower bound of their estimated effect clears 0.167.
-
-**Task.** Write the card. For the analyst–high line answer three questions: is the effect real? does it pay? does a sub-segment clearly pay?
+**Tasks**
+1. Write the card. For the analyst–high line answer two questions: is the effect real? does it pay?
+2. A colleague proposes to merge the two executive leaves into one line and re-estimate it on half B. May the card print them as one line? May the merged estimate be reported?
 
 ---
 
@@ -393,11 +398,9 @@ The 5,000 Q3 coupons go out next month. The chain has just licensed an **automat
 
 | List | How it was built |
 |---|---|
-| Segment rule | All lapsed members. No model. |
-| T-learner | Top 5,000 by predicted lift from boosted arm models (the engine) |
-| Causal forest | Top 5,000 by the forest's predicted lift (the engine) |
-
-The engine also offers to choose its own cut-off, in place of the fixed 5,000.
+| Segment rule | All 5,000 lapsed members. No model. |
+| Forest, top 5,000 | The engine: top 5,000 by a causal forest's predicted lift (Meeting 4) |
+| Forest, engine's cut-off | The same ranking, cut where the engine itself chooses |
 
 The CFO asks one question: *what will each list earn, compared with sending nothing?* Nobody's individual effect is observed. The CFO's rule: nothing the engine proposes goes live until it has been valued on a fold of the Q2 test it has never seen. That fold's outcomes stay locked until each list is **frozen**.
 
@@ -446,24 +449,32 @@ A small evaluation fold of 80 members, 50/50 within each segment:
 
 ### Part M5-R4. The fold is unlocked
 
-Gain per member of the base, ¥:
+The forest split each segment in two groups of 2,500:
 
-| List | Selection fold | Evaluation fold (SE) |
-|---|---:|---:|
-| Segment rule (lapsed) | 1.46 | 1.53 (0.21) |
-| T-learner, top 5,000 | 1.88 | 1.61 (0.22) |
-| Forest, top 5,000 | 2.07 | 1.79 (0.21) |
-| Forest, cut-off chosen by the engine on the selection fold | 2.31 | 1.82 (0.23) |
+| Group | Rate without | Rate with | Lift | Net per coupon (¥) |
+|---|---:|---:|---:|---:|
+| L1 (lapsed) | 0.05 | 0.40 | 0.35 | 6.50 |
+| L2 (lapsed) | 0.15 | 0.20 | 0.05 | −0.50 |
+| A1 (active) | 0.75 | 0.95 | 0.20 | −3.50 |
+| A2 (active) | 0.75 | 0.65 | −0.10 | −9.50 |
+
+Gain per member of the base (¥) on an evaluation fold of 5,000, each list frozen before the fold was opened:
+
+| List | Groups | Gain | SE | Gain minus segment rule | Paired SE | Unpaired SE |
+|---|---|---:|---:|---:|---:|---:|
+| Segment rule | L1, L2 | 1.50 | 0.20 | | | |
+| Forest, top 5,000 | L1, A1 | 0.75 | 0.35 | −0.75 | 0.36 | 0.41 |
+| Forest, engine's cut-off (2,500) | L1 | 1.625 | 0.14 | +0.125 | 0.15 | 0.25 |
 
 **Tasks**
-1. Which number goes in the CFO's forecast for each list, and why?
-2. Which list fell most between the two folds? Explain.
-3. The forest and segment lists overlap heavily and were valued on the same members. Why can't you combine their two SEs to judge the difference between them? What would you compute instead?
+1. Why does the forest's top 5,000 earn less than the segment rule, although the forest ranks effects better?
+2. On the selection fold the engine compared ten cut-offs and reported the best. Why would its selection-fold value have been too high, even if each cut-off's estimate was unbiased? Which number goes in the CFO's forecast?
+3. Why can't you combine the two lists' SEs as if independent to judge the difference between them? What does pairing change here?
 4. Write two sentences to the CFO: which list goes live, how sure you are, and the fallback.
 
 ---
 
-## Meeting 6: Caps, Budgets and Spending Risk
+## Meeting 6: Who Gets the Push?
 
 ### Part M6-R1. The Q4 push
 
@@ -486,7 +497,6 @@ From the test log and the Q4 plan:
 **Tasks.** Build the list one friction at a time; each step adds one thing.
 1. **Free push.** Suppose, for now, that the push and its coupon cost nothing: ignore redemptions and opt-outs. Who gets one? Why could you *not* use these effects for a push sent without the coupon?
 2. **A hidden cost.** 1% of notified members switch notifications off for good, at a long-run cost of ¥150 each. What is the cost per push, and the lift threshold? Who gets a push?
-3. **A cap.** Product management caps pushes at 1,000 a day. The segment table cannot rank 5,000 analysts for 1,000 slots. The Meeting 4 forest splits them: 1,000 at a lift of 0.30, 2,000 at 0.20, 2,000 at 0.15. What does the capped list earn with and without the forest?
 
 ### Part M6-R2. The coupon is paid on redemption
 
@@ -502,7 +512,8 @@ Now add the ¥5 coupon. It is paid only when the member buys. Push-test purchase
 **Tasks**
 1. For each cell compute the expected cost per push (opt-out plus expected coupon payout) and the net value.
 2. Split the net value into three parts: incremental buyers, the "sure-thing" cost, and the opt-out cost. Why are two cells with the same lift no longer interchangeable?
-3. If every analyst gets a push, what is the expected total cost? Finance asks: *"What is the chance we exceed ¥18,000?"* What do you need in order to answer?
+3. **A cap.** Product management caps pushes at 1,000 a day. On a one-day send, 5,000 analysts with positive net value compete for 1,000 slots. A causal forest splits the 2,500 analyst–low members three ways: 500 at a lift of 0.30, 1,000 at 0.20 and 1,000 at 0.15. What does the capped list earn with and without the forest?
+4. If every analyst gets a push, what is the expected total cost? Finance asks: *"What is the chance we exceed ¥18,000?"* What do you need in order to answer?
 
 ### Part M6-R3. Finance's memo
 
@@ -521,7 +532,7 @@ Now add the ¥5 coupon. It is paid only when the member buys. Push-test purchase
 
 ### Part M7-R1. The programme on trial
 
-In Q3 the engine's targeting rule went live. It sent a ¥10 coupon to **40%** of the loyalty base, choosing members by a **score** built from recency, tier and spend. A daily contact cap throttled the sends.
+In Q3 the engine's targeting rule went live. It sent the **5,000** ¥10 coupons of Meeting 3, half the 10,000-member base, choosing members by a **score** built from recency, tier and spend. A daily contact cap throttled the sends.
 
 The CFO wants the programme reviewed. Sales has pulled the Q3 logs:
 
@@ -549,8 +560,8 @@ The scoring rule mostly sent coupons to lapsed members, the ones Meetings 3–5 
 
 | Segment | Members | Coupon share | Coupon | No coupon | Purchase rate (coupon / no coupon) |
 |---|---:|---:|---:|---:|---|
-| Active | 500 | 0.20 | 100 | 400 | 0.80 / 0.75 |
-| Lapsed | 500 | 0.80 | 400 | 100 | 0.30 / 0.10 |
+| Active | 5,000 | 0.20 | 1,000 | 4,000 | 0.80 / 0.75 |
+| Lapsed | 5,000 | 0.80 | 4,000 | 1,000 | 0.30 / 0.10 |
 
 **Tasks. In pairs**
 1. Compute the overall purchase rate in each arm, then the difference within each segment.
@@ -558,6 +569,7 @@ The scoring rule mostly sent coupons to lapsed members, the ones Meetings 3–5 
 3. Compute the three averages the CFO could ask for (everyone, recipients, non-recipients). Which does *"keep the programme as run?"* need? Does it clear the break-even?
 4. Commit: does the CFO kill the programme?
 5. To estimate the effect on recipients, controls are reweighted by $e/(1-e)$: 0.25 for active controls and 4 for lapsed controls. How many *effective* controls does the estimate rest on? Use $(\sum w)^2 / \sum w^2$.
+6. *(Optional)* Regress purchase on the coupon and a lapsed dummy. What does the coefficient on the coupon estimate?
 
 ### Part M7-R3. The app-open column
 
@@ -576,20 +588,38 @@ Take a clean case: 1,000 customers, coupon **randomised** 50/50, and suppose the
 
 ### Part M7-R4. The real logs
 
-| | |
-|---|---:|
-| Customers in the Q3 export | 40,000 |
-| Received the coupon | 16,100 |
-| Recorded fields the rule read | 14 |
-| Purchase rate, coupon / no coupon | 0.41 / 0.60 |
+The engine's score reads **14 CRM fields** and cuts them into four bands; each band had a daily send probability, throttled by the cap. **The purchase column stays locked.**
 
-The rule is **banded**: a score from the 14 fields, cut into bands, with a daily send probability for each band, throttled by the cap. The top band was sent coupons on almost every day and the bottom band almost never. Bands in the middle were sent on some days and not others.
+| Band | Segment | Members | Coupon | No coupon |
+|---|---|---:|---:|---:|
+| 1 | active | 2,500 | 200 | 2,300 |
+| 2 | active | 2,500 | 800 | 1,700 |
+| 3 | lapsed | 2,500 | 1,550 | 950 |
+| 4 | lapsed | 2,500 | 2,450 | 50 |
+| Total | | 10,000 | 5,000 | 5,000 |
 
 **Tasks. In pairs**
-1. **Design first.** The purchase column stays locked. Using only the 14 fields and the coupon column, what would you do, and what would you decide, before anyone looks at a purchase?
-2. Write down the model you would fit once the outcomes open.
-3. Predict three estimated lifts: with no controls; from regressing purchase on coupon and the 14 fields linearly; from reweighting each customer by the inverse of their coupon probability. Against a break-even of 0.14, which ones keep the programme?
-4. The engine's rule decided who got a coupon. What does that make the rule, in this analysis?
+1. Reconstruct $\hat e$ by band and the ATT weights $\hat e/(1-\hat e)$.
+2. Which band's comparison is thin? Compute the effective number of non-recipients, $(\sum w)^2 / \sum w^2$.
+3. Trim at $[0.05, 0.95]$. Whom does the ATT now describe?
+4. Write the design record (estimand, estimator, trimming rule, balance check) before seeing any purchase.
+5. What does the engine's rule become in this analysis?
+
+### Part M7-R4b. Opening the outcomes
+
+Lin's design record is written and dated. The purchase column opens:
+
+| Band | Coupon: bought | No coupon: bought |
+|---|---:|---:|
+| 1 | 160 / 200 | 1,725 / 2,300 |
+| 2 | 640 / 800 | 1,275 / 1,700 |
+| 3 | 465 / 1,550 | 95 / 950 |
+| 4 | 735 / 2,450 | 5 / 50 |
+
+**Tasks. In pairs**
+1. Compute the pooled effect, the IPW effect on all recipients (all four bands), the trimmed effect (bands 1 to 3) and the effect in band 4.
+2. Each population has its own break-even, $10p_1/30$, where $p_1$ is its purchase rate with the coupon. Give each population's break-even and net per coupon.
+3. Write Lin's memo to the CFO: what to keep, what to stop, and what to report separately.
 
 ---
 

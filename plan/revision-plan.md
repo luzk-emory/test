@@ -52,40 +52,50 @@ There are two categories, and the course keeps them distinct.
 | Handout H2 | TARNet, CFR, DragonNet, the CEVAE critique, in-context estimators (Do-PFN), benchmark pitfalls |
 | M6 notes | Predict-then-optimise → decision-focused learning → policy learning, as one spectrum; policy learning as weighted classification |
 | **M9 (whole meeting)** | A: learned simulators. B: LLM-generated variables. Worked examples: courier-bonus pipelines on two simulators; LLM-coded review outcome with PPI |
-| Lab 1 | AI as **tool**: an LLM writes the A/B readout; students verify it with simulation tests |
-| Lab 4 | AI as **decision-maker**: an LLM ranks customers from text profiles, evaluated by IPW against model rules |
-| Lab 6 | AI as **analyst**: audit a tool-calling agent's observational analysis, then add a guardrail |
-| Lab 8 | AI as **source of data**: LLM labels versus gold, PPI, embeddings as DML controls, a leakage demo |
-| Lab 9 | AI as **intervention**: evaluate an AI staffing-tool rollout with DiD |
+| Lab 2 | AI as **tool**: an LLM writes the A/B readout; students verify it with simulation tests |
+| Lab 5 | AI as **decision-maker**: an LLM ranks customers from text profiles, evaluated by IPW against model rules |
+| Lab 7 (optional) | AI as **analyst**: audit a tool-calling agent's observational analysis, then add a guardrail |
+| Lab 9 | AI as **source of data**: LLM labels versus gold, PPI, embeddings as DML controls, a leakage demo |
+| Lab 10 | AI as **intervention**: evaluate an AI staffing-tool rollout with DiD |
 | A1 | Write the readout once by hand, then delegate it to an LLM and verify |
-| A4 | Stress-test a pricing pipeline on two pretrained simulators with a confounding dial; regret against the oracle |
+| A3 | A simulator fitted to the coupon logs, with a planted effect and a confounding dial, as the testbed for the logs-based estimators and policy (an LLM-coded feature to be decided) |
 | M9 Section 3 (optional lab) | Three routes compared on the simulator: plug-in, decision-focused, policy tree |
 
 ## 3. Current schedule (source of truth: `schedule.xlsx`)
 
-Meetings are on Tuesday and Thursday in Weeks 1 to 5, and on Thursday in Weeks 6 and 7. Each meeting has lecture
-blocks A and B (50 minutes each) and lab C (60 minutes).
+Meetings are on Tuesdays and Thursdays from 20 October to 1 December 2026, with no meeting on Thursday 26 November
+(Thanksgiving). Each meeting has lecture blocks A and B (50 minutes each) and block C (60 minutes), which holds Lab N
+for Meeting N.
 
 | M | A | B | C (lab) | Notes / handout |
 |---|---|---|---|---|
-| 1 | Potential outcomes | Causal graphs | Lab 0 review | M1 |
-| 2 | Experiments: estimation | Experiments: design; to close, noncompliance and the LATE | Lab 1 (LLM readout) | M2, H1 interference |
-| 3 | CATE basics | Meta-learners, TARNet | Lab 2 | M3, H2 neural |
-| 4 | Causal trees | Causal forests | Lab 3 | M4 |
-| 5 | **Exam I (M1–M4)** | Evaluating targeting policies | Lab 4 (LLM as decision-maker) | M5 |
-| 6 | Allocation | Policy learning | Lab 5 | M6, H3 sequential |
-| 7 | Adjustment | Propensity scores, AIPW | Lab 6 (agent audit) | M7, H4 IV |
-| 8 | DML I | DML II | **Proposal presentations** (Lab 7 take-home) | M8, H5 RD |
-| 9 | GenAI I: simulators | GenAI II: LLM variables | Lab 8 | M9 |
-| 10 | Panel basics | DiD | Lab 9 (AI rollout) | M10, H6 staggered |
-| 11 | **Exam II (M5–M10)** | Synthetic control | Lab 10 | M11 |
-| 12 | Final presentations | | | |
+| 1 (Tue 20 Oct) | Potential outcomes | Causal graphs | Lab 1 (review) | M1 |
+| 2 (Thu 22 Oct) | Experiments: estimation | Experiments: design; to close, noncompliance and the LATE | Lab 2 (LLM readout) | M2, H1 interference |
+| 3 (Tue 27 Oct) | CATE basics | Meta-learners, TARNet | Lab 3 | M3, H2 neural |
+| 4 (Thu 29 Oct) | Causal trees | Causal forests | Lab 4 | M4 |
+| 5 (Tue 3 Nov) | **Exam I (M1–M4)** | Evaluating targeting policies | Lab 5 (CATE evaluation; LLM as decision-maker) | M5 |
+| 6 (Thu 5 Nov) | Allocation | Policy learning | Lab 6 | M6, H3 sequential |
+| 7 (Tue 10 Nov) | Identification and adjustment | Overlap, design, AIPW | **Proposal presentations**; Lab 7 optional, at home (observational methods, agent audit) | M7, H4 IV |
+| 8 (Thu 12 Nov) | DML I | DML II | Lab 8 (DML, in class) | M8, H5 RD |
+| 9 (Tue 17 Nov) | GenAI I: simulators | GenAI II: LLM variables | Lab 9 | M9 |
+| 10 (Thu 19 Nov) | Panel basics | DiD | Lab 10 (AI rollout) | M10, H6 staggered |
+| 11 (Tue 24 Nov) | **Exam II (M5–M10)** | Synthetic control | Lab 11 | M11 |
+| Thu 26 Nov | *No meeting (Thanksgiving)* | | | |
+| 12 (Tue 1 Dec) | Final presentations | | | |
 
 **Assignments.**
-- A1 (M1–M2): delegate and verify.
-- A2 (M3–M6): coupon targeting under a budget, scored by an autograder on a locked RCT set.
-- A3 (M6–M8): the same decision from observational logs, scored on the same locked set.
-- A4 (M8–M9): pipeline stress test on simulators.
+- A1 (M1–M2; out 22 Oct, due Fri 30 Oct): delegate and verify.
+- A2 (M3–M6; out 3 Nov, due Sun 15 Nov): coupon targeting under a budget, scored by an autograder on a locked RCT set.
+- A3 (M7–M9; out 10 Nov, due Fri 20 Nov): the same decision from observational logs (regression, IPW, AIPW, then DML),
+  scored on the same locked set; a simulator of the logs as the evaluation testbed.
+- A4 (M10–M11; out 19 Nov, due Sun 29 Nov): panel data; DiD on the AI-assistant rollout and a synthetic control for
+  the flagship.
+
+**Labs.** Ten graded labs (1 point each); Lab 7 is optional and ungraded, and its observational methods are graded in
+A3. Notebooks are expected soon after their meeting and carry no fixed deadline.
+
+**Project.** Proposal Sun 8 Nov; presentations Tue 10 Nov (M7, block C); final presentations Tue 1 Dec; final slides,
+abstract and report due together on Tue 8 Dec.
 
 **Deadline rules.**
 - One major deliverable per week.
@@ -104,9 +114,9 @@ syllabus's weekly table follows it, with an "Out / due" column.
 | Handouts H1–H6 | **Done.** Renumbered in meeting order on 8 Oct (H1 interference, M2, to H6 staggered adoption, M10). H4 (IV) refocused on classical IV, with a new worked example, so it no longer repeats M2 Section 1.9 |
 | Notation sheet, style, build and check scripts | Done. `run_all.sh` runs the notes, handout, slide and case checks |
 | Schedule, labs, assignments, deadlines, bonus reading | Planned in `schedule.xlsx` (Release and Due columns since 8 Oct); judgement calls in Section 7 still open |
-| Lecture slides | **M1 (44 frames) and M2 (36 frames) rebuilt on the coffee-chain case, under review**, checked by `slides01_check.py` and `slides02_check.py`. M3–M11 hold v2 content, built for the old calendar |
+| Lecture slides | **All eleven decks rebuilt to the v4.1 notes and the current schedule, under review** (8 Oct): M1 44 frames, M2 37, M3 30, M4 33, M5 21 (one lecture block; block A is Exam I), M6 34, M7 34, M8 35, M9 36 (new), M10 31, M11 21 (new; one block, Exam II). Each checked by `slidesNN_check.py`. Lecture cases: coffee chain M1–M7, Meridian M8–M9, retail M10–M11 |
 | Syllabus | Draft 3 (8 Oct), matches `schedule.xlsx`, handouts H1–H6 in meeting order, no critique exercises. Undecided items marked `\tbd` (dates, weights, policies) |
-| Lab notebooks 0–10 | Not built |
+| Lab notebooks 1–11 | Not built (renumbered 9 Oct: Lab N goes with Meeting N) |
 | Assignments A1–A4, autograder, locked RCT set | Not built |
 | Lecture cases A–C | Drafts. Rewritten 8 Oct: Case A Part M2-R6 (noncompliance), Case B's M9 part (generative AI), Case C's M11 part (synthetic control); their old IV and staggered-DiD parts kept at the end as bonus. Checked by `case_check.py`. Other parts' release times to be retimed with each deck |
 | Reading-and-critique exercises | Dropped for now (instructor, 8 Oct); may return later. Frames C2–C6 remain in the v2 decks for M3, M5, M7, M9 and M11 |
@@ -115,32 +125,26 @@ syllabus's weekly table follows it, with an "Out / due" column.
 
 ## 5. Work remaining, in suggested order
 
-1. **Slides, M3 to M11** (M1 and M2 are done and under review). Rebuild each deck to match its v4.1 notes and its
-   schedule row, one deck at a time, stopping for the instructor's review after each. Lecture slides carry the
-   intuition and the lecture's own running case; proofs stay in the notes. Slides and notes share the method, not the
-   example (Section 6). M1 and M2 set the pattern: title, block A, block boundary, block B, summary; Results with the
-   notes' numbers and titles in the notes' order; a `slidesNN_check.py` for every number.
-   - Exam meetings (M5, M11) have only block B of lecture.
-   - M9 needs a new deck. New material for other decks:
-     - M3: TARNet slide;
-     - M5: isotonic calibration;
-     - M6: capacity and the critical fractile, fairness as a priced constraint, the predict-then-optimise spectrum;
-     - M8: DML II with sensitivity bounds;
-     - M10: a warning slide on staggered timing;
-     - M11: synthetic control only.
+1. **Slides: instructor review.** All eleven decks are rebuilt (8 Oct) and follow the pattern: title, road map, block A,
+   block boundary, block B, summary (exam meetings M5 and M11 have one lecture block); Results with the notes' numbers,
+   titles and wording in the notes' order; the lecture's own case and numbers; a `slidesNN_check.py` for every number.
+   Remaining: the instructor's review of each deck, and the decisions flagged in the CHANGELOG entries of 8 Oct (case
+   choice for TARNet; given numbers in M8's event-flag benchmark and M11's flagship results, which have no simulation
+   script; whether to add case parts for the new M5 and M6 material).
    - Done on 8 Oct: M2 closes with noncompliance in an RCT (ITT, compliance types, the LATE), on Case A Part M2-R6,
      matching M2 notes Section 1.9. Classical IV stays in Handout H4 (M7, bonus).
    - Tested slides from the instructor's other course (the Starbucks causal module) are in `plan/old-decks/`. Reuse them
      where a topic matches (Section 6). The frame-by-frame map (`plan/old-decks/map.md`) still needs to be committed.
 2. **Syllabus.** Draft 3 matches `schedule.xlsx`. Remaining: settle the items marked `\tbd` (dates, weights, policies;
    see the open calls in Section 7) and keep it in step with the spreadsheet when either changes.
-3. **Labs 0–10.** Data and tasks are specified in the spreadsheet's Labs tab. The heaviest preparation is Lab 8
-   (cached LLM outputs, gold labels) and Lab 6 (agent harness).
+3. **Labs 1–11.** Data and tasks are specified in the spreadsheet's Labs tab. The heaviest preparation is Lab 9
+   (cached LLM outputs, gold labels) and Lab 7 (agent harness; optional for students).
 4. **Assignments.**
    - A1 to A4 handouts.
    - The locked RCT evaluation set and an autograder for A2 and A3.
-   - The two hotel-demand simulators with a confounding dial for A4. This is the largest single build; `m09_sim.py`
-     is the template.
+   - A simulator of the coupon logs with a planted effect and a confounding dial for A3, built on the generator
+     behind Lab 7's logs; `m09_sim.py` is a template. An LLM-coded feature for A3 is to be decided.
+   - A4 on panel data, built on the Rossmann rollout of Lab 10.
 5. **Review passes.** Pass 2: independent check of every numbered Result. Pass 3: a student reads each meeting one
    week ahead.
 6. **Optional.**
@@ -153,13 +157,19 @@ syllabus's weekly table follows it, with an "Out / due" column.
 
 ## 6. Notes for the slide rebuild
 
-- **Carried frames are a starting point.** The v2 decks for M3 to M6 still hold 50 frames taken from the old decks
-  (M1 and M2 have been reworked), each marked in the source with a comment such as
-  `% [CARRIED VERBATIM from old-decks/lecture03.tex:121]`. Start from these frames; do not copy them from
-  `plan/old-decks/` a second time. Once a frame is reworked, delete its comment.
-- **M9 and M11 decks are replaced, not revised.** The current M9 deck teaches instrumental variables (hotel example) and
-  the current M11 deck is mostly staggered DiD. Both topics are now handouts (H4, H6). Write new decks to the M9 and
-  M11 notes. The old frames stay in git history (commit `5522695`, the v4.1 state), so no separate copy is needed.
+- **Deck structure (instructor, 8 Oct).** Slide 1 is the title. Slide 2 is a road map of the meeting's topics, by
+  block, in the order they are taught. The deck ends with a summary frame, and nothing follows it.
+- **Slides are self-contained.** No lab previews, assignment or project notices, case-handout instructions, exit
+  tickets, "in pairs" or other in-class activity prompts, and no pointers to the notes or handouts. A question on a
+  slide is answered on the slide or the next one. The running case is the lecture's example, so its story and numbers
+  stay; the `% [RELEASE ...]` comments in the source are for the instructor and do not print. Short references to
+  another meeting, where a topic continues, may stay in the text.
+
+- **Carried frames.** The frames taken from the old decks into the v2 decks for M1 to M6 have all been reworked or
+  deleted in the rebuilds. For M7 to M11, reuse `plan/old-decks/` only where a topic matches, and rework what you take.
+- **M9 and M11 decks were replaced, not revised** (done 8 Oct). The v2 M9 deck taught instrumental variables and the v2
+  M11 deck was mostly staggered DiD; both topics are now handouts (H4, H6). The old frames stay in git history (commit
+  `5522695`, the v4.1 state).
 - **Lectures keep their own case; the notes use a different one on purpose.** Each lecture has its own running case
   (the coffee chain in M1, the hotel in M8, and so on). The notes' Section 2 worked example uses a different business
   (FitLife or QuickBite) so students see the method transfer. Do not move a slide example to the notes' business.
@@ -174,7 +184,7 @@ syllabus's weekly table follows it, with an "Out / due" column.
 - **Source decks.** `plan/old-decks/lecture01.tex` to `lecture09.tex` are reference material only: do not build or
   edit them.
 - **No critique frames.** Reading-and-critique exercises are dropped for now. Delete the v2 critique frames when
-  rebuilding those decks: C1 is gone with the M2 rebuild; C2 to C6 remain in the M3, M5, M7, M9 and M11 decks, along
+  rebuilding those decks: all six (C1 to C6) are gone with the rebuilds, along
   with their "Today's plan" rows.
 - **Block order follows the notes.** Where the v2 deck or the old schedule ordered topics differently, the notes win,
   and `schedule.xlsx` and the syllabus are updated to match (as in M2: transport ends block A, CUPED moves to block B).
@@ -187,7 +197,7 @@ Decided on 8 October:
 - Noncompliance in an RCT (ITT, compliance types, the LATE) closes M2, lecture and notes. Classical IV stays in
   Handout H4 with M7 as bonus reading, and H4 no longer repeats the M2 material.
 - M2 Step 6 uses 15% redemption (¥1.50 per offer).
-- A3 is due Friday of Week 5, so nothing is due the weekend before Exam II.
+- A3 is due Friday of Week 5 (20 Nov), so nothing is due the weekend before Exam II.
 - Reading-and-critique exercises are dropped for now.
 - M9 keeps the hotel case (Case B) and M11 keeps the retail case (Case C), both rewritten, with the old IV and
   staggered-DiD parts kept as bonus.
@@ -195,14 +205,23 @@ Decided on 8 October:
   (M6), H4 instrumental variables (M7), H5 regression discontinuity (M8), H6 staggered adoption (M10).
 - `schedule.xlsx` splits the old Misc column into Release and Due.
 
+Decided on 9 October:
+- Dates: Tuesdays and Thursdays, 20 October to 1 December 2026; no meeting on Thursday 26 November (Thanksgiving).
+  Exam I is Tue 3 Nov and Exam II Tue 24 Nov.
+- Labs are numbered 1 to 11 to match the meetings. Ten are graded (1 point each). Lab 7 (observational methods and the
+  agent audit) is optional and ungraded; its methods are graded in A3. Lab notebooks carry no fixed deadlines.
+- Proposal presentations move to M7, block C; Lab 8 (DML) runs in class in M8.
+- Lab 5 is CATE evaluation and Lab 6 allocation and policy learning, kept separate to reinforce M5 and M6.
+- Assignment scope: A1 M1–M2; A2 M3–M6; A3 M7–M9, with a simulator as the evaluation testbed; A4 panel data
+  (M10–M11). The hotel-simulator pipeline assignment is retired.
+- Final slides, abstract and report are due together, on Tue 8 Dec.
+
 Still open (decide before building the affected pieces):
 
-1. Staggered DiD: a warning slide in Panel II plus an optional extension in Lab 9.
+1. Staggered DiD: the warning slide in Panel II is in the M10 deck (8 Oct); still open, an optional extension in Lab 10.
 2. A2 and A3 pose the same decision (RCT-trained versus logs-trained), so both need an autograder and a locked set.
-3. Proposal due Sunday of Week 3.
-4. No panel-data assignment.
-   - As planned, DiD is tested on Exam II and practised in Labs 9 and 10.
-   - Alternative: make A4 a DiD evaluation and fold the simulator into Lab 8.
+3. Proposal due Sunday 8 November, presented two days later.
+4. Whether A3 includes an LLM-coded feature (depends on the problem and the data available).
 5. Final-project appendices: an LLM review of the draft plus responses, and a planted-effect validation of the design.
 6. Exam weights: Exam II covers more lectures than Exam I; consider weighting it more.
 
