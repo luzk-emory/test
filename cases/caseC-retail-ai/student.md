@@ -62,7 +62,7 @@ From Dana's rollout file:
 - "Cohorts were assigned by region, in the order the regional managers signed off, after each region's data-privacy review."
 - "Associates were trained on the assistant in weeks 51–52, in paid sessions held off the shop floor."
 - "The comparison stores are the 89 whose regions had not yet signed off."
-- "Licences are tied to store handsets: associates cannot use the assistant at another store. No two stores share a catchment."
+- "Licenses are tied to store handsets: associates cannot use the assistant at another store. No two stores share a catchment."
 - "Once the assistant took over stock checks, store managers re-planned their rotas."
 
 **Tasks. In pairs, commit first**

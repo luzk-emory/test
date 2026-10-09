@@ -31,8 +31,8 @@ $Y_{it}(0) \equiv Y_{it}(\infty)$ for short. The target is the effect on the tre
 $\ATT = \E[Y_{\text{post}}(1) - Y_{\text{post}}(0) \mid T = 1]$, whose difficulty is $\E[Y_{\text{post}}(0) \mid T = 1]$.
 
 Nothing in the design made adoption random. The assumptions below replace the coin of Meetings 1--6 and the recorded rule of
-Meetings 7--8: they are claims about untreated outcomes, supported by facts about \emph{why} units adopted when they did, and
-checkable only in part. Identification here is assumption-based, and should be said so.
+Meetings 7--8. They are claims about untreated outcomes, supported by facts about \emph{why} units adopted when they did, and
+they can be checked only in part. Identification here rests on assumptions, and the analysis should say so.
 
 \subsection{Why before--after fails}
 
@@ -67,7 +67,8 @@ $\hat\beta = \sum_{i,t}\ddot D_{it}Y_{it}/\sum_{i,t}\ddot D_{it}^2$.
 \end{prop}
 \begin{proof}
 Unit and period indicators span the additive functions $a_i + b_t$; in a balanced panel the residual from projecting on them is the
-two-way demeaned variable. Frisch--Waugh--Lovell (Meeting~8) finishes it. In an unbalanced panel the one-pass demeaning is not the
+two-way demeaned variable. The Frisch--Waugh--Lovell theorem from Meeting~8 finishes it: the coefficient on $D$ is the slope of $Y$
+on the part of $D$ left after projecting out the other regressors. In an unbalanced panel the one-pass demeaning is not the
 projection, and the regression with both sets of indicators must be run directly.
 \end{proof}
 
@@ -83,7 +84,7 @@ $Y_{\text{pre}}(1) = Y_{\text{pre}}(0)$ for treated units, and comparison units'
 \end{assum}
 
 Parallel trends restricts \emph{changes}, not levels: the groups may differ by any amount provided the difference would have stayed constant.
-It is untestable, because the treated group's post-period $Y(0)$ is never seen. No anticipation fixes what ``pre'' means: if behavior changed
+It is untestable, because the treated group's post-period $Y(0)$ is never seen. No anticipation fixes what ``pre'' means. If behavior changed
 when adoption was announced, the pre-period must end before that.
 
 \begin{prop}{DiD identifies the ATT}{did}
@@ -98,8 +99,8 @@ both are of $Y(0)$, free of spillovers. Replace the comparison group's change by
 the $Y_{\text{pre}}(0)$ terms cancel.
 \end{proof}
 
-The before--after change keeps the common \emph{trend}; the post-period cross-section keeps the \emph{level gap} (Meeting~1's selection bias,
-measured before treatment). The DiD removes both.
+The before--after change keeps the common \emph{trend}; the post-period cross-section keeps the \emph{level gap}, which is the selection bias of
+Meeting~1, $\E[Y(0) \mid T=1] - \E[Y(0) \mid T=0]$, measured before treatment. The DiD removes both.
 
 \begin{prop}{Parallel trends depends on the scale}{scale}
 If parallel trends holds in levels with a common counterfactual change $\Delta \ne 0$ and the groups' pre-period means differ, it fails in
@@ -142,7 +143,7 @@ $\delta(\bar t_{\text{post}} - \bar t_{\text{pre}})$.
 \end{proof}
 
 Report $\delta^\ast$ in the decision's units, compare it with the drift the pre-period coefficients can rule out, and argue from the institution
-whether a drift that large is plausible. Later event-time coefficients and distant bases are more exposed.
+whether a drift that large is plausible. Later event-time coefficients and distant bases are more exposed to drift.
 
 \subsection{Inference}
 
@@ -166,7 +167,7 @@ bootstrap.
 When units adopt at different dates, TWFE with a single $D_{it}$ still runs but averages many two-by-two comparisons, some using
 \emph{already-treated} units as controls for later adopters. If effects grow over time, those comparisons subtract part of the effect, some get
 negative weight, and the estimate can be badly biased, even of the wrong sign. Use estimators that compare only with not-yet-treated or
-never-treated units, and report effects by cohort (Handout H6).
+never-treated units, and report effects by cohort.
 
 \begin{pitfall}[DiD errors]
 Before--after on units chosen for a bad period; controls changed by the treatment; unit-period SEs; a base period inside an anticipation window;
@@ -200,7 +201,7 @@ The other clubs' rise of $0.4$ stands in for the seasonal rise app clubs would h
 the counterfactual $8.4$), above $0.3$. App clubs were busier to begin with; parallel trends does not need equal levels.
 
 \paragraph{Step 3: levels or logs.} In logs, $\ln(8.9/8.0) - \ln(7.9/7.5) = 0.055$; parallel trends in logs implies a counterfactual of
-$8.0 \times 7.9/7.5 = 8.43$ and an effect of $0.47$ visits. The two scales give $0.50$ and $0.47$: the decision is the same.
+$8.0 \times 7.9/7.5 = 8.43$ and an effect of $0.47$ visits. The two scales give $0.50$ and $0.47$, and the decision is the same.
 
 \paragraph{Step 4: event study.} Monthly TWFE with June as the base, SEs clustered by club (50 clusters):
 \begin{center}
@@ -227,12 +228,12 @@ $\delta^\ast = (0.60 - 0.30)/3 = 0.10$, nearly twice what the pre-period allows.
 \paragraph{Step 6: how clubs were chosen.} The 20 clubs had the most complaints about phone booking; their visits had been stable, which argues
 against regression to the mean. Had they been chosen after a slump, the event study would show a dip before adoption.
 
-\paragraph{Recommendation.} Extend the app. The remaining 30 clubs will adopt at different times, so evaluate the extension with a staggered-adoption
-estimator, ideally with adoption dates randomized across clubs (Handout H6).
+\paragraph{Recommendation.} Extend the app. The remaining 30 clubs will adopt at different times, so evaluate the extension with an estimator
+that compares each wave only with clubs not yet on the app, ideally with adoption dates randomized across clubs.
 
 \begin{exercise}[computation]
 Collapsing to one change per club, the 20 app clubs' changes $\Delta_i$ have SD $0.20$ and the 30 other clubs' SD $0.18$. Compute the SE of the DiD and a
-95\% interval. Clubs belong to 6 regions with shared marketing; what would you do about that?
+95\% interval. Clubs belong to six regions with shared marketing; what would you do about that?
 \end{exercise}
 \answer{$\SE = \sqrt{0.20^2/20 + 0.18^2/30} = \sqrt{0.0020 + 0.0011} = 0.055$; interval $0.5 \pm 1.96 \times 0.055 = [0.39, 0.61]$, clear of the
 break-even of $0.3$. But if regions share shocks, the clubs are not independent: cluster by region. With only 6 clusters, use a $t$ distribution with about
@@ -251,25 +252,38 @@ or use conditional parallel trends, rather than dropping the comparison group.}
 
 \begin{extension}[Conditional parallel trends, few clusters, changes-in-changes]
 If parallel trends is plausible only within covariate groups, outcome-regression, IPW, and doubly robust DiD estimators compare changes within groups
-(Sant'Anna and Zhao, 2020). With few clusters, the wild cluster bootstrap gives better-sized tests. Changes-in-changes (Athey and Imbens, 2006) replaces
+(Sant'Anna and Zhao 2020). With few clusters, the wild cluster bootstrap gives better-sized tests. Changes-in-changes (Athey and Imbens 2006) replaces
 parallel means with a stable mapping between quantiles.
 \end{extension}
 
 \begin{extension}[Triple differences and randomized adoption]
 A triple difference adds a within-unit comparison group that should be unaffected (members of a class type not bookable by app). Randomizing adoption
-dates turns DiD into a design-based comparison (Handout H6).
+dates turns DiD into a design-based comparison. When dates are assigned at random, comparing an early cohort's mean outcome with a later
+cohort's, before the later one adopts, is unbiased for the effect under no anticipation, with no parallel-trends assumption.
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Angrist and Pischke (2009), \emph{Mostly Harmless Econometrics}, Princeton}{DiD and fixed effects at textbook pace}{Ch.\ 5}{2}
-\reading{Bertrand, Duflo, and Mullainathan (2004), ``How much should we trust differences-in-differences estimates?'', \emph{QJE}}{Why unit-period SEs
-mislead}{All}{1}
-\reading{Roth (2022), ``Pretest with caution: event-study estimates after testing for parallel trends'', \emph{AER: Insights}}{What a passed pre-trend test
-does to the estimate}{All}{2}
-\reading{Rambachan and Roth (2023), ``A more credible approach to parallel trends'', \emph{Review of Economic Studies}}{Sensitivity beyond linear drift}{Sections
-1--3}{3}
-\reading{Roth, Sant'Anna, Bilinski, and Poe (2023), ``What's trending in difference-in-differences?'', \emph{Journal of Econometrics}}{A survey of modern DiD}{All}{2}
+\reading{Angrist, Joshua D., and J\"orn-Steffen Pischke. 2009. \emph{Mostly Harmless Econometrics: An Empiricist's
+Companion}. Princeton: Princeton University Press.}{DiD and fixed effects at textbook pace}{Ch.\ 5}{2}
+\reading{Bertrand, Marianne, Esther Duflo, and Sendhil Mullainathan. 2004. ``How Much Should We Trust
+Differences-in-Differences Estimates?'' \emph{Quarterly Journal of Economics} 119 (1): 249--275.
+\url{https://doi.org/10.1162/003355304772839588}}{Why unit-period SEs mislead}{All}{1}
+\reading{Roth, Jonathan. 2022. ``Pretest with Caution: Event-Study Estimates after Testing for Parallel Trends.''
+\emph{American Economic Review: Insights} 4 (3): 305--322. \url{https://doi.org/10.1257/aeri.20210236}}{What a passed
+pre-trend test does to the estimate}{All}{2}
+\reading{Rambachan, Ashesh, and Jonathan Roth. 2023. ``A More Credible Approach to Parallel Trends.'' \emph{Review of
+Economic Studies} 90 (5): 2555--2591. \url{https://doi.org/10.1093/restud/rdad018}}{Sensitivity beyond linear
+drift}{Sections 1--3}{3}
+\reading{Roth, Jonathan, Pedro H. C. Sant'Anna, Alyssa Bilinski, and John Poe. 2023. ``What's Trending in
+Difference-in-Differences? A Synthesis of the Recent Econometrics Literature.'' \emph{Journal of Econometrics} 235 (2):
+2218--2244. \url{https://doi.org/10.1016/j.jeconom.2023.03.008}}{A survey of modern DiD}{All}{2}
+\reading{Sant'Anna, Pedro H. C., and Jun Zhao. 2020. ``Doubly Robust Difference-in-Differences Estimators.''
+\emph{Journal of Econometrics} 219 (1): 101--122. \url{https://doi.org/10.1016/j.jeconom.2020.06.003}}{Outcome-regression,
+IPW, and doubly robust DiD under conditional parallel trends}{Introduction}{3}
+\reading{Athey, Susan, and Guido W. Imbens. 2006. ``Identification and Inference in Nonlinear Difference-in-Differences
+Models.'' \emph{Econometrica} 74 (2): 431--497. \url{https://doi.org/10.1111/j.1468-0262.2006.00668.x}}{Changes-in-changes:
+a stable mapping between quantiles in place of parallel means}{Introduction}{3}
 \reading{Handout H6, \emph{Staggered adoption}}{Cohorts, clean comparisons, and the TWFE decomposition}{All}{2}
 \end{readinglist}
 
