@@ -6,17 +6,19 @@
 \begin{decision}
 A price, fee, or discount was set by a system reacting to demand signals. The firm wants the effect of the price itself: an
 elasticity to hold against a break-even. Many signals must be controlled for, in complicated ways, so machine learning is
-needed. But a model that predicts outcomes well does not, by itself, give an unbiased effect. These notes show how to use
-machine learning for the controls without letting its errors bias the causal estimate, and how to say how wrong the controls would
-have to be to change the decision.
+needed. But a model that predicts outcomes well does not, by itself, give an unbiased effect. The task is to use machine
+learning for the controls without letting its errors bias the causal estimate, and to say how wrong the controls would have to be
+to change the decision.
 \end{decision}
 
 \begin{goals}
   \item state the partially linear model, its identifying assumptions, and its estimand when effects vary;
   \item derive the residual-on-residual (Frisch--Waugh--Lovell) form and explain why both sides must be residualized;
   \item explain the two failures of plug-in machine learning and how orthogonality and cross-fitting fix them;
-  \item compute a DML estimate and its (clustered) standard error, and diagnose overlap with a continuous treatment;
-  \item use the interactive model for an ATE, and run an omitted-variable sensitivity analysis with benchmarking.
+  \item compute a double machine learning (DML) estimate and its (clustered) standard error, and diagnose overlap with a
+  continuous treatment;
+  \item use the interactive model for an average treatment effect, and run an omitted-variable sensitivity analysis with
+  benchmarking.
 \end{goals}
 
 %=====================================================================================
@@ -41,8 +43,8 @@ $\E[\Var(D \mid X)] > 0$: treatment is not a deterministic function of $X$.
 
 The first is Meeting~7's exchangeability for a possibly continuous treatment. When a recorded rule set the price, it reads: the
 rule's inputs are all in $X$, nothing unrecorded moved the price, and $X$ is measured \emph{as of the moment the price was set}. A
-signal recorded later (booking pace after the price posted, a competitor index that reacts to our price) is partly caused by $D$:
-a mediator or collider, and a bad control.
+signal recorded later (booking pace after the price posted, a competitor index that reacts to our price) is partly caused by $D$.
+It is a mediator or a collider, and a bad control.
 
 \begin{prop}{Frisch--Waugh--Lovell in population form}{fwl}
 Under the model, $Y - \ell(X) = \theta\{D - r(X)\} + \varepsilon$, so
@@ -55,8 +57,8 @@ Taking $\E[\,\cdot \mid X]$ gives $\ell(X) = \theta r(X) + g(X)$; subtract from 
 the $\varepsilon$ term vanishes.
 \end{proof}
 
-Note that $\ell \ne g$: predicting $Y$ from $X$ estimates $\ell = \theta r + g$, which already contains the part of the treatment $X$
-explains. That is why \emph{both} sides are residualized. Subtracting $\ell$ from $Y$ and regressing on raw $D$ discards the very
+Keep $\ell$ and $g$ apart. Predicting $Y$ from $X$ estimates $\ell = \theta r + g$, which already contains the part of the treatment
+that $X$ explains. That is why \emph{both} sides are residualized. Subtracting $\ell$ from $Y$ and regressing on raw $D$ discards the very
 treatment variation the estimate needs.
 
 \begin{prop}{What $\theta$ estimates when effects vary}{vw}
@@ -69,8 +71,8 @@ average over $X$.
 \end{proof}
 
 $\theta$ is a weighted average, weighted by how much treatment still varies once $X$ is known. Units the system priced almost
-deterministically contribute almost nothing. For binary $D$ the weights are $e(X)(1-e(X))$: this is not the ATE (Meeting~7).
-Report which weighted average you have, and for whom.
+deterministically contribute almost nothing. For binary $D$ the weights are $e(X)(1-e(X))$, so $\theta$ is not the average treatment effect (ATE) of Meeting~7, which weights
+every unit equally. Report which weighted average you have, and for whom.
 
 \subsection{Why plugging in machine learning fails}
 
@@ -99,20 +101,20 @@ The estimator is the sample analog of Result~\ref{prop:fwl}; the SE is the heter
 the residual regression. Its validity rests on the bias calculation below and the rate conditions in Section~3.
 \end{proof}
 
-Why it works: write the nuisance errors $e_r = \hat r - r$, $e_\ell = \hat\ell - \ell$, and $\nu = D - r(X)$. Then
+To see why it works, write the nuisance errors $e_r = \hat r - r$, $e_\ell = \hat\ell - \ell$, and $\nu = D - r(X)$. Then
 $\tilde D = \nu - e_r$ and $\tilde Y = \theta\nu + \varepsilon - e_\ell$. Cross-fitting makes the errors independent of the fold being
 scored, so the cross terms with $\nu$ and $\varepsilon$ vanish in expectation, leaving
 \[
   \hat\theta \approx \theta + \frac{\E[e_re_\ell] - \theta\,\E[e_r^2]}{\E[\nu^2] + \E[e_r^2]} .
 \]
-The first term is a \emph{product} of two errors: if each model is moderately wrong, the product is much smaller than either. This
+The first term is a \emph{product} of two errors, so if each model is moderately wrong, the product is much smaller than either. This
 is \emph{Neyman orthogonality}: first-order errors in either nuisance do not move the estimating equation. The second term, the
 squared error of the treatment model, attenuates $\hat\theta$ toward zero and gets no product protection; it vanishes only if $\hat r$ is
 accurate. Diagnose it with the share of $\sum\tilde D^2$ that is model error, and fix it with a better treatment model or more data.
 
 Repeat the whole procedure over several random fold splits and report the median, adding the spread across splits to the SE. Choose
-each nuisance learner by its own cross-validated prediction error (that is legitimate: they are prediction problems), and report at
-least two. Disagreement means the answer depends on modeling choices.
+each nuisance learner by its own cross-validated prediction error, which is legitimate because they are prediction problems, and
+report at least two. If they disagree, the answer depends on modeling choices.
 
 \subsection{Overlap with a continuous treatment}
 
@@ -123,14 +125,16 @@ decisions near the prices the data contain; a formula that extrapolates it (such
 
 \subsection{The interactive model and the ATE}
 
-For binary $D$ and the ATE, use $Y = g(D, X) + \varepsilon$ and the cross-fitted AIPW score of Meeting~7:
+For binary $D$ and the ATE, use $Y = g(D, X) + \varepsilon$ and the cross-fitted augmented inverse-probability-weighted (AIPW) score
+of Meeting~7:
 \[
   \hat\theta_{\ATE} = \frac1n\sum_i\phi_i, \quad
   \phi_i = \hat\mu_1(X_i) - \hat\mu_0(X_i) + \frac{D_i(Y_i - \hat\mu_1(X_i))}{\hat e(X_i)} - \frac{(1-D_i)(Y_i - \hat\mu_0(X_i))}{1 - \hat e(X_i)},
 \]
-with standard error $\text{sd}(\phi_i)/\sqrt n$. The score is orthogonal in the same sense: its bias is a product of the outcome and
-propensity models' errors. The choice between the partially linear and interactive models is a choice of estimand. Regressing $\phi_i$ on
-a few modifiers gives the best linear projection of the CATE on them, with valid SEs; regressing it on $X$ flexibly is the DR-learner.
+with standard error $\text{sd}(\phi_i)/\sqrt n$. The score is orthogonal in the same sense, since its bias is a product of the outcome
+and propensity models' errors. The choice between the partially linear and interactive models is a choice of estimand. Regressing
+$\phi_i$ on a few modifiers gives the best linear projection of the conditional average treatment effect (CATE) on them, with valid SEs;
+regressing it on $X$ flexibly is the DR-learner of Meeting~3.
 
 \subsection{Sensitivity to unmeasured confounding}
 
@@ -142,13 +146,13 @@ the residual outcome variance (after $D$ and $X$). Then the bias in the partiall
 \]
 \end{prop}
 \begin{proof}
-This is the omitted-variable-bias formula in partial-$R^2$ form (Cinelli and Hazlett, 2020) applied to the residualized regression; the
+This is the omitted-variable-bias formula in partial-$R^2$ form (Cinelli and Hazlett 2020) applied to the residualized regression; the
 bound uses $|\text{corr}| \le 1$ for the part of $U$ not explained by $D$ and $X$.
 \end{proof}
 
-The two $R^2$ values are unknowable, so use the bound in two ways. The \emph{robustness value}: the equal $R^2$ at which the estimate
-reaches the break-even. \emph{Benchmarking}: drop an observed control, re-estimate, and compute how much residual variance it explained;
-then ask whether an omitted factor could be that strong, or a fraction of it. A conclusion that survives a confounder as strong as the
+The two $R^2$ values are unknowable, so use the bound in two ways. The \emph{robustness value} is the equal $R^2$ at which the
+estimate reaches the break-even. \emph{Benchmarking} drops an observed control, re-estimates, and computes how much residual variance
+it explained; then ask whether an omitted factor could be that strong, or a fraction of it. A conclusion that survives a confounder as strong as the
 strongest observed control is robust; one that flips at a fraction of a minor control is not.
 
 \begin{pitfall}[DML errors]
@@ -163,8 +167,7 @@ charged.
 \paragraph{Setting.} QuickBite's system sets each zone's delivery fee by the hour from demand and courier-supply signals. Should the
 standard fee rise from ¥4.0 to ¥4.4? Margin per order excluding the fee is ¥6. Profit per zone-hour is $Q(f)(6 + f)$, whose elasticity
 with respect to $f$ is $\varepsilon + f/(6 + f) = \varepsilon + 0.4$ at $f = 4$. A rise pays only if the order elasticity $\varepsilon$ exceeds $-0.4$.
-The data are 40{,}000 zone-hours from a simulation calibrated to this setting (script \texttt{checks/m08\_sim.py}; true elasticity
-$-0.6$), with $Y$ log orders, $D$ log fee, and $X$ hour, rain, weekend, zone, and supply signals.
+The data are 40{,}000 zone-hours from a simulation calibrated to this setting (true elasticity $-0.6$), with $Y$ log orders, $D$ log fee, and $X$ hour, rain, weekend, zone, and supply signals.
 
 \paragraph{Step 1: naive.} The regression of log orders on log fee gives $+1.20$: fees are high exactly when demand is high (dinner,
 rain), so high-fee hours have many orders for reasons unrelated to the fee. Taken at face value it says to raise the fee.
@@ -184,7 +187,8 @@ $\sum\tilde D\tilde Y = -0.0242$ and $\sum\tilde D^2 = 0.0386$, so $\hat\theta =
 
 \paragraph{Step 3: full sample.} Five-fold DML with gradient boosting gives $\hat\theta = -0.575$ (SE $0.015$); with lasso nuisances, $-0.524$
 (SE $0.015$). The fee model's out-of-fold $R^2$ is $0.74$, so a quarter of fee variation is left to identify the effect. Both estimates are
-smaller in magnitude than the truth: the attenuation term $-\theta\E[e_r^2]$ at work, larger for the lasso, whose fee model is more misspecified. Both are
+smaller in magnitude than the truth. That is the attenuation term $-\theta\E[e_r^2]$ at work, and it is larger for the lasso, whose fee
+model is more misspecified. Both are
 well below $-0.4$: at $-0.575$ a 10\% fee rise changes profit by a factor of about $(1.1)^{-0.575} \times 10.4/10 = 0.985$, a 1.5\% loss.
 
 \begin{center}
@@ -202,13 +206,14 @@ and the DML slope ($-0.575$). Single points are noisy; the binned means show the
 \end{center}
 
 \paragraph{Step 4: sensitivity.} The residual SDs give a ratio $\text{sd}(\tilde Y - \hat\theta\tilde D)/\text{sd}(\tilde D) = 0.304/0.101 = 3.0$. A confounder with
-$R^2 = 0.05$ on both sides could move the estimate by at most $\sqrt{0.05 \times 0.05/0.95} \times 3.0 = 0.15$, giving $[-0.73, -0.42]$: still below
-$-0.4$. Reaching the break-even needs a bias of $0.175$, an equal $R^2$ of about $0.057$. Benchmark: rain explains $0.18$ of the residual fee
+$R^2 = 0.05$ on both sides could move the estimate by at most $\sqrt{0.05 \times 0.05/0.95} \times 3.0 = 0.15$, giving $[-0.73, -0.42]$, still below
+$-0.4$. Reaching the break-even needs a bias of $0.175$, an equal $R^2$ of about $0.057$. As a benchmark, rain explains $0.18$ of the residual fee
 variance and $0.32$ of the residual order variance. An omitted factor a third as strong as rain on the fee side would overturn the
 conclusion. Unrecorded local events could plausibly be that strong.
 
 \paragraph{Recommendation.} Do not raise the fee. Because a moderately strong unrecorded confounder could overturn the conclusion,
-confirm it with a randomized fee test (a switchback by hour in a few zones, which respects courier interference; Handout H1).
+confirm it with a randomized fee test. A zone's couriers serve all of its orders, so the test should randomize time rather than
+orders. A \emph{switchback} sets the fee for a whole zone hour by hour, in a few zones.
 
 \begin{exercise}[computation]
 Using the DML estimate $-0.575$, what fee change does the model suggest, and why should you not compute an ``optimal fee'' from the constant-elasticity formula?
@@ -238,22 +243,30 @@ high-dimensional learners.
 \end{extension}
 
 \begin{extension}[Post-double-selection and dependent data]
-The linear predecessor: lasso $Y$ on $X$, lasso $D$ on $X$, take the union of selected variables, and regress $Y$ on $D$ and the union (Belloni,
-Chernozhukov, and Hansen, 2014). With panel or time-series data, form folds by cluster or forward in time, and check stability with coarser folds.
+The linear predecessor: lasso $Y$ on $X$, lasso $D$ on $X$, take the union of selected variables, and regress $Y$ on $D$ and the union (Belloni
+et al. 2014).
+ With panel or time-series data, form folds by cluster or forward in time, and check stability with coarser folds.
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Chernozhukov, Chetverikov, Demirer, Duflo, Hansen, Newey, and Robins (2018), ``Double/debiased machine learning for treatment and
-structural parameters'', \emph{Econometrics Journal}}{The DML framework, orthogonality, and cross-fitting}{Sections 1--3}{3}
-\reading{Chernozhukov, Hansen, Kallus, Spindler, and Syrgkanis, \emph{Applied Causal Inference Powered by ML and AI} (free online)}{DML at
-textbook pace, with code}{Ch.\ 4, 9--10}{2}
-\reading{Cinelli and Hazlett (2020), ``Making sense of sensitivity'', \emph{JRSS B}}{Partial-$R^2$ sensitivity, robustness values, and
-benchmarking}{Sections 1--4}{2}
-\reading{Chernozhukov, Cinelli, Newey, Sharma, and Syrgkanis, ``Long story short: omitted variable bias in causal machine learning'' (working
-paper)}{The sensitivity bound for DML and the interactive model}{Sections 1--3}{3}
-\reading{Belloni, Chernozhukov, and Hansen (2014), ``Inference on treatment effects after selection among high-dimensional controls'',
-\emph{Review of Economic Studies}}{Post-double-selection lasso}{Sections 1--2}{3}
+\reading{Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James
+Robins. 2018. ``Double/Debiased Machine Learning for Treatment and Structural Parameters.'' \emph{Econometrics Journal} 21
+(1): C1--68. \url{https://doi.org/10.1111/ectj.12097}}{The DML framework, orthogonality, and cross-fitting}{Sections 1--3}{3}
+\reading{Chernozhukov, Victor, Christian Hansen, Nathan Kallus, Martin Spindler, and Vasilis Syrgkanis. 2024. \emph{Applied
+Causal Inference Powered by ML and AI}. arXiv:2403.02467. \url{https://causalml-book.org}}{DML at textbook pace, with code;
+free online}{Ch.\ 4, 9--10}{2}
+\reading{Cinelli, Carlos, and Chad Hazlett. 2020. ``Making Sense of Sensitivity: Extending Omitted Variable Bias.''
+\emph{Journal of the Royal Statistical Society Series B: Statistical Methodology} 82 (1): 39--67.
+\url{https://doi.org/10.1111/rssb.12348}}{Partial-$R^2$ sensitivity, robustness values, and benchmarking}{Sections 1--4}{2}
+\reading{Chernozhukov, Victor, Carlos Cinelli, Whitney Newey, Amit Sharma, and Vasilis Syrgkanis. 2022. ``Long Story
+Short: Omitted Variable Bias in Causal Machine Learning.'' NBER Working Paper 30302.
+\url{https://doi.org/10.3386/w30302}}{The sensitivity bound for DML and the interactive model}{Sections 1--3}{3}
+\reading{Belloni, Alexandre, Victor Chernozhukov, and Christian Hansen. 2014. ``Inference on Treatment Effects after
+Selection among High-Dimensional Controls.'' \emph{Review of Economic Studies} 81 (2): 608--50.
+\url{https://doi.org/10.1093/restud/rdt044}}{Post-double-selection lasso}{Sections 1--2}{3}
+\reading{Robinson, Peter M. 1988. ``Root-N-Consistent Semiparametric Regression.'' \emph{Econometrica} 56 (4): 931--54.
+\url{https://doi.org/10.2307/1912705}}{The residual-on-residual estimator for the partially linear model}{Sections 1--3}{3}
 \reading{Handout H5, \emph{Regression discontinuity}}{Identification from a threshold rule}{All}{2}
 \end{readinglist}
 
