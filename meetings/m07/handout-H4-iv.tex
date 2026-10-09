@@ -1,14 +1,14 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\handoutheader{H4}{Instrumental variables}{Outside shifters of treatment: instruments that nobody randomized}{Meeting 7 (Observational data)}
+\handoutheader{H4}{Instrumental variables}{Instruments that nobody randomized}{Meeting 7 (Observational data)}
 
 \begin{decision}
-A firm suspects an unmeasured confounder that no adjustment can fix (Meeting 7), and it cannot run an experiment. Something
-outside its control may still shift the treatment: a rule, a manager's choice, a system outage, the weather. Meeting~2 showed
-what the ratio of two differences identifies when the shifter is a randomized offer. This handout is about shifters that
-nobody randomized: what must then be argued, what goes wrong when the argument fails, and how to tell a strong instrument
-from a weak one.
+A firm suspects an unmeasured confounder, something that drives both treatment and outcome and was never recorded, so no
+adjustment for recorded covariates can remove it. It cannot run an experiment. Something outside its control may still shift
+the treatment, such as a rule, a manager's choice, a system outage, or the weather. Meeting~2 showed what the ratio of two
+differences identifies when the shifter is a randomized offer. Here nobody randomized the shifter. You then have to argue
+for what the draw used to guarantee, know what goes wrong when the argument fails, and tell a strong instrument from a weak one.
 \end{decision}
 
 \begin{goals}
@@ -23,9 +23,10 @@ from a weak one.
 
 \subsection{From a randomized offer to an outside shifter}
 
-The notation is Meeting~2's (Section~1.9): a binary instrument $Z$, a treatment $D$ with potential treatments $D(0), D(1)$,
-and potential outcomes $Y(d, z)$. Meeting~2 took $Z$ to be a randomized offer, so independence came from the draw. Here
-$Z$ is any variable that shifts $D$, and independence becomes an assumption.
+Write $Z \in \{0,1\}$ for the instrument and $D \in \{0,1\}$ for the treatment. Each unit has potential treatments
+$D(0), D(1)$ and potential outcomes $Y(d, z)$; we observe $D = D(Z)$ and $Y = Y(D, Z)$. This is the notation of the
+noncompliance analysis in Meeting~2, where $Z$ was a randomized offer and independence came from the draw. Here $Z$ is any
+variable that shifts $D$, and independence becomes an assumption.
 
 \begin{assum}{Independence}{ind}
 $\{Y(d,z), D(z) : d, z \in \{0,1\}\} \indep Z$, possibly only within levels of covariates $X$.
@@ -34,12 +35,23 @@ $\{Y(d,z), D(z) : d, z \in \{0,1\}\} \indep Z$, possibly only within levels of c
 $\E[D(1) - D(0)] \ne 0$.
 \end{assum}
 
-Exclusion and monotonicity are as in Meeting~2 (Assumptions~1.11 and~1.12), with $Z$ in place of the draw. Under all four,
-Meeting~2's results carry over unchanged: the ITT and the first stage are identified (Result~1.13), the type shares are
-identified (Result~1.14), and the ratio $\text{ITT}/\pi$ is the LATE, the average effect on compliers (Result~1.15). What
-changes is the status of each assumption. Relevance is checkable. Independence, which a draw delivers by design, is now a
-claim about the world, argued like Meeting~7's exchangeability. Exclusion and monotonicity were already claims; with an
-outside shifter they are usually harder to defend, because nobody designed the instrument to satisfy them.
+Exclusion and monotonicity are the two assumptions Meeting~2 added for noncompliance, with $Z$ in place of the draw.
+\emph{Exclusion} says $Y(d, 0) = Y(d, 1) \equiv Y(d)$: the instrument affects the outcome only through the treatment.
+\emph{Monotonicity} says $D(1) \ge D(0)$ for every unit, so nobody takes the treatment because the instrument is off. Under
+monotonicity each unit is an \emph{always-taker} $A$ ($D(0) = D(1) = 1$), a \emph{never-taker} $N$ ($D(0) = D(1) = 0$), or a
+\emph{complier} $C$ ($D(0) = 0$, $D(1) = 1$), with population shares $\pi_A$, $\pi_N$, and $\pi_C$; \emph{defiers} ($D(0) = 1$,
+$D(1) = 0$, share $\pi_D$) are ruled out.
+
+Under all four assumptions, what Meeting~2 proved for a randomized offer carries over unchanged. The ITT, $\E[Y \mid Z=1] - \E[Y \mid Z=0]$, and the
+first stage, $\pi = \E[D \mid Z=1] - \E[D \mid Z=0]$, are identified. The type shares are identified as
+$\pi_A = \Pr(D=1 \mid Z=0)$, $\pi_N = \Pr(D=0 \mid Z=1)$, and $\pi_C = \pi$. And the LATE theorem holds: the ratio
+$\text{ITT}/\pi$ equals $\text{LATE} = \E[Y(1) - Y(0) \mid C]$, the average effect on compliers, because always- and
+never-takers contribute nothing to the ITT and compliers contribute $\pi_C\,\text{LATE}$.
+
+What changes is the status of each assumption. Relevance is checkable. Independence, which a draw delivers by design, is now a
+claim about the world, argued like conditional exchangeability in Meeting~7 (treatment independent of the potential outcomes
+given $X$): from how the instrument was actually set. Exclusion and monotonicity were already claims; with an outside shifter
+they are usually harder to defend, because nobody designed the instrument to satisfy them.
 
 \subsection{Arguing for an instrument}
 
@@ -87,8 +99,9 @@ Keep independence, exclusion, and relevance but allow defiers. Then
 $\text{ITT}/\pi = (\pi_C\,\text{LATE}_C - \pi_D\,\text{LATE}_D)/(\pi_C - \pi_D)$.
 \end{prop}
 \begin{proof}
-The proof of the LATE theorem (Meeting~2, Result~1.15) now leaves a defier term $-\pi_D\,\text{LATE}_D$ in the ITT, and the first
-stage is $\pi_C - \pi_D$.
+By exclusion the ITT is $\E[Y(D(1)) - Y(D(0))]$. Always- and never-takers contribute zero and compliers contribute
+$\pi_C\,\text{LATE}_C$, as in the LATE theorem; defiers, with $D(1) = 0$ and $D(0) = 1$, now add $-\pi_D\,\text{LATE}_D$. The
+first stage is $\pi_C - \pi_D$.
 \end{proof}
 
 With defiers one weight is negative, and the ratio need not lie between the two groups' effects; it can have the wrong sign.
@@ -127,8 +140,8 @@ Linearize $a/b$ at $(\text{ITT}, \pi)$: $a/b - \theta \approx \{(a - \text{ITT})
 
 With a precise first stage, $\SE(\hat\theta) \approx \SE(\widehat{\text{ITT}})/\pi$. The approximation fails when $\pi$ is small relative to its
 SE, measured by the first-stage $F = (\hat\pi/\SE(\hat\pi))^2$. A weak instrument's estimate is heavy-tailed, centered between the truth
-and the naive regression, and its nominal 95\% interval undercovers. $F > 10$ (Staiger and Stock) is a floor, not a certificate: Lee,
-McCrary, Moreira, and Porter (2022) show a conventional 5\% $t$-test has correct size only for $F$ above about $104.7$.
+and the naive regression, and its nominal 95\% interval undercovers. $F > 10$ (Staiger and Stock 1997) is a floor, not a certificate. Lee
+et al.\ (2022) show a conventional 5\% $t$-test has correct size only for $F$ above about $104.7$.
 
 \begin{prop}{The Anderson--Rubin test}{ar}
 If $Y = \theta D + u$ with $Z \indep u$, the regression of $Y - \theta_0D$ on $Z$ has slope zero exactly when $\theta_0 = \theta$ (given $\pi \ne 0$),
@@ -160,9 +173,9 @@ LATE as the ATE; ignoring a direct effect of the instrument.
 
 \paragraph{Setting.} QuickBite wants the effect of its Plus membership ($D$) on orders ($Y$, orders in the following month).
 Each order earns ¥10 of margin; each Plus member costs ¥15 a month in waived delivery fees. Members choose to join, and heavy
-users join most, so comparing members with non-members is hopeless. In March, regional managers in 6 of the 12 cities chose
+users join most, so comparing members with non-members is hopeless. In March, regional managers in six of the 12 cities chose
 to run an in-app campaign promoting Plus ($Z = 1$ for a customer in a campaign city). Nobody randomized the campaign: managers
-in big cities were keener (4 of 6 big cities ran it, 2 of 6 small ones), and big-city customers order more.
+in big cities were keener (four of six big cities ran it, two of six small ones), and big-city customers order more.
 
 \begin{center}
 \small
@@ -204,10 +217,10 @@ $(0.30 - 0.05)/0.25 = 1.0$.
 \paragraph{Step 5: the decisions.}
 \begin{itemize}
   \item \emph{Run the campaign, billboards and all, in every city?} The within-size ITT is the policy effect, billboards
-  included: per customer, $10 \times 0.30 = $ ¥3.00 of margin against $0.25 \times 15 = $ ¥3.75 of waived fees for the extra
-  members. Net $-$¥0.75: no.
+  included. Per customer, $10 \times 0.30 = $ ¥3.00 of margin against $0.25 \times 15 = $ ¥3.75 of waived fees for the extra
+  members, a net $-$¥0.75. No.
   \item \emph{Is Plus worth it for the customers the campaign recruits?} $10 \times 1.0 = $ ¥10 a month against ¥15 (and
-  $10 \times 1.2 = $ ¥12 before the exclusion correction): no, for compliers. The data say nothing about always-takers, the
+  $10 \times 1.2 = $ ¥12 before the exclusion correction), so not for compliers. The data say nothing about always-takers, the
   heaviest users, for whom Plus may well pay.
 \end{itemize}
 
@@ -235,30 +248,48 @@ changes.}
 
 \begin{extension}[Continuous treatments, flexible controls, and describing compliers]
 With a continuous treatment and binary instrument, the Wald ratio is a weighted average of unit slopes over the range the instrument
-moved them (Angrist, Graddy, and Imbens, 2000). With many controls, residualize $Y$, $D$, and $Z$ on $X$ with cross-fitted learners and compute
-$\sum\tilde Z\tilde Y/\sum\tilde Z\tilde D$: the partially linear IV model of double machine learning. Abadie's $\kappa$-weighting identifies any feature of the
+moved them (Angrist et al.\ 2000). With many controls, residualize $Y$, $D$, and $Z$ on $X$ with cross-fitted learners and compute
+$\sum\tilde Z\tilde Y/\sum\tilde Z\tilde D$: the partially linear IV model of double machine learning. The $\kappa$-weighting of Abadie (2003) identifies any feature of the
 compliers' joint distribution.
 \end{extension}
 
 \begin{extension}[Sensitivity to exclusion]
 Report the LATE as a function of the direct effect, $(\text{ITT} - \delta)/\pi$, over a range of $\delta$ argued from the institution, and the
-$\delta$ at which the decision flips. Conley, Hansen, and Rossi (2012) formalize this as ``plausibly exogenous'' instruments.
+$\delta$ at which the decision flips. Conley et al.\ (2012) formalize this as ``plausibly exogenous'' instruments.
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Angrist, Imbens, and Rubin (1996), ``Identification of causal effects using instrumental variables'', \emph{JASA}}{The
-potential-outcomes framework for IV, compliance types, and the LATE (also in Meeting~2's list)}{Sections 1--4}{2}
-\reading{Angrist and Pischke (2015), \emph{Mastering 'Metrics}, Princeton}{IV at an intuitive level, with classic
-examples}{Ch.\ 3}{1}
-\reading{Imbens and Angrist (1994), ``Identification and estimation of local average treatment effects'',
-\emph{Econometrica}}{The LATE theorem}{All}{3}
-\reading{Lee, McCrary, Moreira, and Porter (2022), ``Valid t-ratio inference for IV'', \emph{AER}}{Why $F > 10$ is not enough, and
-corrected critical values}{Sections I--III}{3}
-\reading{Andrews, Stock, and Sun (2019), ``Weak instruments in instrumental variables regression'', \emph{Annual Review of
-Economics}}{A survey of weak-instrument-robust inference}{Sections 1--4}{3}
-\reading{Graddy (2006), ``The Fulton Fish Market'', \emph{Journal of Economic Perspectives}}{Weather as an instrument for price in a
-real market}{All}{1}
+\reading{Abadie, Alberto. 2003. ``Semiparametric Instrumental Variable Estimation of Treatment Response Models.''
+\emph{Journal of Econometrics} 113 (2): 231--263.}{$\kappa$-weighting: any feature of the compliers' distribution}{Sections
+1--3}{3}
+\reading{Andrews, Isaiah, James H. Stock, and Liyang Sun. 2019. ``Weak Instruments in Instrumental Variables Regression:
+Theory and Practice.'' \emph{Annual Review of Economics} 11: 727--753.
+\href{https://doi.org/10.1146/annurev-economics-080218-025643}{\nolinkurl{https://doi.org/10.1146/annurev-}\allowbreak\nolinkurl{economics-080218-025643}}}{A survey of weak-instrument-robust inference}{Sections
+1--4}{3}
+\reading{Angrist, Joshua D., Kathryn Graddy, and Guido W. Imbens. 2000. ``The Interpretation of Instrumental Variables
+Estimators in Simultaneous Equations Models with an Application to the Demand for Fish.'' \emph{Review of Economic Studies}
+67 (3): 499--527. \url{https://doi.org/10.1111/1467-937X.00141}}{What the Wald ratio averages when the treatment is
+continuous}{Sections 1--3}{3}
+\reading{Angrist, Joshua D., Guido W. Imbens, and Donald B. Rubin. 1996. ``Identification of Causal Effects Using
+Instrumental Variables.'' \emph{Journal of the American Statistical Association} 91 (434): 444--455.
+\url{https://www.jstor.org/stable/2291629}}{The potential-outcomes framework for IV, compliance types, and the
+LATE}{Sections 1--4}{2}
+\reading{Angrist, Joshua D., and J\"orn-Steffen Pischke. 2015. \emph{Mastering 'Metrics: The Path from Cause to Effect}.
+Princeton: Princeton University Press.}{IV at an intuitive level, with classic examples}{Ch.\ 3}{1}
+\reading{Conley, Timothy G., Christian B. Hansen, and Peter E. Rossi. 2012. ``Plausibly Exogenous.'' \emph{Review of
+Economics and Statistics} 94 (1): 260--272. \url{https://doi.org/10.1162/REST_a_00139}}{Inference when the exclusion
+restriction holds only approximately}{Sections 1--3}{3}
+\reading{Graddy, Kathryn. 2006. ``Markets: The Fulton Fish Market.'' \emph{Journal of Economic Perspectives} 20 (2):
+207--220.}{Weather as an instrument for price in a real market}{All}{1}
+\reading{Imbens, Guido W., and Joshua D. Angrist. 1994. ``Identification and Estimation of Local Average Treatment
+Effects.'' \emph{Econometrica} 62 (2): 467--475. \url{https://doi.org/10.2307/2951620}}{The LATE theorem}{All}{3}
+\reading{Lee, David S., Justin McCrary, Marcelo J. Moreira, and Jack R. Porter. 2022. ``Valid \emph{t}-Ratio Inference for
+IV.'' \emph{American Economic Review} 112 (10): 3260--3290. \url{https://doi.org/10.1257/aer.20211063}}{Why $F > 10$ is not
+enough, and corrected critical values}{Sections I--III}{3}
+\reading{Staiger, Douglas, and James H. Stock. 1997. ``Instrumental Variables Regression with Weak Instruments.''
+\emph{Econometrica} 65 (3): 557--586. \url{https://www.jstor.org/stable/2171753}}{Weak-instrument asymptotics and the
+origin of the $F > 10$ rule of thumb}{Sections 1--3}{3}
 \end{readinglist}
 
 \end{document}
