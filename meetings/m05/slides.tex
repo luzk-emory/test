@@ -95,7 +95,7 @@
   \item Three lists, one launch
   \item A policy's value and gain; the policy-value identity
   \item Estimating value on a randomized fold; the variance of a row contribution
-  \item Gain, profit and Qini curves; denominators
+  \item Gain, profit, and Qini curves; denominators
   \item RATE: one number for a ranking
 \end{itemize}
 \end{column}
@@ -437,7 +437,7 @@ A RATE significantly above zero on held-out data shows the score ranks better th
 For any strictly increasing $h$, the scores $s$ and $h \circ s$ give identical gain curves and RATEs. A threshold policy $\ind{s(x) > t}$ and its gain change with $h$.
 \end{result}
 
-Suppose the forest's scores are \textbf{twice} the true effects: the order, gain curve and RATE are unchanged. Apply Meeting 3's rule, coupon $x$ if $\hatt(x) > \mu_1(x)/3$:
+Suppose the forest's scores are \textbf{twice} the true effects: the order, gain curve, and RATE are unchanged. Apply Meeting 3's rule, coupon $x$ if $\hatt(x) > \mu_1(x)/3$:
 
 \medskip
 
@@ -532,7 +532,7 @@ Winner's true value & 1.50 & 1.50 & 1.50 & 1.50 \\
 \end{tabular}
 \end{center}
 
-\small Candidates are not only models: cut-offs, feature sets, budgets and any adjustment after looking at results are choices too. An engine that scans ten cut-offs has chosen among ten candidates.
+\small Candidates are not only models: cut-offs, feature sets, budgets, and any adjustment after looking at results are choices too. An engine that scans ten cut-offs has chosen among ten candidates.
 \end{frame}
 
 % ====================================================================
@@ -551,7 +551,7 @@ Winner's true value & 1.50 & 1.50 & 1.50 & 1.50 \\
 \end{center}
 
 \begin{enumerate}
-  \item \textbf{Split before fitting:} draw training, selection and evaluation samples from the experiment at random.
+  \item \textbf{Split before fitting:} draw training, selection, and evaluation samples from the experiment at random.
   \item \textbf{Fit} on training data.
   \item \textbf{Choose} among candidates on the selection sample: the list, the engine's cut-off, the isotonic map.
   \item \textbf{Freeze:} record the chosen policy's decision for every evaluation unit, and the code, before evaluation outcomes are released.

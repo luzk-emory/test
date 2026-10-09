@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\handoutheader{H3}{Sequential Decisions}{Dynamic treatment regimes, Q-learning, G-estimation and learning from bandit logs}{Meeting 6 (Allocation and policy learning)}
+\handoutheader{H3}{Sequential Decisions}{Dynamic treatment regimes, Q-learning, G-estimation, and learning from bandit logs}{Meeting 6 (Allocation and policy learning)}
 
 \begin{decision}
 A platform sends a coupon in week 1 and decides in week 2 whether to send another, depending on whether the
@@ -53,7 +53,7 @@ over $x_1$.
 \end{proof}
 
 \begin{prop}{Adjusting for the intermediate response is wrong}{mediator}
-In a regression of $Y$ on $A_1$, $X_2$ and $A_2$, the coefficient on $A_1$ is not the effect of $A_1$ on $Y$ whenever $A_1$
+In a regression of $Y$ on $A_1$, $X_2$, and $A_2$, the coefficient on $A_1$ is not the effect of $A_1$ on $Y$ whenever $A_1$
 affects $X_2$ and $X_2$ affects $Y$.
 \end{prop}
 \begin{proof}
@@ -163,7 +163,7 @@ Verify the value of ``coupon both weeks'' (¥7.40) with the g-formula, and the n
 $0.40 \times 2.5 + 0.60 \times 0.9 = 1.0 + 0.54 = 1.54$.}
 
 \begin{exercise}[judgment]
-An analyst estimates the week-1 coupon's effect by regressing weeks 2--4 orders on $A_1$, $A_2$ and the week-1 order indicator,
+An analyst estimates the week-1 coupon's effect by regressing weeks 2--4 orders on $A_1$, $A_2$, and the week-1 order indicator,
 Explain what the coefficient on $A_1$ measures and why it should not be read as the coupon's effect.
 \end{exercise}
 \answer{Conditioning on the week-1 order (a result of $A_1$) compares customers with the same response, removing the coupon's
@@ -181,10 +181,10 @@ backward induction}{Sections 1--4}{3}
 \reading{Robins (2004), ``Optimal structural nested models for optimal sequential decisions'', \emph{Proceedings of the Second
 Seattle Symposium in Biostatistics}}{SNMMs and G-estimation for optimal regimes}{Sections 1--3}{3}
 \reading{Chakraborty and Moodie (2013), \emph{Statistical Methods for Dynamic Treatment Regimes}, Springer}{Q-learning,
-G-estimation and SMARTs at textbook pace}{Ch.\ 2--5}{2}
+G-estimation, and SMARTs at textbook pace}{Ch.\ 2--5}{2}
 \reading{Hern\'an and Robins, \emph{Causal Inference: What If}}{The g-formula and time-varying confounding in the course's
 notation}{Ch.\ 19--21}{2}
-\reading{Dud\'ik, Langford and Li (2011), ``Doubly robust policy evaluation and learning'', \emph{ICML}}{Off-policy evaluation
+\reading{Dud\'ik, Langford, and Li (2011), ``Doubly robust policy evaluation and learning'', \emph{ICML}}{Off-policy evaluation
 from bandit logs}{Sections 1--4}{2}
 \reading{Murphy (2005), ``An experimental design for the development of adaptive treatment strategies'', \emph{Statistics in
 Medicine}}{How to design a SMART}{All}{2}

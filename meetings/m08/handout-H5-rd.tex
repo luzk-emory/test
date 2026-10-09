@@ -13,7 +13,7 @@ effect, for units at the threshold.
 \begin{goals}
   \item state the sharp and fuzzy RD designs and their identifying assumption (continuity);
   \item estimate the jump by local linear regression and choose a bandwidth;
-  \item run the standard checks: density of the running variable, covariate balance, bandwidth and placebo cut-offs;
+  \item run the standard checks: density of the running variable, covariate balance, bandwidth, and placebo cut-offs;
   \item interpret the effect as local and say what it implies for moving the threshold.
 \end{goals}
 
@@ -77,7 +77,7 @@ polynomials are not recommended: they put large weight on far-away units and can
 
 \paragraph{The bandwidth.} A small $h$ uses units closest to $c$ (less bias, more variance); a large $h$ the reverse. Data-driven bandwidths minimize
 the estimated mean squared error. Because the MSE-optimal bandwidth leaves bias of the same order as the SE, conventional intervals undercover;
-use robust bias-corrected intervals (Calonico, Cattaneo and Titiunik, 2014), and show results across a range of bandwidths.
+use robust bias-corrected intervals (Calonico, Cattaneo, and Titiunik, 2014), and show results across a range of bandwidths.
 
 \subsection{Checks}
 
@@ -163,15 +163,15 @@ before the reminder (visits by a date before reminders start), or treats the rem
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Cattaneo, Idrobo and Titiunik (2020), \emph{A Practical Introduction to Regression Discontinuity Designs: Foundations}, Cambridge}{The
+\reading{Cattaneo, Idrobo, and Titiunik (2020), \emph{A Practical Introduction to Regression Discontinuity Designs: Foundations}, Cambridge}{The
 modern practice: local polynomials, bandwidths, robust inference, checks}{All}{2}
 \reading{Imbens and Lemieux (2008), ``Regression discontinuity designs: a guide to practice'', \emph{Journal of Econometrics}}{A concise practical
 guide}{All}{2}
 \reading{Lee and Lemieux (2010), ``Regression discontinuity designs in economics'', \emph{Journal of Economic Literature}}{Intuition, the
 as-good-as-random interpretation, many examples}{Sections 1--4}{1}
-\reading{Calonico, Cattaneo and Titiunik (2014), ``Robust nonparametric confidence intervals for regression-discontinuity designs'',
+\reading{Calonico, Cattaneo, and Titiunik (2014), ``Robust nonparametric confidence intervals for regression-discontinuity designs'',
 \emph{Econometrica}}{Why MSE-optimal bandwidths need bias correction}{Sections 1--3}{3}
-\reading{Hahn, Todd and van der Klaauw (2001), ``Identification and estimation of treatment effects with a regression-discontinuity design'',
+\reading{Hahn, Todd, and van der Klaauw (2001), ``Identification and estimation of treatment effects with a regression-discontinuity design'',
 \emph{Econometrica}}{The fuzzy design as local IV}{Sections 1--3}{3}
 \end{readinglist}
 

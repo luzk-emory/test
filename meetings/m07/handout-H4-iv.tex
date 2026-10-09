@@ -58,7 +58,7 @@ No test confirms an instrument; each of the following can only count against one
 \subsection{Who the compliers are}
 
 \begin{prop}{Complier outcome means}{complier}
-Under independence, relevance, exclusion and monotonicity,
+Under independence, relevance, exclusion, and monotonicity,
 $\E[Y(1) \mid C] = \{\E[YD \mid Z=1] - \E[YD \mid Z=0]\}/\pi$ and $\E[Y(0) \mid C] = \{\E[Y(1-D) \mid Z=0] - \E[Y(1-D) \mid Z=1]\}/\pi$.
 \end{prop}
 \begin{proof}
@@ -72,7 +72,7 @@ outside shifter the compliers are whoever the shifter happened to move, a group 
 \subsection{When exclusion or monotonicity fails}
 
 \begin{prop}{Exclusion violation}{violation}
-Keep independence, relevance and monotonicity, but let $Y(d,1) = Y(d,0) + \delta$ for every unit. Then
+Keep independence, relevance, and monotonicity, but let $Y(d,1) = Y(d,0) + \delta$ for every unit. Then
 $\text{ITT}/\pi = \text{LATE} + \delta/\pi$.
 \end{prop}
 \begin{proof}
@@ -83,7 +83,7 @@ The direct effect is divided by the first stage: harmless with a strong instrume
 function of $\delta$ and the $\delta$ at which the decision flips.
 
 \begin{prop}{Defiers}{defiers}
-Keep independence, exclusion and relevance but allow defiers. Then
+Keep independence, exclusion, and relevance but allow defiers. Then
 $\text{ITT}/\pi = (\pi_C\,\text{LATE}_C - \pi_D\,\text{LATE}_D)/(\pi_C - \pi_D)$.
 \end{prop}
 \begin{proof}
@@ -128,7 +128,7 @@ Linearize $a/b$ at $(\text{ITT}, \pi)$: $a/b - \theta \approx \{(a - \text{ITT})
 With a precise first stage, $\SE(\hat\theta) \approx \SE(\widehat{\text{ITT}})/\pi$. The approximation fails when $\pi$ is small relative to its
 SE, measured by the first-stage $F = (\hat\pi/\SE(\hat\pi))^2$. A weak instrument's estimate is heavy-tailed, centered between the truth
 and the naive regression, and its nominal 95\% interval undercovers. $F > 10$ (Staiger and Stock) is a floor, not a certificate: Lee,
-McCrary, Moreira and Porter (2022) show a conventional 5\% $t$-test has correct size only for $F$ above about $104.7$.
+McCrary, Moreira, and Porter (2022) show a conventional 5\% $t$-test has correct size only for $F$ above about $104.7$.
 
 \begin{prop}{The Anderson--Rubin test}{ar}
 If $Y = \theta D + u$ with $Z \indep u$, the regression of $Y - \theta_0D$ on $Z$ has slope zero exactly when $\theta_0 = \theta$ (given $\pi \ne 0$),
@@ -191,7 +191,7 @@ did not choose the campaign because they expected their city's orders to rise. B
 is the first check.
 
 \paragraph{Step 3: who the compliers are.} In big cities, $\E[YD \mid Z=1] = 2.15$, $\E[YD \mid Z=0] = 0.40$,
-$\E[Y(1-D) \mid Z=0] = 4.60$ and $\E[Y(1-D) \mid Z=1] = 3.15$. By Result~\ref{prop:complier}, compliers would order
+$\E[Y(1-D) \mid Z=0] = 4.60$, and $\E[Y(1-D) \mid Z=1] = 3.15$. By Result~\ref{prop:complier}, compliers would order
 $(4.60 - 3.15)/0.25 = 5.8$ times a month without Plus and $(2.15 - 0.40)/0.25 = 7.0$ with it. Always-takers, who joined
 without a campaign, order $0.40/0.05 = 8.0$; never-takers $3.15/0.70 = 4.5$. The campaign moved middling customers, not the
 heaviest ones.
@@ -233,29 +233,29 @@ changes.}
 %=====================================================================================
 \sectionthree
 
-\begin{extension}[Continuous treatments, flexible controls and describing compliers]
+\begin{extension}[Continuous treatments, flexible controls, and describing compliers]
 With a continuous treatment and binary instrument, the Wald ratio is a weighted average of unit slopes over the range the instrument
-moved them (Angrist, Graddy and Imbens, 2000). With many controls, residualize $Y$, $D$ and $Z$ on $X$ with cross-fitted learners and compute
+moved them (Angrist, Graddy, and Imbens, 2000). With many controls, residualize $Y$, $D$, and $Z$ on $X$ with cross-fitted learners and compute
 $\sum\tilde Z\tilde Y/\sum\tilde Z\tilde D$: the partially linear IV model of double machine learning. Abadie's $\kappa$-weighting identifies any feature of the
 compliers' joint distribution.
 \end{extension}
 
 \begin{extension}[Sensitivity to exclusion]
 Report the LATE as a function of the direct effect, $(\text{ITT} - \delta)/\pi$, over a range of $\delta$ argued from the institution, and the
-$\delta$ at which the decision flips. Conley, Hansen and Rossi (2012) formalize this as ``plausibly exogenous'' instruments.
+$\delta$ at which the decision flips. Conley, Hansen, and Rossi (2012) formalize this as ``plausibly exogenous'' instruments.
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Angrist, Imbens and Rubin (1996), ``Identification of causal effects using instrumental variables'', \emph{JASA}}{The
-potential-outcomes framework for IV, compliance types and the LATE (also in Meeting~2's list)}{Sections 1--4}{2}
+\reading{Angrist, Imbens, and Rubin (1996), ``Identification of causal effects using instrumental variables'', \emph{JASA}}{The
+potential-outcomes framework for IV, compliance types, and the LATE (also in Meeting~2's list)}{Sections 1--4}{2}
 \reading{Angrist and Pischke (2015), \emph{Mastering 'Metrics}, Princeton}{IV at an intuitive level, with classic
 examples}{Ch.\ 3}{1}
 \reading{Imbens and Angrist (1994), ``Identification and estimation of local average treatment effects'',
 \emph{Econometrica}}{The LATE theorem}{All}{3}
-\reading{Lee, McCrary, Moreira and Porter (2022), ``Valid t-ratio inference for IV'', \emph{AER}}{Why $F > 10$ is not enough, and
+\reading{Lee, McCrary, Moreira, and Porter (2022), ``Valid t-ratio inference for IV'', \emph{AER}}{Why $F > 10$ is not enough, and
 corrected critical values}{Sections I--III}{3}
-\reading{Andrews, Stock and Sun (2019), ``Weak instruments in instrumental variables regression'', \emph{Annual Review of
+\reading{Andrews, Stock, and Sun (2019), ``Weak instruments in instrumental variables regression'', \emph{Annual Review of
 Economics}}{A survey of weak-instrument-robust inference}{Sections 1--4}{3}
 \reading{Graddy (2006), ``The Fulton Fish Market'', \emph{Journal of Economic Perspectives}}{Weather as an instrument for price in a
 real market}{All}{1}

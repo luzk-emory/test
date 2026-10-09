@@ -75,7 +75,7 @@
 
 % ── Title ──
 \title[Meeting 6]{Meeting 6: Who Gets the Push?}
-\subtitle{Allocation and policy learning: from effect estimates to a deployable rule under costs, caps, budgets and risk}
+\subtitle{Allocation and policy learning: from effect estimates to a deployable rule under costs, caps, budgets, and risk}
 \author{Zhikun Lu}
 \date{\today}
 
@@ -105,10 +105,10 @@
 \begin{column}{0.48\textwidth}
 \textbf{Block B: Policy learning}
 \begin{itemize}
-  \item Predict-then-optimize, decision-focused learning and policy learning
+  \item Predict-then-optimize, decision-focused learning, and policy learning
   \item Doubly robust scores for net value: empirical welfare maximization
   \item Policy learning is weighted classification
-  \item Policy trees, regret and the size of the class
+  \item Policy trees, regret, and the size of the class
   \item Deploying so that it can still be checked: holdouts and bandits
   \item What the sum assumes
 \end{itemize}
@@ -295,7 +295,7 @@ The forest's list earns $500 \times 6.00 + 500 \times 3.50 = $ \textyen 4{,}750.
 % [RELEASE R3: finance's memo: ¥8,000 of expected cost, at most a 5% chance of overrunning it]
 \begin{frame}{A Budget: The Knapsack and Its Shadow Price}
 
-Finance limits \textbf{expected cost}. With unit costs $c_i > 0$, benefits $b_i = m\tau_i$ and budget $C$: maximize $\sum_i d_i(b_i - c_i)$ subject to $\sum_i d_i c_i \le C$. The relaxation allows $d_i \in [0,1]$. Order units by $r_i = b_i/c_i$; the \textbf{greedy} assignment treats them in that order until the budget runs out or $r_i \le 1$, treating a fraction of the first unit $j$ that does not fit.
+Finance limits \textbf{expected cost}. With unit costs $c_i > 0$, benefits $b_i = m\tau_i$, and budget $C$: maximize $\sum_i d_i(b_i - c_i)$ subject to $\sum_i d_i c_i \le C$. The relaxation allows $d_i \in [0,1]$. Order units by $r_i = b_i/c_i$; the \textbf{greedy} assignment treats them in that order until the budget runs out or $r_i \le 1$, treating a fraction of the first unit $j$ that does not fit.
 
 \begin{result}{1.4}{Greedy is optimal for the relaxation; the shadow price}
 Let $\lambda^\ast = r_j - 1$ if the budget binds before the ratio reaches 1, and $0$ otherwise. The greedy assignment solves the relaxation and equals the rule $d_i = \ind{b_i > (1 + \lambda^\ast)c_i}$ except at the fractional unit. Where the budget binds, the optimal value $V(C)$ is concave in $C$ with slope $\lambda^\ast$: an extra yuan of budget adds $\lambda^\ast$ of net value.
@@ -418,7 +418,7 @@ South ($b$), 4{,}000 & 160 at \textyen 5.00; 1{,}000 at \textyen 2.50 & below \t
 
 The budget constrains \textbf{expected} cost. With redemption $R_i \sim \text{Bernoulli}(s_i)$, $s_i = \mu_1(X_i)$, member $i$ costs $k + aR_i$: \textyen 6.50 or \textyen 1.50.
 
-\begin{result}{1.6}{Mean, variance and the reserve}
+\begin{result}{1.6}{Mean, variance, and the reserve}
 If redemptions are independent, realized cost $K = \sum_i d_i(k + aR_i)$ has $\E[K] = \sum_i d_ic_i$ and $\Var(K) = a^2\sum_i d_is_i(1-s_i)$. Under the normal approximation, $\Pr(K > C) \le \alpha$ if and only if $\E[K] + z_\alpha\sqrt{\Var(K)} \le C$.
 \end{result}
 
@@ -530,7 +530,7 @@ Q & 360 & 480 or 360, $\tfrac12$ each & 60 \\
 
 \medskip
 
-\textbf{The payoff}, with $\pi(360) = 10{,}800$, $\pi(420) = 12{,}000 - 400 = 11{,}600$ and $\pi(480) = 12{,}000 - 1{,}600 = 10{,}400$:
+\textbf{The payoff}, with $\pi(360) = 10{,}800$, $\pi(420) = 12{,}000 - 400 = 11{,}600$, and $\pi(480) = 12{,}000 - 1{,}600 = 10{,}400$:
 \begin{itemize}
   \item store P: $v = 11{,}600 - 10{,}800 - 500 = $ \textcolor{sbgreen}{\textyen 300}: push;
   \item store Q: $v = \tfrac12(10{,}400 - 10{,}800) + \tfrac12(0) - 500 = $ \textcolor{warnred}{$-$\textyen 700}: do not push.
@@ -646,7 +646,7 @@ An estimation loss buys accuracy everywhere, including where the decision is nev
 \begin{enumerate}
   \item \textbf{Predict, then optimize} (plug-in). Fit $\hatt$ by an estimation loss and apply the optimizer. Modular and reusable, but accuracy is bought everywhere.
   \item \textbf{Decision-focused learning.} Keep the optimizer; train $\hatt_\theta$ on the value of the decision it induces, $\frac1n\sum_i \pi_\theta(X_i)\Gamma_i$ ($\Gamma_i$: the score of the next frame). The objective jumps as decisions flip, so practice uses smooth surrogates (SPO+) or randomized optimizers. Worth it when the optimizer couples units: a budget, a capacity, a menu of coupon depths.
-  \item \textbf{Policy learning.} Drop the estimate and search a class $\Pi$ of rules, such as depth-2 trees, for the one with the highest estimated value. A restricted class is easy to explain, audit and deploy.
+  \item \textbf{Policy learning.} Drop the estimate and search a class $\Pi$ of rules, such as depth-2 trees, for the one with the highest estimated value. A restricted class is easy to explain, audit, and deploy.
 \end{enumerate}
 
 \medskip
@@ -743,7 +743,7 @@ Under a budget, replace $\Gamma_i$ by $\Gamma_i - \lambda^\ast c(X_i)$ (Result 1
 % ====================================================================
 \begin{frame}{Classifying the Eight Members}
 
-Label each of the eight members by the sign of $\Gamma_i$: push 1, 2, 3, 6 and 7; do not push 4, 5 and 8. Weight each by $|\Gamma_i|$.
+Label each of the eight members by the sign of $\Gamma_i$: push 1, 2, 3, 6, and 7; do not push 4, 5, and 8. Weight each by $|\Gamma_i|$.
 
 \medskip
 
@@ -779,7 +779,7 @@ A \textbf{policy tree} takes $\Pi$ to be the trees of depth one or two, searched
 On the eight members, with type and spending as the only features:
 \begin{itemize}
   \item \textbf{Depth one.} Split on type: push analysts, 47.00. Split on spending: push low spenders, 48.50. The best depth-one tree pushes \textbf{low spenders}.
-  \item \textbf{Depth two.} Four leaves, one per cell, with sums $55.00$, $-8.00$, $-6.50$ and $-9.50$. The best depth-two tree pushes \textbf{analyst--low only}, 55.00.
+  \item \textbf{Depth two.} Four leaves, one per cell, with sums $55.00$, $-8.00$, $-6.50$, and $-9.50$. The best depth-two tree pushes \textbf{analyst--low only}, 55.00.
 \end{itemize}
 
 \bigskip
@@ -902,7 +902,7 @@ Each has a number today:
 
 \begin{itemize}
   \item \spinestep{Estimand.} The net value of a list, $\sum_i d_i v(X_i)$ with $v(x) = m\tau(x) - c(x)$, under the business's constraints; for a learned rule, its gain $G(\pi)$. With a capacity, the expected payoff in each arm.
-  \item \spinestep{Identification.} The push test's coin identifies $\tau(x)$ cell by cell; transport to Q4 rests on the same push, coupon and members; the sum rests on no interference. A nonlinear payoff needs each arm's distribution, never the joint.
+  \item \spinestep{Identification.} The push test's coin identifies $\tau(x)$ cell by cell; transport to Q4 rests on the same push, coupon, and members; the sum rests on no interference. A nonlinear payoff needs each arm's distribution, never the joint.
   \item \spinestep{Estimation.} The benefit is a contrast, the cost a one-arm prediction. A cap ranks by $v$, a budget by $b/c$ with shadow price $\lambda^\ast$, a rate constraint by group-specific thresholds, a capacity at the critical fractile. Policy learning maximizes $\frac1n\sum_i \pi(X_i)\Gamma_i$: a weighted classification.
   \item \spinestep{Inference.} A reserve covers spending luck; a lower bound on $v$ covers noisy effects; a learned rule's own estimate is optimistic and its regret shrinks with $n$; a holdout keeps the deployed rule checkable.
   \item \textbf{Judge a model by the decisions it changes.} Equal accuracy can cost \textyen 0 or \textyen 5{,}000.

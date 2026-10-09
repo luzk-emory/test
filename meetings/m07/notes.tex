@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\notesheader{7}{Observational Data}{When the logs must answer: adjustment, propensity scores and double robustness}
+\notesheader{7}{Observational Data}{When the logs must answer: adjustment, propensity scores, and double robustness}
 
 \begin{decision}
 No experiment was run. Treatment was assigned by a business process (a targeting rule, an account manager, an automated
@@ -14,7 +14,7 @@ treated and sometimes not.
   \item state the three identifying assumptions and read the assignment rule as the assignment mechanism;
   \item identify the ATE and ATT by standardization and by inverse-probability weighting, with proofs;
   \item show why a scalar propensity score suffices, and why predicting treatment well is a warning;
-  \item choose controls with the backdoor logic, recognizing mediators, colliders and M-bias;
+  \item choose controls with the backdoor logic, recognizing mediators, colliders, and M-bias;
   \item run the outcome-free design stage, diagnose overlap, and say how trimming changes the estimand;
   \item use the doubly robust (AIPW) estimator and say what double robustness does and does not protect against.
 \end{goals}
@@ -27,7 +27,7 @@ treated and sometimes not.
 Treatment $D$, outcome $Y$, pre-treatment covariates $X$; $\mu_d(x) = \E[Y \mid D=d, X=x]$ and $e(x) = \Pr(D=1 \mid X=x)$. When a
 recorded rule assigned treatment, $e$ is that rule viewed as a function of its inputs. This includes rules written by an
 automated system: its decisions are the assignment mechanism, and the data it leaves are observational however sophisticated
-it was. The ATE, ATT and ATU differ whenever effects vary with $X$ and the rule's targeting depends on $X$; which one is
+it was. The ATE, ATT, and ATU differ whenever effects vary with $X$ and the rule's targeting depends on $X$; which one is
 needed is a question about the decision.
 
 \subsection{Identification}
@@ -89,7 +89,7 @@ $\Pr(D=1 \mid X, e(X)) = e(X)$ and $\Pr(D=1 \mid e(X)) = \E[e(X) \mid e(X)] = e(
 $\Pr(D=1 \mid Y(0), Y(1), e(X)) = \E[\Pr(D=1 \mid Y(0), Y(1), X) \mid Y(0), Y(1), e(X)] = e(X)$, using exchangeability given $X$.
 \end{proof}
 
-Adjusting for the scalar $e(X)$, by weighting, stratifying or matching, does the work of the full vector. The propensity model
+Adjusting for the scalar $e(X)$, by weighting, stratifying, or matching, does the work of the full vector. The propensity model
 is not a prediction task: its job is to reproduce the assignment mechanism and balance $X$. A model that predicts $D$ almost
 perfectly is reporting that the mechanism was nearly deterministic, which is a failure of overlap, not a success.
 
@@ -128,7 +128,7 @@ Measure controls before the treatment decision. Timing is necessary but not suff
 collider if two unrecorded causes, one of $D$ and one of $Y$, both drive it (\emph{M-bias}). Justify each control by its causes,
 not only its date. ``Everything in the warehouse'' almost always contains post-treatment variables.
 
-\subsection{Overlap, trimming and the estimand}
+\subsection{Overlap, trimming, and the estimand}
 
 Diagnose overlap with the distribution of $\hat e(X)$ in each arm (regions where one arm is empty have no comparison) and with
 the largest weights. \emph{Trimming} restricts to $\hat e(X) \in [a, 1-a]$, often with $a = 0.05$ or $0.10$. It stabilizes the estimate
@@ -281,7 +281,7 @@ model of Meeting~8.
 \emph{Biometrika}}{The balancing property and its consequences}{Sections 1--3}{2}
 \reading{Rubin (2008), ``For objective causal inference, design trumps analysis'', \emph{Annals of Applied
 Statistics}}{The case for an outcome-free design stage}{All}{1}
-\reading{Crump, Hotz, Imbens and Mitnik (2009), ``Dealing with limited overlap'', \emph{Biometrika}}{How to choose a trimming
+\reading{Crump, Hotz, Imbens, and Mitnik (2009), ``Dealing with limited overlap'', \emph{Biometrika}}{How to choose a trimming
 rule, and what estimand results}{Sections 1--3}{3}
 \reading{LaLonde (1986), \emph{AER}; Dehejia and Wahba (1999), \emph{JASA}}{Can observational methods recover an experiment?}{Intro,
 results}{1}

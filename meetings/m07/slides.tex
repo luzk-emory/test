@@ -75,7 +75,7 @@
 
 % ── Title ──
 \title[Meeting 7]{Meeting 7: When the Logs Must Answer}
-\subtitle{Observational data: adjustment, propensity scores and double robustness}
+\subtitle{Observational data: adjustment, propensity scores, and double robustness}
 \author{Zhikun Lu}
 \date{\today}
 
@@ -125,7 +125,7 @@
 % [RELEASE R1: the Q3 programme, sales' table and Lin's four sentences]
 \begin{frame}{The Program on Trial}
 
-In Q3 the chain's \textbf{automated campaign engine} (Meeting 5) sent the \textbf{5{,}000} \textyen 10 coupons, half of the 10{,}000-member base. It chose members by a \textbf{score} built from recency, tier and spend, throttled by a daily contact cap.
+In Q3 the chain's \textbf{automated campaign engine} (Meeting 5) sent the \textbf{5{,}000} \textyen 10 coupons, half of the 10{,}000-member base. It chose members by a \textbf{score} built from recency, tier, and spend, throttled by a daily contact cap.
 
 \bigskip
 
@@ -183,7 +183,7 @@ Treatment $D$ (coupon), outcome $Y$ (purchase), pre-treatment covariates $X$ (th
 \begin{itemize}
   \item When a recorded rule assigned treatment, $e$ \textbf{is that rule}, viewed as a function of its inputs.
   \item That includes a rule written by an automated system. Its decisions are the assignment mechanism, and the logs it leaves are observational however sophisticated it was. The engine did not remove confounding; it \textbf{wrote it down}.
-  \item The ATE, ATT and ATU differ whenever effects vary with $X$ and the rule's targeting depends on $X$. Which one is needed is a question about the decision.
+  \item The ATE, ATT, and ATU differ whenever effects vary with $X$ and the rule's targeting depends on $X$. Which one is needed is a question about the decision.
 \end{itemize}
 
 \medskip
@@ -436,7 +436,7 @@ $D \indep X \mid e(X)$; hence if exchangeability holds given $X$, it holds given
 
 \begin{itemize}
   \item Two members with the same $e(x)$ were treated alike by the rule, whichever of the 14 fields produced that value. Comparing them is as good as comparing members with identical $x$.
-  \item Adjusting for the scalar $e(X)$, by \textbf{weighting}, \textbf{stratifying} or \textbf{matching} recipients to non-recipients with similar $e$, does the work of the full vector.
+  \item Adjusting for the scalar $e(X)$, by \textbf{weighting}, \textbf{stratifying}, or \textbf{matching} recipients to non-recipients with similar $e$, does the work of the full vector.
 \end{itemize}
 
 \medskip
@@ -553,20 +553,20 @@ The coupon was randomized: there was no confounding to fix. Opening the app is c
 \vfill
 
 \begin{center}
-\Large \textbf{Block B: Overlap, design and double robustness}\\[0.4em]
+\Large \textbf{Block B: Overlap, design, and double robustness}\\[0.4em]
 \normalsize The full export: where the comparison is thin, what to decide before looking, and AIPW.
 \end{center}
 \vfill
 \end{frame}
 
 % ====================================================================
-\section{Block B: Overlap, design and double robustness}
+\section{Block B: Overlap, design, and double robustness}
 % ====================================================================
 
 % [RELEASE R4: the real logs, coupon column only; the purchase column stays locked]
 \begin{frame}{The Real Logs}
 
-The engine's score reads \textbf{14 CRM fields} and cuts them into four bands; each band had a daily send probability, throttled by the cap. The export has the 14 fields, the band and the coupon column. \textbf{The purchase column stays locked.}
+The engine's score reads \textbf{14 CRM fields} and cuts them into four bands; each band had a daily send probability, throttled by the cap. The export has the 14 fields, the band, and the coupon column. \textbf{The purchase column stays locked.}
 
 \begin{center}
 \begin{tabular}{llrrr}
@@ -854,7 +854,7 @@ Second row: the residuals have mean zero in each segment, so wrong weights multi
 % ====================================================================
 \begin{frame}{What Double Robustness Does Not Cover}
 
-\textbf{Modeling errors, not missing variables.} Double robustness protects against a wrong $\tilde\mu_d$ or a wrong $\tilde e$. If exchangeability fails, say store managers added unrecorded ``VIP'' members to the list, every estimator today is biased: standardization, IPW, regression and AIPW alike.
+\textbf{Modeling errors, not missing variables.} Double robustness protects against a wrong $\tilde\mu_d$ or a wrong $\tilde e$. If exchangeability fails, say store managers added unrecorded ``VIP'' members to the list, every estimator today is biased: standardization, IPW, regression, and AIPW alike.
 
 \bigskip
 
@@ -886,7 +886,7 @@ Second row: the residuals have mean zero in each segment, so wrong weights multi
 
 \medskip
 
-At the coffee chain, the defense of the Q3 review is not the choice among IPW, standardization and AIPW. It is that the export holds every field the score read, past purchases among them, and that within a band the cap, not the members, decided who got a coupon.
+At the coffee chain, the defense of the Q3 review is not the choice among IPW, standardization, and AIPW. It is that the export holds every field the score read, past purchases among them, and that within a band the cap, not the members, decided who got a coupon.
 \end{frame}
 
 % ====================================================================

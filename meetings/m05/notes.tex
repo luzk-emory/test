@@ -12,7 +12,7 @@ come from randomized data the list was not chosen on.
 \begin{goals}
   \item define a policy's value and gain, and estimate them from a randomized sample by inverse-probability
   weighting with the design's own probabilities;
-  \item read gain, profit and Qini curves, and summarize a ranking with RATE;
+  \item read gain, profit, and Qini curves, and summarize a ranking with RATE;
   \item separate ranking from calibration, say which one a decision uses, and recalibrate a score by isotonic
   regression without changing its ranking;
   \item explain why a policy's value on the data that chose it is optimistic, and run the freeze-and-evaluate
@@ -23,14 +23,14 @@ come from randomized data the list was not chosen on.
 %=====================================================================================
 \sectionone
 
-\subsection{Policies, values and gains}
+\subsection{Policies, values, and gains}
 
 A \emph{policy} is a rule $\pi: x \mapsto \{0,1\}$. Let $R(d)$ be the reward a unit would generate under decision $d$, a
 potential outcome in money. The policy's \emph{value} and its \emph{gain} over treating no one are
 \[
   V(\pi) = \E[R(\pi(X))], \qquad G(\pi) = V(\pi) - V(\mathbf{0}) .
 \]
-With margin $m$ per purchase, cost $c$ per redemption and $k$ per unit treated, $R(d) = (m - cd)Y(d) - kd$, and
+With margin $m$ per purchase, cost $c$ per redemption, and $k$ per unit treated, $R(d) = (m - cd)Y(d) - kd$, and
 the net value of treating $x$ is $v(x) = \E[R(1) - R(0) \mid X = x] = m\tau(x) - c\mu_1(x) - k$.
 
 \begin{prop}{The policy-value identity}{pvi}
@@ -80,13 +80,13 @@ noisy reward needs a large evaluation sample. Replacing $g_i$ with the doubly ro
 of the reward fitted on other data, then weight the residual) keeps the expectation and can cut the variance
 sharply.
 
-\subsection{Gain, profit and Qini curves}
+\subsection{Gain, profit, and Qini curves}
 
 Rank units by a score $s(x)$ and let $S_\phi$ be the top fraction $\phi$. The \emph{gain curve}
 $Q(\phi) = \phi\{\E[Y(1) \mid S_\phi] - \E[Y(0) \mid S_\phi]\}$ is the incremental outcome per unit of the population from
 treating the top $\phi$. Every ranking starts at $0$ and ends at the ATE; random ranking traces $\phi\cdot\ATE$. With
 four equal groups whose effects are $0.20, 0.10, 0.00, -0.10$ (ATE $0.05$), the best ranking gives $Q = 0.050, 0.075, 0.075,
-0.050$ at $\phi = \tfrac14, \tfrac12, \tfrac34, 1$: it rises, flattens and falls once it reaches the harmed group. A curve
+0.050$ at $\phi = \tfrac14, \tfrac12, \tfrac34, 1$: it rises, flattens, and falls once it reaches the harmed group. A curve
 that does not start at $0$ and end at the ATE has been computed incorrectly. The \emph{Qini curve} is the same plot in counts.
 
 \begin{prop}{Estimate rates within a group, then scale}{rates}
@@ -176,7 +176,7 @@ Result~\ref{prop:ipw} applies to it on $E$.
 Candidates are not only models: cut-offs, feature sets, budgets, and any adjustment after looking at results are
 all choices. An automated system that tunes its own cut-off is making one.
 
-\paragraph{The evaluation protocol.} (1) \emph{Split before fitting}: draw training, selection and evaluation samples
+\paragraph{The evaluation protocol.} (1) \emph{Split before fitting}: draw training, selection, and evaluation samples
 from the experiment at random. (2) \emph{Fit} on training data. (3) \emph{Choose} among candidates on the selection
 sample. (4) \emph{Freeze}: record the chosen policy's decision for every evaluation unit, and the code, before
 evaluation outcomes are released. (5) \emph{Evaluate once} and report that number. A disappointing evaluation is a
@@ -334,10 +334,10 @@ cross-fitting on the same experiment.
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{van der Laan, Ulloa-P\'erez, Carone and Luedtke (2023), ``Causal isotonic calibration for heterogeneous treatment
+\reading{van der Laan, Ulloa-P\'erez, Carone, and Luedtke (2023), ``Causal isotonic calibration for heterogeneous treatment
 effects'', \emph{ICML}}{Isotonic calibration of effect scores on doubly robust outcomes}{Sections 1--3}{3}
-\reading{Yadlowsky, Fleming, Shah, Brunskill and Wager, ``Evaluating treatment prioritization rules via rank-weighted
-average treatment effects'', \emph{JASA} (2025)}{TOC, AUTOC and Qini as members of one family, with inference}{Sections
+\reading{Yadlowsky, Fleming, Shah, Brunskill, and Wager, ``Evaluating treatment prioritization rules via rank-weighted
+average treatment effects'', \emph{JASA} (2025)}{TOC, AUTOC, and Qini as members of one family, with inference}{Sections
 1--3}{3}
 \reading{Imai and Li (2023), ``Experimental evaluation of individualized treatment rules'', \emph{JASA}}{Finite-sample
 evaluation of a rule on a randomized sample}{Sections 1--3}{3}

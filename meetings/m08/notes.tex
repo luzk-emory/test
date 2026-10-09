@@ -4,7 +4,7 @@
 \notesheader{8}{Double Machine Learning}{Flexible controls without biased answers}
 
 \begin{decision}
-A price, fee or discount was set by a system reacting to demand signals. The firm wants the effect of the price itself: an
+A price, fee, or discount was set by a system reacting to demand signals. The firm wants the effect of the price itself: an
 elasticity to hold against a break-even. Many signals must be controlled for, in complicated ways, so machine learning is
 needed. But a model that predicts outcomes well does not, by itself, give an unbiased effect. These notes show how to use
 machine learning for the controls without letting its errors bias the causal estimate, and how to say how wrong the controls would
@@ -12,7 +12,7 @@ have to be to change the decision.
 \end{decision}
 
 \begin{goals}
-  \item state the partially linear model, its identifying assumptions and its estimand when effects vary;
+  \item state the partially linear model, its identifying assumptions, and its estimand when effects vary;
   \item derive the residual-on-residual (Frisch--Waugh--Lovell) form and explain why both sides must be residualized;
   \item explain the two failures of plug-in machine learning and how orthogonality and cross-fitting fix them;
   \item compute a DML estimate and its (clustered) standard error, and diagnose overlap with a continuous treatment;
@@ -24,7 +24,7 @@ have to be to change the decision.
 
 \subsection{The partially linear model}
 
-With outcome $Y$, treatment $D$ (binary or continuous, such as a log price) and controls $X$,
+With outcome $Y$, treatment $D$ (binary or continuous, such as a log price), and controls $X$,
 \[
   Y = \theta D + g(X) + \varepsilon, \qquad \E[\varepsilon \mid D, X] = 0 .
 \]
@@ -99,7 +99,7 @@ The estimator is the sample analog of Result~\ref{prop:fwl}; the SE is the heter
 the residual regression. Its validity rests on the bias calculation below and the rate conditions in Section~3.
 \end{proof}
 
-Why it works: write the nuisance errors $e_r = \hat r - r$, $e_\ell = \hat\ell - \ell$ and $\nu = D - r(X)$. Then
+Why it works: write the nuisance errors $e_r = \hat r - r$, $e_\ell = \hat\ell - \ell$, and $\nu = D - r(X)$. Then
 $\tilde D = \nu - e_r$ and $\tilde Y = \theta\nu + \varepsilon - e_\ell$. Cross-fitting makes the errors independent of the fold being
 scored, so the cross terms with $\nu$ and $\varepsilon$ vanish in expectation, leaving
 \[
@@ -164,7 +164,7 @@ charged.
 standard fee rise from ¥4.0 to ¥4.4? Margin per order excluding the fee is ¥6. Profit per zone-hour is $Q(f)(6 + f)$, whose elasticity
 with respect to $f$ is $\varepsilon + f/(6 + f) = \varepsilon + 0.4$ at $f = 4$. A rise pays only if the order elasticity $\varepsilon$ exceeds $-0.4$.
 The data are 40{,}000 zone-hours from a simulation calibrated to this setting (script \texttt{checks/m08\_sim.py}; true elasticity
-$-0.6$), with $Y$ log orders, $D$ log fee and $X$ hour, rain, weekend, zone and supply signals.
+$-0.6$), with $Y$ log orders, $D$ log fee, and $X$ hour, rain, weekend, zone, and supply signals.
 
 \paragraph{Step 1: naive.} The regression of log orders on log fee gives $+1.20$: fees are high exactly when demand is high (dinner,
 rain), so high-fee hours have many orders for reasons unrelated to the fee. Taken at face value it says to raise the fee.
@@ -230,7 +230,7 @@ time.}
 %=====================================================================================
 \sectionthree
 
-\begin{extension}[Orthogonality, rates and Robinson]
+\begin{extension}[Orthogonality, rates, and Robinson]
 A score is Neyman orthogonal if its derivative with respect to the nuisances is zero at the truth. Valid $\sqrt n$ inference needs the product of
 nuisance error rates to be $o(n^{-1/2})$ (each $o(n^{-1/4})$ suffices) and the treatment model's squared error $o(n^{-1/2})$. Robinson (1988) proposed the
 residual-on-residual estimator with kernel nuisances; cross-fitting removed the entropy conditions that restricted that theory, allowing
@@ -239,20 +239,20 @@ high-dimensional learners.
 
 \begin{extension}[Post-double-selection and dependent data]
 The linear predecessor: lasso $Y$ on $X$, lasso $D$ on $X$, take the union of selected variables, and regress $Y$ on $D$ and the union (Belloni,
-Chernozhukov and Hansen, 2014). With panel or time-series data, form folds by cluster or forward in time, and check stability with coarser folds.
+Chernozhukov, and Hansen, 2014). With panel or time-series data, form folds by cluster or forward in time, and check stability with coarser folds.
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Chernozhukov, Chetverikov, Demirer, Duflo, Hansen, Newey and Robins (2018), ``Double/debiased machine learning for treatment and
-structural parameters'', \emph{Econometrics Journal}}{The DML framework, orthogonality and cross-fitting}{Sections 1--3}{3}
-\reading{Chernozhukov, Hansen, Kallus, Spindler and Syrgkanis, \emph{Applied Causal Inference Powered by ML and AI} (free online)}{DML at
+\reading{Chernozhukov, Chetverikov, Demirer, Duflo, Hansen, Newey, and Robins (2018), ``Double/debiased machine learning for treatment and
+structural parameters'', \emph{Econometrics Journal}}{The DML framework, orthogonality, and cross-fitting}{Sections 1--3}{3}
+\reading{Chernozhukov, Hansen, Kallus, Spindler, and Syrgkanis, \emph{Applied Causal Inference Powered by ML and AI} (free online)}{DML at
 textbook pace, with code}{Ch.\ 4, 9--10}{2}
-\reading{Cinelli and Hazlett (2020), ``Making sense of sensitivity'', \emph{JRSS B}}{Partial-$R^2$ sensitivity, robustness values and
+\reading{Cinelli and Hazlett (2020), ``Making sense of sensitivity'', \emph{JRSS B}}{Partial-$R^2$ sensitivity, robustness values, and
 benchmarking}{Sections 1--4}{2}
-\reading{Chernozhukov, Cinelli, Newey, Sharma and Syrgkanis, ``Long story short: omitted variable bias in causal machine learning'' (working
+\reading{Chernozhukov, Cinelli, Newey, Sharma, and Syrgkanis, ``Long story short: omitted variable bias in causal machine learning'' (working
 paper)}{The sensitivity bound for DML and the interactive model}{Sections 1--3}{3}
-\reading{Belloni, Chernozhukov and Hansen (2014), ``Inference on treatment effects after selection among high-dimensional controls'',
+\reading{Belloni, Chernozhukov, and Hansen (2014), ``Inference on treatment effects after selection among high-dimensional controls'',
 \emph{Review of Economic Studies}}{Post-double-selection lasso}{Sections 1--2}{3}
 \reading{Handout H5, \emph{Regression discontinuity}}{Identification from a threshold rule}{All}{2}
 \end{readinglist}
