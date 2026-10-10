@@ -30,7 +30,7 @@ request that resolves it.
 - [ ] syllabus/syllabus.tex:171 | 1 | Split of the 40 exam points between Exam I and Exam II | instructor
 - [ ] syllabus/syllabus.tex:172 | 1 | Assignment team size | instructor
 - [ ] syllabus/syllabus.tex:173 | 1 | Final-project point breakdown | instructor
-- [ ] syllabus/syllabus.tex:205 | 1 | Whether A3 includes an LLM-coded feature | instructor, once the problem and data are set
+- [x] syllabus/syllabus.tex:205 | 1 | Whether A3 includes an LLM-coded feature | instructor, once the problem and data are set (decided 10 Oct: no; the feature is in Lab 9. The syllabus text is updated with the data plan)
 - [ ] syllabus/syllabus.tex:292 | 1 | Due times; late-work policy | instructor
 - [ ] syllabus/syllabus.tex:306 | 1 | School policy on AI use | instructor
 - [ ] syllabus/syllabus.tex:310 | 1 | Academic integrity, accommodations, attendance, late work | instructor
@@ -47,7 +47,7 @@ request that resolves it.
 - [ ] meetings/m05/notes.tex:44 | 6 | "It is reach times average effect" describes $G(\pi) = \Pr(\pi=1)\,\E[v \mid \pi=1]$, which is reach times average net value $v$, not the effect; the slides say "net value". A technical statement, so the editorial pass left it | change to "reach times average net value"; or confirm the looser wording
 - [ ] meetings/m05/notes.tex:346 (reading list) | 7 | Radcliffe 2007, *Direct Marketing Analytics Journal*: pages 14–21 confirmed, volume (sources say 1 or 3) and issue not | check the original issue and add volume (issue)
 - [ ] meetings/m08/handout-H5-rd.tex:58 | 6 | The Fuzzy RD identification box lists continuity, monotonicity, and a nonzero jump but not exclusion (crossing the cut-off moves $Y$ only through $D$); it holds only if continuity is read for $Y(d)$ with no direct effect of $Z$. A technical statement, so the pass left it | add exclusion to the box in a technical pass; or leave
-- [ ] meetings/m08/slides.tex:942 | 7 | The event-flag benchmark ($R^2_D = 0.04$, $R^2_Y = 0.06$) is not in the Case B files; `slides08_check.py` takes it as a given input | add it to `cases/caseB-meridian`
+- [ ] meetings/m08/slides.tex:942 | 7 | The event-flag benchmark ($R^2_D = 0.04$, $R^2_Y = 0.06$) is not in the Case B files; `slides08_check.py` takes it as a given input | add it to `cases/caseB-qiantan`
 - [ ] meetings/m08/notes.tex, handout-H5-rd.tex (reading lists) | 7 | Imbens and Lemieux 2008: DOI not confirmed, left out. Cattaneo, Idrobo, and Titiunik: dated 2020 (paperback; the online Element is 2019). Chernozhukov et al., "Long Story Short": cited as NBER Working Paper 30302 (2022); possibly forthcoming in the *Review of Economics and Statistics* | confirm and update
 - [ ] meetings/m06/slides.tex:787 | 4 | "With the 14 CRM fields" is a case detail the deck never defines | define the fields in the deck; or say "with all the CRM fields" (drops a number, so instructor's call)
 - [ ] meetings/m06/notes.tex:446; meetings/m06/handout-H3-sequential-decisions.tex:186 (reading lists) | 7 | Mandi et al. 2024: JAIR volume 80 used (arXiv says 81). Dudík, Langford, and Li 2011: proceedings label unverified (pages 1097–1104 verified). Murphy 2003: pages 331–355 used (331–366 with discussion). Robins 2004: no chapter DOI found | confirm on the publisher pages
