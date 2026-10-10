@@ -35,3 +35,12 @@ request that resolves it.
 - [ ] syllabus/syllabus.tex:306 | 1 | School policy on AI use | instructor
 - [ ] syllabus/syllabus.tex:310 | 1 | Academic integrity, accommodations, attendance, late work | instructor
 - [ ] syllabus/syllabus.tex:407–412 | 1 | Lab tooling: language model and provider, student access and cost, agent harness, autograder and locked set, A3 simulator, computing environment | instructor, before the labs are built
+
+## Editorial pass findings
+
+- [ ] meetings/m04/notes.tex:100; meetings/m04/slides.tex:538, 567, 599 | 5 | The honest-estimation protocol labels its steps H1 Discover, H2 Estimate, H3 Recommend, which collide with the handout labels H1 to H6; the frame titles "H2: The Same Leaves on Half B" and "H3: The Card" also read as "Label: Title". Kept unchanged | rename to Step 1 to Step 3 or plain Discover / Estimate / Recommend (notes, slides, and Case A Parts M4-R3 to M4-R5 together); or keep
+- [ ] meetings/m01/notes.tex:124; meetings/m01/slides.tex:420 | 4 | The box title of Assumption 1.5, "SUTVA", is never spelled out inside the box; the editorial pass spelled it out in the text before the box in both files instead of editing the box wording | leave; or spell out the box title in both files at once
+- [ ] meetings/m01/slides.tex:978 | 6 | "the coupon cannot change a customer's Q2 segment" in the Q3 win-back frame. Probably intended (the segment is fixed before the campaign) | keep; or say "pre-campaign segment"
+- [ ] meetings/m03/handout-H2-neural-estimators.tex (reading list) | 7 | Page ranges omitted as unverified for the four NeurIPS papers (Shi et al.; Louizos et al.; Rissanen and Marttinen; Curth et al.) and for Robertson et al. 2025 (Do-PFN, arXiv number given) | add pages from the official proceedings if wanted
+- [ ] meetings/m02/notes.tex:297; meetings/m02/slides.tex:807 | 7 | The box title "The LATE theorem (Imbens and Angrist)" cites without a year, and box wording is frozen in the editorial pass | add "1994" in both files at once; or drop the names from the title (the reference list already carries Imbens and Angrist 1994)
+- [ ] meetings/m02/notes.tex, slides.tex, handout-H1-interference.tex (reference lists) | 7 | Details not verified online and left out or taken from a secondary source: Holtz et al. 2025 (authors' first names), Kohavi, Tang, and Xu 2020 (place of publication), Johari et al. 2022 (first name of Pekelis), Angrist, Imbens, and Rubin 1996 (DOI; the JSTOR URL is given), Ugander et al. 2013 (DOI; the arXiv identifier is given) | check against the publisher pages and fill in

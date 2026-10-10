@@ -120,7 +120,7 @@
 % [RELEASE R1: the Q3 budget and the two proposed lists]
 \begin{frame}{Two Lists for 5{,}000 Coupons}
 
-Meeting 2 settled one question: \textbf{do not coupon everyone}. The CFO has approved \textbf{5{,}000 coupons} for Q3, half the 10{,}000-member base. Two lists are on Lin's desk.
+Meeting 2 settled one question: \textbf{do not coupon everyone}. The CFO has approved 5{,}000 coupons for Q3, half the 10{,}000-member base. Two lists are on Lin's desk.
 
 \begin{center}
 \small
@@ -148,7 +148,7 @@ Lapsed & 0.10 & 0.30 & 0.20 \\
 \end{tabular}
 \end{center}
 
-Marketing's model ranks the \textbf{active} first; Lin's rule ranks the \textbf{lapsed} first.
+Marketing's model ranks the active members first; Lin's rule ranks the lapsed members first.
 \end{frame}
 
 % ====================================================================
@@ -160,7 +160,7 @@ With treatment $D$, outcome $Y$, and pre-treatment covariates $X$, write $\mu_d(
 \[
 \tau(x) = \E[Y(1) - Y(0) \mid X = x].
 \]
-It is a \textbf{function}; the ATE is its average, $\ATE = \E[\tau(X)]$.
+It is a function; the ATE is its average, $\ATE = \E[\tau(X)]$.
 \end{defbox}
 
 Once identified, every outcome regression splits into a \textbf{baseline} and an \textbf{effect}:
@@ -168,7 +168,7 @@ Once identified, every outcome regression splits into a \textbf{baseline} and an
 \mu_d(x) = \mu_0(x) + d\,\tau(x).
 \]
 
-A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum_x \Pr_T(X=x)\,\tau(x)$: standardization with $T$'s weights.
+A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum_x \Pr_T(X=x)\,\tau(x)$, which standardizes the CATE with $T$'s weights.
 
 \medskip
 
@@ -179,15 +179,15 @@ A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum
 \begin{frame}{Prognostic Variables and Effect Modifiers}
 
 \begin{itemize}
-  \item A variable is \textbf{prognostic} if $\mu_0(x)$ varies with it: it predicts the outcome level.
-  \item It is an \textbf{effect modifier} if $\tau(x)$ varies with it: it predicts who responds.
+  \item A variable is \textbf{prognostic} if $\mu_0(x)$ varies with it. It predicts the outcome level.
+  \item It is an \textbf{effect modifier} if $\tau(x)$ varies with it. It predicts who responds.
 \end{itemize}
 
-The two are independent properties: a variable can be either, both, or neither. Segment is both. Distance to the nearest store might be prognostic only: nearby members buy more, with or without a coupon.
+The two are independent properties: a variable can be either, both, or neither. Segment is both. Distance to the nearest store might be prognostic only, since nearby members buy more with or without a coupon.
 
 \bigskip
 
-\textbf{Which dominates?} Across the base,
+Prognostic variation dominates. Across the base,
 \[
 \Var\bigl(\mu_0(X)\bigr) = 0.325^2 = 0.106, \qquad \Var\bigl(\tau(X)\bigr) = 0.075^2 = 0.0056 :
 \]
@@ -239,7 +239,7 @@ A manager picks members ``likely to respond'' & \textcolor{warnred}{no} & may ho
 
 \medskip
 
-A \textbf{deterministic} rule makes independence given its input automatic and useless: overlap fails, so no comparison is left (a support problem). Assignment on something outside $X$ can leave overlap intact while independence fails (a confounding problem).
+A deterministic rule makes independence given its input automatic and useless: overlap fails, so no comparison is left (a support problem). Assignment on something outside $X$ can leave overlap intact while independence fails (a confounding problem).
 \end{frame}
 
 % ====================================================================
@@ -262,7 +262,7 @@ From Lin's documentation of the Q2 export:
 
 \bigskip
 
-The first two sentences make identification a fact about the procedure, as in Meeting 1. The third is about the \textbf{decision}: the Q3 list will include new members, and the test says nothing about them. Assumption 1.2 is stated on the decision population for this reason.
+The first two sentences make identification a fact about the procedure, as in Meeting 1. The third is about the decision: the Q3 list will include new members, and the test says nothing about them. Assumption 1.2 is stated on the decision population for this reason.
 \end{frame}
 
 % ====================================================================
@@ -344,11 +344,11 @@ D & lapsed & 0 & 0 & 0.10 & 0.30 & $0.20 > 0.100$: \textcolor{sbgreen}{yes} \\
 % ====================================================================
 \begin{frame}{Read the Model Through Its Predictions}
 
-\textbf{Coding sets the sign, not the substance.} With $X = 1$ active, $\tau(x) = 0.20 - 0.15x$. Recode $L = 1$ for lapsed: $\tau(x) = 0.05 + 0.15L$. The same two effects.
+Coding sets the sign, not the substance. With $X = 1$ active, $\tau(x) = 0.20 - 0.15x$. Recode $L = 1$ for lapsed: $\tau(x) = 0.05 + 0.15L$. The two effects are unchanged.
 
 \bigskip
 
-\textbf{The coefficient on $D$ is not an average.} $\widehat\tau = 0.20$ is the effect at the reference group ($X = 0$, lapsed). The average for a population $T$ is $\widehat\tau + \widehat\gamma\,\E_T[X]$:
+The coefficient on $D$ is not an average. $\widehat\tau = 0.20$ is the effect at the reference group ($X = 0$, lapsed). The average for a population $T$ is $\widehat\tau + \widehat\gamma\,\E_T[X]$:
 
 \begin{center}
 \begin{tabular}{lrr}
@@ -363,7 +363,7 @@ A list that is 80\% active & 0.8 & $0.20 - 0.15 \times 0.8 = 0.08$ \\
 
 \bigskip
 
-\textbf{A row's $\widehat\tau(x)$ is a group average.} A lapsed member's $0.20$ means about 200 extra purchases per 1{,}000 similar members, without knowing \emph{which} 200.
+A row's $\widehat\tau(x)$ is a group average. A lapsed member's $0.20$ means about 200 extra purchases per 1{,}000 similar members, without knowing \emph{which} 200.
 \end{frame}
 
 % ====================================================================
@@ -403,9 +403,9 @@ The gap's two-sided $p$-value is $0.008$. Whether that is convincing depends on 
 
 \begin{itemize}
   \item With $K$ segments each tested at level $\alpha$, the chance of a false positive somewhere approaches $1 - (1-\alpha)^K$. For the 14 CRM fields at $\alpha = 0.05$: $1 - 0.95^{14} = 0.51$.
-  \item \textbf{Pre-specified}, segment was the one comparison: $p = 0.008 < 0.05$ stands.
-  \item \textbf{Found by searching} the 14 fields, Bonferroni asks for $p < 0.05/14 = 0.0036$, and $0.008$ fails. Holm's first step is the same test.
-  \item Report all segments examined. Segments found by searching need fresh data (Meeting 4).
+  \item If segment was the one pre-specified comparison, $p = 0.008 < 0.05$ stands.
+  \item If segment was found by searching the 14 fields, Bonferroni asks for $p < 0.05/14 = 0.0036$, and $0.008$ fails. Holm's first step is the same test.
+  \item Report all segments examined. Segments found by searching need confirmation on fresh data.
 \end{itemize}
 
 \bigskip
@@ -439,7 +439,7 @@ The gap's two-sided $p$-value is $0.008$. Whether that is convincing depends on 
 
 \begin{frame}{From Two Segments to Fourteen Fields}
 
-With two segments the CATE is two differences in means. The Q2 export has \textbf{14 CRM fields}: recency, visit frequency, tier, spend, app use, store, and more. There are more cells than members.
+With two segments the CATE is two differences in means. The Q2 export has 14 CRM fields: recency, visit frequency, tier, spend, app use, store, and more. There are more cells than members.
 
 \bigskip
 
@@ -486,7 +486,7 @@ A lasso sets a small $\gamma$ exactly to zero, and the model reports the same ef
 % ====================================================================
 \begin{frame}{How Much the Penalty Removes}
 
-The pilot region's segment test: 800 members, 200 per arm per segment. Center both columns: $\tilde D = \pm\tfrac12$, $\tilde X = \pm\tfrac12$.
+The pilot region's segment test has 800 members, 200 per arm per segment. Center both columns: $\tilde D = \pm\tfrac12$, $\tilde X = \pm\tfrac12$.
 
 \begin{center}
 \begin{tabular}{lrr}
@@ -544,7 +544,7 @@ No penalty can shrink the effect, because $D$ is never a feature. But each arm m
 % ====================================================================
 \begin{frame}{Better Fit, Worse Effect}
 
-Lapsed members. Truth: $\mu_1 = 0.30$, $\mu_0 = 0.10$, so $\tau = 0.20$. Two fitted T-learners:
+Take the lapsed members, where the truth is $\mu_1 = 0.30$ and $\mu_0 = 0.10$, so $\tau = 0.20$. Two fitted T-learners:
 
 \begin{center}
 \begin{tabular}{lrrrrr}
@@ -652,11 +652,11 @@ The \textbf{R-learner} minimizes the sample version, the \textbf{R-loss}, with $
 
 \medskip
 
-\textbf{At the coffee chain.} $\ell(\text{lapsed}) = 0.10 + 0.5 \times 0.20 = 0.20$ and $\ell(\text{active}) = 0.75 + 0.5 \times 0.05 = 0.775$. Subtracting $\ell$ removes the $0.65$ baseline gap before the effect is fitted, so the prognostic variation no longer competes with the effect.
+At the coffee chain, $\ell(\text{lapsed}) = 0.10 + 0.5 \times 0.20 = 0.20$ and $\ell(\text{active}) = 0.75 + 0.5 \times 0.05 = 0.775$. Subtracting $\ell$ removes the $0.65$ baseline gap before the effect is fitted, so the prognostic variation no longer competes with the effect.
 
 \medskip
 
-The same idea drives causal forests (Meeting 4) and double machine learning (Meeting 8).
+The same idea drives causal forests and double machine learning, which come later in the course.
 \end{frame}
 
 % ====================================================================
@@ -681,14 +681,14 @@ Between sharing everything (S) and sharing nothing (T):
 \end{center}
 
 \begin{itemize}
-  \item The shared layers learn the baseline once, from every member: what predicts buying.
-  \item Each member trains only its own arm's head: coupon members $h_1$, the others $h_0$.
+  \item The shared layers learn the baseline, what predicts buying, once from every member.
+  \item Each member trains only its own arm's head (coupon members $h_1$, the others $h_0$).
   \item $\hatt(x) = h_1(\Phi(x)) - h_0(\Phi(x))$: the heads differ only where the effect does.
 \end{itemize}
 
 \medskip
 
-\textbf{A caution.} Variants that force $\Phi(X)$ to look alike in both arms can hide an overlap failure rather than fix it. In the Q2 test overlap holds by design; in logged data it may not (Meeting 7).
+\textbf{A caution.} Variants that force $\Phi(X)$ to look alike in both arms can hide an overlap failure rather than fix it. In the Q2 test overlap holds by design; in logged data it may not.
 \end{frame}
 
 % ====================================================================
@@ -739,13 +739,13 @@ Model A & $\sqrt{0.16188 + 0.0375^2} = 0.4041$ & 0.125 / 0.125 & a coin toss: \t
 \medskip
 \normalsize
 
-The RMSEs differ by \textbf{0.4\%}. The decisions differ by \textbf{\textyen 23{,}750}.
+The RMSEs differ by 0.4\%. The decisions differ by \textyen 23{,}750.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Fit, Choose, Assess}
 
-Every \textbf{member} gets one of three roles, assigned before any per-visit or duplicated rows are created, so that no member appears in two:
+Every member gets one of three roles, assigned before any per-visit or duplicated rows are created, so that no member appears in two:
 
 \begin{center}
 \small
@@ -764,9 +764,9 @@ Assess & held-out test & Touched once: the value of the chosen list \\
 
 On the validation fold, compare candidates by
 \begin{enumerate}
-  \item the \textbf{value of the policy} each implies: the net value of its list (Meeting 5);
-  \item the \textbf{R-loss}; or
-  \item the mean squared gap between $\hatt(X)$ and the \textbf{DR pseudo-outcome} $\phi$.
+  \item the \textbf{value of the policy} each implies: the net value of its list;
+  \item the R-loss; or
+  \item the mean squared gap between $\hatt(X)$ and the DR pseudo-outcome $\phi$.
 \end{enumerate}
 
 When the nuisance models are accurate, (2) and (3) rank candidates as their true CATE error would.

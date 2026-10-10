@@ -6,8 +6,8 @@
 \begin{decision}
 A firm can send a coupon. It costs $c$ each time it is redeemed and each purchase earns margin $m$. The
 number that settles the decision is the coupon's effect on purchase probability, compared with a
-break-even that depends on who would have bought anyway. These notes are about how to get that effect out of
-data, and what can go wrong on the way.
+break-even that depends on who would have bought anyway. The question is how to get that effect out of data,
+and what can go wrong on the way.
 \end{decision}
 
 \begin{goals}
@@ -37,22 +37,22 @@ intervention and its comparator, the outcome and its horizon. It is fixed before
 any data or method.
 \end{defn}
 
-Three averages recur throughout the course:
+Three averages recur throughout the course.
 \[
   \ATE = \E[Y(1) - Y(0)], \qquad \ATT = \E[Y(1) - Y(0) \mid D = 1], \qquad \ATU = \E[Y(1) - Y(0) \mid D = 0].
 \]
 The ATT and ATU depend on the assignment mechanism, because it defines who the treated are; the ATE does
 not. Which one you need depends on the decision: ``keep treating the people we treat now?'' needs the ATT;
 ``treat everyone?'' needs the ATE; ``whom to treat?'' needs the conditional effect
-$\tau(x) = \E[Y(1) - Y(0) \mid X = x]$ (Meeting~3).
+$\tau(x) = \E[Y(1) - Y(0) \mid X = x]$, which later meetings learn to estimate.
 
 \paragraph{Which population?} In the \emph{finite-population} (design-based) reading, $\E$ averages over
 the $n$ units in the study and the estimand is the \emph{sample average treatment effect}
-$\tau_S = \frac1n \sum_i \tau_i$, a fixed number. This is the reading used for experiments in Meetings 1
-and 2: it is the answer about the customers in front of us and needs no assumption about how they were
+$\tau_S = \frac1n \sum_i \tau_i$, a fixed number. This is the reading these notes use for experiments,
+because it is the answer about the customers in front of us and needs no assumption about how they were
 sampled. In the \emph{superpopulation} reading, units are a sample from a larger population. The two
 coincide when the study is a random sample of the population the decision covers; otherwise moving to
-another population is a separate, assumed step called transport (Meeting~2).
+another population is a separate, assumed step called transport, which the course takes up later.
 
 \begin{prop}{The ATE averages the ATT and ATU}{ate-mix}
 With $\pi = \Pr(D=1)$, \quad $\ATE = \pi\,\ATT + (1-\pi)\,\ATU$.
@@ -94,8 +94,8 @@ $(m-c)p_1 - m p_0 = m(p_1 - p_0) - c\,p_1$. Substitute $p_1 = p_0 + \tau$ for th
 \end{proof}
 
 The second form separates what the coupon does: it earns $m-c$ on every purchase it causes and loses $c$
-on every purchase that would have happened anyway, the \emph{sure-thing cost} $c\,p_0$. Per type, with
-$m = 30$ and $c = 10$:
+on every purchase that would have happened anyway, the \emph{sure-thing cost} $c\,p_0$. The table gives the
+change per type, with $m = 30$ and $c = 10$.
 \begin{center}
 \begin{tabular}{lrrr}
 \toprule
@@ -118,7 +118,8 @@ the decision covers.
 
 We observe $Y_i = D_i Y_i(1) + (1-D_i) Y_i(0)$, so one potential outcome is always missing: causal
 inference is a missing-data problem in which the missing values are missing by design. Writing the
-observed outcome this way already assumes two things.
+observed outcome this way already assumes two things, together called the stable unit treatment value
+assumption (SUTVA).
 
 \begin{assum}{SUTVA}{sutva}
 (i) \emph{No interference}: unit $i$'s outcome depends only on its own treatment. (ii) \emph{Consistency}:
@@ -126,7 +127,7 @@ observed outcome this way already assumes two things.
 \end{assum}
 
 No interference fails when a coupon is shared with friends or a discount at one store draws shoppers from
-the next (Handout H1). Consistency fails when ``a coupon'' is sometimes 10\% off and sometimes 30\%; then
+the next. Consistency fails when ``a coupon'' is sometimes 10\% off and sometimes 30\%; then
 the effect is a mixture over versions with weights set by whatever produced the data. In practice, describe
 the intervention precisely enough that you could, in principle, assign it.
 
@@ -234,7 +235,7 @@ replaces $Y(d)$ by $Y$.
 \end{proof}
 
 The formula is \emph{standardization}: compare within levels of $X$, then average with the population's
-weights; using the treated units' weights instead gives the ATT. Randomization is graph surgery: a coin
+weights; using the treated units' weights instead gives the ATT. Randomization is graph surgery. A coin
 deletes every arrow into $D$, so no backdoor paths remain and no adjustment is needed.
 
 \paragraph{Simpson's paradox.} An association can reverse when data are split by a third variable. Which
@@ -257,7 +258,7 @@ $\E_D[\bar Y_1] = \frac1n\sum_i Y_i(1)$; likewise $\E_D[\bar Y_0] = \frac1n\sum_
 
 The proof uses nothing but the draw: no outcome model, no sampling assumption, no large-sample
 approximation. The collection of $\hatt$ values over all possible draws is the \emph{randomization
-distribution}; its spread is what a standard error estimates (Meeting~2).
+distribution}; its spread is what a standard error estimates.
 
 \begin{prop}{OLS on a dummy is the difference in means}{ols}
 In the least-squares fit of $Y_i = \alpha + \beta D_i + \varepsilon_i$, $\hat\alpha = \bar Y_0$ and
@@ -351,9 +352,9 @@ Pooled & 78 / 250 & 0.312 & 149 / 260 & 0.573 \\
 \end{tabular}
 \end{center}
 Pooled, invited members renew far less; within each type they renew more (by $0.05$ and $0.06$). Member
-type is a fork: it drove invitations and renewal, and the class cannot change it. Standardizing to all 510
-members (Result~\ref{prop:backdoor}): $(260 \times 0.05 + 250 \times 0.06)/510 = 0.055$. To the invited
-members (the ATT): $(200 \times 0.05 + 50 \times 0.06)/250 = 0.052$.
+type is a fork. It drove invitations and renewal, and the class cannot change it. Standardizing to all 510
+members (Result~\ref{prop:backdoor}) gives $(260 \times 0.05 + 250 \times 0.06)/510 = 0.055$; standardizing to
+the invited members gives the ATT, $(200 \times 0.05 + 50 \times 0.06)/250 = 0.052$.
 
 \begin{center}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\small}]
@@ -395,7 +396,8 @@ Randomization identifies $p_1$ and $p_0$, hence $\tau = \Pr(\text{P}) - \Pr(\tex
 shares. Since $\Pr(\text{DND}) \ge 0$, $\Pr(\text{P}) \ge \tau$; since persuadables have $Y(1)=1$ and
 $Y(0)=0$, $\Pr(\text{P}) \le \min(p_1, 1-p_0)$. So $\max(0, p_1 - p_0) \le \Pr(\text{P}) \le \min(p_1, 1-p_0)$.
 The bounds collapse to $\tau$ under \emph{monotonicity} (no unit is harmed), an assumption about behavior
-that the experiment cannot check. It reappears as monotonicity, ``no defiers'', in Meeting~2 (Assumption~1.12).
+that the experiment cannot check. The same assumption returns later in the course as ``no defiers'', when
+some customers do not take the treatment they are assigned.
 \end{extension}
 
 \begin{extension}[d-separation, the backdoor theorem, and beyond]
@@ -423,18 +425,25 @@ rewritten as forward questions, one per candidate cause.
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Hern\'an and Robins, \emph{Causal Inference: What If} (2020, free online)}{Potential outcomes,
-randomization, standardization, and graphs in one consistent notation}{Ch.\ 1--3, 6--8}{1}
-\reading{Pearl, Glymour, and Jewell, \emph{Causal Inference in Statistics: A Primer} (Wiley, 2016)}{The
-shortest rigorous route to d-separation and the backdoor and front-door criteria}{Ch.\ 1--3}{2}
-\reading{Cinelli, Forney, and Pearl, ``A crash course in good and bad controls'', \emph{Sociological Methods
-\& Research} (2024)}{A catalog of graphs showing when adjusting helps or hurts}{All}{1}
-\reading{Imbens and Rubin, \emph{Causal Inference for Statistics, Social, and Biomedical Sciences}
-(Cambridge, 2015)}{The design-based view of experiments used in Meetings 1--2}{Ch.\ 1--4}{2}
-\reading{Holland, ``Statistics and causal inference'', \emph{JASA} (1986)}{The classic statement of the
-fundamental problem and ``no causation without manipulation''}{Sections 1--4}{1}
-\reading{Bertrand and Mullainathan, ``Are Emily and Greg more employable than Lakisha and Jamal?'',
-\emph{AER} (2004)}{How an audit study turns an attribute into a randomized signal}{Intro, design}{1}
+\reading{Hern\'an, Miguel A., and James M. Robins. 2020. \emph{Causal Inference: What If}. Boca Raton: Chapman
+\& Hall/CRC.}{Potential outcomes, randomization, standardization, and graphs in one consistent notation; free
+online}{Ch.\ 1--3, 6--8}{1}
+\reading{Pearl, Judea, Madelyn Glymour, and Nicholas P. Jewell. 2016. \emph{Causal Inference in Statistics: A
+Primer}. Chichester, UK: Wiley.}{The shortest rigorous route to d-separation and the backdoor and front-door
+criteria}{Ch.\ 1--3}{2}
+\reading{Cinelli, Carlos, Andrew Forney, and Judea Pearl. 2024. ``A Crash Course in Good and Bad Controls.''
+\emph{Sociological Methods \& Research} 53 (3): 1071--1104. \url{https://doi.org/10.1177/00491241221099552}}{A
+catalog of graphs showing when adjusting helps or hurts}{All}{1}
+\reading{Imbens, Guido W., and Donald B. Rubin. 2015. \emph{Causal Inference for Statistics, Social, and
+Biomedical Sciences: An Introduction}. New York: Cambridge University Press.}{The design-based view of
+experiments used in these notes}{Ch.\ 1--4}{2}
+\reading{Holland, Paul W. 1986. ``Statistics and Causal Inference.'' \emph{Journal of the American Statistical
+Association} 81 (396): 945--60. \url{https://doi.org/10.1080/01621459.1986.10478354}}{The classic statement of
+the fundamental problem and ``no causation without manipulation''}{Sections 1--4}{1}
+\reading{Bertrand, Marianne, and Sendhil Mullainathan. 2004. ``Are Emily and Greg More Employable Than Lakisha
+and Jamal? A Field Experiment on Labor Market Discrimination.'' \emph{American Economic Review} 94 (4):
+991--1013. \url{https://doi.org/10.1257/0002828042002561}}{How an audit study turns an attribute into a
+randomized signal}{Intro, design}{1}
 \end{readinglist}
 
 \end{document}

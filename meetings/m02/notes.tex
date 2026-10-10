@@ -49,7 +49,7 @@ their ratio is an effect among compliers under further assumptions (Section~\ref
 \paragraph{The unit of assignment.} If unit $i$'s outcome depends on unit $j$'s treatment, the difference
 in means compares two mixtures of spillover conditions, not ``everyone treated'' with ``no one treated''.
 This is a failure of identification; no variance formula repairs it. The remedy is a unit of assignment
-large enough to contain the spillover (Section~1.7 and Handout H1).
+large enough to contain the spillover (Section~1.7).
 
 \paragraph{Sample-ratio mismatch.} Check the realized arm sizes against the planned allocation with a
 chi-squared test, $\chi^2 = \sum_d (n_d - \E n_d)^2/\E n_d$ with one degree of freedom. A tiny $p$-value (in
@@ -99,8 +99,8 @@ Within an arm the units are a simple random sample of the $n$ values of $Y(d)$, 
 $S_d^2$. The gap is $S_\tau^2/n \ge 0$.
 \end{proof}
 
-The dropped term involves the joint distribution of $Y(1)$ and $Y(0)$, which no experiment reveals:
-conservatism is the price of not knowing individual effects. Example: 1{,}000 customers made of 300 sure
+The dropped term involves the joint distribution of $Y(1)$ and $Y(0)$, which no experiment reveals, so
+conservatism is the price of not knowing individual effects. For example, 1{,}000 customers made of 300 sure
 things, 200 persuadables, 100 do-not-disturbs, and 400 lost causes, split 500/500, have $\tau_S = 0.10$,
 $S_1^2 = 250/999$, $S_0^2 = 240/999$, and $S_\tau^2 = 290/999$. The true standard deviation over draws is
 $0.026$; the usual SE is $0.031$ (Figure~1).
@@ -157,7 +157,7 @@ Results~\ref{prop:conservative} and \ref{prop:superpop} apply to those outcomes.
 Testing $\hatt$ against a plug-in break-even $c\hat p_1/m$ treats an estimate as known; writing the decision
 variable as a linear function of the arm means avoids this. When the cost is per unit treated, the net value
 is $m\tau - c$ and the one-sided test is $H_0: \tau \le c/m$ with $z = (\hatt - c/m)/\widehat\SE$. In general,
-\textbf{put the interval on the quantity the decision is made on.}
+put the interval on the quantity the decision is made on.
 
 \subsection{Transport to another population}
 
@@ -180,9 +180,9 @@ break-even, which moves with its composition. Types absent from the experiment c
 
 \subsection{Designing the next experiment}
 
-\paragraph{Fix it in writing first.} Unit of assignment and allocation; the outcome and its window,
-measured for every assigned unit; the decision threshold; the sample size and stopping rule; logged exposure
-and guardrail metrics. Then check the arm sizes on day one.
+\paragraph{Fix it in writing first.} Before the first unit is treated, write down the unit of assignment and
+the allocation, the outcome and its window (measured for every assigned unit), the decision threshold, the
+sample size and stopping rule, and the exposure logs and guardrail metrics. Then check the arm sizes on day one.
 
 \begin{prop}{Sample size}{n}
 With $n$ units per arm, a level-$\alpha$ two-sided test has approximate power $1-\beta$ against an effect
@@ -218,7 +218,7 @@ $\Var(Y) - 2\theta\Cov(Y,X) + \theta^2\Var(X)$ is a quadratic minimized at $\the
 
 In any one draw $\bar X_1 \ne \bar X_0$, so the adjusted estimate moves; that shift corrects chance imbalance.
 Estimating $\theta$ from the pooled data costs nothing asymptotically. CUPED is regression adjustment; adding
-the interaction $D \times (X - \bar X)$ (Lin's estimator) guarantees adjustment never hurts in large samples.
+the interaction $D \times (X - \bar X)$ (Lin 2013) guarantees adjustment never hurts in large samples.
 The required sample size scales by $1 - \rho^2$. If $X$ were affected by treatment, the correction would
 subtract part of the effect.
 
@@ -323,8 +323,8 @@ with those who did not (\emph{as treated}), or keeping only units that followed 
 (\emph{per protocol}), conditions on receipt, which assignment caused, so each compares different mixtures of
 types (Section~1.2). Hold the ITT against a cost per offer and the LATE against a cost per receiver; when the
 cost is paid only on receipt and noncompliance is one-sided, the two comparisons agree (Section~2, Step~6).
-Instruments that are not randomized offers, and what failures of exclusion or monotonicity do to the ratio, are
-in Handout H4.
+Instruments that are not randomized offers, and what failures of exclusion or monotonicity do to the ratio, come
+later in the course.
 
 \begin{pitfall}[what no standard error can fix]
 Excluding units on post-assignment behavior; reading a test with a sample-ratio mismatch; analyzing a
@@ -370,7 +370,7 @@ $\text{DEFF} = 1 + 499 \times 0.01 = 5.99$: twenty zones (10{,}000 customers) ca
 $1{,}670$ independent customers, and the SE must be clustered by zone.
 
 \paragraph{Step 6: assignment versus receipt.} Only offered customers could use the discount, and 15\% of them
-did: one-sided noncompliance with $\pi = 0.15$ (the cost of ¥1.50 per offer is $0.15 \times$ ¥10). The ITT of
+did. This is one-sided noncompliance with $\pi = 0.15$ (the cost of ¥1.50 per offer is $0.15 \times$ ¥10). The ITT of
 ¥1.84 is the effect of \emph{offering}, the number the offer decision needs. By
 Result~\ref{prop:onesided}, the ratio $1.84/0.15 = $ ¥12.27 is the effect on customers who used the discount.
 Held against the ¥10 each of them cost, it leaves ¥2.27, which is $(1.84 - 1.50)/0.15$: the same test as the ITT
@@ -404,7 +404,7 @@ those who engage, divide the ITT by the share who engage when offered (Result~\r
 \begin{extension}[More on randomization inference]
 Fisher tests extend to any statistic (rank sums, trimmed means) and to sharp nulls of a constant effect
 $\tau_0$; inverting them over $\tau_0$ gives a confidence set. Under complete randomization Neyman's
-variance can be tightened using bounds on $S_\tau^2$ (Aronow, Green, and Lee, 2014).
+variance can be tightened using bounds on $S_\tau^2$ (Aronow et al.\ 2014).
 \end{extension}
 
 \begin{extension}[Stratified designs and ratio metrics]
@@ -416,9 +416,9 @@ randomizing users while analyzing sessions needs clustering by user.
 
 \begin{extension}[Beyond randomized offers]
 When the offer is not randomized but something else shifts treatment (a rule, a lottery, an outage), the same
-ratio identifies a LATE only if that shifter is as good as random, which must now be argued. Handout H4 covers such
-\emph{instruments}: two-stage least squares with covariates, weak instruments, what failures of exclusion and
-monotonicity do, and how to describe the compliers.
+ratio identifies a LATE only if that shifter is as good as random, which must now be argued. Such shifters are
+called \emph{instruments}. Two-stage least squares with covariates, weak instruments, what failures of exclusion
+and monotonicity do, and how to describe the compliers all come later in the course.
 \end{extension}
 
 \begin{extension}[Sequential testing]
@@ -428,20 +428,41 @@ sequential probability ratio test gives always-valid $p$-values that may be chec
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Imbens and Rubin (2015), \emph{Causal Inference for Statistics, Social, and Biomedical
-Sciences}}{Fisher and Neyman inference in the design-based frame, with proofs; noncompliance in experiments}{Ch.\ 5--6, 9, 23--24}{2}
-\reading{Angrist, Imbens, and Rubin (1996), ``Identification of causal effects using instrumental variables'',
-\emph{JASA}}{Compliance types and the LATE in potential outcomes}{Sections 1--4}{2}
-\reading{Kohavi, Tang, and Xu (2020), \emph{Trustworthy Online Controlled Experiments}}{The practitioner's
-checklist: SRM, guardrails, peeking, ratio metrics}{Ch.\ 3, 17, 21}{1}
-\reading{Deng, Xu, Kohavi, and Walker (2013), ``Improving the sensitivity of online controlled experiments'',
-\emph{WSDM}}{The original CUPED paper}{All}{1}
-\reading{Lin (2013), ``Agnostic notes on regression adjustments to experimental data'', \emph{Annals of
-Applied Statistics}}{Why the interacted adjustment never hurts asymptotically}{Sections 1--3}{3}
-\reading{Abadie, Athey, Imbens, and Wooldridge (2023), ``When should you adjust standard errors for
-clustering?'', \emph{QJE}}{Cluster at the level of assignment, and why}{Sections 1--3}{2}
-\reading{Johari, Koomen, Pekelis, and Walsh (2022), ``Always valid inference'', \emph{Operations
-Research}}{Continuous monitoring without inflating errors}{Sections 1--4}{3}
+\reading{Imbens, Guido W., and Donald B. Rubin. 2015. \emph{Causal Inference for Statistics, Social, and
+Biomedical Sciences: An Introduction}. New York: Cambridge University Press.
+\url{https://doi.org/10.1017/CBO9781139025751}}{Fisher and Neyman inference in the design-based frame, with
+proofs; noncompliance in experiments}{Ch.\ 5--6, 9, 23--24}{2}
+\reading{Imbens, Guido W., and Joshua D. Angrist. 1994. ``Identification and Estimation of Local Average
+Treatment Effects.'' \emph{Econometrica} 62 (2): 467--475. \url{https://doi.org/10.2307/2951620}}{The LATE
+theorem as first stated, for a general instrument}{All}{3}
+\reading{Angrist, Joshua D., Guido W. Imbens, and Donald B. Rubin. 1996. ``Identification of Causal Effects
+Using Instrumental Variables.'' \emph{Journal of the American Statistical Association} 91 (434): 444--455.
+\url{https://www.jstor.org/stable/2291629}}{Compliance types and the LATE in potential outcomes}{Sections
+1--4}{2}
+\reading{Kohavi, Ron, Diane Tang, and Ya Xu. 2020. \emph{Trustworthy Online Controlled Experiments: A Practical
+Guide to A/B Testing}. Cambridge: Cambridge University Press.
+\url{https://doi.org/10.1017/9781108653985}}{The practitioner's checklist: SRM, guardrails, peeking, ratio
+metrics}{Ch.\ 3, 17, 21}{1}
+\reading{Deng, Alex, Ya Xu, Ron Kohavi, and Toby Walker. 2013. ``Improving the Sensitivity of Online Controlled
+Experiments by Utilizing Pre-Experiment Data.'' In \emph{Proceedings of the Sixth ACM International Conference
+on Web Search and Data Mining (WSDM)}, 123--132. \url{https://doi.org/10.1145/2433396.2433413}}{The original
+CUPED paper}{All}{1}
+\reading{Lin, Winston. 2013. ``Agnostic Notes on Regression Adjustments to Experimental Data: Reexamining
+Freedman's Critique.'' \emph{Annals of Applied Statistics} 7 (1): 295--318.
+\url{https://doi.org/10.1214/12-AOAS583}}{Why the interacted adjustment never hurts asymptotically}{Sections
+1--3}{3}
+
+\reading{Aronow, Peter M., Donald P. Green, and Donald K. K. Lee. 2014. ``Sharp Bounds on the Variance in
+Randomized Experiments.'' \emph{Annals of Statistics} 42 (3): 850--871.
+\url{https://doi.org/10.1214/13-AOS1200}}{How far Neyman's conservative variance can be tightened}{Sections
+1--3}{3}
+\reading{Abadie, Alberto, Susan Athey, Guido W. Imbens, and Jeffrey M. Wooldridge. 2023. ``When Should You
+Adjust Standard Errors for Clustering?'' \emph{Quarterly Journal of Economics} 138 (1): 1--35.
+\url{https://doi.org/10.1093/qje/qjac038}}{Cluster at the level of assignment, and why}{Sections 1--3}{2}
+\reading{Johari, Ramesh, Pete Koomen, Leonid Pekelis, and David Walsh. 2022. ``Always Valid Inference:
+Continuous Monitoring of A/B Tests.'' \emph{Operations Research} 70 (3): 1806--1821.
+\url{https://doi.org/10.1287/opre.2021.2135}}{Continuous monitoring without inflating errors}{Sections
+1--4}{3}
 \reading{Handout H1, \emph{Interference and marketplace experiments}}{What to do when units affect each
 other}{All}{2}
 \end{readinglist}
