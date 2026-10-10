@@ -57,10 +57,11 @@ meeting has two 50-minute lecture blocks (A, B) and a 60-minute block C, which h
 | 11 | Synthetic control (SDID, matrix completion in Section 3) | | Exam II (M5–M10) |
 | 12 | Final presentations | | |
 
-Four assignments; Labs 1–11, ten graded and Lab 7 optional; bonus reading is optional. Lecture cases (`cases/`): a
-coffee chain (Case A, M1–M7), Meridian Hotels (Case B, M8–M9) and a home-goods retail chain (Case C, M10–M11). The notes'
-worked examples deliberately use other businesses: FitLife (fitness chain) in M1, M3, M7, M10, H5 and H6; QuickBite
-(food delivery) everywhere else.
+Four assignments; Labs 1–11, ten graded and Lab 7 optional; bonus reading is optional. Lecture cases (`cases/`): Houtan
+Coffee, a coffee chain (Case A, M1–M7); Qiantan Hotels, a hotel group (Case B, M8–M9); and Sanlin Home, a home-goods
+retail chain (Case C, M10–M11). The notes' worked examples deliberately use other businesses: Yangsi Fitness (fitness
+chain) in M1, M3, M7, M10, H5 and H6; Pujiang Delivery (food delivery) everywhere else. All businesses, people and case
+data are fictional; the names come from places near the Qiantan campus.
 
 ## Conventions
 
