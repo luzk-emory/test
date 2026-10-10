@@ -123,7 +123,7 @@ Simulation scripts behind worked examples:
 ## Open items
 
 1. Merge pull requests #6 to #10 (spelling and editorial passes), in order.
-2. Settle the decisions in `plan/FLAGS.md`: data licenses, the accent color, the syllabus `\tbd` items, and the
+2. Settle the decisions in `plan/FLAGS.md`: the syllabus `\tbd` items, and the
    technical points found in the editorial pass.
 3. Technical pass on the flagged statements (for example the M10 event-study standard errors and the M11 notation
    clashes), then pass 2: independent check of every numbered Result; pass 3: a student read, one meeting ahead.
