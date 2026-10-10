@@ -20,12 +20,14 @@ what is current, how to build, and what is open.
 - Never rewrite history (`rebase`, `reset --hard`, force push) or delete tags.
 
 ## Content
-- Every number in the notes is checked by `shared/checks/`. After changing a number, update the matching
-  `*_check.py`, then run `bash shared/checks/run_all.sh`. Commit only when it passes.
-- Rebuild what you changed (`bash ../../shared/build.sh notes` in a meeting folder) and confirm there are no LaTeX
-  errors or undefined references.
-- Record substantive content changes in `plan/CHANGELOG.md`, and update the "Open items" in `README.md` when you
-  close or open one.
+- Every number in the notes, handouts, slides and rewritten case parts is checked by `shared/checks/`. After changing
+  a number, update the matching `*_check.py`, then run `bash shared/checks/run_all.sh`. Commit only when it passes.
+- Rebuild what you changed (in a meeting folder: `bash ../../shared/build.sh notes`, `... handout-HN-topic`, or
+  `... slides nokey`) and confirm there are no LaTeX errors, undefined references or overfull boxes.
+- Decisions that belong to the instructor (content choices, data sources, policies, anything marked `\tbd`) are not
+  yours to make: log them in `plan/FLAGS.md` and ask.
+- Record substantive content changes in `plan/CHANGELOG.md`. Keep `README.md` (status and "Open items") and
+  `plan/revision-plan.md` (work remaining, open judgement calls) current when you finish or start a piece of work.
 - Writing style, spelling, labels, self-containment, citations and the editorial checks: follow
   `plan/editorial-guide.md` (US English; no em-dashes; direct, technically precise prose; notation per
   `shared/notation.tex`). Run `python3 shared/checks/editorial_scan.py` on the student-facing files you edit, and log

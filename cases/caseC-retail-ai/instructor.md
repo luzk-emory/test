@@ -8,7 +8,7 @@ A retail chain has rolled a generative-AI assistant out to its stores in stages.
 
 This is **AI as an intervention to evaluate**: the chain tests an AI product the way it would test any other change, and the vendor's own metric is the first thing to set aside.
 
-Each meeting follows the course spine (`course-spine.md`): estimand → identification → estimation. Here identification is **assumption-based, not design-based**. Say so out loud: go-live timing was not randomized.
+Each meeting follows the course spine: estimand → identification → estimation. Here identification is **assumption-based, not design-based**. Say so out loud: go-live timing was not randomized.
 
 | Meeting | Estimand (vs ¥10,000 sales per store-week) | Identification | Estimation and uncertainty | Destination |
 |---|---|---|---|---|
@@ -208,7 +208,7 @@ These are the keys of the former Meeting 11 parts on staggered adoption, unchang
 
 The M10 and M11 decks were rebuilt on 8 October with this case's story, numbers, and release markers, and most frames named below no longer exist; the table applies only to old frames reused for the bonus parts.
 
-The general corrections from the Codex review are also in `course-spine.md` §4:
+General corrections from the earlier review of the panel material:
 - no error bar at the base period;
 - the placebo rank is descriptive;
 - unbalanced-panel demeaning;

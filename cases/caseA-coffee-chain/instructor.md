@@ -6,7 +6,7 @@
 
 One decision runs through seven meetings: *should this coffee chain send coupons, to whom, and was the program it ran worth it?* Every meeting adds one reason the previous number was not yet the decision number.
 
-Each meeting follows the course spine (`course-spine.md`): **estimand → identification → estimation**, with uncertainty taken from the design.
+Each meeting follows the course spine: **estimand → identification → estimation**, with uncertainty taken from the design.
 
 | Meeting | Estimand (and the number that decides it) | Assignment mechanism → identification | Estimation and uncertainty |
 |---|---|---|---|
@@ -96,7 +96,7 @@ Minutes are elapsed minutes in the meeting and approximate. **Retime when each d
 - ATU $= (80-40)/500 = 0.08$. $0.5(0.12) + 0.5(0.08) = 0.10$.
   - Relative to the ATE, the raw gap is off by $0.34 = 0.32$ (baseline selection) $+ 0.02$ (selection on gains: marketing also picked slightly better responders).
 - Recipients: $0.12 \times 30 - 6.8 = -¥3.20$. **Three quarters of the lift is who was picked.**
-- Per-type margins: Persuadable +¥20; **Sure Thing −¥10**; Lost Cause **¥0** (the coupon is paid only on purchase); Do-Not-Disturb −¥30. Averaging gives net $= 20p_1 - 30p_0 = 30\tau - 10p_1$: M2's "test the profit directly" formula, one meeting early. (The deck's "Lost Cause → coupon is wasted" bullet is wrong for this coupon; see `course-spine.md` §4.)
+- Per-type margins: Persuadable +¥20; **Sure Thing −¥10**; Lost Cause **¥0** (the coupon is paid only on purchase); Do-Not-Disturb −¥30. Averaging gives net $= 20p_1 - 30p_0 = 30\tau - 10p_1$: M2's "test the profit directly" formula, one meeting early.
 
 ### M1-R3
 - (a) $0.80 - 0.10 = +0.70 = 0.05$ (ATT) $+ 0.65$ (bias).
@@ -376,7 +376,7 @@ A justified "test first" earns full marks.
 
 ## 7. Deck issues found while aligning the case
 
-The case follows the decks as they are. The complete accepted change list, including the Codex-review corrections, is in `course-spine.md` §4. The issues listed here earlier are resolved in the rebuilt decks:
+The case follows the decks as they are. The issues listed here earlier are resolved in the rebuilt decks:
 
 1. **Population sizes** (resolved): the base is 10,000 members throughout M3–M7, and M7's Q3 export is the same 10,000 members with the 5,000 coupons of Meeting 3.
 2. **Retired assessments** (resolved): the rebuilt decks no longer name A1, A2, or proposal deadlines.

@@ -9,7 +9,7 @@ Two meetings, one question: *what happens to bookings if Meridian changes its ra
 - **M8** answers it from the RM system's logs (adjustment and DML) and ends on the assumption the logs cannot check: unlogged overrides.
 - **M9** keeps the question and brings in generative AI in both of its roles. A simulator learned from the M8 logs tests the M8 estimator against the override problem, and tests whole pricing pipelines (block A). A language model reads guest reviews for a randomized rate test's guardrail, and text becomes DML controls (block B). The M8 breakdown is the motivation for M9; do not let the two meetings read as separate cases.
 
-Each meeting follows the course spine (`course-spine.md`): estimand → identification → estimation.
+Each meeting follows the course spine: estimand → identification → estimation.
 
 | Meeting | Estimand (vs break-even) | Assignment mechanism → identification | Estimation and uncertainty | Destination |
 |---|---|---|---|---|
@@ -205,7 +205,7 @@ Most fail on **exclusion**, which the data cannot test in general. The coin pass
 
 ## 4. Deck issues found while aligning the case
 
-The complete accepted change list, including the Codex-review corrections, is in `course-spine.md` §4. The issues listed here earlier are resolved in the rebuilt decks:
+The issues listed here earlier are resolved in the rebuilt decks:
 
 1. **M8 release order** (resolved): "Predict Before You Look" and "The Ladder" are gone, and `[RELEASE R3]` sits on "The Real Logs", the first frame with the log summary and the RM rule. (The R1 frame names the 80 hotels and 47 signals, as Part R1 does.)
 2. **M8 outputs as figures** (resolved): "The Exhibit" and "Wen's Table" are gone. The decision table is in the text of "The Price Elasticity at Meridian", and every M8 number is checked by `shared/checks/slides08_check.py`.
