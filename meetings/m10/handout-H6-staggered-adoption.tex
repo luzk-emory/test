@@ -15,7 +15,7 @@ comparisons instead.
   \item identify each group-time effect with never-treated or not-yet-treated comparisons, and handle anticipation;
   \item show why already-treated units are contaminated controls, and what TWFE averages;
   \item aggregate group-time effects by event time and overall, and build event studies from clean comparisons;
-  \item describe the design-based alternative: randomised adoption dates.
+  \item describe the design-based alternative: randomized adoption dates.
 \end{goals}
 
 %=====================================================================================
@@ -59,7 +59,7 @@ equates the two untreated changes.
 Each $\ATT(g,t)$ is a two-by-two DiD with a \emph{clean} control, whose treatment status does not change between the base period and $t$, and with the
 base fixed at $g - 1$. This is the estimator of Callaway and Sant'Anna (2021).
 
-\paragraph{Anticipation moves the base.} If units change behaviour $k$ periods before adoption (training staff off the floor), the base must be $g - k - 1$,
+\paragraph{Anticipation moves the base.} If units change behavior $k$ periods before adoption (training staff off the floor), the base must be $g - k - 1$,
 and a later cohort stops being a clean control once \emph{its} anticipation begins. Build the table of eligible controls and base periods from the calendar
 before computing any effect.
 
@@ -106,7 +106,7 @@ observed.
 studies from clean comparisons: event-time dummies in a TWFE regression inherit the contaminated comparisons and can show spurious pre-trends.
 
 \paragraph{Imputation.} An alternative estimator fits unit and period effects on untreated observations only (never-treated units and not-yet-treated periods),
-imputes $Y_{it}(\infty)$ for treated cells, and averages $Y_{it} - \hat Y_{it}(\infty)$ with chosen weights (Borusyak, Jaravel and Spiess, 2024). It uses all
+imputes $Y_{it}(\infty)$ for treated cells, and averages $Y_{it} - \hat Y_{it}(\infty)$ with chosen weights (Borusyak, Jaravel, and Spiess, 2024). It uses all
 pre-periods efficiently and never uses treated cells as controls.
 
 \subsection{Inference}
@@ -114,12 +114,12 @@ pre-periods efficiently and never uses treated cells as controls.
 Group-time estimates share control units and base periods, and a unit's observations are correlated over time. Cluster by unit (or by the level of adoption);
 for simultaneous bands across event times, use the multiplier bootstrap over units. The number of clusters is the number of units, not unit-periods.
 
-\subsection{The design-based alternative: randomise the dates}
+\subsection{The design-based alternative: randomize the dates}
 
-\begin{prop}{Randomised adoption dates}{random}
+\begin{prop}{Randomized adoption dates}{random}
 If the adoption date of each unit is assigned at random from a fixed set of dates (independently of potential outcomes), then for each $t$ and each pair of
 cohorts $g \le t < s$, the difference in mean outcomes at $t$ between cohort $g$ and cohort $s$ is unbiased for $\E[Y_{it}(g) - Y_{it}(s)]$, and under no
-anticipation, for $\E[Y_{it}(g) - Y_{it}(\infty)]$ over the randomised population.
+anticipation, for $\E[Y_{it}(g) - Y_{it}(\infty)]$ over the randomized population.
 \end{prop}
 \begin{proof}
 Random assignment of dates makes cohort membership independent of the potential-outcome vector, so each cohort's mean at $t$ is unbiased for the
@@ -127,11 +127,11 @@ population mean of $Y_{it}(g)$ (Meeting~1). No anticipation gives $Y_{it}(s) = Y
 \end{proof}
 
 No parallel-trends assumption is needed: the comparison is identified by design, as in an experiment, and the design-based inference of Meeting~2
-applies with the randomised dates (Athey and Imbens, 2022). ``Stagger the rest at random'' is therefore the cheapest upgrade to any rollout plan.
+applies with the randomized dates (Athey and Imbens, 2022). ``Stagger the rest at random'' is therefore the cheapest upgrade to any rollout plan.
 
 \begin{pitfall}[staggered DiD errors]
 TWFE with staggered adoption; event-time dummies in TWFE; a base period inside an anticipation window; later cohorts used as controls after their
-anticipation begins; choosing which units adopt first by expected benefit when the order could have been randomised.
+anticipation begins; choosing which units adopt first by expected benefit when the order could have been randomized.
 \end{pitfall}
 
 %=====================================================================================
@@ -158,8 +158,8 @@ $(\ATT(0), \ATT(1)) = (6, 3)$; overall average $5$.
 \paragraph{The contaminated comparison.} L against E, months $2 \to 3$: $(58 - 51) - (45 - 47) = 9$. Result~\ref{prop:contam} predicts
 $\ATT(L,3) - [\ATT(E,3) - \ATT(E,2)] = 6 - (3 - 6) = 9$: E's effect \emph{fell} by $3$, and the comparison credited the fall to L as extra gain.
 
-\paragraph{TWFE.} With equal group sizes the Goodman-Bacon weights are $\tfrac13$ (E vs N), $\tfrac13$ (L vs N), $\tfrac16$ (E vs L before L adopts) and $\tfrac16$ (L vs E after
-E adopts). The four two-by-two estimates are $4.5$, $6$, $6$ and $9$, so
+\paragraph{TWFE.} With equal group sizes the Goodman-Bacon weights are $\tfrac13$ (E vs N), $\tfrac13$ (L vs N), $\tfrac16$ (E vs L before L adopts), and $\tfrac16$ (L vs E after
+E adopts). The four two-by-two estimates are $4.5$, $6$, $6$, and $9$, so
 $\hat\beta_{\text{TWFE}} = \tfrac13(4.5) + \tfrac13(6) + \tfrac16(6) + \tfrac16(9) = 6$, which least squares on the nine cells confirms. TWFE overstates the overall average of
 $5$ and reports the first-month effect as if it lasted.
 
@@ -173,12 +173,12 @@ Add a fourth month in which both E's and L's effects are $3$ (E: 46, L: 56, N: 6
 \answer{(a) $(56 - 51) - (63 - 61) = 3$. (b) $(56 - 51) - (46 - 47) = 5 + 1 = 6$. (c) E is treated in both month 2 and month 4, and its own effect fell from $6$ to
 $3$ between them; Result~\ref{prop:contam} gives $\ATT(L,4) - [\ATT(E,4) - \ATT(E,2)] = 3 - (3 - 6) = 6$. The already-treated control credits E's fade to L.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 FitLife's operations team wants the next wave to go to the clubs ``most ready for the app''. What does that do to the evaluation, and what would you
 propose?
 \end{exercise}
 \answer{Readiness probably predicts both adoption timing and the size of the effect (and perhaps trends), which threatens parallel trends and makes
-early-cohort effects unrepresentative of later ones. Propose randomising the order of the remaining waves (possibly within readiness strata), so cohort
+early-cohort effects unrepresentative of later ones. Propose randomizing the order of the remaining waves (possibly within readiness strata), so cohort
 comparisons are identified by design (Result~\ref{prop:random}).}
 
 %=====================================================================================
@@ -189,16 +189,16 @@ comparisons are identified by design (Result~\ref{prop:random}).}
 \reading{Goodman-Bacon (2021), ``Difference-in-differences with variation in treatment timing'', \emph{Journal of Econometrics}}{The decomposition of
 TWFE into two-by-two comparisons}{Sections 1--3}{2}
 \reading{Callaway and Sant'Anna (2021), ``Difference-in-differences with multiple time periods'', \emph{Journal of Econometrics}}{Group-time effects,
-aggregation and inference}{Sections 1--4}{2}
+aggregation, and inference}{Sections 1--4}{2}
 \reading{Sun and Abraham (2021), ``Estimating dynamic treatment effects in event studies with heterogeneous treatment effects'', \emph{Journal of
 Econometrics}}{Why TWFE event studies mislead, and a fix}{Sections 1--3}{3}
-\reading{Borusyak, Jaravel and Spiess (2024), ``Revisiting event-study designs: robust and efficient estimation'', \emph{Review of Economic
+\reading{Borusyak, Jaravel, and Spiess (2024), ``Revisiting event-study designs: robust and efficient estimation'', \emph{Review of Economic
 Studies}}{The imputation estimator}{Sections 1--3}{3}
 \reading{de Chaisemartin and D'Haultf\oe uille (2020), ``Two-way fixed effects estimators with heterogeneous treatment effects'', \emph{AER}}{Negative
 weights in TWFE}{Sections I--III}{3}
 \reading{Athey and Imbens (2022), ``Design-based analysis in difference-in-differences settings with staggered adoption'', \emph{Journal of
-Econometrics}}{Randomised adoption dates and design-based inference}{Sections 1--4}{3}
-\reading{Roth, Sant'Anna, Bilinski and Poe (2023), ``What's trending in difference-in-differences?'', \emph{Journal of Econometrics}}{A synthesis of
+Econometrics}}{Randomized adoption dates and design-based inference}{Sections 1--4}{3}
+\reading{Roth, Sant'Anna, Bilinski, and Poe (2023), ``What's trending in difference-in-differences?'', \emph{Journal of Econometrics}}{A synthesis of
 the literature}{All}{2}
 \end{readinglist}
 

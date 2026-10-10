@@ -1,6 +1,6 @@
-# Case A: Lin's Coupon Programme
+# Case A: Lin's Coupon Program
 
-**A coffee chain, Meetings 1–7.** Fictional teaching case: the company, the people and all data are invented.
+**A coffee chain, Meetings 1–7.** Fictional teaching case: the company, the people, and all data are invented.
 
 This case is handed out one part at a time. Each part is released in class after the previous task is done. When a task says *commit*, write your answer down before the class discusses it, even if you are unsure.
 
@@ -83,7 +83,7 @@ In Q2 Lin ran a proper test in the pilot region: 500 of the 1,000 members were d
 
 - "The 500 recipients were drawn by a random number generator; the seed is in the log."
 - "Nobody could opt in, and nobody was removed after the draw."
-- "One coupon design, sent in the app, single-use and tied to the account."
+- "One coupon design, sent in the app, single-use, and tied to the account."
 - "Store staff did not know who held a coupon."
 
 Result: the coupon arm bought at **0.50**, the control arm at **0.40**.
@@ -92,7 +92,7 @@ Result: the coupon arm bought at **0.50**, the control arm at **0.40**.
 1. Estimate the effect. If the thought-experiment types of Part R2 had been split at random, half of each type in each arm, what would each arm's purchase rate be?
 2. For each log sentence, say what it guarantees about the comparison.
 3. Recompute the break-even at the test's $p_1$. Does the coupon pay? What is the forecast across the 10,000 members, compared with marketing's?
-4. The seed could have produced a different draw. One possible draw puts 195 Lost Causes, 155 Sure Things, 105 Persuadables and 45 Do-Not-Disturbs in the coupon arm, and the rest in control. What would the estimate have been? Was that draw "broken"?
+4. The seed could have produced a different draw. One possible draw puts 195 Lost Causes, 155 Sure Things, 105 Persuadables, and 45 Do-Not-Disturbs in the coupon arm, and the rest in control. What would the estimate have been? Was that draw "broken"?
 
 ### Part M1-R5. Segment economics and data roles
 
@@ -115,7 +115,7 @@ Apply the same economics segment by segment, using the table in Part R3.
 | Coupon | 500 | 250 | 0.50 |
 | No coupon | 500 | 200 | 0.40 |
 
-**Marketing:** *"It was randomised, and it's significant. The coupon works. Roll it out."*
+**Marketing:** *"It was randomized, and it's significant. The coupon works. Roll it out."*
 **The CFO:** *"Last week you said it loses ¥2 a coupon. Which is it?"*
 
 **Tasks**
@@ -140,7 +140,7 @@ From the campaign brief: *"The same coupon, in the same app, in the same quarter
 
 **Tasks**
 1. What effect will each test measure? Is either test biased?
-2. For each list, compute the purchase rate with the coupon, the break-even and the net value per coupon. Compare with the whole base.
+2. For each list, compute the purchase rate with the coupon, the break-even, and the net value per coupon. Compare with the whole base.
 3. Which sentence in the brief lets you carry segment effects from the Q2 test to these lists?
 
 ### Part M2-R3. The next test
@@ -171,7 +171,7 @@ The BOGO goes on the menu board: everyone in a store sees it. Lin plans 50 store
 
 ### Part M2-R5. The memo
 
-Write Lin's memo on the Q2 test in four sentences, one judgement each:
+Write Lin's memo on the Q2 test in four sentences, one judgment each:
 1. Is the comparison causal, and for whom?
 2. The estimate and its interval.
 3. Against the break-even: does it pay?
@@ -213,7 +213,7 @@ The CFO has approved **5,000 coupons** for Q3, half the base. Two lists are on L
 On the two segments of Meeting 1, marketing's model ranks the active members first; Lin's rule ranks the lapsed first.
 
 From Lin's documentation of the Q2 export:
-- "The Q2 draw was 50/50 in every region, tier and store."
+- "The Q2 draw was 50/50 in every region, tier, and store."
 - "All CRM fields were frozen the day before the draw."
 - "Members who joined during Q2 were not in the draw."
 
@@ -291,12 +291,12 @@ On 200 members whose CRM status is known, the model's label was right **80% of t
 
 **Tasks**
 1. Some comments were written *after* the Q2 coupons went out. Which comments may be used to build a pre-treatment field, and why?
-2. Suppose the true effect modifier is exactly the lapsed flag, and the model's label is wrong for 20% of lapsed and 20% of active members. Among the 5,000 members labelled "drifting", what are the coupon's lift and the purchase rate with the coupon? What is a coupon worth there?
+2. Suppose the true effect modifier is exactly the lapsed flag, and the model's label is wrong for 20% of lapsed and 20% of active members. Among the 5,000 members labeled "drifting", what are the coupon's lift and the purchase rate with the coupon? What is a coupon worth there?
 3. What does the 5,000-coupon list built on the label earn, compared with the list built on the true flag?
-4. What does labelling error do to the *gap* between the two groups' estimated effects?
-5. Commit: how accurate must the label be for the labelled list to break even?
+4. What does labeling error do to the *gap* between the two groups' estimated effects?
+5. Commit: how accurate must the label be for the labeled list to break even?
 
-In the lab you will build this labeller, check it against gold labels, and measure the damage yourself.
+In the lab you will build this labeler, check it against gold labels, and measure the damage yourself.
 
 ---
 
@@ -512,7 +512,7 @@ Now add the ¥5 coupon. It is paid only when the member buys. Push-test purchase
 **Tasks**
 1. For each cell compute the expected cost per push (opt-out plus expected coupon payout) and the net value.
 2. Split the net value into three parts: incremental buyers, the "sure-thing" cost, and the opt-out cost. Why are two cells with the same lift no longer interchangeable?
-3. **A cap.** Product management caps pushes at 1,000 a day. On a one-day send, 5,000 analysts with positive net value compete for 1,000 slots. A causal forest splits the 2,500 analyst–low members three ways: 500 at a lift of 0.30, 1,000 at 0.20 and 1,000 at 0.15. What does the capped list earn with and without the forest?
+3. **A cap.** Product management caps pushes at 1,000 a day. On a one-day send, 5,000 analysts with positive net value compete for 1,000 slots. A causal forest splits the 2,500 analyst–low members three ways: 500 at a lift of 0.30, 1,000 at 0.20, and 1,000 at 0.15. What does the capped list earn with and without the forest?
 4. If every analyst gets a push, what is the expected total cost? Finance asks: *"What is the chance we exceed ¥18,000?"* What do you need in order to answer?
 
 ### Part M6-R3. Finance's memo
@@ -523,18 +523,18 @@ Now add the ¥5 coupon. It is paid only when the member buys. Push-test purchase
 1. Rank the cells by benefit per yuan of cost. Fill the ¥8,000 in that order. Which cell is marginal? What is the next ¥1 of budget worth?
 2. Add the 5% overrun guarantee. (A member costs ¥6.50 if they redeem and ¥1.50 if not.) How many marginal-cell members leave the list, and what does the guarantee cost in expected net?
 3. Does the daily cap bind?
-4. Write the final list: pushes, expected cost and expected net by cell.
+4. Write the final list: pushes, expected cost, and expected net by cell.
 5. *(Optional)* The net value of a push is $v = 25\mu_1 - 30\mu_0 - 1.50$. For analyst–high, the arm rates are estimated with independent errors, and the lift's SE is 3%. Put a one-sided 95% lower bound on $v$ itself. Does analyst–high stay on the list?
 
 ---
 
 ## Meeting 7: When the Logs Must Answer
 
-### Part M7-R1. The programme on trial
+### Part M7-R1. The program on trial
 
-In Q3 the engine's targeting rule went live. It sent the **5,000** ¥10 coupons of Meeting 3, half the 10,000-member base, choosing members by a **score** built from recency, tier and spend. A daily contact cap throttled the sends.
+In Q3 the engine's targeting rule went live. It sent the **5,000** ¥10 coupons of Meeting 3, half the 10,000-member base, choosing members by a **score** built from recency, tier, and spend. A daily contact cap throttled the sends.
 
-The CFO wants the programme reviewed. Sales has pulled the Q3 logs:
+The CFO wants the program reviewed. Sales has pulled the Q3 logs:
 
 | | Got coupon | No coupon |
 |---|---:|---:|
@@ -543,7 +543,7 @@ The CFO wants the programme reviewed. Sales has pulled the Q3 logs:
 Sales' reading: *"The coupon repels customers. Kill it."*
 And **the CFO will not fund another experiment.** The Q3 logs must answer.
 
-From Lin's description of the programme:
+From Lin's description of the program:
 - "Coupons were assigned by the scoring rule and by nothing else."
 - "Every field the rule read is in the export."
 - "The daily cap meant no score band was sent coupons on every day."
@@ -566,8 +566,8 @@ The scoring rule mostly sent coupons to lapsed members, the ones Meetings 3–5 
 **Tasks. In pairs**
 1. Compute the overall purchase rate in each arm, then the difference within each segment.
 2. Split the pooled difference into the effect on recipients plus selection bias.
-3. Compute the three averages the CFO could ask for (everyone, recipients, non-recipients). Which does *"keep the programme as run?"* need? Does it clear the break-even?
-4. Commit: does the CFO kill the programme?
+3. Compute the three averages the CFO could ask for (everyone, recipients, non-recipients). Which does *"keep the program as run?"* need? Does it clear the break-even?
+4. Commit: does the CFO kill the program?
 5. To estimate the effect on recipients, controls are reweighted by $e/(1-e)$: 0.25 for active controls and 4 for lapsed controls. How many *effective* controls does the estimate rest on? Use $(\sum w)^2 / \sum w^2$.
 6. *(Optional)* Regress purchase on the coupon and a lapsed dummy. What does the coefficient on the coupon estimate?
 
@@ -575,7 +575,7 @@ The scoring rule mostly sent coupons to lapsed members, the ones Meetings 3–5 
 
 A junior analyst argues: *"Customers who never open the app cannot see the coupon. Restrict to app openers; it makes the comparison fairer."*
 
-Take a clean case: 1,000 customers, coupon **randomised** 50/50, and suppose the coupon has **no effect at all**. Half the customers have high intent and buy regardless; half have low intent and never buy. A customer opens the app if they received a coupon **or** have high intent.
+Take a clean case: 1,000 customers, coupon **randomized** 50/50, and suppose the coupon has **no effect at all**. Half the customers have high intent and buy regardless; half have low intent and never buy. A customer opens the app if they received a coupon **or** have high intent.
 
 | | Customers | Open the app | Buy |
 |---|---:|---:|---:|
@@ -617,7 +617,7 @@ Lin's design record is written and dated. The purchase column opens:
 | 4 | 735 / 2,450 | 5 / 50 |
 
 **Tasks. In pairs**
-1. Compute the pooled effect, the IPW effect on all recipients (all four bands), the trimmed effect (bands 1 to 3) and the effect in band 4.
+1. Compute the pooled effect, the IPW effect on all recipients (all four bands), the trimmed effect (bands 1 to 3), and the effect in band 4.
 2. Each population has its own break-even, $10p_1/30$, where $p_1$ is its purchase rate with the coupon. Give each population's break-even and net per coupon.
 3. Write Lin's memo to the CFO: what to keep, what to stop, and what to report separately.
 

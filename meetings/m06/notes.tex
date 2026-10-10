@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\notesheader{6}{Allocation and Policy Learning}{From effect estimates to a deployable rule under costs, caps, budgets and risk}
+\notesheader{6}{Allocation and Policy Learning}{From effect estimates to a deployable rule under costs, caps, budgets, and risk}
 
 \begin{decision}
 The effect estimates are in. Finance gives a budget, operations a cap on contacts, and management wants a rule simple
@@ -17,7 +17,7 @@ is acceptable, and how should a rule be learned and deployed so that it can stil
   \item set a spending reserve and a conservative rule for uncertain effects, and say what each guarantees;
   \item decide under a capacity, where each arm's outcome distribution matters, and set capacity at the critical
   fractile;
-  \item place predict-then-optimise, decision-focused learning and policy learning on one spectrum, and learn a policy
+  \item place predict-then-optimize, decision-focused learning, and policy learning on one spectrum, and learn a policy
   as weighted classification of doubly robust scores;
   \item deploy a policy so that it can still be evaluated (holdouts, logged probabilities, bandits).
 \end{goals}
@@ -37,7 +37,7 @@ Without constraints the optimal assignment is $d_i^\ast = \ind{v(X_i) > 0}$; wit
 $\ind{\tau(X_i) > c/m}$.
 \end{prop}
 \begin{proof}
-The objective is a sum of terms each depending on one $d_i$; maximise term by term.
+The objective is a sum of terms each depending on one $d_i$; maximize term by term.
 \end{proof}
 
 \begin{prop}{Sure-thing decomposition}{surething}
@@ -50,7 +50,7 @@ Substitute $\mu_1 = \mu_0 + \tau$ into $m\tau - k - a\mu_1$.
 
 The first term pays the margin, net of the coupon, on outcomes the treatment causes; the second pays the coupon to units
 that would have bought anyway. Ranking by $\tau$ is ranking by $v$ only when costs are uniform. The benefit side needs a
-\emph{contrast} ($\tau$, which needs randomisation or an identification argument); the cost side needs a
+\emph{contrast} ($\tau$, which needs randomization or an identification argument); the cost side needs a
 \emph{prediction} ($\mu_0$ or $\mu_1$, fitted on one arm). They have different data requirements and are validated
 separately.
 
@@ -71,7 +71,7 @@ money. This is where unit-level estimates add value over segment averages.
 
 \subsection{A budget: the knapsack and its shadow price}
 
-With unit costs $c_i > 0$, benefits $b_i = m\tau_i$ and a budget $C$ on expected cost, solve
+With unit costs $c_i > 0$, benefits $b_i = m\tau_i$, and a budget $C$ on expected cost, solve
 $\max_d \sum_i d_i(b_i - c_i)$ subject to $\sum_i d_ic_i \le C$. The \emph{relaxation} allows $d_i \in [0,1]$ (treating a random
 share of a segment). Order units by the benefit--cost ratio $r_i = b_i/c_i$; the \emph{greedy} assignment treats units in
 that order until the budget runs out or $r_i \le 1$, treating a fraction of the first unit $j$ that does not fit.
@@ -93,15 +93,15 @@ $(r_j - 1)\delta = \lambda^\ast\delta$; as $C$ grows the marginal ratio falls, s
 The result has three practical consequences. The budget is spent in ratio order, not in order of $\tau$ or $v$. A
 budget can be replaced by a price: charging each unit's cost at $(1 + \lambda^\ast)$ reproduces the allocation. And
 $\lambda^\ast$ is the number to give finance: if the next-best use of the money returns more, the budget belongs there. The \emph{integer} problem is harder.
-With costs $6, 5, 5$, net values $12, 9, 9$ and budget $10$, ratio order takes the first (ratio $3.0$) and cannot afford
+With costs $6, 5, 5$, net values $12, 9, 9$, and budget $10$, ratio order takes the first (ratio $3.0$) and cannot afford
 another, for $12$; the two cheaper units together are worth $18$. Greedy is exact when units are small relative to the
 budget or come in blocks (segments); otherwise use an integer solver, and note that greedy is within one unit's value of
 the optimum.
 
 \paragraph{Several actions.} With actions $a = 1, \dots, K$ (coupon depths) of benefit $b_i(a)$ and cost $c_i(a)$, the same
-Lagrangian argument gives: each unit takes the action maximising $b_i(a) - (1 + \lambda^\ast)c_i(a)$, or nothing if all are
+Lagrangian argument gives: each unit takes the action maximizing $b_i(a) - (1 + \lambda^\ast)c_i(a)$, or nothing if all are
 negative. A deeper coupon is chosen only if its \emph{extra} benefit over the shallower one beats $(1+\lambda^\ast)$ times its
-extra cost; tight budgets push towards cheaper actions spread over more units. Contact caps add constraints, each with its
+extra cost; tight budgets push toward cheaper actions spread over more units. Contact caps add constraints, each with its
 own shadow price.
 
 \subsection{Group constraints and the price of fairness}
@@ -120,23 +120,23 @@ $\eta^\ast\,\text{rate}_b$.
 \end{prop}
 \begin{proof}
 The Lagrangian $\sum_i d_iv_i - \lambda(\sum_i d_i - B) - \eta(\sum_{i \in a} d_i/N_a - \gamma\sum_{i \in b} d_i/N_b)$ is a sum of
-terms in single $d_i$, each maximised by the stated threshold. The weak-duality argument of Result~\ref{prop:knapsack} shows
+terms in single $d_i$, each maximized by the stated threshold. The weak-duality argument of Result~\ref{prop:knapsack} shows
 that an assignment meeting both constraints with complementary slackness is optimal, and the envelope theorem gives
 $dV/d\gamma = \partial/\partial\gamma$ of the Lagrangian, $\eta^\ast\sum_{i \in b} d_i/N_b$.
 \end{proof}
 
-In effect, a constraint on rates sets different thresholds for the two groups: the group the unconstrained rule favours
+In effect, a constraint on rates sets different thresholds for the two groups: the group the unconstrained rule favors
 faces a higher bar, the other a lower one, and $\eta^\ast$ sets the gap. The \emph{price of fairness} $V(\infty) - V(\gamma)$ is the value given up, and it is the value of the
 units swapped. Illustration: 10{,}000 customers in two groups of 5{,}000 and a cap of 1{,}000. Group $a$ has 750 customers at
-$v = $ ¥6 and the rest at ¥1; group $b$ has 250 at ¥6, 1{,}000 at ¥3 and the rest at ¥0.5. The unconstrained list is the 1{,}000
+$v = $ ¥6 and the rest at ¥1; group $b$ has 250 at ¥6, 1{,}000 at ¥3, and the rest at ¥0.5. The unconstrained list is the 1{,}000
 customers at ¥6: rates 15\% and 5\% (3:1), value ¥6{,}000. With $\gamma = 1.25$ the rates satisfy
 $5{,}000(\text{rate}_b + 1.25\,\text{rate}_b) = 1{,}000$, so group $b$ gets $444.4$ and group $a$ $555.6$ (in whole customers,
 445 and 555). The list swaps about 195 customers at ¥6 in $a$ for 195 at ¥3 in $b$: value about ¥5{,}415, a price of about ¥585. The thresholds are ¥6 in $a$ and ¥3 in $b$; solving the two
 threshold equations gives $\eta^\ast \approx$ ¥6{,}667 and $\lambda^\ast \approx$ ¥4.67, so tightening $\gamma$ from 1.25 to 1.20 costs about
 $0.05 \times 6{,}667 \times 0.089 \approx$ ¥30.
 
-Which constraint to impose is a value judgement rather than an estimation problem. Parity of treatment rates, of expected
-benefit and of outcomes are different constraints with different prices, and they can conflict. Writing the group label
+Which constraint to impose is a value judgment rather than an estimation problem. Parity of treatment rates, of expected
+benefit, and of outcomes are different constraints with different prices, and they can conflict. Writing the group label
 into the rule, as group-specific thresholds do, may itself be restricted where the label is legally protected. The
 multiplier tells management what a constraint costs; whether to pay it is their decision.
 
@@ -145,8 +145,8 @@ multiplier tells management what a constraint costs; whether to pay it is their 
 The budget above constrains \emph{expected} cost. With redemption $R_i \sim \text{Bernoulli}(s_i)$, $s_i = \mu_1(X_i)$, unit $i$
 costs $k + aR_i$.
 
-\begin{prop}{Mean, variance and the reserve}{reserve}
-If redemptions are independent, realised cost $K = \sum_i d_i(k + aR_i)$ has $\E[K] = \sum_i d_ic_i$ and
+\begin{prop}{Mean, variance, and the reserve}{reserve}
+If redemptions are independent, realized cost $K = \sum_i d_i(k + aR_i)$ has $\E[K] = \sum_i d_ic_i$ and
 $\Var(K) = a^2\sum_i d_is_i(1-s_i)$. Under the normal approximation, $\Pr(K > C) \le \alpha$ if and only if
 $\E[K] + z_\alpha\sqrt{\Var(K)} \le C$.
 \end{prop}
@@ -173,20 +173,20 @@ If $v \le 0$, $\Pr\{\hat v - z_\alpha\SE > 0\} \le \Pr\{\hat v - z_\alpha\SE > v
 
 The guarantee is one-sided: it limits paying for losers and says nothing about profitable cells left off because their
 estimates are noisy. $z_\alpha$ expresses risk preference, not something the data supply. Bound the net value, not $\tau$:
-with arms estimated independently, $\widehat\Var(\hat v) = (m - a)^2\widehat\Var(\hat\mu_1) + m^2\widehat\Var(\hat\mu_0)$ (Meeting~2). Optimising
-on point estimates also suffers the \emph{optimiser's curse}: units chosen because their estimates are high are
-disproportionately those whose estimates are too high, so the realised value of an optimised list falls short of its
+with arms estimated independently, $\widehat\Var(\hat v) = (m - a)^2\widehat\Var(\hat\mu_1) + m^2\widehat\Var(\hat\mu_0)$ (Meeting~2). Optimizing
+on point estimates also suffers the \emph{optimizer's curse}: units chosen because their estimates are high are
+disproportionately those whose estimates are too high, so the realized value of an optimized list falls short of its
 estimate. Evaluate the frozen list on held-out data (Meeting~5).
 
 \subsection{When the mean is not enough: capacity}
 
 Net value $m\tau(x) - c(x)$ is linear in the outcome. When the payoff is not (a kitchen that can cook only so many meals,
 a store with a fixed number of staff), the average effect no longer decides. Make the unit the holder of the capacity: a
-partner kitchen with daily orders $Y$, capacity $q$, margin $p$ per order served and cost $g$ per order turned away
+partner kitchen with daily orders $Y$, capacity $q$, margin $p$ per order served, and cost $g$ per order turned away
 (refunds, goodwill). A day is worth $\pi(y) = p\min(y, q) - g(y - q)^+$, and running the promotion costs $c$.
 
 \begin{prop}{A nonlinear payoff needs each arm's distribution}{nonlin}
-The promotion's net value at $x$ is $v(x) = \E[\pi(Y(1)) \mid X = x] - \E[\pi(Y(0)) \mid X = x] - c$. In a randomised experiment
+The promotion's net value at $x$ is $v(x) = \E[\pi(Y(1)) \mid X = x] - \E[\pi(Y(0)) \mid X = x] - c$. In a randomized experiment
 each term is identified from one arm, $\E[\pi(Y(d)) \mid X = x] = \E[\pi(Y) \mid D = d, X = x]$. So $v(x)$ depends on the
 conditional distributions of $Y(1)$ and $Y(0)$ separately; it does not depend on their joint distribution, and it is not
 a function of $\tau(x)$ alone unless $\pi$ is linear ($q = \infty$ gives $v = p\tau(x) - c$).
@@ -196,7 +196,7 @@ Linearity of expectation splits $\E[\pi(Y(1)) - \pi(Y(0)) \mid X]$ into one term
 and consistency give the identification, as in Meeting~3.
 \end{proof}
 
-Two kitchens with baseline 200 orders, capacity 210, $p = $ ¥25 and $g = $ ¥15. Kitchen A's promoted demand is 215 for
+Two kitchens with baseline 200 orders, capacity 210, $p = $ ¥25, and $g = $ ¥15. Kitchen A's promoted demand is 215 for
 certain; kitchen B's is 230 or 200 with probability one half each. Both have $\tau = 15$. For A,
 $v + c = 25 \times 10 - 15 \times 5 = 175$. For B, $v + c = \tfrac12(25 \times 10 - 15 \times 20) + \tfrac12 \times 0 = -25$. The two
 kitchens have the same CATE but call for opposite decisions. What the decision does \emph{not} need is the distribution of individual effects $Y(1) - Y(0)$, which no
@@ -206,7 +206,7 @@ experiment identifies, since no kitchen shows both outcomes on the same day.
 cannot fill and $c_o$ per meal prepared and wasted. Let $F_1(\cdot \mid x)$ be the distribution function of $Y(1)$ given $X = x$.
 
 \begin{prop}{The critical fractile}{fractile}
-The expected loss $c_u\E[(Y(1) - q)^+ \mid x] + c_o\E[(q - Y(1))^+ \mid x]$ is minimised at the $\kappa$-quantile of $F_1(\cdot \mid x)$,
+The expected loss $c_u\E[(Y(1) - q)^+ \mid x] + c_o\E[(q - Y(1))^+ \mid x]$ is minimized at the $\kappa$-quantile of $F_1(\cdot \mid x)$,
 $\kappa = c_u/(c_u + c_o)$.
 \end{prop}
 \begin{proof}
@@ -217,35 +217,35 @@ With $c_u = $ ¥40 (margin plus goodwill) and $c_o = $ ¥10, $\kappa = 0.8$. Kit
 ``baseline plus CATE'' suggests; the expected loss falls from ¥375 to ¥150 a day. Three further points. (i) $\kappa$ comes from the
 business, not from a risk preference: it prices the randomness of the outcome. The $z_\alpha$ of the conservative rule
 guards against error in the \emph{estimate} and remains a preference; a full treatment uses both. (ii) The quantile of
-$Y(1)$ given $x$ is a prediction on the treated arm, fitted by minimising the \emph{pinball loss}
+$Y(1)$ given $x$ is a prediction on the treated arm, fitted by minimizing the \emph{pinball loss}
 $\rho_\kappa(u) = u\{\kappa - \ind{u < 0}\}$ (quantile regression, or the quantile forest of Meeting~4); like the cost side of
 Result~\ref{prop:surething}, it needs one arm. (iii) A \emph{conditional quantile treatment effect},
 $F_1^{-1}(\kappa \mid x) - F_0^{-1}(\kappa \mid x)$, compares the two arms' quantiles. It is not the quantile of individual effects,
 and neither decision above uses it.
 
-\subsection{From predict-then-optimise to policy learning}
+\subsection{From predict-then-optimize to policy learning}
 
-Every rule so far is \emph{predict-then-optimise}: estimate $\tau$ (and $c$), then hand the estimates to an optimiser (a
+Every rule so far is \emph{predict-then-optimize}: estimate $\tau$ (and $c$), then hand the estimates to an optimizer (a
 threshold, a sort, a knapsack). The estimates are trained for accuracy; the decision is judged by value. Three routes
 differ in how much of the training they hand to the decision.
 \begin{enumerate}
-  \item \emph{Predict, then optimise} (plug-in). Fit $\hatt$ by an estimation loss and apply the optimiser. Modular and
+  \item \emph{Predict, then optimize} (plug-in). Fit $\hatt$ by an estimation loss and apply the optimizer. Modular and
   reusable, but accuracy is bought everywhere, including where the decision is never in doubt.
-  \item \emph{Decision-focused learning.} Keep the optimiser and train the estimate on the value of the decision it
-  induces: choose $\theta$ to maximise $\frac1n\sum_i \pi_\theta(X_i)\Gamma_i$, where $\pi_\theta$ is the optimiser applied to
-  $\hatt_\theta$ and $\Gamma_i$ is the score of Result~\ref{prop:ewm} below. The objective jumps as the optimiser's output
+  \item \emph{Decision-focused learning.} Keep the optimizer and train the estimate on the value of the decision it
+  induces: choose $\theta$ to maximize $\frac1n\sum_i \pi_\theta(X_i)\Gamma_i$, where $\pi_\theta$ is the optimizer applied to
+  $\hatt_\theta$ and $\Gamma_i$ is the score of Result~\ref{prop:ewm} below. The objective jumps as the optimizer's output
   changes, so practice uses smooth surrogates (the SPO+ loss of Elmachtoub and Grigas for linear objectives) or
-  randomised optimisers. It is worth the extra effort when the optimiser couples units (a budget, a capacity, a menu), so that
+  randomized optimizers. It is worth the extra effort when the optimizer couples units (a budget, a capacity, a menu), so that
   a unit's decision is not a simple function of its own estimate.
   \item \emph{Policy learning.} Drop the estimate and search a class $\Pi$ of rules, such as depth-2 trees, for the one with
-  the highest estimated value. A restricted class is easy to explain, audit and deploy.
+  the highest estimated value. A restricted class is easy to explain, audit, and deploy.
 \end{enumerate}
-Route 2 is route 3 with the class $\Pi = \{\text{optimiser} \circ \hatt_\theta\}$. One difference from textbook
-predict-then-optimise: there the training labels (realised demands, costs) are observed noisy draws of their conditional
+Route 2 is route 3 with the class $\Pi = \{\text{optimizer} \circ \hatt_\theta\}$. One difference from textbook
+predict-then-optimize: there the training labels (realized demands, costs) are observed noisy draws of their conditional
 mean. Here the label $\tau_i$ is never observed; the doubly robust score takes its place, as a noisy draw whose
-conditional mean is the net value. With that substitution, predict-then-optimise methods carry over.
+conditional mean is the net value. With that substitution, predict-then-optimize methods carry over.
 
-\begin{prop}{Empirical welfare maximisation with doubly robust scores}{ewm}
+\begin{prop}{Empirical welfare maximization with doubly robust scores}{ewm}
 Let $\Gamma_i = m\,\phi_i - c(X_i)$, where $\phi_i$ is the cross-fitted doubly robust score of Meeting~3. Then
 $\E[\Gamma_i \mid X_i] = v(X_i)$, so $\frac1n\sum_i \pi(X_i)\Gamma_i$ is unbiased for the gain $G(\pi)$ of any fixed policy, and
 \[
@@ -262,7 +262,7 @@ For any policy $\pi$, with $\Gamma_i^- = \max(-\Gamma_i, 0)$,
 \[
   \sum_{i=1}^n \pi(X_i)\Gamma_i = \sum_{i=1}^n |\Gamma_i|\,\ind{\pi(X_i) = \ind{\Gamma_i > 0}} - \sum_{i=1}^n \Gamma_i^- .
 \]
-Maximising estimated value is minimising the misclassification of the sign of $\Gamma_i$, each unit weighted by $|\Gamma_i|$.
+Maximizing estimated value is minimizing the misclassification of the sign of $\Gamma_i$, each unit weighted by $|\Gamma_i|$.
 \end{prop}
 \begin{proof}
 If $\Gamma_i > 0$, $\pi\Gamma_i = |\Gamma_i|\ind{\pi = 1}$. If $\Gamma_i \le 0$, $\pi\Gamma_i = -|\Gamma_i|\pi = |\Gamma_i|\ind{\pi = 0} - |\Gamma_i|$.
@@ -270,7 +270,7 @@ The last sum does not depend on $\pi$.
 \end{proof}
 
 Any classifier that accepts sample weights becomes a policy learner (\emph{outcome-weighted learning}). This makes the
-contrast with route 1 precise: an estimation loss penalises errors on every unit, while the decision loss penalises only errors
+contrast with route 1 precise: an estimation loss penalizes errors on every unit, while the decision loss penalizes only errors
 that flip a decision, weighted by how much is at stake. Meeting~9 proves the population version (regret counts only
 misclassified units). Under a budget, replace $\Gamma_i$ by $\Gamma_i - \lambda^\ast c(X_i)$ (Result~\ref{prop:knapsack}).
 
@@ -284,12 +284,12 @@ policy's in-sample value is optimistic, so evaluate it on fresh data.
 
 A deployed policy is a hypothesis about where value lies. Keep a small random \emph{holdout} of eligible units under the
 old policy or untreated: it keeps measuring value, detects drift, and generates experimental data for the next round. A
-policy deployed without one destroys the data needed to evaluate it. When the rule itself randomises (for instance, a
+policy deployed without one destroys the data needed to evaluate it. When the rule itself randomizes (for instance, a
 bandit), log each unit's assignment probability: the logs are then experimental data with known, varying propensities,
 and the IPW identity of Meeting~5 applies with those probabilities.
 
 \paragraph{Bandits.} A fixed test spends half its traffic on the worse arm until the end. A \emph{multi-armed bandit} shifts
-traffic towards arms that look better as data arrive: \emph{Thompson sampling} assigns each new unit to an arm with
+traffic toward arms that look better as data arrive: \emph{Thompson sampling} assigns each new unit to an arm with
 probability equal to the current posterior probability that the arm is best. Bandits suit many short-lived decisions
 (creative variants); one-off strategic decisions are better served by a clean test. Sequential rules, where today's
 action depends on yesterday's response, are the subject of Handout H3.
@@ -299,18 +299,18 @@ action depends on yesterday's response, are the subject of Handout H3.
 Writing the value of a list as $\sum_i d_iv(X_i)$ assumes no interference and one well-defined treatment. It fails when
 treated units tell untreated ones, draw demand from them, or share a capacity (Handout H1). Then the objective is not
 separable and none of the sorting results holds. Check also that the list does not rank cells the experiment never
-contained (no support): the optimiser cannot tell a measured number from an extrapolated one.
+contained (no support): the optimizer cannot tell a measured number from an extrapolated one.
 
 \begin{pitfall}[allocation errors]
 Ranking by $\tau$ when costs differ by unit; spending the budget in order of effect rather than ratio; planning capacity
-at baseline plus the CATE; treating a fairness constraint as free; reporting the optimiser's own estimate of the list's
+at baseline plus the CATE; treating a fairness constraint as free; reporting the optimizer's own estimate of the list's
 value; deploying a rule with no holdout; ignoring spillovers when a list is scaled up.
 \end{pitfall}
 
 %=====================================================================================
 \sectiontwo
 
-\paragraph{Setting.} QuickBite can send a ¥5 or a ¥10 coupon. Six segments (A--F) of 10{,}000 customers were randomised
+\paragraph{Setting.} QuickBite can send a ¥5 or a ¥10 coupon. Six segments (A--F) of 10{,}000 customers were randomized
 across the three arms last month. Per customer offered, the experiment gives incremental margin $b$ and expected coupon
 cost $c$ (face value times redemption rate, including redemptions by customers who would have ordered anyway), in yuan.
 \begin{center}
@@ -334,7 +334,7 @@ F & 0.5 & 1.5 & $-1.0$ & 0.8 & 3.0 & $-2.2$ \\
 C ¥5, E ¥5. Spend $10{,}000 \times (2.0 + 4.5 + 2.5 + 1.0) = $ ¥100{,}000; profit ¥80{,}000.
 
 \paragraph{Step 2: a ¥50{,}000 budget.} Net value per yuan of cost: A at ¥5, $4.0/2.0 = 2.0$; B and E at ¥5, $1.0$; C at ¥5, $0.2$;
-upgrading B from ¥5 to ¥10, $(2.5 - 2.0)/(4.5 - 2.0) = 0.2$. Filling from the top, A, B and E at ¥5 use exactly ¥50{,}000 and earn
+upgrading B from ¥5 to ¥10, $(2.5 - 2.0)/(4.5 - 2.0) = 0.2$. Filling from the top, A, B, and E at ¥5 use exactly ¥50{,}000 and earn
 ¥70{,}000; a linear-programming solver returns the same. The next uses of money return ¥0.20 per yuan, so
 $\lambda^\ast = 0.2$: an extra ¥10{,}000 would add about ¥2{,}000. Halving the budget costs only ¥10{,}000 of profit because the
 dropped spending was the least productive. (At exactly ¥50{,}000, \emph{removing} a yuan would cost ¥1.00, since B or E would be
@@ -364,7 +364,7 @@ Estimated gain per customer, $\tfrac18\sum_i\pi(X_i)\Gamma_i$: treat everyone $1
 spenders $2.5/8 = 0.31$. The best depth-one tree treats new customers; depth two cannot improve (cell sums $4.0, 1.0, -1.5,
 -2.0$). By Result~\ref{prop:wclass} the same search is a weighted classification: label each customer by the sign of
 $\Gamma_i$ and weight it by $|\Gamma_i|$. ``New customers'' misclassifies customers 4 and 6 (weight $1.5$); ``everyone''
-misclassifies 4, 5, 7 and 8 (weight $5.0$). The difference, $3.5$, is the difference in summed value, $5.0 - 1.5$. Eight
+misclassifies 4, 5, 7, and 8 (weight $5.0$). The difference, $3.5$, is the difference in summed value, $5.0 - 1.5$. Eight
 customers are far too few to trust; the example only illustrates the arithmetic.
 
 \paragraph{Step 6: deployment.} QuickBite deploys with 5\% of each segment held out at random under no coupon, so next month's
@@ -378,7 +378,7 @@ worth it if marketing's alternative use of money returns ¥0.30 per yuan?
 ¥25{,}000 for ¥5{,}000. Either (or a mix) gives profit ¥75{,}000. (b) The extra money returns $5{,}000/25{,}000 = 0.2$ per yuan, below
 marketing's $0.30$: give it to marketing.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 The growth team wants to send the ¥10 coupon to segment A ``because its incremental margin, ¥9.0, is the highest of any option''.
 What is wrong with the argument, and what would change your mind?
 \end{exercise}
@@ -388,16 +388,16 @@ coupon has a larger net value (a lower redemption subsidy, or a longer-lasting e
 
 \begin{exercise}[computation]
 A third partner kitchen has baseline 200 orders, capacity 210, $p = $ ¥25, $g = $ ¥15, and a promotion costing ¥60 a day. A test
-shows promoted demand of 205, 215 or 235 orders, each with probability one third. (a) Compute $\tau$ and the linear rule's
+shows promoted demand of 205, 215, or 235 orders, each with probability one third. (a) Compute $\tau$ and the linear rule's
 verdict $p\tau - c$. (b) Compute the correct net value (Result~\ref{prop:nonlin}). (c) If instead the kitchen can prepare meals in
 advance with $c_u = $ ¥40 and $c_o = $ ¥10, how many should it prepare for a promoted day?
 \end{exercise}
 \answer{(a) $\tau = 218.3 - 200 = 18.3$; $25 \times 18.3 - 60 = 398$: promote. (b) The incremental day values are $25 \times 5 = 125$,
-$25 \times 10 - 15 \times 5 = 175$ and $25 \times 10 - 15 \times 25 = -125$; their mean is $58.3$, so $v = 58.3 - 60 = -1.7$: do not promote.
+$25 \times 10 - 15 \times 5 = 175$, and $25 \times 10 - 15 \times 25 = -125$; their mean is $58.3$, so $v = 58.3 - 60 = -1.7$: do not promote.
 The tail day above capacity costs more than the average lift earns. (c) $\kappa = 40/50 = 0.8$; $F_1(215) = 2/3 < 0.8 \le F_1(235) = 1$,
 so prepare 235.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 QuickBite's effect estimates are noisier for group $b$, which was smaller in the experiment. The team applies the conservative
 rule and the rate constraint of Result~\ref{prop:fair} together. What happens to the rates, to $\eta^\ast$, and what would you change
 for next month?
@@ -412,10 +412,10 @@ at little cost.}
 
 \begin{extension}[Decision-focused learning in practice]
 The value of a decision is piecewise constant in the estimates, so its gradient is zero almost everywhere. Three fixes:
-convex surrogates such as SPO+ (Elmachtoub and Grigas, 2022), which bound the regret of a linear optimiser; smoothing the
-optimiser by adding noise and averaging its output; and, for threshold and sort rules, the weighted classification of
+convex surrogates such as SPO+ (Elmachtoub and Grigas, 2022), which bound the regret of a linear optimizer; smoothing the
+optimizer by adding noise and averaging its output; and, for threshold and sort rules, the weighted classification of
 Result~\ref{prop:wclass}. Mandi et al.\ (2024) survey the methods and benchmarks. With causal labels, every surrogate is fed
-doubly robust scores in place of realised outcomes, and the cross-fitting rules of Meeting~3 apply.
+doubly robust scores in place of realized outcomes, and the cross-fitting rules of Meeting~3 apply.
 \end{extension}
 
 \begin{extension}[Distributional effects]
@@ -425,7 +425,7 @@ that fit the critical quantile directly from features, the one-arm version of Re
 \end{extension}
 
 \begin{extension}[Theory of policy learning]
-Kitagawa and Tetenov (2018) bound the regret of empirical welfare maximisation with known propensities; Athey and Wager (2021)
+Kitagawa and Tetenov (2018) bound the regret of empirical welfare maximization with known propensities; Athey and Wager (2021)
 extend it to doubly robust scores with estimated nuisances. The \texttt{policytree} package implements exact tree search.
 \end{extension}
 
@@ -437,13 +437,13 @@ extend it to doubly robust scores with estimated nuisances. The \texttt{policytr
 policy trees}{Sections 1--3}{3}
 \reading{Elmachtoub and Grigas (2022), ``Smart `predict, then optimize''', \emph{Management Science}}{Training predictions on
 the decisions they induce; the SPO+ loss}{Sections 1--4}{3}
-\reading{Zhao, Zeng, Rush and Kosorok (2012), ``Estimating individualized treatment rules using outcome weighted learning'',
+\reading{Zhao, Zeng, Rush, and Kosorok (2012), ``Estimating individualized treatment rules using outcome weighted learning'',
 \emph{JASA}}{Policy learning as weighted classification}{Sections 1--3}{2}
 \reading{Kasy and Abebe (2021), ``Fairness, equality, and power in algorithmic decision-making'', \emph{FAccT}}{What
 fairness constraints do and do not protect, from an economist's view}{All}{1}
-\reading{Russo, Van Roy, Kazerouni, Osband and Wen (2018), ``A tutorial on Thompson sampling'', \emph{Foundations and Trends in
+\reading{Russo, Van Roy, Kazerouni, Osband, and Wen (2018), ``A tutorial on Thompson sampling'', \emph{Foundations and Trends in
 Machine Learning}}{Bandits from first principles}{Ch.\ 1--4}{2}
-\reading{Handout H3, \emph{Sequential decisions}}{Dynamic treatment regimes, Q-learning, G-estimation and bandit
+\reading{Handout H3, \emph{Sequential decisions}}{Dynamic treatment regimes, Q-learning, G-estimation, and bandit
 logs}{All}{2}
 \end{readinglist}
 

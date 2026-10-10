@@ -4,7 +4,7 @@
 \notesheader{10}{Panel Data and Difference-in-Differences}{Untreated units over time as the comparison}
 
 \begin{decision}
-A change was rolled out to some stores, clubs or cities and not others, on one date, and nobody randomised which. The firm wants
+A change was rolled out to some stores, clubs, or cities and not others, on one date, and nobody randomized which. The firm wants
 to know what it did before extending it. The comparison now comes from untreated units' changes over time. That requires an
 assumption about what treated units would have done without the change, which no data can verify, so the analysis must also say
 how far that assumption could fail before the decision changes.
@@ -16,7 +16,7 @@ how far that assumption could fail before the decision changes.
   \item identify the ATT by difference-in-differences under parallel trends, with a proof;
   \item show that TWFE with one adoption date equals the DiD, and read an event study;
   \item compute a breakdown drift for trend sensitivity, and cluster standard errors correctly;
-  \item recognise why staggered adoption breaks the simple TWFE regression.
+  \item recognize why staggered adoption breaks the simple TWFE regression.
 \end{goals}
 
 %=====================================================================================
@@ -59,7 +59,7 @@ one unless it was selected the same way.
 
 The two-way fixed-effects (TWFE) model $Y_{it} = \alpha_i + \lambda_t + \beta D_{it} + \varepsilon_{it}$ gives each unit a level $\alpha_i$ (absorbing every
 stable characteristic, measured or not) and each period a shock $\lambda_t$ common to all units. Confounders that change over time
-\emph{differently} across units (a neighbourhood gentrifying, a manager who adopts and works harder) are not removed.
+\emph{differently} across units (a neighborhood gentrifying, a manager who adopts and works harder) are not removed.
 
 \begin{prop}{TWFE by the within transformation}{within}
 In a balanced panel, with $\ddot W_{it} = W_{it} - \bar W_{i\cdot} - \bar W_{\cdot t} + \bar W_{\cdot\cdot}$, the least-squares coefficient on $D$ is
@@ -83,7 +83,7 @@ $Y_{\text{pre}}(1) = Y_{\text{pre}}(0)$ for treated units, and comparison units'
 \end{assum}
 
 Parallel trends restricts \emph{changes}, not levels: the groups may differ by any amount provided the difference would have stayed constant.
-It is untestable, because the treated group's post-period $Y(0)$ is never seen. No anticipation fixes what ``pre'' means: if behaviour changed
+It is untestable, because the treated group's post-period $Y(0)$ is never seen. No anticipation fixes what ``pre'' means: if behavior changed
 when adoption was announced, the pre-period must end before that.
 
 \begin{prop}{DiD identifies the ATT}{did}
@@ -110,7 +110,7 @@ The implied counterfactual percentage changes are $\Delta/\mu_1$ and $\Delta/\mu
 \end{proof}
 Choose the scale on which common shocks plausibly act (multiplicative shocks suggest logs), and report the other if the decision is close.
 
-\subsection{TWFE, event studies and pre-trends}
+\subsection{TWFE, event studies, and pre-trends}
 
 \begin{prop}{With one adoption date, TWFE is the DiD}{twfedid}
 In a balanced panel with $n_1$ treated and $n_0$ comparison units, $\mathcal T_0$ pre- and $\mathcal T_1$ post-periods, and
@@ -228,7 +228,7 @@ $\delta^\ast = (0.60 - 0.30)/3 = 0.10$, nearly twice what the pre-period allows.
 against regression to the mean. Had they been chosen after a slump, the event study would show a dip before adoption.
 
 \paragraph{Recommendation.} Extend the app. The remaining 30 clubs will adopt at different times, so evaluate the extension with a staggered-adoption
-estimator, ideally with adoption dates randomised across clubs (Handout H6).
+estimator, ideally with adoption dates randomized across clubs (Handout H6).
 
 \begin{exercise}[computation]
 Collapsing to one change per club, the 20 app clubs' changes $\Delta_i$ have SD $0.20$ and the 30 other clubs' SD $0.18$. Compute the SE of the DiD and a
@@ -238,7 +238,7 @@ Collapsing to one change per club, the 20 app clubs' changes $\Delta_i$ have SD 
 break-even of $0.3$. But if regions share shocks, the clubs are not independent: cluster by region. With only 6 clusters, use a $t$ distribution with about
 5 degrees of freedom or the wild cluster bootstrap, and expect a much wider interval that may reach the break-even.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 A regional manager wants to report the app's effect as the before--after change in the 20 clubs, ``because the other clubs are in different cities and not
 comparable''. Respond.
 \end{exercise}
@@ -250,26 +250,26 @@ or use conditional parallel trends, rather than dropping the comparison group.}
 \sectionthree
 
 \begin{extension}[Conditional parallel trends, few clusters, changes-in-changes]
-If parallel trends is plausible only within covariate groups, outcome-regression, IPW and doubly robust DiD estimators compare changes within groups
+If parallel trends is plausible only within covariate groups, outcome-regression, IPW, and doubly robust DiD estimators compare changes within groups
 (Sant'Anna and Zhao, 2020). With few clusters, the wild cluster bootstrap gives better-sized tests. Changes-in-changes (Athey and Imbens, 2006) replaces
 parallel means with a stable mapping between quantiles.
 \end{extension}
 
-\begin{extension}[Triple differences and randomised adoption]
-A triple difference adds a within-unit comparison group that should be unaffected (members of a class type not bookable by app). Randomising adoption
+\begin{extension}[Triple differences and randomized adoption]
+A triple difference adds a within-unit comparison group that should be unaffected (members of a class type not bookable by app). Randomizing adoption
 dates turns DiD into a design-based comparison (Handout H6).
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
 \reading{Angrist and Pischke (2009), \emph{Mostly Harmless Econometrics}, Princeton}{DiD and fixed effects at textbook pace}{Ch.\ 5}{2}
-\reading{Bertrand, Duflo and Mullainathan (2004), ``How much should we trust differences-in-differences estimates?'', \emph{QJE}}{Why unit-period SEs
+\reading{Bertrand, Duflo, and Mullainathan (2004), ``How much should we trust differences-in-differences estimates?'', \emph{QJE}}{Why unit-period SEs
 mislead}{All}{1}
 \reading{Roth (2022), ``Pretest with caution: event-study estimates after testing for parallel trends'', \emph{AER: Insights}}{What a passed pre-trend test
 does to the estimate}{All}{2}
 \reading{Rambachan and Roth (2023), ``A more credible approach to parallel trends'', \emph{Review of Economic Studies}}{Sensitivity beyond linear drift}{Sections
 1--3}{3}
-\reading{Roth, Sant'Anna, Bilinski and Poe (2023), ``What's trending in difference-in-differences?'', \emph{Journal of Econometrics}}{A survey of modern DiD}{All}{2}
+\reading{Roth, Sant'Anna, Bilinski, and Poe (2023), ``What's trending in difference-in-differences?'', \emph{Journal of Econometrics}}{A survey of modern DiD}{All}{2}
 \reading{Handout H6, \emph{Staggered adoption}}{Cohorts, clean comparisons, and the TWFE decomposition}{All}{2}
 \end{readinglist}
 

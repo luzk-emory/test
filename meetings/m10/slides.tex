@@ -123,7 +123,7 @@
 % [RELEASE R1: the assistant, its cost, and the three numbers on Dana's desk]
 \begin{frame}{The Store Assistant}
 
-\textbf{Dana} runs store operations for a home-goods chain of 120 stores. \textbf{Store Assistant} is a generative-AI assistant on associates' handhelds: stock checks, product answers and add-on suggestions, in seconds.
+\textbf{Dana} runs store operations for a home-goods chain of 120 stores. \textbf{Store Assistant} is a generative-AI assistant on associates' handhelds: stock checks, product answers, and add-on suggestions, in seconds.
 
 \medskip
 
@@ -131,7 +131,7 @@ In week 53 the first \textbf{cohort of thirty stores} went live. A second cohort
 
 \medskip
 
-\textbf{On her desk:} confirm cohort 2, at \textyen 2{,}500 per store-week (licence \textyen 1{,}700, handsets \textyen 300, each store's ``AI champion'' allowance \textyen 500).
+\textbf{On her desk:} confirm cohort 2, at \textyen 2{,}500 per store-week (license \textyen 1{,}700, handsets \textyen 300, each store's ``AI champion'' allowance \textyen 500).
 
 \begin{center}
 \small
@@ -324,7 +324,7 @@ Y_{it} = \alpha_i + \lambda_t + \beta D_{it} + \varepsilon_{it}, \qquad D_{it} =
 
 \begin{itemize}
   \item $\alpha_i$, the \textbf{unit effect}: each store's own level. It absorbs every stable characteristic, measured or not: floor area, location, catchment, format.
-  \item $\lambda_t$, the \textbf{time effect}: each week's shock common to all stores. It absorbs the chain's trend, the season and chain-wide events.
+  \item $\lambda_t$, the \textbf{time effect}: each week's shock common to all stores. It absorbs the chain's trend, the season, and chain-wide events.
   \item $\beta$ is then identified only by how a store's sales move, relative to the chain's week, when its $D_{it}$ switches.
 \end{itemize}
 
@@ -423,7 +423,7 @@ The time effects bring in the comparison's $+4$: $15 - 4 = 11$. The unit effects
 
 \begin{itemize}
   \item The target is the ATT; its missing term is cohort 1's sales without the assistant. Break-even: 10.
-  \item Before--after keeps trends, seasons, events and regression to the mean: 15 includes the $+4$ every store saw.
+  \item Before--after keeps trends, seasons, events, and regression to the mean: 15 includes the $+4$ every store saw.
   \item Across stores keeps the level gap: 41 includes the 30 that was there before.
   \item Unit effects remove stable levels; time effects remove common shocks. Neither removes confounders that change differently across stores.
   \item On the four cells, TWFE gives 11.
@@ -457,7 +457,7 @@ $Y_{\text{pre}}(1) = Y_{\text{pre}}(0)$ for treated units, and comparison units'
 \begin{itemize}
   \item Parallel trends restricts \textbf{changes}, not levels: cohort 1 may be 30 bigger, provided the difference would have stayed 30.
   \item It is untestable: cohort 1's post-period $Y(0)$ is never seen.
-  \item No anticipation fixes what ``pre'' means. If behaviour changed when adoption was announced, or while staff prepared for it, the pre-period must end before that.
+  \item No anticipation fixes what ``pre'' means. If behavior changed when adoption was announced, or while staff prepared for it, the pre-period must end before that.
 \end{itemize}
 \end{frame}
 
@@ -551,7 +551,7 @@ Comparison & 146 & 148 & 150 & 152 & 154 & 156 \\
 \end{column}
 \begin{column}{0.44\textwidth}
 \small
-Green: cohort 1. Grey: comparison. Dashed: cohort 1 without the assistant, as parallel trends draws it, the comparison's path shifted up by the gap of \textbf{30}.
+Green: cohort 1. Gray: comparison. Dashed: cohort 1 without the assistant, as parallel trends draws it, the comparison's path shifted up by the gap of \textbf{30}.
 
 \medskip
 
@@ -837,7 +837,7 @@ Confirm cohort 2 for week 79. The assistant loses margin in a store's first quar
 
 \begin{itemize}
   \item \spinestep{Estimand.} $\ATT = \E[Y_{\text{post}}(1) - Y_{\text{post}}(0) \mid T = 1]$, with adoption-date potential outcomes $Y_{it}(g)$, against a break-even of 10. A vendor's usage count is not an estimate of it.
-  \item \spinestep{Identification.} No coin chose the dates. Parallel trends (on a stated scale), no anticipation and no spillovers are assumptions, tied to why the treated adopted when they did. Fixed effects remove stable levels and common shocks, not differential trends or a dip before adoption.
+  \item \spinestep{Identification.} No coin chose the dates. Parallel trends (on a stated scale), no anticipation, and no spillovers are assumptions, tied to why the treated adopted when they did. Fixed effects remove stable levels and common shocks, not differential trends or a dip before adoption.
   \item \spinestep{Estimation.} Before--after keeps the trend (15), across keeps the level (41), the DiD removes both (11). With one adoption date, TWFE is the DiD; an event study traces the effect (8, then 14) and gives placebo pre-period coefficients.
   \item \spinestep{Inference.} One change per store (SE 1.22, not 0.47); cluster where treatment was assigned (by region, $[6.7, 15.3]$). Report the breakdown drift (0.5 for the average, 2.0 for the second quarter) against what the pre-period rules out (0.64).
   \item \textbf{With several adoption dates, TWFE can weight effects negatively.} Use a design built for staggered timing.

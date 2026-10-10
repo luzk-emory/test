@@ -11,10 +11,10 @@ same idea into an estimate for every customer.
 \end{decision}
 
 \begin{goals}
-  \item explain why a causal splitting criterion ignores prognostic splits while an outcome tree favours them;
+  \item explain why a causal splitting criterion ignores prognostic splits while an outcome tree favors them;
   \item quantify the winner's curse and show that honest estimation removes it;
   \item run the discover--estimate--recommend protocol;
-  \item describe a causal forest as adaptive neighbour weights with local centering, and state what its
+  \item describe a causal forest as adaptive neighbor weights with local centering, and state what its
   intervals require;
   \item test whether a CATE model has found real heterogeneity (calibration test and GATES).
 \end{goals}
@@ -24,16 +24,16 @@ same idea into an estimate for every customer.
 
 \subsection{An estimand chosen by the data}
 
-Units have covariates $X$, a randomised treatment $D$ with known $\Pr(D=1) = e$, and outcome $Y$. A
+Units have covariates $X$, a randomized treatment $D$ with known $\Pr(D=1) = e$, and outcome $Y$. A
 \emph{partition} $\Pi = \{\ell_1, \dots, \ell_L\}$ divides covariate space into \emph{leaves}, and the
 \emph{leaf CATE} is $\tau_\ell = \E[Y(1) - Y(0) \mid X \in \ell]$. When the leaves are the output of a search, the
-estimand itself depends on the data that found it. Estimand, identification and estimation still apply, but
+estimand itself depends on the data that found it. Estimand, identification, and estimation still apply, but
 only in order: the partition must be fixed before the data used to estimate it are consulted. The leaf
 estimate on a sample $S$ is $\hatt_\ell(S) = \bar Y_{1,\ell}(S) - \bar Y_{0,\ell}(S)$.
 
 \subsection{Splitting on the effect}
 
-A regression tree (CART) splits a parent $P$ into children $L, R$ to maximise
+A regression tree (CART) splits a parent $P$ into children $L, R$ to maximize
 $\tfrac{n_L}{n_P}(\bar Y_L - \bar Y_P)^2 + \tfrac{n_R}{n_P}(\bar Y_R - \bar Y_P)^2$. A \emph{causal tree} replaces outcome
 means with effect estimates:
 \[
@@ -45,7 +45,7 @@ treated and control units.
 
 \begin{prop}{A causal criterion ignores prognostic splits}{prognostic}
 If a split leaves the CATE unchanged ($\tau_L = \tau_R$), its population $\Delta$ is zero whatever it does to
-outcomes. Under randomisation with $e = \tfrac12$, the outcome gap between the two sides of a split on $V$ is
+outcomes. Under randomization with $e = \tfrac12$, the outcome gap between the two sides of a split on $V$ is
 \[
   \E[Y \mid V=1] - \E[Y \mid V=0] = \{\mu_0(1) - \mu_0(0)\} + \tfrac12\{\tau(1) - \tau(0)\}.
 \]
@@ -71,7 +71,7 @@ $\max_j \hat T_j \ge \hat T_m$ for every $m$, so $\E[\hat T_{j^\ast}] \ge \max_m
 $\tau$, $\hat T_j = \tau + sZ_j$.
 \end{proof}
 
-$\E[\max Z_j]$ is $1.03$ for $k = 4$, $1.54$ for $k = 10$, $1.87$ for $k = 20$ and $2.25$ for $k = 50$; for large
+$\E[\max Z_j]$ is $1.03$ for $k = 4$, $1.54$ for $k = 10$, $1.87$ for $k = 20$, and $2.25$ for $k = 50$; for large
 $k$ it grows like $\sqrt{2\ln k}$. A tree search over fields and cut points compares hundreds of candidates. The winner's
 effect, reported on the data that chose it, is too high, and its standard error is too small because it ignores
 the search.
@@ -80,13 +80,13 @@ the search.
 
 \begin{prop}{Honest leaf estimates are unbiased}{honest}
 Split the data at random into $A$ and $B$, let the partition be any function of $A$ alone, and let $B$ contain its
-own randomised assignment. Then for every leaf with both arms present in $B$,
+own randomized assignment. Then for every leaf with both arms present in $B$,
 $\E[\hatt_\ell(B) \mid \Pi] = \tau_\ell$, and the difference-in-means standard error computed on $B$ is valid given
 $\Pi$.
 \end{prop}
 \begin{proof}
 $B$ is independent of $A$ and hence of $\Pi$, so conditioning on $\Pi$ leaves $B$ unchanged: within a leaf, $B$'s
-units are a random sample from that leaf with randomised treatment, and the experiment results of Meetings 1
+units are a random sample from that leaf with randomized treatment, and the experiment results of Meetings 1
 and 2 apply.
 \end{proof}
 
@@ -107,7 +107,7 @@ leaves, a Bonferroni level $1 - 0.05/L$ controls the chance that any line on the
 
 A single tree is unstable. A \emph{causal forest} grows many honest trees, each on a random subsample drawn
 without replacement with a random subset of candidate variables at each split. It is best read as a way of
-choosing, for each target $x$, which training units are its neighbours.
+choosing, for each target $x$, which training units are its neighbors.
 
 \begin{prop}{The forest estimate as a weighted residual regression}{forest}
 For a target $x$, tree $b$ places $x$ in leaf $L_b(x)$. Define
@@ -122,13 +122,13 @@ with $\hat\ell$ and $\hat e$ estimated out of bag.
 \end{prop}
 \begin{proof}
 The estimating equation is the first-order condition of a weighted least-squares fit of the outcome residual on the
-treatment residual, the R-learner's loss (Meeting~3) localised by $\alpha_i(x)$; solve the linear equation for
+treatment residual, the R-learner's loss (Meeting~3) localized by $\alpha_i(x)$; solve the linear equation for
 $\theta$.
 \end{proof}
 
 Subtracting $\hat\ell$ and $\hat e$ first is \emph{local centering}: it removes what prognostic variables explain, so
 splits concentrate on effect modifiers, and it protects the estimate when treatment probabilities vary with $x$.
-The neighbours are adaptive: the trees decide which directions in $x$ matter for the effect.
+The neighbors are adaptive: the trees decide which directions in $x$ matter for the effect.
 
 \paragraph{Intervals.} Under conditions (a Lipschitz $\tau$, covariates with a density bounded away from zero on
 bounded support, overlap, honest trees whose leaves shrink in every direction, and subsamples of size $s$ with
@@ -155,7 +155,7 @@ In the population regression $\phi = \beta_1 + \beta_2(\hatt(X) - \E[\hatt(X)]) 
 \]
 \end{prop}
 \begin{proof}
-With a centred regressor, $\beta_1 = \E[\phi] = \E[\tau(X)]$ and $\beta_2 = \Cov(\phi, \hatt)/\Var(\hatt)$. Since
+With a centered regressor, $\beta_1 = \E[\phi] = \E[\tau(X)]$ and $\beta_2 = \Cov(\phi, \hatt)/\Var(\hatt)$. Since
 $\hatt(X)$ is fixed given $X$ and $\E[\phi \mid X] = \tau(X)$, $\Cov(\phi, \hatt) = \Cov(\tau(X), \hatt(X))$.
 \end{proof}
 
@@ -195,7 +195,7 @@ B: first-time customer & (600, 0.11) & (1{,}400, 0.03) & $2.69$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-(Scores use the unnormalised form $n_Ln_R/n_P \cdot (\hatt_L - \hatt_R)^2$, which ranks splits identically.) The tree
+(Scores use the unnormalized form $n_Ln_R/n_P \cdot (\hatt_L - \hatt_R)^2$, which ranks splits identically.) The tree
 splits on first-time customers. Both are consistent with the overall effect: $(600 \times 0.11 + 1{,}400 \times 0.03)/2{,}000 = 0.054$.
 
 \paragraph{Step 2: the curse in numbers.} If the search ends up comparing 10 leaves, all with true effect $0.05$
@@ -257,7 +257,7 @@ would the halves' true effects have to be for the gap to be detected at 5\% with
 (b) The gap's SE is $\sqrt{2} \times 0.0499 = 0.0706$, so the detectable gap is $2.8 \times 0.0706 \approx 0.20$, nearly
 twice the leaf's whole effect of $0.11$. The split is not worth making.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 The forest's variable-importance chart ranks ``app version'' first. A product manager concludes that the app
 version drives the response to free delivery. What two analyses would you run before agreeing, and on which data?
 \end{exercise}
@@ -269,17 +269,17 @@ and correlated or high-cardinality fields absorb splits arbitrarily.}
 %=====================================================================================
 \sectionthree
 
-\begin{extension}[Generalised random forests]
+\begin{extension}[Generalized random forests]
 Any parameter defined by a local moment condition $\E[\psi(O;\theta) \mid X = x] = 0$ (a quantile, a local IV effect)
 can be estimated with forest weights by solving $\sum_i \alpha_i(x)\psi(O_i;\theta) = 0$. A gradient trick turns split
-selection into ordinary CART on pseudo-outcomes. The \texttt{grf} package implements causal, quantile, IV and survival
-forests, the calibration test and doubly robust GATEs (Athey, Tibshirani and Wager, 2019).
+selection into ordinary CART on pseudo-outcomes. The \texttt{grf} package implements causal, quantile, IV, and survival
+forests, the calibration test, and doubly robust GATEs (Athey, Tibshirani, and Wager, 2019).
 \end{extension}
 
 \begin{extension}[Honest criteria, inference on winners, shrinkage]
 Athey and Imbens's criterion subtracts the estimation variance a split will create, discouraging small leaves
-directly. When a winner must be reported from the data that chose it, conditional intervals (Andrews, Kitagawa
-and McCloskey, 2024) are valid given the selection; empirical Bayes shrinkage pulls noisy segments towards the
+directly. When a winner must be reported from the data that chose it, conditional intervals (Andrews, Kitagawa,
+and McCloskey, 2024) are valid given the selection; empirical Bayes shrinkage pulls noisy segments toward the
 mean and tempers the winner automatically.
 \end{extension}
 
@@ -289,12 +289,12 @@ mean and tempers the winner automatically.
 \emph{PNAS}}{Causal trees and honesty, with the splitting criterion}{Sections 1--4}{2}
 \reading{Wager and Athey (2018), ``Estimation and inference of heterogeneous treatment effects using random
 forests'', \emph{JASA}}{The asymptotic normality result and its conditions}{Sections 1--3}{3}
-\reading{Athey, Tibshirani and Wager (2019), ``Generalized random forests'', \emph{Annals of Statistics}}{Forests
+\reading{Athey, Tibshirani, and Wager (2019), ``Generalized random forests'', \emph{Annals of Statistics}}{Forests
 as weights for any moment condition}{Sections 1--2, 6}{3}
-\reading{Chernozhukov, Demirer, Duflo and Fern\'andez-Val (2025), ``Fisher--Schultz Lecture: Generic machine learning inference on
+\reading{Chernozhukov, Demirer, Duflo, and Fern\'andez-Val (2025), ``Fisher--Schultz Lecture: Generic machine learning inference on
 heterogeneous treatment effects in randomized experiments'', \emph{Econometrica}}{The calibration test and GATES with repeated
 splitting}{Sections 1--3}{2}
-\reading{Andrews, Kitagawa and McCloskey (2024), ``Inference on winners'', \emph{QJE}}{Valid intervals for the
+\reading{Andrews, Kitagawa, and McCloskey (2024), ``Inference on winners'', \emph{QJE}}{Valid intervals for the
 best-looking segment}{Sections 1--2}{3}
 \end{readinglist}
 

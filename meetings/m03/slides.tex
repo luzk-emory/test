@@ -154,7 +154,7 @@ Marketing's model ranks the \textbf{active} first; Lin's rule ranks the \textbf{
 % ====================================================================
 \begin{frame}{The CATE}
 
-With treatment $D$, outcome $Y$ and pre-treatment covariates $X$, write $\mu_d(x) = \E[Y \mid D=d, X=x]$.
+With treatment $D$, outcome $Y$, and pre-treatment covariates $X$, write $\mu_d(x) = \E[Y \mid D=d, X=x]$.
 
 \begin{defbox}{conditional average treatment effect (CATE)}
 \[
@@ -168,7 +168,7 @@ Once identified, every outcome regression splits into a \textbf{baseline} and an
 \mu_d(x) = \mu_0(x) + d\,\tau(x).
 \]
 
-A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum_x \Pr_T(X=x)\,\tau(x)$: standardisation with $T$'s weights.
+A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum_x \Pr_T(X=x)\,\tau(x)$: standardization with $T$'s weights.
 
 \medskip
 
@@ -183,7 +183,7 @@ A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum
   \item It is an \textbf{effect modifier} if $\tau(x)$ varies with it: it predicts who responds.
 \end{itemize}
 
-The two are independent properties: a variable can be either, both or neither. Segment is both. Distance to the nearest store might be prognostic only: nearby members buy more, with or without a coupon.
+The two are independent properties: a variable can be either, both, or neither. Segment is both. Distance to the nearest store might be prognostic only: nearby members buy more, with or without a coupon.
 
 \bigskip
 
@@ -195,7 +195,7 @@ about \textbf{nineteen times} as much variation in \emph{who buys} as in \emph{w
 
 \medskip
 
-This is typical of business data, and it is why learners tuned to predict outcomes favour prognostic variables. Block B returns to it.
+This is typical of business data, and it is why learners tuned to predict outcomes favor prognostic variables. Block B returns to it.
 \end{frame}
 
 % ====================================================================
@@ -253,7 +253,7 @@ From Lin's documentation of the Q2 export:
 \toprule
 \textbf{The documentation says} & \textbf{Which buys} \\
 \midrule
-``The Q2 draw was 50/50 in every region, tier and store.'' & Independence within every $x$, and $e(x) = 0.5$: overlap everywhere by design. \\[0.5em]
+``The Q2 draw was 50/50 in every region, tier, and store.'' & Independence within every $x$, and $e(x) = 0.5$: overlap everywhere by design. \\[0.5em]
 ``All CRM fields were frozen the day before the draw.'' & $X$ is pre-treatment: no field carries part of the effect. \\[0.5em]
 ``Members who joined during Q2 were not in the draw.'' & The CATE is identified only for pre-Q2 members. For new joiners it is extrapolation. \\
 \bottomrule
@@ -271,7 +271,7 @@ The first two sentences make identification a fact about the procedure, as in Me
 A treated unit generates margin $m$ per purchase, costs $c$ per purchase made while treated (a redeemed coupon) and $k$ per unit treated regardless (a phone call).
 
 \begin{result}{1.4}{Individual targeting rule}
-The expected net value of treating a unit with covariates $x$ is $V(x) = m\,\tau(x) - c\,\mu_1(x) - k$. Without a budget, the value-maximising rule treats $x$ if and only if $V(x) > 0$, and its value per unit is
+The expected net value of treating a unit with covariates $x$ is $V(x) = m\,\tau(x) - c\,\mu_1(x) - k$. Without a budget, the value-maximizing rule treats $x$ if and only if $V(x) > 0$, and its value per unit is
 \[
 \E\big[\max\{V(X), 0\}\big] \;\ge\; \max\{\E[V(X)],\, 0\},
 \]
@@ -384,7 +384,7 @@ Lapsed & 60/200 & 20/200 & $0.20$ & $\sqrt{0.21/200 + 0.09/200} = 0.039$ \\
 \end{center}
 
 \begin{result}{1.5}{Standard error of a difference between segments}
-For segment effects estimated on disjoint randomised samples, $\SE(\hatt_a - \hatt_b) = \sqrt{\SE(\hatt_a)^2 + \SE(\hatt_b)^2}$.
+For segment effects estimated on disjoint randomized samples, $\SE(\hatt_a - \hatt_b) = \sqrt{\SE(\hatt_a)^2 + \SE(\hatt_b)^2}$.
 \end{result}
 
 \[
@@ -470,8 +470,8 @@ Any supervised learner can fit one of these. The question is what each one risks
 
 Fit $\hat f(x, d) \approx \E[Y \mid X = x, D = d]$ with $D$ alongside $X$; then $\hatt(x) = \hat f(x,1) - \hat f(x,0)$. The interaction model is an S-learner fitted by OLS.
 
-\begin{result}{1.6}{Regularisation shrinks heterogeneity in the S-learner}
-In a balanced design with centred, orthogonal regressors $\tilde X$, $\tilde D = D - \tfrac12$ and $\tilde D\tilde X$, penalising only the interaction by $\lambda\gamma^2$ gives $\hat\gamma_\lambda = \hat\gamma_{\text{OLS}} \cdot s/(s + \lambda)$ with $s = \sum_i (\tilde D_i \tilde X_i)^2$; the other coefficients are unchanged.
+\begin{result}{1.6}{Regularization shrinks heterogeneity in the S-learner}
+In a balanced design with centered, orthogonal regressors $\tilde X$, $\tilde D = D - \tfrac12$, and $\tilde D\tilde X$, penalizing only the interaction by $\lambda\gamma^2$ gives $\hat\gamma_\lambda = \hat\gamma_{\text{OLS}} \cdot s/(s + \lambda)$ with $s = \sum_i (\tilde D_i \tilde X_i)^2$; the other coefficients are unchanged.
 \end{result}
 
 \medskip
@@ -486,7 +486,7 @@ A lasso sets a small $\gamma$ exactly to zero, and the model reports the same ef
 % ====================================================================
 \begin{frame}{How Much the Penalty Removes}
 
-The pilot region's segment test: 800 members, 200 per arm per segment. Centre both columns: $\tilde D = \pm\tfrac12$, $\tilde X = \pm\tfrac12$.
+The pilot region's segment test: 800 members, 200 per arm per segment. Center both columns: $\tilde D = \pm\tfrac12$, $\tilde X = \pm\tfrac12$.
 
 \begin{center}
 \begin{tabular}{lrr}
@@ -595,7 +595,7 @@ Each imputation uses the other arm's model, so the larger arm's model does most 
 % ====================================================================
 \begin{frame}{Learners That Target the Effect: The Transformed Outcome}
 
-S, T and X minimise a loss in $Y$ and get $\hatt$ as a by-product. The next three regress something whose conditional mean \emph{is} $\tau(x)$.
+S, T, and X minimize a loss in $Y$ and get $\hatt$ as a by-product. The next three regress something whose conditional mean \emph{is} $\tau(x)$.
 
 \begin{result}{1.8}{The transformed outcome}
 With known propensity $e(x)$, let $Y^\ast = Y\,\dfrac{D - e(X)}{e(X)(1-e(X))}$. Under Assumptions 1.1 and 1.2, $\E[Y^\ast \mid X] = \tau(X)$.
@@ -603,7 +603,7 @@ With known propensity $e(x)$, let $Y^\ast = Y\,\dfrac{D - e(X)}{e(X)(1-e(X))}$. 
 
 \medskip
 
-In the Q2 test $e = 0.5$, so $Y^\ast = 2Y$ for coupon members and $-2Y$ for the others. Every value is $-2$, $0$ or $2$, yet the segment means are the effects:
+In the Q2 test $e = 0.5$, so $Y^\ast = 2Y$ for coupon members and $-2Y$ for the others. Every value is $-2$, $0$, or $2$, yet the segment means are the effects:
 \[
 \text{lapsed: } 0.5 \times 2 \times 0.30 - 0.5 \times 2 \times 0.10 = 0.20, \qquad \text{active: } 0.80 - 0.75 = 0.05 .
 \]
@@ -643,12 +643,12 @@ The gain is largest where the baseline is high. In an experiment $e$ is known, s
 \begin{frame}{The R-Learner}
 
 \begin{result}{1.10}{The R-learner's target}
-Let $\ell(x) = \E[Y \mid X=x]$. Under Assumption 1.1, $Y - \ell(X) = (D - e(X))\,\tau(X) + \varepsilon$ with $\E[\varepsilon \mid D, X] = 0$, so $\tau$ minimises $\E\big[\{(Y - \ell(X)) - (D - e(X))\,t(X)\}^2\big]$ over functions $t$.
+Let $\ell(x) = \E[Y \mid X=x]$. Under Assumption 1.1, $Y - \ell(X) = (D - e(X))\,\tau(X) + \varepsilon$ with $\E[\varepsilon \mid D, X] = 0$, so $\tau$ minimizes $\E\big[\{(Y - \ell(X)) - (D - e(X))\,t(X)\}^2\big]$ over functions $t$.
 \end{result}
 
 \medskip
 
-The \textbf{R-learner} minimises the sample version, the \textbf{R-loss}, with $\hat\ell$ and $\hat e$ fitted on other folds and a penalty on $t$. It regresses the outcome residual on the treatment residual, locally in $x$.
+The \textbf{R-learner} minimizes the sample version, the \textbf{R-loss}, with $\hat\ell$ and $\hat e$ fitted on other folds and a penalty on $t$. It regresses the outcome residual on the treatment residual, locally in $x$.
 
 \medskip
 
@@ -754,7 +754,7 @@ Every \textbf{member} gets one of three roles, assigned before any per-visit or 
 \textbf{Role} & \textbf{Members} & \textbf{What happens there} \\
 \midrule
 Fit & training folds & Each learner estimates its nuisance models and $\hatt$ \\
-Choose & randomised validation fold & Pick one learner. \textcolor{warnred}{Not by outcome RMSE} \\
+Choose & randomized validation fold & Pick one learner. \textcolor{warnred}{Not by outcome RMSE} \\
 Assess & held-out test & Touched once: the value of the chosen list \\
 \bottomrule
 \end{tabular}
@@ -801,7 +801,7 @@ Each one has appeared today:
 \begin{itemize}
   \item \spinestep{Estimand.} Targeting needs $\tau(x)$, not $\Pr(\text{buy} \mid x)$: coupon $x$ iff $\tau(x) > \mu_1(x)/3$. A list's average effect uses that list's weights. Targeting is worth $\E[\max\{V(X), 0\}] - \max\{\E[V(X)], 0\}$.
   \item \spinestep{Identification.} The Q2 draw identifies $\tau(x)$ within every $x$, but only on the test's support. A deterministic rule fails on overlap; assignment on something outside $X$ fails on independence.
-  \item \spinestep{Estimation.} S-learners shrink the effect; T-learners learn the baseline twice and their errors subtract; the X-learner borrows the larger arm. The transformed outcome, the DR pseudo-outcome and the R-loss target $\tau(x)$ itself; TARNet shares the baseline across arms.
+  \item \spinestep{Estimation.} S-learners shrink the effect; T-learners learn the baseline twice and their errors subtract; the X-learner borrows the larger arm. The transformed outcome, the DR pseudo-outcome, and the R-loss target $\tau(x)$ itself; TARNet shares the baseline across arms.
   \item \spinestep{Inference.} Test the gap between segments, not two significance labels, and count the segments examined.
   \item \textbf{Choose by the decision, not by the fit.} Ignoring all heterogeneity costs only $\tfrac14\Var(\tau(X))$ in outcome loss, and here \textyen 23{,}750 in value.
 \end{itemize}

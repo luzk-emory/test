@@ -6,17 +6,17 @@
 \begin{decision}
 An A/B test has run. The business needs to know whether the treatment pays for the population it will be
 rolled out to, which is a different question from whether the effect is zero. Answering it takes an interval
-on the right quantity, a test against the break-even, and a clear account of what randomisation does and
+on the right quantity, a test against the break-even, and a clear account of what randomization does and
 does not guarantee.
 \end{decision}
 
 \begin{goals}
-  \item test the sharp null by randomisation and compute Neyman's standard error, and say why the usual SE
+  \item test the sharp null by randomization and compute Neyman's standard error, and say why the usual SE
   is conservative;
   \item put an interval on net value and test against the break-even rather than zero;
   \item reduce variance with a pre-treatment covariate (CUPED) and size an experiment for a decision;
-  \item choose the unit of randomisation, compute a design effect, and cluster standard errors correctly;
-  \item recognise the threats that no formula repairs: post-assignment exclusions, sample-ratio mismatch,
+  \item choose the unit of randomization, compute a design effect, and cluster standard errors correctly;
+  \item recognize the threats that no formula repairs: post-assignment exclusions, sample-ratio mismatch,
   peeking, many metrics, interference;
   \item separate the effect of an offer (the ITT) from the effect of taking it up (the LATE), and say for whom the
   LATE holds.
@@ -27,7 +27,7 @@ does not guarantee.
 
 \subsection{Setup and the estimand}
 
-A completely randomised experiment draws $n_1$ of $n$ units for treatment and leaves $n_0 = n - n_1$ as
+A completely randomized experiment draws $n_1$ of $n$ units for treatment and leaves $n_0 = n - n_1$ as
 controls; $\hatt = \bar Y_1 - \bar Y_0$. In the \emph{design-based} frame the units and their potential
 outcomes are fixed and the only randomness is the draw. The estimand is
 $\tau_S = \frac1n\sum_i \{Y_i(1) - Y_i(0)\}$. Write
@@ -39,7 +39,7 @@ $\sigma_d^2 = \Var(Y(d))$, and the estimand is the population ATE.
 
 Meeting~1 showed $\E_D[\hatt] = \tau_S$. Two conditions keep that true after the coin has been tossed.
 
-\paragraph{Analyse as drawn.} Compare the arms the coin produced. Dropping units on anything measured
+\paragraph{Analyze as drawn.} Compare the arms the coin produced. Dropping units on anything measured
 after assignment (``opened the app'', ``redeemed'', ``stayed to the end'') compares different kinds of unit
 whenever treatment affects that variable. The difference in means over all assigned units identifies the
 effect of \emph{assignment}, the intention-to-treat (ITT) effect, which is what a decision to send an offer
@@ -51,7 +51,7 @@ in means compares two mixtures of spillover conditions, not ``everyone treated''
 This is a failure of identification; no variance formula repairs it. The remedy is a unit of assignment
 large enough to contain the spillover (Section~1.7 and Handout H1).
 
-\paragraph{Sample-ratio mismatch.} Check the realised arm sizes against the planned allocation with a
+\paragraph{Sample-ratio mismatch.} Check the realized arm sizes against the planned allocation with a
 chi-squared test, $\chi^2 = \sum_d (n_d - \E n_d)^2/\E n_d$ with one degree of freedom. A tiny $p$-value (in
 practice below about $0.001$) means the draw or the logging is broken, for example a bot filter that removed
 more users in one arm. Then the arms are no longer a random split, and no outcome analysis should proceed
@@ -61,7 +61,7 @@ until the cause is found.
 
 \paragraph{Fisher: could the draw alone explain the result?} Fisher's approach holds the units fixed and asks
 whether the draw alone could have produced the observed gap.
-\begin{prop}{Randomisation test of the sharp null}{fisher}
+\begin{prop}{Randomization test of the sharp null}{fisher}
 Under the sharp null $Y_i(1) = Y_i(0)$ for every $i$, the observed outcomes are both potential outcomes,
 so the distribution of any statistic over the $\binom{n}{n_1}$ equally likely draws is known exactly. The
 $p$-value is the share of draws giving a statistic at least as extreme as the observed one.
@@ -101,8 +101,8 @@ $S_d^2$. The gap is $S_\tau^2/n \ge 0$.
 
 The dropped term involves the joint distribution of $Y(1)$ and $Y(0)$, which no experiment reveals:
 conservatism is the price of not knowing individual effects. Example: 1{,}000 customers made of 300 sure
-things, 200 persuadables, 100 do-not-disturbs and 400 lost causes, split 500/500, have $\tau_S = 0.10$,
-$S_1^2 = 250/999$, $S_0^2 = 240/999$ and $S_\tau^2 = 290/999$. The true standard deviation over draws is
+things, 200 persuadables, 100 do-not-disturbs, and 400 lost causes, split 500/500, have $\tau_S = 0.10$,
+$S_1^2 = 250/999$, $S_0^2 = 240/999$, and $S_\tau^2 = 290/999$. The true standard deviation over draws is
 $0.026$; the usual SE is $0.031$ (Figure~1).
 
 \begin{prop}{Superpopulation variance}{superpop}
@@ -127,7 +127,7 @@ variance.
   xtick={0,0.05,0.10,0.15,0.20}, xticklabel style={/pgf/number format/fixed}]
 \addplot[thick, sbgreen] {exp(-(x-0.10)^2/(2*0.026^2))/(0.026*sqrt(2*pi))};
 \addplot[thick, dashed, noteblue] {exp(-(x-0.10)^2/(2*0.031^2))/(0.031*sqrt(2*pi))};
-\legend{true randomisation distribution (SD $0.026$), normal with the usual SE ($0.031$)}
+\legend{true randomization distribution (SD $0.026$), normal with the usual SE ($0.031$)}
 \end{axis}
 \end{tikzpicture}
 
@@ -208,12 +208,12 @@ month's spend, say) and define $Y^{\text{cv}} = Y - \theta(X - \bar X)$.
 
 \begin{prop}{CUPED}{cuped}
 For any fixed $\theta$, $\hatt^{\text{cv}} = \hatt - \theta(\bar X_1 - \bar X_0)$ is unbiased over the draw.
-Within an arm, $\Var(Y - \theta X)$ is minimised at $\theta^\ast = \Cov(Y,X)/\Var(X)$, where it equals
+Within an arm, $\Var(Y - \theta X)$ is minimized at $\theta^\ast = \Cov(Y,X)/\Var(X)$, where it equals
 $\Var(Y)(1-\rho^2)$, $\rho = \mathrm{Corr}(Y, X)$.
 \end{prop}
 \begin{proof}
 $X$ is fixed before a random assignment, so $\E_D[\bar X_1 - \bar X_0] = 0$. The variance
-$\Var(Y) - 2\theta\Cov(Y,X) + \theta^2\Var(X)$ is a quadratic minimised at $\theta^\ast$; substitute.
+$\Var(Y) - 2\theta\Cov(Y,X) + \theta^2\Var(X)$ is a quadratic minimized at $\theta^\ast$; substitute.
 \end{proof}
 
 In any one draw $\bar X_1 \ne \bar X_0$, so the adjusted estimate moves; that shift corrects chance imbalance.
@@ -224,7 +224,7 @@ subtract part of the effect.
 
 \subsection{Clustered assignment}
 
-When groups (stores, delivery zones, companies) are randomised, the design was randomised $J$ times, not once
+When groups (stores, delivery zones, companies) are randomized, the design was randomized $J$ times, not once
 per unit, and outcomes within a group are correlated.
 
 \begin{prop}{Design effect}{deff}
@@ -238,9 +238,9 @@ $\Var(\tfrac1m\sum_j Y_j) = \tfrac{1}{m^2}[m\sigma^2 + m(m-1)\rho_c\sigma^2]$.
 
 With $J$ clusters of size $m$ the effective sample is $Jm/\text{DEFF}$; $\rho_c = 0.01$ and $m = 400$ give
 $\text{DEFF} = 4.99$. Either compare cluster means ($J$ observations) or cluster standard errors at the level
-of assignment. With fewer than about 40 clusters use small-sample corrections or randomisation inference over
+of assignment. With fewer than about 40 clusters use small-sample corrections or randomization inference over
 cluster assignments. Choose the smallest unit that contains the spillover: the household for shared codes,
-the store for staff behaviour, catchment clusters for customers who use nearby stores, time blocks with
+the store for staff behavior, catchment clusters for customers who use nearby stores, time blocks with
 washouts for offers that carry over.
 
 \subsection{Peeking and many metrics}
@@ -257,7 +257,7 @@ $k$-th smallest with $\alpha/(K - k + 1)$, stopping at the first failure).
 
 Often the coin assigns an \emph{offer} and units decide whether to take it up. Write $Z \in \{0,1\}$ for
 assignment and $D \in \{0,1\}$ for receipt. Each unit has \emph{potential receipts} $D(0), D(1)$ and potential
-outcomes $Y(d, z)$; we observe $D = D(Z)$ and $Y = Y(D, Z)$. Randomising $Z$ delivers independence,
+outcomes $Y(d, z)$; we observe $D = D(Z)$ and $Y = Y(D, Z)$. Randomizing $Z$ delivers independence,
 $\{Y(d,z), D(z) : d, z \in \{0,1\}\} \indep Z$. Two more assumptions are needed before anything can be said
 about receipt.
 
@@ -281,12 +281,12 @@ offer decision needs, and it needs neither exclusion nor monotonicity. Those are
 effect to receipt itself.
 
 Under monotonicity each unit is an \emph{always-taker} ($D(0) = D(1) = 1$), a \emph{never-taker}
-($D(0) = D(1) = 0$) or a \emph{complier} ($D(0) = 0$, $D(1) = 1$); \emph{defiers} ($D(0) = 1$, $D(1) = 0$) are
+($D(0) = D(1) = 0$), or a \emph{complier} ($D(0) = 0$, $D(1) = 1$); \emph{defiers} ($D(0) = 1$, $D(1) = 0$) are
 ruled out. These are Meeting~1's response types, written for receipt instead of the outcome, and as there, no
 unit's type is observed.
 
 \begin{prop}{Type shares}{shares}
-Under random assignment and monotonicity, $\pi_A = \Pr(D=1 \mid Z=0)$, $\pi_N = \Pr(D=0 \mid Z=1)$ and
+Under random assignment and monotonicity, $\pi_A = \Pr(D=1 \mid Z=0)$, $\pi_N = \Pr(D=0 \mid Z=1)$, and
 $\pi_C = \pi$.
 \end{prop}
 \begin{proof}
@@ -295,7 +295,7 @@ independence makes each arm's shares the population's. The rest are compliers, a
 \end{proof}
 
 \begin{prop}{The LATE theorem (Imbens and Angrist)}{late}
-Under random assignment, exclusion and monotonicity, with $\pi > 0$,
+Under random assignment, exclusion, and monotonicity, with $\pi > 0$,
 \[
   \frac{\text{ITT}}{\pi} = \frac{\E[Y \mid Z=1] - \E[Y \mid Z=0]}{\E[D \mid Z=1] - \E[D \mid Z=0]}
   = \E[Y(1) - Y(0) \mid \text{complier}] \equiv \text{LATE}.
@@ -323,17 +323,17 @@ with those who did not (\emph{as treated}), or keeping only units that followed 
 (\emph{per protocol}), conditions on receipt, which assignment caused, so each compares different mixtures of
 types (Section~1.2). Hold the ITT against a cost per offer and the LATE against a cost per receiver; when the
 cost is paid only on receipt and noncompliance is one-sided, the two comparisons agree (Section~2, Step~6).
-Instruments that are not randomised offers, and what failures of exclusion or monotonicity do to the ratio, are
+Instruments that are not randomized offers, and what failures of exclusion or monotonicity do to the ratio, are
 in Handout H4.
 
 \begin{pitfall}[what no standard error can fix]
-Excluding units on post-assignment behaviour; reading a test with a sample-ratio mismatch; analysing a
-store-randomised test with customer-level SEs; stopping when the dashboard turns green; reporting whichever
+Excluding units on post-assignment behavior; reading a test with a sample-ratio mismatch; analyzing a
+store-randomized test with customer-level SEs; stopping when the dashboard turns green; reporting whichever
 of twenty metrics moved.
 \end{pitfall}
 
 \checkpoint{A checkout test reports a 0.8-point lift with $p = 0.003$, using 30 metrics, peeked at daily, with
-users randomised but the page cached by region. List every reason to doubt the decision, in order of how much
+users randomized but the page cached by region. List every reason to doubt the decision, in order of how much
 it matters.}
 
 %=====================================================================================
@@ -342,7 +342,7 @@ it matters.}
 \paragraph{Setting.} QuickBite, a food-delivery platform, tests a ¥10 discount on a customer's second order.
 The outcome $Y$ is the customer's gross margin over the next 30 days, before the discount cost. The discount
 costs ¥1.50 per customer offered on average (most do not redeem), so the break-even is $\tau^\ast = $ ¥1.50.
-Customers are randomised 50/50, $n_1 = n_0 = 4{,}000$.
+Customers are randomized 50/50, $n_1 = n_0 = 4{,}000$.
 
 \paragraph{Step 1: checks.} Arm sizes match the plan. (In an earlier QuickBite test that planned a 50/50 split
 of 20{,}000 and logged 10{,}240 and 9{,}760, $\chi^2 = 2 \times 240^2/10{,}000 = 11.52$, $p = 0.0007$: that test
@@ -365,7 +365,7 @@ $p = 0.12$: narrower by 29\%, still not clear of the break-even.
 $n = (1.645 + 0.842)^2 \times 2 \times 165.2/0.50^2 = 8{,}174.3$, so $8{,}175$ per arm. The current test's one-sided MDE above
 break-even is $2.486 \times 0.287 = $ ¥0.71.
 
-\paragraph{Step 5: had it been randomised by delivery zone.} With 500 customers per zone and $\rho_c = 0.01$,
+\paragraph{Step 5: had it been randomized by delivery zone.} With 500 customers per zone and $\rho_c = 0.01$,
 $\text{DEFF} = 1 + 499 \times 0.01 = 5.99$: twenty zones (10{,}000 customers) carry the information of about
 $1{,}670$ independent customers, and the SE must be clustered by zone.
 
@@ -387,7 +387,7 @@ above. How many zones per arm give the same power for a ¥0.50 margin above brea
 \answer{$\text{DEFF} = 1 + 399 \times 0.005 = 2.995$. Customers needed per arm: $8{,}175 \times 2.995 \approx 24{,}480$, so
 $24{,}480/400 \approx 61.2$, i.e.\ 62 zones per arm. (With so many zones the cluster-robust SE is reliable.)}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 Marketing proposes to report the effect only among customers who opened the discount notification, ``because
 the others never saw it''. Explain what this compares and when, if ever, it would equal an effect of the
 discount.
@@ -401,21 +401,21 @@ those who engage, divide the ITT by the share who engage when offered (Result~\r
 %=====================================================================================
 \sectionthree
 
-\begin{extension}[More on randomisation inference]
+\begin{extension}[More on randomization inference]
 Fisher tests extend to any statistic (rank sums, trimmed means) and to sharp nulls of a constant effect
-$\tau_0$; inverting them over $\tau_0$ gives a confidence set. Under complete randomisation Neyman's
-variance can be tightened using bounds on $S_\tau^2$ (Aronow, Green and Lee, 2014).
+$\tau_0$; inverting them over $\tau_0$ gives a confidence set. Under complete randomization Neyman's
+variance can be tightened using bounds on $S_\tau^2$ (Aronow, Green, and Lee, 2014).
 \end{extension}
 
 \begin{extension}[Stratified designs and ratio metrics]
-Randomising within strata of a strong predictor removes chance imbalance by design; the estimator is the
+Randomizing within strata of a strong predictor removes chance imbalance by design; the estimator is the
 stratum-weighted difference and its variance sums the within-stratum variances. Ratio metrics (revenue per
 session) have numerator and denominator in both arms; their standard error needs the delta method, and
-randomising users while analysing sessions needs clustering by user.
+randomizing users while analyzing sessions needs clustering by user.
 \end{extension}
 
-\begin{extension}[Beyond randomised offers]
-When the offer is not randomised but something else shifts treatment (a rule, a lottery, an outage), the same
+\begin{extension}[Beyond randomized offers]
+When the offer is not randomized but something else shifts treatment (a rule, a lottery, an outage), the same
 ratio identifies a LATE only if that shifter is as good as random, which must now be argued. Handout H4 covers such
 \emph{instruments}: two-stage least squares with covariates, weak instruments, what failures of exclusion and
 monotonicity do, and how to describe the compliers.
@@ -430,17 +430,17 @@ sequential probability ratio test gives always-valid $p$-values that may be chec
 \begin{readinglist}
 \reading{Imbens and Rubin (2015), \emph{Causal Inference for Statistics, Social, and Biomedical
 Sciences}}{Fisher and Neyman inference in the design-based frame, with proofs; noncompliance in experiments}{Ch.\ 5--6, 9, 23--24}{2}
-\reading{Angrist, Imbens and Rubin (1996), ``Identification of causal effects using instrumental variables'',
+\reading{Angrist, Imbens, and Rubin (1996), ``Identification of causal effects using instrumental variables'',
 \emph{JASA}}{Compliance types and the LATE in potential outcomes}{Sections 1--4}{2}
-\reading{Kohavi, Tang and Xu (2020), \emph{Trustworthy Online Controlled Experiments}}{The practitioner's
+\reading{Kohavi, Tang, and Xu (2020), \emph{Trustworthy Online Controlled Experiments}}{The practitioner's
 checklist: SRM, guardrails, peeking, ratio metrics}{Ch.\ 3, 17, 21}{1}
-\reading{Deng, Xu, Kohavi and Walker (2013), ``Improving the sensitivity of online controlled experiments'',
+\reading{Deng, Xu, Kohavi, and Walker (2013), ``Improving the sensitivity of online controlled experiments'',
 \emph{WSDM}}{The original CUPED paper}{All}{1}
 \reading{Lin (2013), ``Agnostic notes on regression adjustments to experimental data'', \emph{Annals of
 Applied Statistics}}{Why the interacted adjustment never hurts asymptotically}{Sections 1--3}{3}
-\reading{Abadie, Athey, Imbens and Wooldridge (2023), ``When should you adjust standard errors for
+\reading{Abadie, Athey, Imbens, and Wooldridge (2023), ``When should you adjust standard errors for
 clustering?'', \emph{QJE}}{Cluster at the level of assignment, and why}{Sections 1--3}{2}
-\reading{Johari, Koomen, Pekelis and Walsh (2022), ``Always valid inference'', \emph{Operations
+\reading{Johari, Koomen, Pekelis, and Walsh (2022), ``Always valid inference'', \emph{Operations
 Research}}{Continuous monitoring without inflating errors}{Sections 1--4}{3}
 \reading{Handout H1, \emph{Interference and marketplace experiments}}{What to do when units affect each
 other}{All}{2}

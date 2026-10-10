@@ -7,14 +7,14 @@
 Two meetings, one question: *what happens to bookings if Meridian changes its rate, and how should it set rates?*
 
 - **M8** answers it from the RM system's logs (adjustment and DML) and ends on the assumption the logs cannot check: unlogged overrides.
-- **M9** keeps the question and brings in generative AI in both of its roles. A simulator learned from the M8 logs tests the M8 estimator against the override problem, and tests whole pricing pipelines (block A). A language model reads guest reviews for a randomised rate test's guardrail, and text becomes DML controls (block B). The M8 breakdown is the motivation for M9; do not let the two meetings read as separate cases.
+- **M9** keeps the question and brings in generative AI in both of its roles. A simulator learned from the M8 logs tests the M8 estimator against the override problem, and tests whole pricing pipelines (block A). A language model reads guest reviews for a randomized rate test's guardrail, and text becomes DML controls (block B). The M8 breakdown is the motivation for M9; do not let the two meetings read as separate cases.
 
 Each meeting follows the course spine (`course-spine.md`): estimand → identification → estimation.
 
 | Meeting | Estimand (vs break-even) | Assignment mechanism → identification | Estimation and uncertainty | Destination |
 |---|---|---|---|---|
 | M8 | average price elasticity of premium bookings: local and variance-weighted (vs −1.32) | the RM system's rule; unconfoundedness given the signals **measured as of pricing time**; overlap = off-rule variation | partially linear model; DML with cross-fitting (folds by night); date-clustered SE; interactive model and the AIPW score for a yes-or-no treatment; partial-$R^2$ sensitivity with benchmarking | −1.56 (date-clustered SE 0.03), 95% CI [−1.62, −1.50]: **do not raise** |
-| M9 | the elasticity again (vs −1.32); regret of a pricing pipeline against an oracle; the rise's effect on value complaints (guardrail: 5 points) | a simulator's effects are g-formula effects: the M8 assumption, with the truth planted; the Q3 test is randomised | estimator and pipeline testbeds on two simulators; backtest; PPI with a gold subsample; text embeddings as controls | Q3 test −1.72 [−2.07, −1.38]: **do not raise**; pilot DML pricing inside the logged range with a holdout; guardrail 0.03 (SE 0.023): not tripped, not cleared |
+| M9 | the elasticity again (vs −1.32); regret of a pricing pipeline against an oracle; the rise's effect on value complaints (guardrail: 5 points) | a simulator's effects are g-formula effects: the M8 assumption, with the truth planted; the Q3 test is randomized | estimator and pipeline testbeds on two simulators; backtest; PPI with a gold subsample; text embeddings as controls | Q3 test −1.72 [−2.07, −1.38]: **do not raise**; pilot DML pricing inside the logged range with a holdout; guardrail 0.03 (SE 0.023): not tripped, not cleared |
 
 M8 numbers match `meetings/m08` and are checked by `shared/checks/slides08_check.py`. M9 numbers are the case's own (the M9 notes use a food-delivery example) and are checked by `shared/checks/case_check.py`.
 
@@ -30,7 +30,7 @@ M8 has no slack, and its block C is the proposal presentations. If the meeting r
 |---|---|---|---|---|
 | M8-R1 | M8 A | 0–10 | `[RELEASE R1]` "Meridian Hotels: The Proposal" | "The Number That Decides It"; the pooled slope on "Six Comparable Nights" |
 | M8-R2 | M8 A | 15–30 | `[RELEASE R2]` "Pooled, Then Within Category" | the −1.0 line; "Why Both Sides? Six Nights Again" |
-| M8-R3 | M8 A | 40–50 | `[RELEASE R3]` "The Real Logs" | "Controls That Cannot Bend"; "Plug-In Failure 1: Regularisation Bias" and "Plug-In Failure 2: Overfitting Bias"; "The Price Elasticity at Meridian" |
+| M8-R3 | M8 A | 40–50 | `[RELEASE R3]` "The Real Logs" | "Controls That Cannot Bend"; "Plug-In Failure 1: Regularization Bias" and "Plug-In Failure 2: Overfitting Bias"; "The Price Elasticity at Meridian" |
 | M8-R4 | M8 B | 75–82 | `[RELEASE R4]` "A Yes-or-No Treatment: The Last-Minute Discount" | the 13.9 line; "Two Models, Two Estimands"; "The AIPW Score" |
 | M8-R5 | M8 B | 85–95 | `[RELEASE R5]` "One More Thing, Says Wen" | "How Strong Would It Have To Be?"; "Benchmarking Against an Observed Signal" |
 | M9-R1 | M9 A | 0–5 | `[RELEASE R1]` "Meeting 8 Left One Doubt" | "What the Simulator's Answer Rests On"; the data/analyst table on "Planting the Truth" |
@@ -66,9 +66,9 @@ Controlled projection copy for M8 is still required: do not project the residual
 - Typical proposals and their failures:
   1. **47 linear controls: −0.54.** The rule is a staircase and the model is a ramp. It misses the bands and the weekend × band interaction.
   2. **Boosted model with price as a feature: −1.03.** Price stands in for the signals. The competitor-index share falls from 4.2% to 0.9% when the log rate is added.
-  3. **Residualise both sides in-sample: −0.95.** The flexible model memorises rows; its in-sample $R^2$ is 0.97. Well-regularised in-sample gives −1.57 and cross-fitted −1.56. The bias grows with flexibility and cannot be sized from inside the fit.
-- **DML** (residualise both sides + cross-fit, folds by night, date-clustered SE): −1.56 (date-clustered SE 0.03), 95% CI [−1.62, −1.50]; rows treated as independent give SE 0.01, three times too small.
-  - The bias from nuisance errors is second-order: products of the two errors, plus the price model's squared error. That is why both sides are residualised.
+  3. **Residualize both sides in-sample: −0.95.** The flexible model memorizes rows; its in-sample $R^2$ is 0.97. Well-regularized in-sample gives −1.57 and cross-fitted −1.56. The bias grows with flexibility and cannot be sized from inside the fit.
+- **DML** (residualize both sides + cross-fit, folds by night, date-clustered SE): −1.56 (date-clustered SE 0.03), 95% CI [−1.62, −1.50]; rows treated as independent give SE 0.01, three times too small.
+  - The bias from nuisance errors is second-order: products of the two errors, plus the price model's squared error. That is why both sides are residualized.
 - Task 4: same-night booking pace recorded after the rate posted is partly *caused* by the rate. So is a competitor index that reacts to Meridian's own rate. Both are post-treatment. **Every control must be measured as of the moment the RM system set the rate**; otherwise it enters as a mediator or a collider (M7).
 - Decision table (deck frame "The Price Elasticity at Meridian", computed from −1.56):
   - +8% rate: bookings −11.3%, contribution −1.9%.
@@ -87,20 +87,20 @@ Controlled projection copy for M8 is still required: do not project the residual
 ### M8-R5
 1. The first sentence, *the RM system is the only thing setting rates*, is false. The unlogged reason (local knowledge $U$) moves both rate and bookings.
 2. No. $U$ is not in $X$, and flexibility in $g(X)$ cannot adjust for a variable that isn't there.
-3. An override that moves both the same way (a wedding block raises the rate and bookings) biases the estimate **towards zero**, as the category did on the six nights, so the truth lies further below −1.32 and the decision stands. Moving them in opposite directions (a rate raised to hold rooms back) makes −1.56 **too elastic**, and the rise could pay. The logs show neither.
+3. An override that moves both the same way (a wedding block raises the rate and bookings) biases the estimate **toward zero**, as the category did on the six nights, so the truth lies further below −1.32 and the decision stands. Moving them in opposite directions (a rate raised to hold rooms back) makes −1.56 **too elastic**, and the rise could pay. The logs show neither.
 4. With equal shares and the residual ratio 3.0, the bound gives: partial $R^2$ of 1% → bias 0.03; 2% → 0.06; 5% → 0.15; **10% → 0.32**, range [−1.88, −1.24], which crosses −1.32. The robustness value solves $q/\sqrt{1-q} \times 3.0 = 0.24$: **$q = 7.7\%$** on each side.
 5. At 1× the event flag: $\sqrt{0.06 \times 0.04/0.96} \times 3.0 = $ **0.15**, range [−1.71, −1.41]: the decision survives. At 2×: $\sqrt{0.12 \times 0.08/0.92} \times 3.0 = $ **0.31**, range [−1.87, −1.25]: it crosses. The decision is overturned at about **1.6×** the flag. That is plausible, because overrides respond to exactly the events the calendar misses, but it would also need the override to push rate and bookings in opposite directions.
 
-   The recommendation survives **conditionally**. Sensitivity prices the doubt; it does not test the assumption. Randomised rate variation comes before any bigger move. Bridge line: *"Meeting 9 returns to the overrides."*
+   The recommendation survives **conditionally**. Sensitivity prices the doubt; it does not test the assumption. Randomized rate variation comes before any bigger move. Bridge line: *"Meeting 9 returns to the overrides."*
 
 ### M9-R1
 1. **Unconfoundedness given the signals**, with positivity and consistency: the M7 and M8 assumption. The simulator learned $\E[Y \mid D, X]$ and the distribution of $X$ from the logs; sampling from it at a new rate is the g-formula. Its "bookings at another rate" are causal only if the logs' rates were as good as random given the 47 signals. The overrides are exactly where that fails.
-2. **From the data:** the signals' joint distribution, the shape of demand across nights, the noise. **From the analyst:** the elasticity −1.50, the override effect (+12% demand, +10% rate) and its 8% share.
+2. **From the data:** the signals' joint distribution, the shape of demand across nights, the noise. **From the analyst:** the elasticity −1.50, the override effect (+12% demand, +10% rate), and its 8% share.
 3. **No.** A simulator learned from confounded logs inherits their confounding, and the truth inside it is planted by the team. It can test whether an estimator recovers a truth on data shaped like Meridian's. It cannot reveal Meridian's truth.
 
 ### M9-R2
 1. Bias (mean − (−1.50)): **+1.92, +0.32, +0.01, +0.09, +0.13**.
-2. DML with boosted trees: unbiased with near-nominal coverage (0.94) on this data shape. The RM rule is a step function of bucketed signals with interactions. Lasso fits it with smooth linear terms, so part of the rule stays in the residuals (regularisation bias), and coverage falls to 0.71.
+2. DML with boosted trees: unbiased with near-nominal coverage (0.94) on this data shape. The RM rule is a step function of bucketed signals with interactions. Lasso fits it with smooth linear terms, so part of the rule stays in the residuals (regularization bias), and coverage falls to 0.71.
 3. If the real overrides act like the planted ones, DML is about 0.13 too close to zero, so the truth is near $-1.56 - 0.13 = $ **−1.69**. That is further from −1.32, so the decision **does not change: do not raise**.
 4. Whether the real overrides look like the planted ones. Their size and correlation with demand were **chosen**; the logs cannot reveal them. Turn the dial (A4 does) and report the decision across settings: that is a sensitivity analysis, not a measurement.
 
@@ -108,13 +108,13 @@ Controlled projection copy for M8 is still required: do not project the residual
 1. Boosted simulator: vendor 380 < DML 690 < RM 1,450. Neural: DML 760 < RM 1,520 < vendor 2,240. Worst-case regret: RM 1,520, vendor 2,240, **DML 760, the smallest**.
 2. **Home advantage.** The vendor's demand model and the boosted simulator are the same model class fitted to the same logs, so the vendor's errors are the simulator's errors. The neural simulator does not share them. A pipeline should be ranked across simulators of different classes, never on its own class alone.
 3. Both simulators have little data above ¥1,920 (5% of logged nights); both largely extrapolate the shapes they learned. On 14% of the vendor's nights the regret measures one model against another, not against reality. Treat those nights as untested, or cap rates at the logged range.
-4. **The optimiser's curse.** Choosing, every night, the rate with the highest *predicted* contribution selects the rates where the prediction is most optimistic. This is the winner's curse of M4, and it is why the realised loss exceeds the model's average error. Errors compound: the prediction error becomes a pricing error.
+4. **The optimizer's curse.** Choosing, every night, the rate with the highest *predicted* contribution selects the rates where the prediction is most optimistic. This is the winner's curse of M4, and it is why the realized loss exceeds the model's average error. Errors compound: the prediction error becomes a pricing error.
 5. Near current rates both simulators pass: $4.6$ is 0.2 from 4.8 and $3.4$ is 1.4 from it, about one SE. The backtest is weak evidence (it rejects neither) and says nothing above ¥1,920, where the two pipelines differ most. A backtest earns trust only in the region it covers.
-6. **DML elasticity, then optimise**: the smallest worst-case regret, and it stays inside the logged range. Run it with a **holdout**: a random 10% of hotel-nights stay on the current rule (or alternate by night, a switchback), so realised contribution can be compared. Pilot the vendor's engine the same way, only with rates capped at the logged range.
+6. **DML elasticity, then optimize**: the smallest worst-case regret, and it stays inside the logged range. Run it with a **holdout**: a random 10% of hotel-nights stay on the current rule (or alternate by night, a switchback), so realized contribution can be compared. Pilot the vendor's engine the same way, only with rates capped at the logged range.
 
 ### M9-R4
 1. In R1 the analyst planted the truth on top of what was learned from Meridian's own logs, so an estimator can be checked against it. Here the truth is **asserted**: it is whatever the language model's priors say about guests in general. Nobody planted it, and nothing ties it to Meridian's guests.
-2. Believe the evidence with a design: M8 (−1.56, conditional on its assumption), the testbed (direction of the override bias), and above all a randomised test. The Q3 test (R5) settles it: −1.72. The synthetic number is a hypothesis, not evidence.
+2. Believe the evidence with a design: M8 (−1.56, conditional on its assumption), the testbed (direction of the override bias), and above all a randomized test. The Q3 test (R5) settles it: −1.72. The synthetic number is a hypothesis, not evidence.
 3. **No.** A testbed needs a known truth on the business's data shape; the synthetic guests' truth is unknown. (CEVAE sits on the same side: its identification rests on structure it does not state.)
 
 ### M9-R5
@@ -145,13 +145,13 @@ These are the keys of the former Meeting 9 (instrumental variables), unchanged e
 
 ### B1
 1. Contribution goes from 600 to 536. Bookings must rise more than $600/536 - 1 = $ **11.9%**. $\eta^* = \ln(600/536)/\ln(0.92) = $ **−1.35**. M8's DML said −1.56, but only if the overrides did no harm.
-2. The coin randomises **what members were offered**. It does not randomise **what they were shown**, because managers could block or add.
+2. The coin randomizes **what members were offered**. It does not randomize **what they were shown**, because managers could block or add.
 
 ### B2
 1. As shown: $(350 \cdot 64 + 50 \cdot 40)/400 = 61.0$ vs $(150 \cdot 90 + 450 \cdot 70)/600 = 75.0$, a difference of **−14.0**.
 2. As assigned: heads 71.8, tails 67.0, **ITT = +4.8**.
 3. First stage: $0.70 - 0.10 = $ **0.60**.
-4. Most pairs who used row 1 say "never cut". Same log, opposite sign: managers chose which heads to honour.
+4. Most pairs who used row 1 say "never cut". Same log, opposite sign: managers chose which heads to honor.
 5. Ratio: $4.8/0.60 = $ **8.0** extra bookings on nights the coin switched the rate on, for the **compliers**. $SE(\mathrm{ITT}) = 20\sqrt{2/500} = 1.26$, so $SE \approx 1.26/0.60 = 2.1$ and the CI is [3.9, 12.1].
 
    On a base of 60, that is an elasticity from −0.75 to −2.21. **It straddles −1.35**: a thousand nights cannot decide. Cluster by date in the full test.
@@ -164,13 +164,13 @@ These are the keys of the former Meeting 9 (instrumental variables), unchanged e
 8. Sentences:
    - within hotel × month → **independence given strata**;
    - one thing changed → **exclusion**;
-   - most heads honoured → **relevance** (0.70 vs 0.10);
+   - most heads honored → **relevance** (0.70 vs 0.10);
    - none reversed → **monotonicity**.
 
-   Randomisation buys only the first. Hold onto the second.
+   Randomization buys only the first. Hold onto the second.
 
 ### B3
-1. ITT becomes 6.0, the ratio 10.0 and the elasticity $\ln(70/60)/\ln(0.92) = $ **−1.85**. Bias $= 1.2/0.60 = 2.0$ bookings: **the ratio divides the violation by the first stage.** Nothing in the test log shows it.
+1. ITT becomes 6.0, the ratio 10.0, and the elasticity $\ln(70/60)/\ln(0.92) = $ **−1.85**. Bias $= 1.2/0.60 = 2.0$ bookings: **the ratio divides the violation by the first stage.** Nothing in the test log shows it.
 2. The old-engine hotels' first stage is zero by construction, so their heads–tails gap of 1.2 is the email alone. Corrected ratio $(6.0 - 1.2)/0.60 = $ **8.0**.
    - The correction assumes the email works the same everywhere: a patch, not a proof.
    - The clean fix is design: send the email on both sides of the coin.
@@ -188,7 +188,7 @@ These are the keys of the former Meeting 9 (instrumental variables), unchanged e
    | elasticity | −1.85 | −1.50 | **−1.35 (break-even)** | −1.14 |
 
    The old-engine placebo measured 1.2, only about 0.5 bookings from the point where the cut stops paying. The data cannot say which column is true; the table prices the doubt.
-6. **If the email continues, it is part of the policy, not a bias.** Exclusion matters only for attributing effects to the *rate*. Wen then needs the effect of the programme as it will run, which is the ITT side (ITT 6.0 bookings per heads night, with managers' overrides included), converted to contribution. The email-corrected elasticity answers a different question: the member rate *without* the email. Make students say which programme they are pricing.
+6. **If the email continues, it is part of the policy, not a bias.** Exclusion matters only for attributing effects to the *rate*. Wen then needs the effect of the program as it will run, which is the ITT side (ITT 6.0 bookings per heads night, with managers' overrides included), converted to contribution. The email-corrected elasticity answers a different question: the member rate *without* the email. Make students say which program they are pricing.
 
 ### B4
 

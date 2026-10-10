@@ -82,7 +82,7 @@ for s in ["¥803", "¥439", "¥1,920", "| Median premium rooms booked | 61 |", "
 # ── The ladder and the plug-in attempts (case key; three figures only in the v2 deck) ──
 ladder = {'+0.40': 0.40, '+0.49': 0.49, '-0.07': -0.07, '-0.54': -0.54, '-1.03': -1.03, '-0.95': -0.95}
 for s in ["pooled +0.40", "within hotel +0.49", "band -0.07", "controls: -0.54", "feature: -1.03", "in-sample: -0.95",
-          "4.2% to 0.9%", "in-sample $R^2$ is 0.97", "Well-regularised in-sample gives -1.57 and cross-fitted -1.56"]:
+          "4.2% to 0.9%", "in-sample $R^2$ is 0.97", "Well-regularized in-sample gives -1.57 and cross-fitted -1.56"]:
     sourced("key", s)
 for s in ["0.951", "0.970", "17.6\\%"]: sourced("boosted-model table", s, 'v2')
 truth("every ladder and plug-in estimate says raise (> -1.32)", all(x > be for x in ladder.values()))

@@ -1,6 +1,6 @@
 # Case C: Dana's AI Assistant Rollout
 
-**A home-goods retail chain, Meetings 10–11.** Fictional teaching case: the company, the vendor, the people and all data are invented.
+**A home-goods retail chain, Meetings 10–11.** Fictional teaching case: the company, the vendor, the people, and all data are invented.
 
 This case is handed out one part at a time. When a task says *commit*, write your answer down before the class discusses it.
 
@@ -14,7 +14,7 @@ All sales figures are **mean weekly sales per store, in ¥000**, unless marked o
 
 **Dana** runs store operations for a home-goods chain of **120 stores**.
 
-Last year the chain licensed **Store Assistant**, a generative-AI assistant that runs on associates' handhelds. An associate asks it a question in plain words: *"Do we have the 30 cm frying pan in stock?"*, *"What screws go with this bracket?"*, *"Is the grey sofa cover machine-washable?"* The assistant answers in seconds. It checks the back room and the three nearest stores, and it suggests add-on items for the basket.
+Last year the chain licensed **Store Assistant**, a generative-AI assistant that runs on associates' handhelds. An associate asks it a question in plain words: *"Do we have the 30 cm frying pan in stock?"*, *"What screws go with this bracket?"*, *"Is the gray sofa cover machine-washable?"* The assistant answers in seconds. It checks the back room and the three nearest stores, and it suggests add-on items for the basket.
 
 In week 53 the first **cohort of thirty stores** went live. A second cohort of thirty is scheduled for **week 79**. It is now week 78. (The flagship store went live much earlier, on its own. It is held out today and gets its own hour next meeting.)
 
@@ -22,8 +22,8 @@ In week 53 the first **cohort of thirty stores** went live. A second cohort of t
 
 | Cost item | ¥ per store-week |
 |---|---:|
-| Licence and usage fees | 1,700 |
-| Handsets, amortised | 300 |
+| License and usage fees | 1,700 |
+| Handsets, amortized | 300 |
 | Allowance for each store's "AI champion" associate | 500 |
 | **Total** | **2,500** |
 
@@ -119,7 +119,7 @@ Then write Dana's memo in five sentences: the number, its interval, the assumpti
 
 It is now **week 104**. Meeting 10 confirmed cohort 1: against the 89 stores not yet on it, the assistant added **¥11,000** a store-week (SE 1,220) in its first two quarters. On Dana's desk: extend it to the **59 stores** still without it, at ¥2,500 per store-week.
 
-There is one more piece of evidence. The **flagship** store went live in **week 20**, alone, thirty-three weeks before anyone else, and has 84 weeks live. It was the vendor's **co-development store**. For its first six months a vendor engineer worked on site, and the vendor tuned the assistant on the flagship's own catalogue and customers' questions.
+There is one more piece of evidence. The **flagship** store went live in **week 20**, alone, thirty-three weeks before anyone else, and has 84 weeks live. It was the vendor's **co-development store**. For its first six months a vendor engineer worked on site, and the vendor tuned the assistant on the flagship's own catalog and customers' questions.
 
 Its before/after difference is **+¥18,700** per week. Dana asks: *how much of that is the assistant?*
 

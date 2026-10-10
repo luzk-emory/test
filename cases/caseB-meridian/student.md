@@ -1,6 +1,6 @@
 # Case B: Wen's Rate Decisions
 
-**Meridian Hotels, Meetings 8–9.** Fictional teaching case: the company, the people and all data are invented.
+**Meridian Hotels, Meetings 8–9.** Fictional teaching case: the company, the people, and all data are invented.
 
 This case is handed out one part at a time. When a task says *commit*, write your answer down before the class discusses it.
 
@@ -14,7 +14,7 @@ Throughout: the current midweek premium rate is **¥800** a night, and the varia
 
 **Wen** is commercial director of Meridian Hotels, a group of 80 properties.
 
-A revenue management (RM) system sets the rate for every hotel-night. It uses forecast demand, competitor rates, booking pace and the event calendar. **No human sets these rates night by night**: the system is an automated decision-maker, and it has been for three years.
+A revenue management (RM) system sets the rate for every hotel-night. It uses forecast demand, competitor rates, booking pace, and the event calendar. **No human sets these rates night by night**: the system is an automated decision-maker, and it has been for three years.
 
 On Wen's desk: sales proposes raising midweek premium rates by **8%** across the portfolio. Their evidence is the RM system's own reporting: nights with higher rates sell more rooms. Sales' reading: *demand is strong; the system is under-pricing.*
 
@@ -89,7 +89,7 @@ On some nights the RM system opens a **10% discount** for the final 48 hours. Tw
 **Tasks**
 1. Compare mean bookings on nights with and without the discount. Why is that not the effect?
 2. What does the partially linear model estimate here? Give the ATE and the ATT. Which one does a decision to open the discount every night need?
-3. The resort models are off: $\hat\mu_1 = 74$ and $\hat e = 0.8$. What do regression alone, weighting alone and AIPW give for mean bookings with the discount at resorts?
+3. The resort models are off: $\hat\mu_1 = 74$ and $\hat e = 0.8$. What do regression alone, weighting alone, and AIPW give for mean bookings with the discount at resorts?
 4. Compute the AIPW score of a resort night without the discount that booked 57 rooms. Why is it so far from 12?
 
 ### Part M8-R5. One more thing, says Wen
@@ -124,7 +124,7 @@ Meridian's data-science team has trained a **generative model of the logs**. Giv
 
 ### Part M9-R2. An estimator testbed
 
-The team draws 200 simulated datasets with the same hotels, nights and signals as the real logs, and runs each estimator on each. The truth is −1.50 because they planted it.
+The team draws 200 simulated datasets with the same hotels, nights, and signals as the real logs, and runs each estimator on each. The truth is −1.50 because they planted it.
 
 | Estimator | Override effect planted? | Mean estimate | Share of 95% intervals covering −1.50 |
 |---|---|---:|---:|
@@ -142,15 +142,15 @@ The team draws 200 simulated datasets with the same hotels, nights and signals a
 
 ### Part M9-R3. A pipeline testbed
 
-The RM vendor offers a new engine: a boosted-tree demand model fitted to the logs, and an optimiser that posts the rate with the highest **predicted** contribution, (rate − ¥200) × bookings, night by night. Wen's analyst builds a rival: price from the DML elasticity. Both are compared with the current RM rule.
+The RM vendor offers a new engine: a boosted-tree demand model fitted to the logs, and an optimizer that posts the rate with the highest **predicted** contribution, (rate − ¥200) × bookings, night by night. Wen's analyst builds a rival: price from the DML elasticity. Both are compared with the current RM rule.
 
 The team builds a **second simulator** from the same logs, with a neural network in place of boosted trees, and the same planted truth. On each simulator, an **oracle** knows the planted demand and posts the best rate. Regret is the oracle's contribution minus the pipeline's, per hotel-night.
 
 | Pipeline | Regret, boosted simulator | Regret, neural simulator | Nights priced above ¥1,920 |
 |---|---:|---:|---:|
 | Current RM rule | ¥1,450 | ¥1,520 | 5% |
-| Vendor: predict, then optimise | ¥380 | ¥2,240 | 14% |
-| DML elasticity, then optimise | ¥690 | ¥760 | 3% |
+| Vendor: predict, then optimize | ¥380 | ¥2,240 | 14% |
+| DML elasticity, then optimize | ¥690 | ¥760 | 3% |
 
 ¥1,920 is the 95th percentile of the rates in the logs.
 
@@ -160,7 +160,7 @@ The team builds a **second simulator** from the same logs, with a neural network
 1. Rank the pipelines on each simulator. Which pipeline has the smallest worst-case regret?
 2. Why does the vendor's pipeline do best on one simulator and worst on the other?
 3. 14% of the vendor's rates lie above ¥1,920, the 95th percentile of the logged rates, where the logs are thin. What do both simulators know about bookings there? What does that do to the regret numbers on those nights?
-4. The vendor's optimiser picks, every night, the rate its model likes most. Why does that make its errors larger than its demand model's average error?
+4. The vendor's optimizer picks, every night, the rate its model likes most. Why does that make its errors larger than its demand model's average error?
 5. What does the backtest support, and what not? Would you trust either simulator more after it?
 6. Recommend a pipeline to Wen, and the check you would run when it goes live.
 
@@ -179,7 +179,7 @@ Wen did not take the 8% rise on trust. In Q3 she tested it: at 40 hotels, a coin
 
 **Bookings.** On higher-rate weeks, midweek premium bookings were **12.4% lower** (SE 1.2%).
 
-Nobody can read 10,000 reviews, so a language model labels each one: complains about price or value, yes or no. A random 200 reviews per arm were also labelled by trained staff (the gold labels).
+Nobody can read 10,000 reviews, so a language model labels each one: complains about price or value, yes or no. A random 200 reviews per arm were also labeled by trained staff (the gold labels).
 
 | | Higher rate | Current rate |
 |---|---:|---:|
@@ -199,7 +199,7 @@ In the gold subsample:
 1. Estimate the effect of the rise on complaints using the model's labels. Does it trip the guardrail?
 2. From the gold subsample: the true complaint rate in each arm, and the effect. For each arm, the share of complaints the model catches and the share of non-complaints it flags.
 3. Is the model's error the same in both arms? Read a few reviews from higher-rate nights in your head: why might it differ?
-4. Suppose the error had been the same in both arms, with the current-rate arm's two shares. What would the model-labelled effect have been, given the gold effect? In which direction does error of that kind push an estimate?
+4. Suppose the error had been the same in both arms, with the current-rate arm's two shares. What would the model-labeled effect have been, given the gold effect? In which direction does error of that kind push an estimate?
 5. Prediction-powered inference (PPI): for each arm, take the model's rate on all 5,000 reviews and correct it by the average of (gold − model) in that arm's subsample. Give the corrected rates and the effect. Its standard error is about 0.023; the gold labels alone give about 0.037. Why is PPI unbiased, even though the model's error differs between arms? Why is it more precise than the gold labels alone?
 6. Does the guardrail trip?
 7. Convert the bookings result into an elasticity, with a 95% interval. Compare it with Meeting 8's −1.56 and the break-even of −1.32.
@@ -222,7 +222,7 @@ Back to Meeting 8's elasticity. Each hotel has a listing page, and each stay a r
 ### Part M9-R7. The memo
 
 Write the memo to Wen, in five sentences or fewer:
-1. the 8% rise: what Meeting 8, the testbed and the Q3 test together say;
+1. the 8% rise: what Meeting 8, the testbed, and the Q3 test together say;
 2. the vendor's engine: adopt, reject, or pilot, and how;
 3. the synthetic-guest report;
 4. whether the review guardrail tripped, and the number;
@@ -232,7 +232,7 @@ Write the memo to Wen, in five sentences or fewer:
 
 ## Bonus (not examined): the member-rate coin
 
-These parts were Meeting 9's case when it taught instrumental variables. The experimental core of IV (noncompliance, the ITT and the LATE) now closes Meeting 2; Handout H4 goes further. They use the same hotels, and Part M9-R3's backtest refers to Part B1's test.
+These parts were Meeting 9's case when it taught instrumental variables. The experimental core of IV (noncompliance, the ITT, and the LATE) now closes Meeting 2; Handout H4 goes further. They use the same hotels, and Part M9-R3's backtest refers to Part B1's test.
 
 ### Part B1. The member-rate test
 
@@ -266,7 +266,7 @@ Nightly bookings have a standard deviation of about 20.
 From Wen's description of the test:
 - "The engine drew the coin within each hotel and month; resorts drew heads more often than airport hotels."
 - "Heads changed one thing: the rate members were shown."
-- "Managers honoured most heads and added the member rate on few tails."
+- "Managers honored most heads and added the member rate on few tails."
 - "A manager could block the member rate or add it by hand; none reversed the coin."
 
 **Tasks. In pairs, commit first**
@@ -307,11 +307,11 @@ The share of nights the member rate was shown is 0.70 on heads and 0.10 on tails
 3. Compute the ratio within each kind of hotel, then pooled across both, ignoring hotel type. Why do they differ?
 4. Which controls must the analysis include, which may it include, and which must it never include?
 5. Let $a$ be the email's direct effect on bookings per heads night, whatever its size. Write the complier elasticity as a function of $a$, using the hand log with the email (ITT 6.0). How large would $a$ have to be for the member rate to stop paying? Compare it with what the old-engine hotels measured.
-6. The permanent programme would keep sending the "Members' Week" email. Is the email's effect still a bias? Which number does Wen's decision need?
+6. The permanent program would keep sending the "Members' Week" email. Is the email's effect still a bias? Which number does Wen's decision need?
 
 ### Part B4. Candidate-instrument audit
 
-Analysts across the group propose other instruments for the rate. **In pairs:** mark each assumption ✓, ✗ or ?, with one reason.
+Analysts across the group propose other instruments for the rate. **In pairs:** mark each assumption ✓, ✗, or ?, with one reason.
 
 | Candidate | Relevance | Independence | Exclusion | Monotonicity |
 |---|---|---|---|---|

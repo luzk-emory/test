@@ -5,7 +5,7 @@
 
 \begin{decision}
 Two new uses of generative AI arrive in every analytics team. One builds a simulator of the business to test pricing or
-targeting pipelines before deploying them. The other uses a language model to turn reviews, chats or listings into variables
+targeting pipelines before deploying them. The other uses a language model to turn reviews, chats, or listings into variables
 for an analysis. Both can improve a causal analysis, or bias it without anyone noticing. In both cases the question is the one this course
 always asks: where does the truth come from, and how is it checked?
 \end{decision}
@@ -13,9 +13,9 @@ always asks: where does the truth come from, and how is it checked?
 \begin{goals}
   \item show that a learned simulator is a causal model resting on the same assumptions as the g-formula;
   \item plant effects and confounding, and use a simulator as an estimator testbed and as a pipeline testbed;
-  \item decompose a policy's regret and explain home advantage, backtests and support;
+  \item decompose a policy's regret and explain home advantage, backtests, and support;
   \item distinguish planted truth from asserted truth (silicon samples, CEVAE);
-  \item derive the bias from a model-coded outcome, treatment or modifier, and correct it with a gold subsample (PPI);
+  \item derive the bias from a model-coded outcome, treatment, or modifier, and correct it with a gold subsample (PPI);
   \item use text embeddings as controls without leakage or overlap collapse.
 \end{goals}
 
@@ -24,19 +24,19 @@ always asks: where does the truth come from, and how is it checked?
 
 \subsection*{Part A: Learned simulators}
 
-\subsection{From standardisation to a simulator}
+\subsection{From standardization to a simulator}
 
 The g-formula (Meeting~7) computes $\E[Y(d)]$ by averaging $\mu_d(x)$ over $X$. A \emph{learned simulator} extends this from averages
-to distributions. It fits a generative model in pieces that follow the causal order, $\hat p(x)$, $\hat p(d \mid x)$ and
-$\hat p(y \mid d, x)$, each of which can be any generative model (a parametric fit, a mixture, a normalising flow, a variational
+to distributions. It fits a generative model in pieces that follow the causal order, $\hat p(x)$, $\hat p(d \mid x)$, and
+$\hat p(y \mid d, x)$, each of which can be any generative model (a parametric fit, a mixture, a normalizing flow, a variational
 autoencoder, a boosted tree with a fitted noise distribution). Sampling $x$, then $d$, then $y$ yields synthetic logs. Sampling $y$ for a
-\emph{chosen} $d$ yields potential outcomes, so the simulator can evaluate any policy, including budgeted, sequential or dynamic
+\emph{chosen} $d$ yields potential outcomes, so the simulator can evaluate any policy, including budgeted, sequential, or dynamic
 rules that have no simple estimator.
 
 \begin{prop}{A simulator's effects are g-formula effects}{simg}
 If $\hat p(x) = p(x)$ and $\hat p(y \mid d, x) = p(y \mid d, x)$, the simulator's average outcome under action $d$ is
 $\sum_x \E[Y \mid D=d, X=x]\,p(x)$. This equals $\E[Y(d)]$ if and only if the g-formula does, that is, under consistency, conditional
-exchangeability given $X$ and overlap.
+exchangeability given $X$, and overlap.
 \end{prop}
 \begin{proof}
 Setting $D = d$ and sampling $Y$ from $p(y \mid d, x)$ gives mean $\E[Y \mid D=d, X=x]$ at each $x$; averaging over $p(x)$ is the g-formula,
@@ -51,20 +51,20 @@ not about causation.
 
 The analyst can \emph{decide} the truth. \emph{Planting an effect}: keep $\hat p(x)$ and a control-outcome model, and define treated
 outcomes as control outcomes plus a chosen $\tau^{\text{plant}}(x)$, often calibrated so that the simulator reproduces a past
-randomised test. \emph{Planting confounding}: add a latent $U$ that raises both the chance of treatment and the outcome, with chosen
-strengths, and hide it from the analyst. Because covariates, assignment patterns and noise come from real data, the synthetic data
+randomized test. \emph{Planting confounding}: add a latent $U$ that raises both the chance of treatment and the outcome, with chosen
+strengths, and hide it from the analyst. Because covariates, assignment patterns, and noise come from real data, the synthetic data
 have the business's awkward features (skew, rare segments, poor overlap) rather than a textbook $y = a + bx + \varepsilon$. That realism is
 what persuades stakeholders.
 
 \subsection{Two uses: estimator testbed and pipeline testbed}
 
 \paragraph{Estimator testbed.} Generate many datasets, run an estimator on each, compare with the planted truth: bias, coverage,
-behaviour under poor overlap. This checks code and statistics on this business's data shape.
+behavior under poor overlap. This checks code and statistics on this business's data shape.
 
-\paragraph{Pipeline testbed.} Businesses deploy pipelines (a model feeding an optimiser feeding a decision), not estimators.
+\paragraph{Pipeline testbed.} Businesses deploy pipelines (a model feeding an optimizer feeding a decision), not estimators.
 \begin{enumerate}
   \item Generate synthetic logs, with planted effects and, if wanted, planted confounding.
-  \item Run each candidate pipeline exactly as in production: fit, optimise, output a policy.
+  \item Run each candidate pipeline exactly as in production: fit, optimize, output a policy.
   \item Evaluate each policy on the simulator's potential outcomes, where its value is known.
   \item Compute the \emph{oracle} policy from the planted truth, and each pipeline's \emph{regret}: oracle value minus pipeline value.
 \end{enumerate}
@@ -74,7 +74,7 @@ behaviour under poor overlap. This checks code and statistics on this business's
   \node[box] (real) at (0,0) {Real logs and past tests};
   \node[box] (sim) at (3.0,0) {Simulator\\(planted truth)};
   \node[box] (syn) at (6.0,0) {Synthetic logs};
-  \node[box] (pipe) at (9.0,0) {Pipeline:\\model $\to$ optimiser};
+  \node[box] (pipe) at (9.0,0) {Pipeline:\\model $\to$ optimizer};
   \node[box] (pol) at (9.0,-1.8) {Policy};
   \node[box, draw=sbgreen, fill=greentint] (reg) at (3.0,-1.8) {Value on true potential outcomes; regret vs oracle};
   \draw[->] (real) -- node[above, font=\scriptsize]{fit} (sim);
@@ -119,7 +119,7 @@ In a simulator the analyst \emph{plants} the effect and the model supplies reali
 how people would respond (``You are a 35-year-old parent in Shanghai. Would you order this at ¥39?'') and its answers are treated as
 potential outcomes: the truth is \emph{asserted} by the model's priors, learned from text that may include the very studies being
 replicated. Documented problems include too little variance, stereotyped subgroups, sensitivity to wording, and agreement with
-published results that reflects memorisation. Silicon samples can draft survey questions or set priors for power calculations; they
+published results that reflects memorization. Silicon samples can draft survey questions or set priors for power calculations; they
 settle nothing causal unless validated out of sample against real experiments in a similar setting. The causal effect VAE (CEVAE),
 which infers a hidden confounder from proxies, is on the asserted side too: its identification rests on structure it does not state
 (Handout H2).
@@ -144,7 +144,7 @@ with $p_d = \E[Y \mid D=d]$.
 $\E[f \mid D=d] = \alpha_d(1 - p_d) + (1 - \beta_d)p_d = \alpha_d + (1 - \alpha_d - \beta_d)p_d$; subtract across arms.
 \end{proof}
 
-Non-differential error shrinks the effect towards zero by the factor $1 - \alpha - \beta$. \emph{Differential} error, which arises whenever
+Non-differential error shrinks the effect toward zero by the factor $1 - \alpha - \beta$. \emph{Differential} error, which arises whenever
 the treatment changes the text in ways that affect the model's accuracy, biases the effect in either direction and can create an effect
 from nothing.
 
@@ -157,7 +157,7 @@ With a 50/50 split, $\tau(\tilde V = 1) = (1-q)\tau_1 + q\tau_0$ and $\tau(\tild
 \end{proof}
 
 A coded \emph{control} leaves residual confounding in proportion to its error, and a coded \emph{treatment} misclassifies exposure, usually
-biasing towards zero. In every role, accuracy must be \emph{measured} against gold labels, separately by arm or group, and the coded field
+biasing toward zero. In every role, accuracy must be \emph{measured} against gold labels, separately by arm or group, and the coded field
 must be built from text fixed before treatment.
 
 \subsection{Correcting with a gold subsample}
@@ -204,7 +204,7 @@ LLM label on pre-treatment text only; gold labels from one arm; embeddings of po
 
 \paragraph{Setting.} QuickBite pays bonuses to couriers for working evening peaks, to the top 30\% under a budget. Each extra peak hour is worth
 ¥30 and a bonus costs ¥60, so the net value of paying courier $x$ is $v(x) = 30\,\tau(x) - 60$. Two simulators were fitted to last year's
-randomised bonus test (6{,}000 couriers): one from neural networks, one from boosted trees, each giving its own planted $\mu_0(x)$ and $\tau(x)$.
+randomized bonus test (6{,}000 couriers): one from neural networks, one from boosted trees, each giving its own planted $\mu_0(x)$ and $\tau(x)$.
 Each generates synthetic logs of 4{,}000 couriers in which past bonuses were targeted on courier features, with and without a planted hidden
 confounder (motivation) that raises both bonus receipt and hours. Three pipelines: (1) \emph{outcome prediction}: pay those predicted to work
 the most peak hours if paid; (2) a \emph{DR-learner} with cross-fitted boosting, paying the highest estimated effects; (3) a \emph{neural
@@ -236,8 +236,8 @@ Boosted & moderate & 23{,}464 & 17{,}083 & 2{,}383 & 1{,}668 \\
 
 \subsection*{Part B: a model-coded outcome with a gold subsample}
 
-\paragraph{Setting.} QuickBite randomised a ``Verified Kitchen'' badge across 20{,}000 restaurants (10{,}000 per arm). The outcome is whether a
-restaurant's next review mentions a food-quality problem, coded by a language model. Humans labelled 1{,}000 random reviews in each arm.
+\paragraph{Setting.} QuickBite randomized a ``Verified Kitchen'' badge across 20{,}000 restaurants (10{,}000 per arm). The outcome is whether a
+restaurant's next review mentions a food-quality problem, coded by a language model. Humans labeled 1{,}000 random reviews in each arm.
 
 \paragraph{Step 1: model labels only.} The model flags 8.0\% of treated and 10.0\% of control reviews: an effect of $-0.020$ (SE $0.004$,
 interval $[-0.028, -0.012]$), apparently clear.
@@ -247,7 +247,7 @@ control arm. The model misses more complaints about badged kitchens, whose revie
 
 \paragraph{Step 3: PPI.} Treated $0.080 + 0.012 = 0.092$; control $0.100 + 0.002 = 0.102$; effect $-0.010$. With $\widehat\Var(Y - f) \approx 0.05$ in each arm,
 $\widehat\SE_{\text{treated}} = \sqrt{0.080 \times 0.920/10{,}000 + 0.05/1{,}000} = 0.0076$, $0.0077$ for control, so the effect's SE is $0.0108$ and its
-interval $[-0.031, 0.011]$. Half the apparent effect was a measurement artefact, and the rest is not distinguishable from zero. Gold labels
+interval $[-0.031, 0.011]$. Half the apparent effect was a measurement artifact, and the rest is not distinguishable from zero. Gold labels
 alone would give SE $0.0132$; PPI's is about 18\% smaller.
 
 \begin{exercise}[computation]
@@ -259,7 +259,7 @@ true complaint rates $0.10$ in both arms?
 difference is $(1 - 0.01 - 0.20)(0.10) - (1 - 0.02 - 0.20)(0.10) + (0.01 - 0.02) = 0.079 - 0.078 - 0.010 = -0.009$: a spurious reduction of
 $0.009$ created entirely by the model's different false-positive rates.}
 
-\begin{exercise}[judgement]
+\begin{exercise}[judgment]
 A consultant estimates QuickBite's price elasticity for a new dessert line by asking a language model to role-play 2{,}000 customer personas
 at three prices, and reports $-1.8$ with a tight interval. What would you ask before using the number, and what could the personas legitimately
 be used for?
@@ -273,13 +273,13 @@ prior for the power calculation of a real price test.}
 \sectionthree
 
 \begin{extension}[Calibrated semi-synthetic benchmarks]
-RealCause (Neal, Huang and Raghupathi, 2020) and Credence (Parikh et al., 2022) fit deep generative models to real covariates and treatments and
+RealCause (Neal, Huang, and Raghupathi, 2020) and Credence (Parikh et al., 2022) fit deep generative models to real covariates and treatments and
 let the user plant effects and confounding, with diagnostics for realism and their limits.
 \end{extension}
 
 \begin{extension}[Three routes on one testbed (optional lab or assignment)]
 On the boosted simulator of Section~2, compare three pipelines over 20 replications by regret against the oracle: (1)
-plug-in predict-then-optimise, a DR-learner thresholded at break-even; (2) a decision-focused learner, a gradient-boosted classifier
+plug-in predict-then-optimize, a DR-learner thresholded at break-even; (2) a decision-focused learner, a gradient-boosted classifier
 with label $\ind{\Gamma_i > 0}$ and weight $|\Gamma_i|$ from cross-fitted doubly robust scores (Meeting~6); (3) a depth-2 policy tree.
 Repeat under a budget, replacing $\Gamma_i$ with $\Gamma_i - \lambda c_i$. Report where each pipeline's misclassified units sit relative
 to break-even. Which route wins depends on where the effect model's errors fall, which is what the testbed can show.
@@ -292,17 +292,17 @@ prior over worlds. Handout H2 discusses them with neural estimators generally.
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Angelopoulos, Bates, Fannjiang, Jordan and Zrnic (2023), ``Prediction-powered inference'', \emph{Science}}{PPI for means, regressions and
+\reading{Angelopoulos, Bates, Fannjiang, Jordan, and Zrnic (2023), ``Prediction-powered inference'', \emph{Science}}{PPI for means, regressions, and
 beyond}{Main text}{2}
-\reading{Egami, Hinck, Stewart and Wei (2023), ``Using imperfect surrogates for downstream inference'', \emph{NeurIPS}}{Design-based supervised
+\reading{Egami, Hinck, Stewart, and Wei (2023), ``Using imperfect surrogates for downstream inference'', \emph{NeurIPS}}{Design-based supervised
 learning for LLM-coded variables}{Sections 1--3}{3}
-\reading{Veitch, Sridhar and Blei (2020), ``Adapting text embeddings for causal inference'', \emph{UAI}}{Text as a confounder, with
+\reading{Veitch, Sridhar, and Blei (2020), ``Adapting text embeddings for causal inference'', \emph{UAI}}{Text as a confounder, with
 embeddings}{Sections 1--3}{3}
 \reading{Argyle et al.\ (2023), ``Out of one, many'', \emph{Political Analysis}; Horton (2023), ``Large language models as simulated economic
 agents'' (NBER)}{The case for silicon samples, to read critically}{Main text}{1}
-\reading{Parikh, Varjao, Xu and Tchetgen Tchetgen (2022), ``Validating causal inference methods'', \emph{ICML}}{Credence: calibrated simulators
+\reading{Parikh, Varjao, Xu, and Tchetgen Tchetgen (2022), ``Validating causal inference methods'', \emph{ICML}}{Credence: calibrated simulators
 for method choice}{Sections 1--4}{3}
-\reading{Melnychuk, Frauen and Feuerriegel (2022), ``Causal transformer for estimating counterfactual outcomes'', \emph{ICML}}{Sequence models for
+\reading{Melnychuk, Frauen, and Feuerriegel (2022), ``Causal transformer for estimating counterfactual outcomes'', \emph{ICML}}{Sequence models for
 time-varying treatments}{Sections 1--4}{3}
 \reading{Handout H2, \emph{Neural and foundation-model estimators}}{TARNet to Do-PFN, with what each assumes}{All}{2}
 \end{readinglist}
