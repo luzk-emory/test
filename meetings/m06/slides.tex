@@ -123,7 +123,7 @@
 % [RELEASE R1: the Q4 push, the Region 2 push test and the test log]
 \begin{frame}{The Q4 Push}
 
-Marketing wants to reach Region 2 in Q4 with something cheaper than the \textyen 10 coupon: an \textbf{app push notification} carrying a \textyen 5-off coupon for a seasonal drink. Each purchase the push causes earns $m = $ \textyen 30 of margin.
+Marketing wants to reach Region 2 in Q4 with something cheaper than the \textyen 10 coupon: an app push notification carrying a \textyen 5-off coupon for a seasonal drink. Each purchase the push causes earns $m = $ \textyen 30 of margin.
 
 \bigskip
 
@@ -172,7 +172,7 @@ Write $d_i \in \{0,1\}$ for the decision on member $i$. Every list today is scor
 \[
 \sum_i d_i\, v(X_i), \qquad v(x) = m\,\tau(x) - c(x),
 \]
-the \textbf{net value} of a push: the margin on the purchases it causes less its expected cost $c(x)$. The third sentence is what makes it a sum; block B ends with what happens when it fails.
+the \textbf{net value} of a push: the margin on the purchases it causes less its expected cost $c(x)$. The third sentence is what makes it a sum; Block B ends with what happens when it fails.
 \end{frame}
 
 % ====================================================================
@@ -263,7 +263,7 @@ The middle column pays the coupon to members who would have bought anyway. \text
 
 \smallskip
 
-Two models, two kinds of data: the benefit needs a \textbf{contrast}, $\tau(x)$, from the randomized test; the cost needs a \textbf{prediction}, $\mu_1(x)$ or $\mu_0(x)$, fitted on one arm. They are validated separately.
+Two models, two kinds of data: the benefit needs a contrast, $\tau(x)$, from the randomized test; the cost needs a prediction, $\mu_1(x)$ or $\mu_0(x)$, fitted on one arm. They are validated separately.
 \end{frame}
 
 % ====================================================================
@@ -273,7 +273,7 @@ Two models, two kinds of data: the benefit needs a \textbf{contrast}, $\tau(x)$,
 Under $\sum_i d_i \le B$, an optimal assignment treats the units with the $\min(B, n_+)$ largest values of $v_i$, where $n_+$ is the number with $v_i > 0$.
 \end{result}
 
-Product caps pushes at \textbf{1{,}000 a day}. On a one-day send, 5{,}000 analysts with $v > 0$ compete for 1{,}000 slots; the cells rank analyst--low first, and any 1{,}000 of them earn $1{,}000 \times 3.50 = $ \textyen 3{,}500. A causal forest (Meeting 4) splits analyst--low three ways, averaging the cell's 0.20. None buys without the push, so $v = 25\,\tau - 1.50$:
+Product caps pushes at 1{,}000 a day. On a one-day send, 5{,}000 analysts with $v > 0$ compete for 1{,}000 slots; the cells rank analyst-low first, and any 1{,}000 of them earn $1{,}000 \times 3.50 = $ \textyen 3{,}500. A causal forest (Meeting 4) splits analyst-low three ways, averaging the cell's 0.20. None buys without the push, so $v = 25\,\tau - 1.50$:
 
 \begin{center}
 \small
@@ -295,7 +295,7 @@ The forest's list earns $500 \times 6.00 + 500 \times 3.50 = $ \textyen 4{,}750.
 % [RELEASE R3: finance's memo: ¥8,000 of expected cost, at most a 5% chance of overrunning it]
 \begin{frame}{A Budget: The Knapsack and Its Shadow Price}
 
-Finance limits \textbf{expected cost}. With unit costs $c_i > 0$, benefits $b_i = m\tau_i$, and budget $C$: maximize $\sum_i d_i(b_i - c_i)$ subject to $\sum_i d_i c_i \le C$. The relaxation allows $d_i \in [0,1]$. Order units by $r_i = b_i/c_i$; the \textbf{greedy} assignment treats them in that order until the budget runs out or $r_i \le 1$, treating a fraction of the first unit $j$ that does not fit.
+Finance limits expected cost. With unit costs $c_i > 0$, benefits $b_i = m\tau_i$, and budget $C$: maximize $\sum_i d_i(b_i - c_i)$ subject to $\sum_i d_i c_i \le C$. The relaxation allows $d_i \in [0,1]$. Order units by $r_i = b_i/c_i$; the \textbf{greedy} assignment treats them in that order until the budget runs out or $r_i \le 1$, treating a fraction of the first unit $j$ that does not fit.
 
 \begin{result}{1.4}{Greedy is optimal for the relaxation; the shadow price}
 Let $\lambda^\ast = r_j - 1$ if the budget binds before the ratio reaches 1, and $0$ otherwise. The greedy assignment solves the relaxation and equals the rule $d_i = \ind{b_i > (1 + \lambda^\ast)c_i}$ except at the fractional unit. Where the budget binds, the optimal value $V(C)$ is concave in $C$ with slope $\lambda^\ast$: an extra yuan of budget adds $\lambda^\ast$ of net value.
@@ -303,7 +303,7 @@ Let $\lambda^\ast = r_j - 1$ if the budget binds before the ratio reaches 1, and
 
 Three consequences:
 \begin{itemize}
-  \item spend in order of the \textbf{ratio}, not of $\tau$ or $v$;
+  \item spend in order of the ratio, not of $\tau$ or $v$;
   \item a budget can be replaced by a \textbf{price}: charge each cost at $(1 + \lambda^\ast)$;
   \item $\lambda^\ast$ is the number for finance: if another use of the money returns more, the budget belongs there.
 \end{itemize}
@@ -328,15 +328,15 @@ Executive & High & \textyen 1.50 & \textyen 4.75 & 0.32 & never: $r < 1$ \\
 
 \textbf{Fill \textyen 8{,}000 in ratio order:}
 \begin{itemize}\small
-  \item all 2{,}500 analyst--low: $2{,}500 \times 2.50 = $ \textyen 6{,}250;
-  \item the remaining \textyen 1{,}750 buys $1{,}750/4.00 = 437.5$ analyst--high: 437 members, with \textyen 2 left over.
+  \item all 2{,}500 analyst-low: $2{,}500 \times 2.50 = $ \textyen 6{,}250;
+  \item the remaining \textyen 1{,}750 buys $1{,}750/4.00 = 437.5$, so 437 analyst-high members and \textyen 2 left over.
 \end{itemize}
 
-\textbf{The shadow price.} The marginal cell is analyst--high, so $\lambda^\ast = 1.50 - 1 = 0.50$: each extra yuan of budget adds \textyen 0.50 of net value, until the 2{,}500 analyst--high members run out at \textyen 16{,}250.
+\textbf{The shadow price.} The marginal cell is analyst-high, so $\lambda^\ast = 1.50 - 1 = 0.50$: each extra yuan of budget adds \textyen 0.50 of net value, until the 2{,}500 analyst-high members run out at \textyen 16{,}250.
 
 \medskip
 
-\textbf{The price rule.} Charging costs at $1.5$ gives $6.00 - 1.5 \times 2.50 = 2.25 > 0$ for analyst--low and $6.00 - 1.5 \times 4.00 = 0$ for analyst--high: exactly the marginal cell. Greedy is exact here up to one member, because each cell holds 2{,}500 interchangeable members.
+\textbf{The price rule.} Charging costs at $1.5$ gives $6.00 - 1.5 \times 2.50 = 2.25 > 0$ for analyst-low and $6.00 - 1.5 \times 4.00 = 0$ for analyst-high: exactly the marginal cell. Greedy is exact here up to one member, because each cell holds 2{,}500 interchangeable members.
 \end{frame}
 
 % ====================================================================
@@ -346,13 +346,13 @@ With actions $a = 1, \dots, K$ of benefit $b_i(a)$ and cost $c_i(a)$, the same a
 
 \medskip
 
-Suppose the push test had also tried \textbf{\textyen 10 off} on analyst--low members, and 28\% bought (none buys without a push):
+Suppose the push test had also tried \textyen 10 off on analyst-low members, and 28\% bought (none buys without a push):
 
 \begin{center}
 \small
 \begin{tabular}{lccccc}
 \toprule
-\textbf{Analyst--low} & $\mu_1$ & $b = 30\,\tau$ & $c = 1.50 + \text{face} \times \mu_1$ & $b - c$ & $b - 1.5\,c$ \\
+\textbf{Analyst-low} & $\mu_1$ & $b = 30\,\tau$ & $c = 1.50 + \text{face} \times \mu_1$ & $b - c$ & $b - 1.5\,c$ \\
 \midrule
 \textyen 5 off & 0.20 & \textyen 6.00 & \textyen 2.50 & \textyen 3.50 & \textcolor{sbgreen}{\textyen 2.25} \\
 \textyen 10 off & 0.28 & \textyen 8.40 & \textyen 4.30 & \textcolor{sbgreen}{\textyen 4.10} & \textyen 1.95 \\
@@ -364,7 +364,7 @@ Upgrade & & \textyen 2.40 & \textyen 1.80 & \textyen 0.60 & $-$\textyen 0.30 \\
 
 \begin{itemize}
   \item \textbf{No budget} ($\lambda^\ast = 0$): the deeper coupon nets more, \textyen 4.10 against \textyen 3.50.
-  \item \textbf{\textyen 8{,}000 budget} ($\lambda^\ast = 0.50$): the upgrade returns $2.40/1.80 = 1.33$ per yuan, below the 1.50 of analyst--high, so analyst--low keeps \textyen 5 off. The upgrade pays only when $\lambda^\ast < 0.33$.
+  \item \textbf{\textyen 8{,}000 budget} ($\lambda^\ast = 0.50$): the upgrade returns $2.40/1.80 = 1.33$ per yuan, below the 1.50 of analyst-high, so analyst-low keeps \textyen 5 off. The upgrade pays only when $\lambda^\ast < 0.33$.
 \end{itemize}
 
 Tight budgets push toward cheaper actions spread over more members. A contact cap (1{,}000 pushes a day) is one more constraint, with its own shadow price.
@@ -390,7 +390,7 @@ Which constraint to impose (parity of rates, of expected benefit, of outcomes) i
 % ====================================================================
 \begin{frame}{The Price of Fairness in Region 2}
 
-Region 2 has two districts: \textbf{North}, 6{,}000 members, and \textbf{South}, 4{,}000. A one-day send of 1{,}000 pushes. The rule never reads the district, but the members it values most live mostly in the North:
+Region 2 has two districts, North with 6{,}000 members and South with 4{,}000. The send is one day of 1{,}000 pushes. The rule never reads the district, but the members it values most live mostly in the North:
 
 \begin{center}
 \small
@@ -410,13 +410,13 @@ South ($b$), 4{,}000 & 160 at \textyen 5.00; 1{,}000 at \textyen 2.50 & below \t
   \item The list swaps $840 - 652 = 188$ North members at \textyen 5.00 for 188 South members at \textyen 2.50: value $5{,}000 - 188 \times 2.50 = $ \textyen 4{,}530, a price of \textyen 470.
 \end{itemize}
 
-\textbf{The thresholds} are \textyen 5.00 in the North and \textyen 2.50 in the South. Solving $\lambda^\ast + \eta^\ast/6{,}000 = 5.00$ and $\lambda^\ast - 1.25\,\eta^\ast/4{,}000 = 2.50$ gives $\eta^\ast \approx 5{,}217$ and $\lambda^\ast \approx 4.13$. Tightening $\gamma$ from 1.25 to 1.20 costs about $0.05 \times 5{,}217 \times 0.087 \approx$ \textyen 23.
+The thresholds are \textyen 5.00 in the North and \textyen 2.50 in the South. Solving $\lambda^\ast + \eta^\ast/6{,}000 = 5.00$ and $\lambda^\ast - 1.25\,\eta^\ast/4{,}000 = 2.50$ gives $\eta^\ast \approx 5{,}217$ and $\lambda^\ast \approx 4.13$. Tightening $\gamma$ from 1.25 to 1.20 costs about $0.05 \times 5{,}217 \times 0.087 \approx$ \textyen 23.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Spending Risk}
 
-The budget constrains \textbf{expected} cost. With redemption $R_i \sim \text{Bernoulli}(s_i)$, $s_i = \mu_1(X_i)$, member $i$ costs $k + aR_i$: \textyen 6.50 or \textyen 1.50.
+The budget constrains \emph{expected} cost. With redemption $R_i \sim \text{Bernoulli}(s_i)$, $s_i = \mu_1(X_i)$, member $i$ costs $k + aR_i$: \textyen 6.50 or \textyen 1.50.
 
 \begin{result}{1.6}{Mean, variance, and the reserve}
 If redemptions are independent, realized cost $K = \sum_i d_i(k + aR_i)$ has $\E[K] = \sum_i d_ic_i$ and $\Var(K) = a^2\sum_i d_is_i(1-s_i)$. Under the normal approximation, $\Pr(K > C) \le \alpha$ if and only if $\E[K] + z_\alpha\sqrt{\Var(K)} \le C$.
@@ -440,7 +440,7 @@ essentially zero. The 95th percentile of cost is $16{,}250 + 1.645 \times 160 = 
 
 \smallskip
 
-After all 2{,}500 analyst--low, keep as many analyst--high members as $\E[K] + 1.645\,\text{sd}(K) \le 8{,}000$ allows. With 391:
+After all 2{,}500 analyst-low, keep as many analyst-high members as $\E[K] + 1.645\,\text{sd}(K) \le 8{,}000$ allows. With 391:
 \[
 \text{sd}(K) = \sqrt{2{,}500(25)(0.16) + 391(25)(0.25)} = 111.6, \qquad 1.645 \times 111.6 = \text{\textyen}\,184,
 \]
@@ -463,7 +463,7 @@ Total & 2{,}891 & \textyen 7{,}814 & \textyen 9{,}532 & \\
 
 \medskip
 
-The overrun guarantee costs $437 - 391 = 46$ analyst--high pushes, \textyen 92 of expected net. Sent over three days, the list stays within the daily cap of 1{,}000.
+The overrun guarantee costs $437 - 391 = 46$ analyst-high pushes, \textyen 92 of expected net. Sent over three days, the list stays within the daily cap of 1{,}000.
 \end{frame}
 
 % ====================================================================
@@ -483,20 +483,20 @@ For any $x$ with $v(x) \le 0$, the conservative rule treats it with probability 
 \toprule
 \textbf{Cell} & $\hat v$ & \textbf{SE of each arm} & $\widehat\SE(\hat v)$ & \textbf{Bound} ($z = 1.645$) \\
 \midrule
-Analyst--low, lift SE 0.05 & \textyen 3.50 & $0.05/\sqrt2 = 0.035$ & 1.38 & \textcolor{sbgreen}{\textyen 1.23} \\
-Analyst--high, lift SE 0.03 & \textyen 2.00 & $0.03/\sqrt2 = 0.021$ & 0.83 & \textcolor{sbgreen}{\textyen 0.64} \\
-Analyst--high, lift SE 0.06 & \textyen 2.00 & $0.06/\sqrt2 = 0.042$ & 1.66 & \textcolor{warnred}{$-$\textyen 0.73} \\
+Analyst-low, lift SE 0.05 & \textyen 3.50 & $0.05/\sqrt2 = 0.035$ & 1.38 & \textcolor{sbgreen}{\textyen 1.23} \\
+Analyst-high, lift SE 0.03 & \textyen 2.00 & $0.03/\sqrt2 = 0.021$ & 0.83 & \textcolor{sbgreen}{\textyen 0.64} \\
+Analyst-high, lift SE 0.06 & \textyen 2.00 & $0.06/\sqrt2 = 0.042$ & 1.66 & \textcolor{warnred}{$-$\textyen 0.73} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\small The guarantee is one-sided: it limits paying for losers, not leaving profitable but noisy cells off; $z_\alpha$ is a risk preference. Lists optimized on point estimates also suffer the \textbf{optimizer's curse}: cells chosen for high estimates tend to be estimated too high. Evaluate the frozen list on held-out data (Meeting 5).
+\small The guarantee is one-sided: it limits paying for losers, not leaving profitable but noisy cells off; $z_\alpha$ is a risk preference. Lists optimized on point estimates also suffer the \textbf{optimizer's curse}, because cells chosen for high estimates tend to be estimated too high. Evaluate the frozen list on held-out data (Meeting 5).
 \end{frame}
 
 % ====================================================================
 \begin{frame}{When the Mean Is Not Enough: Capacity}
 
-Net value $m\tau(x) - c(x)$ is linear in the outcome. When the payoff is not, the average effect no longer decides. Make the unit the holder of the capacity: a \textbf{store} on a push day.
+Net value $m\tau(x) - c(x)$ is linear in the outcome. When the payoff is not, the average effect no longer decides. Make the unit the holder of the capacity: a store on a push day.
 
 \begin{itemize}
   \item Its baristas can serve $q = 400$ orders a day.
@@ -532,8 +532,8 @@ Q & 360 & 480 or 360, $\tfrac12$ each & 60 \\
 
 \textbf{The payoff}, with $\pi(360) = 10{,}800$, $\pi(420) = 12{,}000 - 400 = 11{,}600$, and $\pi(480) = 12{,}000 - 1{,}600 = 10{,}400$:
 \begin{itemize}
-  \item store P: $v = 11{,}600 - 10{,}800 - 500 = $ \textcolor{sbgreen}{\textyen 300}: push;
-  \item store Q: $v = \tfrac12(10{,}400 - 10{,}800) + \tfrac12(0) - 500 = $ \textcolor{warnred}{$-$\textyen 700}: do not push.
+  \item store P: $v = 11{,}600 - 10{,}800 - 500 = $ \textcolor{sbgreen}{\textyen 300}, so push;
+  \item store Q: $v = \tfrac12(10{,}400 - 10{,}800) + \tfrac12(0) - 500 = $ \textcolor{warnred}{$-$\textyen 700}, so do not push.
 \end{itemize}
 
 \medskip
@@ -550,10 +550,10 @@ Store Q sets its capacity $q$ (staff, stock) for a push day before demand is kno
 The expected loss $c_u\E[(Y(1) - q)^+ \mid x] + c_o\E[(q - Y(1))^+ \mid x]$ is minimized at the $\kappa$-quantile of $F_1(\cdot \mid x)$, $\kappa = c_u/(c_u + c_o)$.
 \end{result}
 
-$c_u = 30 + 20 = $ \textyen 50 (margin plus voucher), $c_o = $ \textyen 10 (stock and labor wasted), so $\kappa = 50/60 = 0.83$. As $F_1(360) = 0.5 < 0.83 \le F_1(480) = 1$, plan for \textbf{480}. Expected loss:
+$c_u = 30 + 20 = $ \textyen 50 (margin plus voucher), $c_o = $ \textyen 10 (stock and labor wasted), so $\kappa = 50/60 = 0.83$. As $F_1(360) = 0.5 < 0.83 \le F_1(480) = 1$, plan for 480. Expected loss:
 \begin{itemize}
-  \item at 420, baseline plus the CATE: $\tfrac12 \times 50 \times 60 + \tfrac12 \times 10 \times 60 = $ \textcolor{warnred}{\textyen 1{,}800} a day;
-  \item at 480, the 0.83-quantile: $\tfrac12 \times 10 \times 120 = $ \textcolor{sbgreen}{\textyen 600} a day.
+  \item at 420 (baseline plus the CATE), $\tfrac12 \times 50 \times 60 + \tfrac12 \times 10 \times 60 = $ \textcolor{warnred}{\textyen 1{,}800} a day;
+  \item at 480 (the 0.83-quantile), $\tfrac12 \times 10 \times 120 = $ \textcolor{sbgreen}{\textyen 600} a day.
 \end{itemize}
 
 \small $\kappa$ comes from the business: it prices the randomness of the outcome, while $z_\alpha$ guards against error in the estimate. The $\kappa$-quantile of $Y(1)$ given $x$ is a one-arm prediction (quantile regression or a quantile forest).
@@ -564,11 +564,11 @@ $c_u = 30 + 20 = $ \textyen 50 (margin plus voucher), $c_o = $ \textyen 10 (stoc
 
 \begin{itemize}
   \item Net value $v(x) = m\tau(x) - c(x)$; without constraints, push iff $v(x) > 0$.
-  \item A coupon paid on redemption charges sure things: same lift, \textyen 3.50 against \textyen 2.00.
+  \item A coupon paid on redemption charges sure things, so the same lift can be worth \textyen 3.50 or \textyen 2.00.
   \item A cap ranks by $v$; a budget ranks by $b/c$, and $\lambda^\ast = 0.50$ prices it. Tight budgets favor shallow coupons.
   \item A rate constraint sets group-specific thresholds; in Region 2 it costs \textyen 470.
   \item The reserve covers Bernoulli luck (\textyen 184); a lower bound on $v$ covers noisy estimates.
-  \item With a capacity, each arm's distribution matters: plan at the critical fractile, not at baseline plus the CATE.
+  \item With a capacity, each arm's distribution matters, so plan at the critical fractile, not at baseline plus the CATE.
 \end{itemize}
 
 \vfill
@@ -601,13 +601,13 @@ $c_u = 30 + 20 = $ \textyen 50 (margin plus voucher), $c_o = $ \textyen 10 (stoc
 Block A was \textbf{predict-then-optimize}: estimate $\tau$ (and $c$), then hand the estimates to an optimizer.
 
 \begin{itemize}
-  \item The estimates are trained for \textbf{accuracy}: a loss that penalizes errors on every member.
-  \item The decision is judged by \textbf{value}: only errors that change a decision cost anything.
+  \item The estimates are trained for accuracy, with a loss that penalizes errors on every member.
+  \item The decision is judged by value, and only errors that change a decision cost anything.
 \end{itemize}
 
 \medskip
 
-The two criteria need not agree. The next frame shows how far apart they can be.
+The two criteria need not agree: two equally accurate models can lose \textyen 0 or \textyen 5{,}000.
 \end{frame}
 
 % ====================================================================
@@ -621,8 +621,8 @@ Two CATE models for the four cells. Each is exact in three cells and off by 0.10
 \toprule
 & \textbf{Cell in error} & $\hatt$ \textbf{there} & $30\,\hatt - \hat c$ & \textbf{Decision there} \\
 \midrule
-Model 1 & executive--high & $0.15$ (true 0.05) & $4.50 - 4.75 = -0.25$ & off, as it should be \\
-Model 2 & analyst--high & $0.10$ (true 0.20) & $3.00 - 4.00 = -1.00$ & \textcolor{warnred}{off: wrong} \\
+Model 1 & executive-high & $0.15$ (true 0.05) & $4.50 - 4.75 = -0.25$ & off, as it should be \\
+Model 2 & analyst-high & $0.10$ (true 0.20) & $3.00 - 4.00 = -1.00$ & \textcolor{warnred}{off: wrong} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -631,8 +631,8 @@ Model 2 & analyst--high & $0.10$ (true 0.20) & $3.00 - 4.00 = -1.00$ & \textcolo
 
 \begin{itemize}
   \item Both have the same mean squared error over the cells, $\tfrac14 \times 0.10^2 = 0.0025$.
-  \item Model 1 loses nothing: even at 0.15, executive--high stays below its bar of $4.75/30 = 0.158$.
-  \item Model 2 drops 2{,}500 analyst--high members worth \textyen 2.00 each: \textyen 5{,}000.
+  \item Model 1 loses nothing: even at 0.15, executive-high stays below its bar of $4.75/30 = 0.158$.
+  \item Model 2 drops 2{,}500 analyst-high members worth \textyen 2.00 each: \textyen 5{,}000.
 \end{itemize}
 
 \medskip
@@ -645,8 +645,8 @@ An estimation loss buys accuracy everywhere, including where the decision is nev
 
 \begin{enumerate}
   \item \textbf{Predict, then optimize} (plug-in). Fit $\hatt$ by an estimation loss and apply the optimizer. Modular and reusable, but accuracy is bought everywhere.
-  \item \textbf{Decision-focused learning.} Keep the optimizer; train $\hatt_\theta$ on the value of the decision it induces, $\frac1n\sum_i \pi_\theta(X_i)\Gamma_i$ ($\Gamma_i$: the score of the next frame). The objective jumps as decisions flip, so practice uses smooth surrogates (SPO+) or randomized optimizers. Worth it when the optimizer couples units: a budget, a capacity, a menu of coupon depths.
-  \item \textbf{Policy learning.} Drop the estimate and search a class $\Pi$ of rules, such as depth-2 trees, for the one with the highest estimated value. A restricted class is easy to explain, audit, and deploy.
+  \item \textbf{Decision-focused learning.} Keep the optimizer; train $\hatt_\theta$ on the value of the decision it induces, $\frac1n\sum_i \pi_\theta(X_i)\Gamma_i$ ($\Gamma_i$ is the score of the next frame). The objective jumps as decisions flip, so practice uses smooth surrogates (SPO+) or randomized optimizers. Worth it when the optimizer couples units: a budget, a capacity, a menu of coupon depths.
+  \item \textbf{Policy learning.} Drop the estimate and search a class $\Pi$ of rules, such as depth-two trees, for the one with the highest estimated value. A restricted class is easy to explain, audit, and deploy.
 \end{enumerate}
 
 \medskip
@@ -668,7 +668,7 @@ Let $\Gamma_i = m\,\phi_i - c(X_i)$, where $\phi_i$ is the cross-fitted doubly r
 \]
 \end{result}
 
-With $e = 0.5$, $\phi_i = \hat\mu_1 - \hat\mu_0 + 2D_i(Y_i - \hat\mu_1) - 2(1 - D_i)(Y_i - \hat\mu_0)$. Analyst--high: $\hat\mu_1 = 0.50$, $\hat\mu_0 = 0.30$, $c = 4.00$.
+With $e = 0.5$, $\phi_i = \hat\mu_1 - \hat\mu_0 + 2D_i(Y_i - \hat\mu_1) - 2(1 - D_i)(Y_i - \hat\mu_0)$. Analyst-high: $\hat\mu_1 = 0.50$, $\hat\mu_0 = 0.30$, $c = 4.00$.
 
 \smallskip
 {\centering
@@ -713,7 +713,7 @@ Estimated gain per member, $\tfrac18\sum_i \pi(X_i)\Gamma_i$:
 \small
 \begin{tabular}{lcccc}
 \toprule
-\textbf{Push} & \textbf{everyone} & \textbf{analysts} & \textbf{low spenders} & \textbf{analyst--low only} \\
+\textbf{Push} & \textbf{everyone} & \textbf{analysts} & \textbf{low spenders} & \textbf{analyst-low only} \\
 \midrule
 $\sum_i \pi(X_i)\Gamma_i$ & 31.00 & 47.00 & 48.50 & 55.00 \\
 per member & 3.88 & 5.88 & 6.06 & 6.88 \\
@@ -757,16 +757,16 @@ Here $\sum_i |\Gamma_i| = 211$ and $\sum_i \Gamma_i^- = 90$, so a policy's value
 \midrule
 everyone & 4, 5, 8 & 90.00 & 31.00 \\
 analysts & 4, 6, 7 & 74.00 & 47.00 \\
-analyst--low only & 3, 6, 7 & 66.00 & 55.00 \\
+analyst-low only & 3, 6, 7 & 66.00 & 55.00 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-The best classifier and the best policy are the same rule: analyst--low only, with the least misclassified weight, 66.00.
+The best classifier and the best policy are the same rule: analyst-low only, with the least misclassified weight, 66.00.
 
 \medskip
 
-Under the \textyen 8{,}000 budget, $\lambda^\ast = 0.50$: member 3, an analyst--high member with $c = 4.00$, scores $32.00 - 0.50 \times 4.00 = 30.00$.
+Under the \textyen 8{,}000 budget, $\lambda^\ast = 0.50$: member 3, an analyst-high member with $c = 4.00$, scores $32.00 - 0.50 \times 4.00 = 30.00$.
 \end{frame}
 
 % ====================================================================
@@ -778,13 +778,13 @@ A \textbf{policy tree} takes $\Pi$ to be the trees of depth one or two, searched
 
 On the eight members, with type and spending as the only features:
 \begin{itemize}
-  \item \textbf{Depth one.} Split on type: push analysts, 47.00. Split on spending: push low spenders, 48.50. The best depth-one tree pushes \textbf{low spenders}.
-  \item \textbf{Depth two.} Four leaves, one per cell, with sums $55.00$, $-8.00$, $-6.50$, and $-9.50$. The best depth-two tree pushes \textbf{analyst--low only}, 55.00.
+  \item \textbf{Depth one.} Splitting on type (push analysts) scores 47.00; splitting on spending (push low spenders) scores 48.50. The best depth-one tree pushes low spenders.
+  \item \textbf{Depth two.} Four leaves, one per cell, with sums $55.00$, $-8.00$, $-6.50$, and $-9.50$. The best depth-two tree pushes analyst-low only, 55.00.
 \end{itemize}
 
 \bigskip
 
-Both trees are wrong about the push test's cells: analyst--high is worth \textyen 2.00 a member, and executive--low loses \textyen 1.75. Eight scores this noisy cannot find the cell rule. With the 14 CRM fields the class is far larger, but whichever tree the search picks stays easy to read and audit.
+Both trees are wrong about the push test's cells: analyst-high is worth \textyen 2.00 a member, and executive-low loses \textyen 1.75. Eight scores this noisy cannot find the cell rule. With the 14 CRM fields the class is far larger, but whichever tree the search picks stays easy to read and audit.
 \end{frame}
 
 % ====================================================================
@@ -799,7 +799,7 @@ The \textbf{regret} of $\hat\pi$ is the value it gives up relative to the best p
 \textbf{Push} & \textbf{True} $G(\pi)$ \textbf{per member} & \textbf{Eight-member estimate} \\
 \midrule
 analysts: best in class & $0.25(3.50 + 2.00) = $ \textyen 1.38 & \textyen 5.88 \\
-analyst--low: learned, depth two & $0.25 \times 3.50 = $ \textyen 0.88 & \textyen 6.88 \\
+analyst-low: learned, depth two & $0.25 \times 3.50 = $ \textyen 0.88 & \textyen 6.88 \\
 low spenders: learned, depth one & $0.25(3.50 - 1.75) = $ \textyen 0.44 & \textyen 6.06 \\
 \bottomrule
 \end{tabular}
@@ -821,7 +821,7 @@ A deployed policy is a hypothesis about where value lies.
 
 \medskip
 
-\textbf{Keep a random holdout.} Hold back 10\% of each listed cell, at random, with no push: 250 analyst--low and 39 analyst--high, 289 members.
+\textbf{Keep a random holdout.} Hold back 10\% of each listed cell, at random, with no push: 250 analyst-low and 39 analyst-high, 289 members.
 \begin{itemize}
   \item It forgoes $250 \times 3.50 + 39 \times 2.00 = $ \textyen 953 of expected net, about a tenth of the list's \textyen 9{,}532.
   \item It keeps measuring the list's value, detects drift, and generates experimental data for the Q1 decision.
@@ -830,7 +830,7 @@ A deployed policy is a hypothesis about where value lies.
 
 \medskip
 
-\textbf{Log the assignment probability.} A listed member is pushed with probability 0.9, so the logs are an experiment with known propensities, and Meeting 5's weighting applies: a pushed buyer counts $1/0.9 = 1.11$ times, a held-out buyer $1/0.1 = 10$ times. Members off the list have probability 0: nothing in the Q4 logs speaks to them.
+\textbf{Log the assignment probability.} A listed member is pushed with probability 0.9, so the logs are an experiment with known propensities, and the inverse-probability weighting of Meeting 5 applies: a pushed buyer counts $1/0.9 = 1.11$ times, a held-out buyer $1/0.1 = 10$ times. Members off the list have probability 0, so nothing in the Q4 logs speaks to them.
 \end{frame}
 
 % ====================================================================
@@ -864,7 +864,7 @@ $\Pr(\text{text 1 is better} \mid \text{data}) = 0.88$, so the next push carries
 % ====================================================================
 \begin{frame}{What the Sum Assumes}
 
-Every list today was scored by $\sum_i d_i v(X_i)$. That assumes \textbf{no interference} and \textbf{one well-defined treatment}. At the coffee chain it can fail:
+Every list today was scored by $\sum_i d_i v(X_i)$. That assumes \textbf{no interference} and one well-defined treatment. At the coffee chain it can fail:
 \begin{itemize}
   \item \textbf{Telling:} a pushed member brings a friend to try the seasonal drink.
   \item \textbf{Drawing demand:} a push near one store takes orders from the next one.
@@ -874,7 +874,7 @@ Then the objective is not separable and none of the sorting results holds.
 
 \bigskip
 
-\textbf{Check support before ranking.} If the push test had held no executive--low controls, a model would still print a $\hat\mu_0$ for them, and the optimizer would treat that number as data. It cannot tell a measured number from an extrapolated one (Meeting 3).
+\textbf{Check support before ranking.} If the push test had held no executive-low controls, a model would still print a $\hat\mu_0$ for them, and the optimizer would treat that number as data. It cannot tell a measured number from an extrapolated one (Meeting 3).
 \end{frame}
 
 % ====================================================================
@@ -888,8 +888,8 @@ Ranking by $\tau$ when costs differ by unit; spending the budget in order of eff
 
 Each has a number today:
 \begin{itemize}
-  \item analyst--low and analyst--high share a lift of 0.20 but are worth \textyen 3.50 and \textyen 2.00;
-  \item the budget funds analyst--low first, by ratio 2.40 against 1.50;
+  \item analyst-low and analyst-high share a lift of 0.20 but are worth \textyen 3.50 and \textyen 2.00;
+  \item the budget funds analyst-low first, by ratio 2.40 against 1.50;
   \item store Q planned at 420 expects to lose \textyen 1{,}800 a day, at 480 only \textyen 600;
   \item the rate constraint in Region 2 costs \textyen 470;
   \item the learned tree claims \textyen 6.88 a member and earns \textyen 0.88;

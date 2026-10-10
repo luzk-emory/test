@@ -75,8 +75,8 @@ $D(1-D) = 0$ removes the cross term, so $g_i^2 = \pi(X_i)\{D_iR_i^2/e^2 + (1-D_i
 use independence, then subtract $G(\pi)^2$.
 \end{proof}
 
-The variance is driven by the second moments of the whole reward, not by the effect: a small effect on a large,
-noisy reward needs a large evaluation sample. Replacing $g_i$ with the doubly robust score (subtract a prediction
+The second moments of the whole reward drive the variance, not the effect. A small effect on a large, noisy reward
+needs a large evaluation sample. Replacing $g_i$ with the doubly robust score (subtract a prediction
 of the reward fitted on other data, then weight the residual) keeps the expectation and can cut the variance
 sharply.
 
@@ -137,8 +137,9 @@ change.
 
 Under a fixed budget (``treat the top $B$'') only the ranking matters. Under a break-even threshold
 (``treat if $\hatt(x) > k/m$'') the score must be calibrated: a model whose scores are twice the true effects ranks
-perfectly and sends to everyone with true effect above half the break-even. Check calibration with the test and
-group effects of Meeting~4.
+perfectly and sends to everyone with true effect above half the break-even. Check calibration with the tools of
+Meeting~4. Regress a doubly robust score on the prediction (a slope of 1 means calibrated) and compare the sorted
+group effects with the scores.
 
 \paragraph{Recalibrating a score.} A miscalibrated score can be repaired without touching its ranking. On units not used
 to fit the score, let $\psi_i = D_iY_i/e(X_i) - (1 - D_i)Y_i/\{1 - e(X_i)\}$, or the doubly robust score $\phi_i$ of Meeting~3; either
@@ -155,8 +156,8 @@ neighboring blocks differ strictly. If a block's value differed from its average
 average would keep the order with its neighbors and lower the sum of squares.
 \end{proof}
 
-Each block's value estimates that block's average effect, a group effect on data-chosen groups, so the cautions of
-Meeting~4 apply. By Result~\ref{prop:ranks}, gain curves and RATE are unchanged except for the order within tied blocks;
+Each block's value estimates that block's average effect, a group effect on groups the data chose, so the winner's
+curse of Meeting~4 applies, and such groups look better on the data that picked them than they are. By Result~\ref{prop:ranks}, gain curves and RATE are unchanged except for the order within tied blocks;
 what changes is the scale a threshold rule reads. The pool-adjacent-violators algorithm computes $\hat h$: start from each
 unit (or score bin) alone and merge any neighbor pair whose averages are out of order until none is. Fit the map on the
 selection sample of the protocol below, never on the evaluation sample.
@@ -176,9 +177,9 @@ Result~\ref{prop:ipw} applies to it on $E$.
 Candidates are not only models: cut-offs, feature sets, budgets, and any adjustment after looking at results are
 all choices. An automated system that tunes its own cut-off is making one.
 
-\paragraph{The evaluation protocol.} (1) \emph{Split before fitting}: draw training, selection, and evaluation samples
+\paragraph{The evaluation protocol.} (1) \emph{Split before fitting.} Draw training, selection, and evaluation samples
 from the experiment at random. (2) \emph{Fit} on training data. (3) \emph{Choose} among candidates on the selection
-sample. (4) \emph{Freeze}: record the chosen policy's decision for every evaluation unit, and the code, before
+sample. (4) \emph{Freeze.} Record the chosen policy's decision for every evaluation unit, and the code, before
 evaluation outcomes are released. (5) \emph{Evaluate once} and report that number. A disappointing evaluation is a
 correct result, not a reason to return to step 3, which would turn the evaluation sample into a selection sample.
 
@@ -192,8 +193,8 @@ $\bar d$ is unbiased for $G(\pi_a) - G(\pi_b)$ with standard error $\text{sd}(d_
 Linearity and Result~\ref{prop:ipw} for each policy; the $d_i$ are functions of independent rows.
 \end{proof}
 
-$d_i = 0$ wherever the two lists agree. Combining the two lists' separate SEs as if they were independent ignores
-the shared noise and, for overlapping lists, badly overstates the uncertainty of the difference.
+Wherever the two lists agree, $d_i = 0$. If you combine the two lists' separate SEs as if they were independent, you
+ignore the shared noise and, for overlapping lists, badly overstate the uncertainty of the difference.
 
 \begin{pitfall}[evaluation errors]
 Reporting a policy's value on the data that chose it; reusing $e = 0.5$ for a design that was not 50/50; drawing
@@ -206,7 +207,7 @@ evaluation result.
 
 \paragraph{Setting.} QuickBite emails customers an offer to join QuickBite Plus (a delivery-fee subscription), with a
 small incentive. Each email and incentive costs ¥1.00; each additional subscription is worth ¥120 of margin.
-Break-even lift $= 1/120 = 0.0083$. An uplift model was trained and its cut-off chosen on last year's experiment. This
+The break-even lift is $1/120 = 0.0083$. An uplift model was trained and its cut-off chosen on last year's experiment. This
 year a 20{,}000-customer randomized test (50/50) is the evaluation sample.
 
 \paragraph{Step 1: by hand on ten rows.} Policy: treat the four highest scores.
@@ -327,24 +328,30 @@ residual. The estimate stays unbiased with known $e$ and its variance falls by a
 \end{extension}
 
 \begin{extension}[Inference for RATE and for learned policies]
-Yadlowsky et al.\ derive the sampling distribution of RATE estimators and justify a half-sample bootstrap. Imai and Li
+Yadlowsky et al.\ (2025) derive the sampling distribution of RATE estimators and justify a half-sample bootstrap. Imai and Li
 (2023) give variance estimators for individualized rules evaluated on experimental data, including rules learned by
 cross-fitting on the same experiment.
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{van der Laan, Ulloa-P\'erez, Carone, and Luedtke (2023), ``Causal isotonic calibration for heterogeneous treatment
-effects'', \emph{ICML}}{Isotonic calibration of effect scores on doubly robust outcomes}{Sections 1--3}{3}
-\reading{Yadlowsky, Fleming, Shah, Brunskill, and Wager, ``Evaluating treatment prioritization rules via rank-weighted
-average treatment effects'', \emph{JASA} (2025)}{TOC, AUTOC, and Qini as members of one family, with inference}{Sections
+\reading{van der Laan, Lars, Ernesto Ulloa-P\'erez, Marco Carone, and Alex Luedtke. 2023. ``Causal Isotonic Calibration
+for Heterogeneous Treatment Effects.'' In \emph{Proceedings of the 40th International Conference on Machine Learning},
+PMLR 202: 34831--34854. arXiv:2302.14011.}{Isotonic calibration of effect scores on doubly robust outcomes}{Sections
 1--3}{3}
-\reading{Imai and Li (2023), ``Experimental evaluation of individualized treatment rules'', \emph{JASA}}{Finite-sample
-evaluation of a rule on a randomized sample}{Sections 1--3}{3}
-\reading{Radcliffe (2007), ``Using control groups to target on predicted lift'', \emph{Direct Marketing Analytics
-Journal}}{The original Qini curve, from practice}{All}{1}
-\reading{Athey and Wager (2021), ``Policy learning with observational data'', \emph{Econometrica}}{Doubly robust value
-estimation as the basis for choosing policies (Meeting~6)}{Sections 1--2}{3}
+\reading{Yadlowsky, Steve, Scott Fleming, Nigam Shah, Emma Brunskill, and Stefan Wager. 2025. ``Evaluating Treatment
+Prioritization Rules via Rank-Weighted Average Treatment Effects.'' \emph{Journal of the American Statistical
+Association} 120 (549): 38--51. \url{https://doi.org/10.1080/01621459.2024.2393466}}{TOC, AUTOC, and Qini as members
+of one family, with inference}{Sections 1--3}{3}
+\reading{Imai, Kosuke, and Michael Lingzhi Li. 2023. ``Experimental Evaluation of Individualized Treatment Rules.''
+\emph{Journal of the American Statistical Association} 118 (541): 242--256.
+\url{https://doi.org/10.1080/01621459.2021.1923511}}{Finite-sample evaluation of a rule on a randomized
+sample}{Sections 1--3}{3}
+\reading{Radcliffe, Nicholas J. 2007. ``Using Control Groups to Target on Predicted Lift: Building and Assessing Uplift
+Models.'' \emph{Direct Marketing Analytics Journal}, 14--21.}{The original Qini curve, from practice}{All}{1}
+\reading{Athey, Susan, and Stefan Wager. 2021. ``Policy Learning with Observational Data.'' \emph{Econometrica} 89 (1):
+133--161. \url{https://doi.org/10.3982/ECTA15732}}{Doubly robust value estimation as the basis for choosing
+policies}{Sections 1--2}{3}
 \end{readinglist}
 
 \end{document}

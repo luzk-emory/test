@@ -57,7 +57,7 @@ In a regression of $Y$ on $A_1$, $X_2$, and $A_2$, the coefficient on $A_1$ is n
 affects $X_2$ and $X_2$ affects $Y$.
 \end{prop}
 \begin{proof}
-$X_2$ lies on a causal path $A_1 \to X_2 \to Y$; conditioning on it removes that part of the effect (Meeting~1) and, if
+$X_2$ lies on a causal path $A_1 \to X_2 \to Y$; conditioning on it removes that part of the effect and, if
 anything unrecorded affects both $X_2$ and $Y$, opens a collider path. Omitting $X_2$ instead leaves $A_2$ confounded,
 since $A_2$ depends on $X_2$. Neither regression is right; the g-formula averages over $X_2$ instead of conditioning on it.
 \end{proof}
@@ -106,7 +106,7 @@ probabilities are correct, whatever the reward model $\hat\mu$, and usually far 
 \end{prop}
 \begin{proof}
 Given $X_i$, $\E[\ind{A_i = \pi(X_i)}R_i/p_i \mid X_i] = \E[R(\pi(X_i)) \mid X_i]$ because the action was randomized with probability
-$p_i$ (Meeting~5). For the DR estimator, the correction term has conditional mean $\E[R(\pi(X_i)) \mid X_i] - \hat\mu(X_i, \pi(X_i))$.
+$p_i$. For the DR estimator, the correction term has conditional mean $\E[R(\pi(X_i)) \mid X_i] - \hat\mu(X_i, \pi(X_i))$.
 \end{proof}
 
 Two operational rules follow. Never let an exploring policy drive any action's probability to zero where you may later want
@@ -163,7 +163,7 @@ Verify the value of ``coupon both weeks'' (¥7.40) with the g-formula, and the n
 $0.40 \times 2.5 + 0.60 \times 0.9 = 1.0 + 0.54 = 1.54$.}
 
 \begin{exercise}[judgment]
-An analyst estimates the week-1 coupon's effect by regressing weeks 2--4 orders on $A_1$, $A_2$, and the week-1 order indicator,
+An analyst estimates the week-1 coupon's effect by regressing weeks 2--4 orders on $A_1$, $A_2$, and the week-1 order indicator.
 Explain what the coefficient on $A_1$ measures and why it should not be read as the coupon's effect.
 \end{exercise}
 \answer{Conditioning on the week-1 order (a result of $A_1$) compares customers with the same response, removing the coupon's
@@ -176,18 +176,24 @@ responders, $+0.2$ and $0.0$ among non-responders without and with a second coup
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Murphy (2003), ``Optimal dynamic treatment regimes'', \emph{JRSS B}}{The framework, sequential exchangeability and
-backward induction}{Sections 1--4}{3}
-\reading{Robins (2004), ``Optimal structural nested models for optimal sequential decisions'', \emph{Proceedings of the Second
-Seattle Symposium in Biostatistics}}{SNMMs and G-estimation for optimal regimes}{Sections 1--3}{3}
-\reading{Chakraborty and Moodie (2013), \emph{Statistical Methods for Dynamic Treatment Regimes}, Springer}{Q-learning,
-G-estimation, and SMARTs at textbook pace}{Ch.\ 2--5}{2}
-\reading{Hern\'an and Robins, \emph{Causal Inference: What If}}{The g-formula and time-varying confounding in the course's
-notation}{Ch.\ 19--21}{2}
-\reading{Dud\'ik, Langford, and Li (2011), ``Doubly robust policy evaluation and learning'', \emph{ICML}}{Off-policy evaluation
-from bandit logs}{Sections 1--4}{2}
-\reading{Murphy (2005), ``An experimental design for the development of adaptive treatment strategies'', \emph{Statistics in
-Medicine}}{How to design a SMART}{All}{2}
+\reading{Murphy, Susan A. 2003. ``Optimal Dynamic Treatment Regimes.'' \emph{Journal of the Royal Statistical Society:
+Series B (Statistical Methodology)} 65 (2): 331--355. \url{https://doi.org/10.1111/1467-9868.00389}}{The framework,
+sequential exchangeability, and backward induction}{Sections 1--4}{3}
+\reading{Robins, James M. 2004. ``Optimal Structural Nested Models for Optimal Sequential Decisions.'' In
+\emph{Proceedings of the Second Seattle Symposium in Biostatistics: Analysis of Correlated Data}, edited by D. Y. Lin
+and P. J. Heagerty, 189--326. Lecture Notes in Statistics 179. New York: Springer.}{SNMMs and G-estimation for
+optimal regimes}{Sections 1--3}{3}
+\reading{Chakraborty, Bibhas, and Erica E. M. Moodie. 2013. \emph{Statistical Methods for Dynamic Treatment Regimes:
+Reinforcement Learning, Causal Inference, and Personalized Medicine}. New York: Springer.
+\url{https://doi.org/10.1007/978-1-4614-7428-9}}{Q-learning, G-estimation, and SMARTs at textbook pace}{Ch.\ 2--5}{2}
+\reading{Hern\'an, Miguel A., and James M. Robins. 2020. \emph{Causal Inference: What If}. Boca Raton: Chapman \&
+Hall/CRC.}{The g-formula and time-varying confounding in the course's notation}{Ch.\ 19--21}{2}
+\reading{Dud\'ik, Miroslav, John Langford, and Lihong Li. 2011. ``Doubly Robust Policy Evaluation and Learning.'' In
+\emph{Proceedings of the 28th International Conference on Machine Learning (ICML 2011)}, 1097--1104.}{Off-policy
+evaluation from bandit logs}{Sections 1--4}{2}
+\reading{Murphy, Susan A. 2005. ``An Experimental Design for the Development of Adaptive Treatment Strategies.''
+\emph{Statistics in Medicine} 24 (10): 1455--1481. \url{https://doi.org/10.1002/sim.2022}}{How to design a
+SMART}{All}{2}
 \end{readinglist}
 
 \end{document}

@@ -1,3 +1,11 @@
+# Editorial pass, Meetings 5 to 8 (2026-10-09)
+
+- Under `plan/editorial-guide.md`, for the M5 to M8 slides, notes, and handouts H3 to H5. Formulas, numbers, results, and box wording unchanged; a math and number diff against the previous commit shows only removed meeting and result numbers, added years, spelled-out small numbers, and the restated content below.
+- Handouts self-contained: H4 restates the Meeting 2 notation, exclusion, monotonicity, compliance types, and the LATE theorem in place of citing Section 1.9, Assumptions 1.11 and 1.12, and Results 1.13 to 1.15; H5 restates the LATE theorem in place of Result 1.15; H3 drops its meeting pointers. The M6 and M8 notes restate what they used to send readers to Handouts H1 and H3 for.
+- Forward references to later meetings replaced by concept previews (11 scan hits to 0); cross-meeting numbers (4 to 0); citations missing from a document's list added (9 failures to 0); the M7 deck gains a References frame; every reading list is Chicago author-date.
+- Slides: emphasis bold (30 hits to 10, the rest defined terms and structural labels), colons and fragments (49 to 14, the rest lead-ins, labels, and reference entries), en-dashes between words in cell labels made hyphens (39 to 8, the rest joint names and ranges), voice. Internal script paths removed from the M8 rendered text.
+- New flags in `plan/FLAGS.md`, among them three technical statements left for a technical pass: M5's "reach times average effect" (net value), the fuzzy RD box in H5 without exclusion, and undefined $\text{LATE}_C$ and $\text{LATE}_D$ in H4's defiers box.
+
 # Editorial pass, Meetings 1 to 4 (2026-10-09)
 
 - Under `plan/editorial-guide.md`, for the M1 to M4 slides, notes and handouts H1 and H2. Formulas, numbers, results and the wording of Result, Assumption and Definition boxes unchanged; a math and number diff against the previous commit shows only notation-preserving edits (bold removed inside math, "one percent" written as $0.01$, small numbers in words).
