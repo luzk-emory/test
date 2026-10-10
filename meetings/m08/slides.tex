@@ -76,7 +76,7 @@
 \title[Meeting 8]{Meeting 8: Double Machine Learning}
 \subtitle{Flexible controls without biased answers: Wen's rate decision}
 \author{Zhikun Lu}
-\date{\today}
+\date{}
 
 \begin{document}
 
@@ -122,15 +122,15 @@
 % [RELEASE R1: the proposal and the six comparable nights]
 \begin{frame}{Meridian Hotels: The Proposal}
 
-\textbf{Wen} is commercial director of Meridian Hotels, a group of 80 properties.
+Wen is commercial director of Meridian Hotels, a group of 80 properties.
 
 \bigskip
 
-A revenue management (RM) system sets the rate for every hotel-night from forecast demand, competitor rates, booking pace, and the event calendar. \textbf{No human sets these rates night by night}: the system is an automated decision-maker, and, as in Meeting 7, its decisions are what the analysis must adjust for.
+A revenue management (RM) system sets the rate for every hotel-night from forecast demand, competitor rates, booking pace, and the event calendar. No human sets these rates night by night. The system is an automated decision-maker, and, as in Meeting 7, its decisions are what the analysis must adjust for.
 
 \bigskip
 
-\textbf{On her desk:} sales proposes raising midweek premium rates by \textbf{8\%} across the portfolio. Their evidence is the RM system's own reporting: nights with higher rates sell more rooms. Their reading: \emph{demand is strong; the system is under-pricing.}
+On her desk is a proposal from sales to raise midweek premium rates by \textbf{8\%} across the portfolio. Their evidence is the RM system's own reporting: nights with higher rates sell more rooms. Sales reads this as strong demand and a system that is under-pricing.
 
 \bigskip
 
@@ -152,7 +152,7 @@ The rise pays only if bookings fall by less than $1 - 600/664 = 9.6\%$.
 
 \bigskip
 
-Write $\theta$ for the \textbf{elasticity} of bookings with respect to the rate: the \% change in bookings from a 1\% change in the rate. An 8\% rise multiplies bookings by $1.08^{\theta}$, so it pays if and only if $1.08^{\theta} \times 664 > 600$:
+Write $\theta$ for the \textbf{elasticity} of bookings with respect to the rate, the \% change in bookings from a 1\% change in the rate. An 8\% rise multiplies bookings by $1.08^{\theta}$, so it pays if and only if $1.08^{\theta} \times 664 > 600$:
 
 \begin{alertblock}{Break-even elasticity}
 \[
@@ -219,7 +219,7 @@ Read at face value, every \textyen 10 on the rate brings 20 more bookings. That 
 
 \begin{columns}[c]
 \begin{column}{0.50\textwidth}
-Subtract each category's means (standard: 40 and 100; premium: 80 and 200):
+Subtract each category's means (40 and 100 for standard nights, 80 and 200 for premium):
 
 \begin{center}
 \small
@@ -235,7 +235,7 @@ $\tilde Y$ & 10 & 0 & $-10$ & 10 & 0 & $-10$ \\
 \[
 \hat\theta = \frac{\sum_i \tilde D_i \tilde Y_i}{\sum_i \tilde D_i^2} = \frac{-400}{400} = \textcolor{sbgreen}{-1.0} .
 \]
-Same six nights, opposite sign.
+The same six nights give the opposite sign.
 \end{column}
 \begin{column}{0.46\textwidth}
 \begin{center}
@@ -267,7 +267,7 @@ With outcome $Y$ (log premium bookings), treatment $D$ (log rate), and controls 
 \[
 Y = \theta D + g(X) + \varepsilon, \qquad \E[\varepsilon \mid D, X] = 0 .
 \]
-Linear in $D$, so $\theta$ is one number, the elasticity. Unrestricted in $X$: $g$ may be any function, as stepped as the RM rule. The \textbf{nuisance functions} are $\ell(X) = \E[Y \mid X]$ and $r(X) = \E[D \mid X]$.
+The model is linear in $D$, so $\theta$ is one number, the elasticity. It is unrestricted in $X$, so $g$ may be any function, as stepped as the RM rule. The \textbf{nuisance functions} are $\ell(X) = \E[Y \mid X]$ and $r(X) = \E[D \mid X]$.
 
 \begin{assumption}{1.1}{Conditional mean independence}
 $\E[\varepsilon \mid D, X] = 0$: given $X$, nothing left in the outcome moves with $D$.
@@ -305,7 +305,7 @@ What Wen's team says about the RM system:
 
 \medskip
 
-\textbf{A night priced exactly by the rule} has $D - r(X) = 0$. It tells us nothing about $\theta$, however many such nights there are.
+A night priced exactly by the rule has $D - r(X) = 0$. It tells us nothing about $\theta$, however many such nights there are.
 \end{frame}
 
 % ====================================================================
@@ -405,7 +405,7 @@ Median premium rooms booked & 61 \\
 
 \medskip
 
-The RM system is \textbf{rule-based}. Log rate is a step function of bucketed signals:
+The RM system is rule-based. Log rate is a step function of bucketed signals:
 \begin{itemize}
   \item six forecast-occupancy bands, plus competitor-index bands and booking-pace bands;
   \item an event flag interacted with a lead-time tercile;
@@ -472,7 +472,7 @@ On $X$ and log rate & 0.970 & \textcolor{warnred}{0.9\%} & 17.6\% \\
 
 \medskip
 
-\textbf{Why it fails.} Learners trade bias for variance. The rate is almost a function of the signals, so the model can use it as a \textbf{stand-in} for them. Adding the rate cuts the competitor index's share of the model by more than three-quarters, and that confounding is attributed to $D$.
+\textbf{Why it fails.} Learners trade bias for variance. The rate is almost a function of the signals, so the model can use it as a stand-in for them. Adding the rate cuts the competitor index's share of the model by more than three-quarters, and that confounding is attributed to $D$.
 
 \medskip
 
@@ -560,7 +560,7 @@ Write the nuisance errors $e_r = \hat r - r$, $e_\ell = \hat\ell - \ell$, and $\
   \hat\theta \approx \theta + \frac{\E[e_re_\ell] - \theta\,\E[e_r^2]}{\E[\nu^2] + \E[e_r^2]} .
 \]
 
-\textbf{An illustration.} Take $\theta = -1.56$, residual rate SD $0.10$ ($\E[\nu^2] = 0.01$), and errors in the two models correlated $0.5$:
+As an illustration, take $\theta = -1.56$, residual rate SD $0.10$ ($\E[\nu^2] = 0.01$), and errors in the two models correlated $0.5$:
 
 \begin{columns}[T]
 \begin{column}{0.40\textwidth}
@@ -583,7 +583,7 @@ Write the nuisance errors $e_r = \hat r - r$, $e_\ell = \hat\ell - \ell$, and $\
 \begin{column}{0.57\textwidth}
 \small
 \begin{itemize}
-  \item The first term is a \textbf{product} of two errors: halve both and the bias falls about four-fold. This is \textbf{Neyman orthogonality}: first-order errors in either nuisance do not move the estimate.
+  \item The first term is a product of two errors. Halve both and the bias falls about four-fold. This is \textbf{Neyman orthogonality}: first-order errors in either nuisance do not move the estimate.
   \item The second term, the rate model's squared error, pulls $\hat\theta$ toward zero with no product protection. \textbf{Fit the rate model well.}
 \end{itemize}
 \end{column}
@@ -617,18 +617,18 @@ What a rate change would do at $\hat\theta = -1.56$, with contribution $(\text{r
 
 \medskip
 
-Bookings change by the factor $(1 + g)^{-1.56}$ for a rate change $g$. The proposed rise costs about \textbf{2\% of premium-room contribution}: \textbf{do not raise}. Block B asks how sure that is.
+Bookings change by the factor $(1 + g)^{-1.56}$ for a rate change $g$. The proposed rise costs about 2\% of premium-room contribution, so \textbf{do not raise}. Block B asks how sure that is.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{End of Block A}
 
 \begin{itemize}
-  \item The RM system set the rate from its signals: pooled, the six nights say $+2.0$; within category, $-1.0$.
+  \item The RM system set the rate from its signals. Pooled, the six nights say $+2.0$; within category, $-1.0$.
   \item The partially linear model needs every signal the system used, measured before the rate, and some rate variation left over.
   \item Residualize both sides (FWL). With varying slopes, $\theta$ weights nights by $\Var(D \mid X)$.
   \item Plug-in ML fails twice: the rate stands in for the signals ($-1.03$), and in-sample nuisances overfit ($-0.95$).
-  \item Cross-fitting and the product of errors give $-1.56$, past $-1.32$: do not raise.
+  \item Cross-fitting and the product of errors give $-1.56$, past $-1.32$, so do not raise.
 \end{itemize}
 
 \vfill
@@ -649,7 +649,7 @@ Bookings change by the factor $(1 + g)^{-1.56}$ for a rate change $g$. The propo
 The standard error is that of the residual regression (Result 1.5). Two features of the Meridian logs decide which one:
 \begin{itemize}
   \item All 80 hotels on the same night share demand shocks, and the group moves rates system-wide on some nights. Rows are \textbf{clustered by night}.
-  \item The folds were formed by night for the same reason: otherwise a night's shared shock sits in both the fitting and the scored fold.
+  \item The folds were formed by night for the same reason. Otherwise a night's shared shock sits in both the fitting and the scored fold.
 \end{itemize}
 
 \begin{center}
@@ -699,7 +699,7 @@ The second term adds the spread across splits to the sampling error.
 % ====================================================================
 \begin{frame}{Choosing the Nuisance Learners}
 
-$\hat\ell$ (bookings from signals) and $\hat r$ (rate from signals) are \textbf{prediction problems}. Choose each by its own cross-validated prediction error. That is legitimate here: in Meeting 3 outcome accuracy could not choose a CATE model, but nothing here asks a nuisance model to find an effect.
+$\hat\ell$ (bookings from signals) and $\hat r$ (rate from signals) are prediction problems. Choose each by its own cross-validated prediction error. That is legitimate here: in Meeting 3 outcome accuracy could not choose a CATE model, but nothing here asks a nuisance model to find an effect.
 
 \bigskip
 
@@ -712,17 +712,17 @@ $\hat\ell$ (bookings from signals) and $\hat r$ (rate from signals) are \textbf{
 
 \bigskip
 
-\textbf{Report at least two learners.} If boosted trees and a lasso give materially different $\hat\theta$, the answer depends on modeling choices, and that belongs in the report.
+Report at least two learners. If boosted trees and a lasso give materially different $\hat\theta$, the answer depends on modeling choices, and that belongs in the report.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Overlap with a Continuous Rate}
 
-Wherever $\Var(D \mid X)$ is near zero there is no comparison, and those rows contribute nothing however many there are. At Meridian, on \textbf{12\% of nights} the system pins the rate to its rule.
+Wherever $\Var(D \mid X)$ is near zero there is no comparison, and those rows contribute nothing however many there are. At Meridian, on 12\% of nights the system pins the rate to its rule.
 
 \bigskip
 
-\textbf{Two diagnostics.}
+There are two diagnostics.
 \begin{enumerate}
   \item \textbf{The rate model's out-of-fold $R^2$.} At Meridian it is $0.91$: the signals explain 91\% of the variance of log rate, and 9\% is left to identify $\theta$. Near 1 means little is left.
   \item \textbf{The share of $\sum_i \tilde D_i^2$ from each kind of night}, which says whom the estimate describes.
@@ -730,7 +730,7 @@ Wherever $\Var(D \mid X)$ is near zero there is no comparison, and those rows co
 
 \bigskip
 
-\textbf{An illustration.} If the rate left over on pinned nights has one-fifth of the SD it has elsewhere, pinned nights supply
+For illustration, suppose the rate left over on pinned nights has one-fifth of the SD it has elsewhere. Then pinned nights supply
 \[
 \frac{0.12 \times 0.2^2}{0.12 \times 0.2^2 + 0.88 \times 1} = 0.5\% \ \text{ of } \textstyle\sum_i \tilde D_i^2 .
 \]
@@ -796,7 +796,7 @@ more than either kind of night's effect. As with the rate, the decision-maker's 
 \theta = \frac{0.5 \times 0.25 \times 4 + 0.5 \times 0.09 \times 12}{0.5 \times 0.25 + 0.5 \times 0.09} = 6.1 .
 \]
 
-\textbf{Interactive model}, $Y = g(D, X) + \varepsilon$, with no restriction on how the effect varies:
+\textbf{Interactive model}, $Y = g(D, X) + \varepsilon$, with no restriction on how the effect varies. The average treatment effect (ATE) and the average effect on the treated (ATT) are
 \[
 \ATE = 0.5 \times 4 + 0.5 \times 12 = 8.0, \qquad \ATT = \frac{0.25 \times 4 + 0.45 \times 12}{0.70} = 9.1 .
 \]
@@ -813,7 +813,7 @@ Resort nights have the larger effect but little variation in $D$ ($0.9 \times 0.
 % ====================================================================
 \begin{frame}{The AIPW Score}
 
-For binary $D$ and the ATE, use the cross-fitted AIPW score of Meeting 7:
+For binary $D$ and the ATE, use the cross-fitted augmented inverse-probability-weighted (AIPW) score of Meeting 7:
 \[
   \hat\theta_{\ATE} = \frac1n\sum_i\phi_i, \quad
   \phi_i = \hat\mu_1(X_i) - \hat\mu_0(X_i) + \frac{D_i(Y_i - \hat\mu_1(X_i))}{\hat e(X_i)} - \frac{(1-D_i)(Y_i - \hat\mu_0(X_i))}{1 - \hat e(X_i)},
@@ -822,7 +822,7 @@ with standard error $\text{sd}(\phi_i)/\sqrt n$. Its bias is a \textbf{product} 
 
 \medskip
 
-\textbf{At resorts}, estimating $\E[Y(1)] = 72$ with $\hat\mu_1 = 74$ (2 too high) and $\hat e = 0.8$ (0.1 too low):
+At resorts, estimating $\E[Y(1)] = 72$ with $\hat\mu_1 = 74$ (2 too high) and $\hat e = 0.8$ (0.1 too low):
 
 \begin{center}
 \small
@@ -844,7 +844,7 @@ The AIPW error is $(\hat\mu_1 - \mu_1)(1 - e/\hat e) = 2 \times (-0.125)$: zero 
 % ====================================================================
 \begin{frame}{DML for the CATE}
 
-The score's conditional mean is the CATE: with correct nuisances, $\E[\phi \mid X] = \tau(X)$. So regress $\phi_i$ on something.
+The score's conditional mean is the conditional average treatment effect (CATE): with correct nuisances, $\E[\phi \mid X] = \tau(X)$. So regress $\phi_i$ on something.
 
 \begin{itemize}
   \item \textbf{On a few modifiers:} the best linear projection of the CATE on them, with valid SEs. On a resort indicator: $\E[\phi \mid X] = 4 + 8 \times \text{resort}$, recovering both effects.
@@ -853,7 +853,7 @@ The score's conditional mean is the CATE: with correct nuisances, $\E[\phi \mid 
 
 \bigskip
 
-\textbf{Overlap again.} Two resort nights, with correct nuisances:
+Overlap matters here too. Take two resort nights, with correct nuisances:
 \begin{center}
 \small
 \begin{tabular}{llll}
@@ -873,15 +873,15 @@ A three-room surprise on a rare untreated resort night moves $\phi$ by 30. Where
 % [RELEASE R5: the overrides; the event-flag benchmark]
 \begin{frame}{One More Thing, Says Wen}
 
-Property revenue managers \textbf{override} the system on about \textbf{8\% of nights}. They override on local knowledge: a wedding block, a competitor closing a wing, a conference that never reached the event calendar.
+Property revenue managers \textbf{override} the system on about 8\% of nights. They override on local knowledge: a wedding block, a competitor closing a wing, a conference that never reached the event calendar.
 
-The override is logged. \textcolor{warnred}{\textbf{The reason is not.}} So the team's first sentence, \emph{``The RM system is the only thing setting rates''}, is \textcolor{warnred}{\textbf{false}}.
+The override is logged. \textcolor{warnred}{The reason is not.} So the team's first sentence, \emph{``The RM system is the only thing setting rates''}, is \textcolor{warnred}{false}.
 
 \medskip
 
 \begin{itemize}
   \item An unrecorded factor $U$ (the local knowledge) moves both the rate and bookings. Assumption 1.1 fails, and no flexibility in $g(X)$ repairs it: $U$ is not in $X$.
-  \item If an override raises both (a wedding block), it biases $\hat\theta$ toward zero, as the category did on the six nights: the true elasticity is further below $-1.32$.
+  \item If an override raises both (a wedding block), it biases $\hat\theta$ toward zero, as the category did on the six nights, and the true elasticity is further below $-1.32$.
   \item If it moves them in opposite directions (a rate raised to hold rooms back), $\hat\theta$ is too far from zero, and the rise could pay.
 \end{itemize}
 
@@ -904,8 +904,8 @@ Suppose an omitted confounder $U$ would explain a share $R^2_{D}$ of the residua
 
 \begin{itemize}
   \item The second factor comes from the residuals. At Meridian it is $3.0$.
-  \item The first needs two shares nobody can measure: how much of the \emph{leftover} rate and the \emph{leftover} bookings $U$ would explain. So use the bound twice: the strength that would change the decision, and a comparison with observed signals.
-  \item The bound is worst-case: the part of $U$ not explained by $D$ and $X$ lines up perfectly with the outcome.
+  \item The first needs two shares nobody can measure: how much of the \emph{leftover} rate and of the \emph{leftover} bookings $U$ would explain. So use the bound in two ways, to find the strength that would change the decision and to compare with observed signals.
+  \item The bound is worst-case. It assumes the part of $U$ not explained by $D$ and $X$ lines up perfectly with the outcome.
 \end{itemize}
 \end{frame}
 
@@ -935,13 +935,13 @@ The estimate sits $0.24$ from the break-even. With equal shares $R^2_D = R^2_Y$:
 \frac{q}{\sqrt{1 - q}} \times 3.0 = 0.24 \quad\Longrightarrow\quad q = 7.7\% .
 \]
 
-An override that explains 7.7\% of the leftover rate variation \emph{and} 7.7\% of the leftover bookings variation could make the rise pay. Is that a lot? On its own the number cannot say.
+An override that explains 7.7\% of the leftover rate variation \emph{and} 7.7\% of the leftover bookings variation could make the rise pay. Whether that is a lot takes a comparison with a signal the logs do record.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Benchmarking Against an Observed Signal}
 
-Drop an observed signal, re-estimate, and measure how much leftover variation it explains. For the \textbf{event flag}: $R^2_D = 0.04$ of the leftover rate variance and $R^2_Y = 0.06$ of the leftover bookings variance.
+Drop an observed signal, re-estimate, and measure how much leftover variation it explains. For the event flag, $R^2_D = 0.04$ of the leftover rate variance and $R^2_Y = 0.06$ of the leftover bookings variance.
 
 \medskip
 
@@ -960,11 +960,11 @@ $k$ & $R^2_D$ & $R^2_Y$ & \textbf{Largest bias} & \textbf{Range for $\theta$} \\
 
 \medskip
 
-The decision survives a factor as strong as the event flag and can be overturned at about \textbf{1.6 times} it. Overrides happen for exactly the events the calendar misses, so a factor that strong is plausible; it would also have to push the rate and bookings in opposite directions.
+The decision survives a factor as strong as the event flag and can be overturned at about 1.6 times it. Overrides happen for exactly the events the calendar misses, so a factor that strong is plausible; it would also have to push the rate and bookings in opposite directions.
 
 \medskip
 
-\textbf{Sensitivity analysis does not test the assumption; it prices the doubt.} Here the doubt is large enough to want randomized rate variation before any bigger move. Meeting 9 returns to the overrides.
+\textbf{Sensitivity analysis does not test the assumption; it prices the doubt.} Here the doubt is large enough to want randomized rate variation before any bigger move. We return to the overrides later in the course.
 \end{frame}
 
 % ====================================================================
@@ -978,8 +978,8 @@ Reading a slope off a model of $Y$ on $(D, X)$; fitting nuisances on the rows th
 
 Each one has appeared today:
 \begin{itemize}
-  \item the boosted model with the rate as a feature said $-1.03$: raise;
-  \item in-sample residualization with a flexible model said $-0.95$: raise;
+  \item the boosted model with the rate as a feature said $-1.03$ and pointed to a rise;
+  \item in-sample residualization with a flexible model said $-0.95$, also pointing to a rise;
   \item rows treated as independent made the SE three times too small;
   \item booking pace recorded after the rate posted is a mediator, not a control;
   \item for the discount, the partially linear model's $6.1$ is neither the ATE ($8.0$) nor the ATT ($9.1$);
@@ -994,7 +994,8 @@ Each one has appeared today:
   \item \spinestep{Estimand.} The elasticity of bookings with respect to the rate, held against the break-even $-1.32$. With varying slopes, the partially linear $\theta$ is a $\Var(D \mid X)$-weighted average; the interactive model targets the ATE.
   \item \spinestep{Identification.} The RM system is the assignment mechanism: every signal it used, measured before the rate, and some rate variation left over. Pinned nights contribute nothing.
   \item \spinestep{Estimation.} Residualize both sides (FWL); fit the nuisances flexibly and out of fold. The bias is then a product of errors, plus the rate model's squared error. At Meridian, $\hat\theta = -1.56$.
-  \item \spinestep{Inference.} Folds and SEs by night: $[-1.62, -1.50]$. Repeat the split; report two learners.
+  \item \spinestep{Inference.} Folds and SEs by night give $[-1.62, -1.50]$.
+ Repeat the split; report two learners.
   \item \spinestep{Sensitivity.} An unlogged override reaches the break-even at a partial $R^2$ of 7.7\% on each side, about 1.6 times the event flag.
   \item \textbf{Do not raise, and do not extrapolate.} The evidence supports a modest, randomized test of a cut.
 \end{itemize}

@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\notesheader{3}{Conditional Effects}{Who responds, how to estimate it, and why outcome accuracy is the wrong test}
+\notesheader{3}{Conditional effects}{Who responds, how to estimate it, and why outcome accuracy is the wrong test}
 
 \begin{decision}
 An offer works on average. Whom should it go to? The answer depends on how the effect varies with customer
@@ -31,12 +31,12 @@ identified, every outcome regression splits into a \emph{baseline} and an \emph{
 \begin{equation}\label{eq:decomp}
   \mu_d(x) = \mu_0(x) + d\,\tau(x).
 \end{equation}
-A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum_x \Pr_T(X=x)\,\tau(x)$:
-standardization with $T$'s weights.
+A decision about a target population $T$ (a list, a region) needs $\tau_T = \sum_x \Pr_T(X=x)\,\tau(x)$, which
+standardizes the CATE with $T$'s weights.
 
 A variable is \emph{prognostic} if $\mu_0(x)$ varies with it and an \emph{effect modifier} if $\tau(x)$ does.
 The two are independent properties: a variable can be either, both, or neither. In most business data
-$\Var(\mu_0(X))$ is far larger than $\Var(\tau(X))$, which is why learners tuned to outcomes favor
+$\Var(\mu_0(X))$ is far larger than $\Var(\tau(X))$. That is why learners tuned to predict outcomes favor
 prognostic variables.
 
 \subsection{Identification}
@@ -82,12 +82,13 @@ Treating minus not treating is $\E[(m-c)Y(1) - k \mid x] - \E[mY(0) \mid x]$, wh
 holds because $\max\{V,0\} \ge V$ and $\max\{V,0\} \ge 0$ pointwise; take expectations.
 \end{proof}
 
-The gap in the inequality is the \emph{value of targeting}. It is large when effects straddle the break-even:
-an average below break-even can hide a profitable segment. With per-unit costs ($c=0$) the rule ranks by
+The gap in the inequality is the \emph{value of targeting}. It is large when effects straddle the break-even,
+because an average below break-even can hide a profitable segment. With per-unit costs ($c=0$) the rule ranks by
 $\tau(x)$ against a common threshold $k/m$. With per-redemption costs ($k=0$) the threshold $c\,\mu_1(x)/m$
 rises with purchase rates, so likely buyers must clear a higher bar. Either way, ranking by ``most likely to
-buy'' is not the rule and can be its opposite: in the four response types of Meeting~1, a response model ranks
-sure things first, while the rule wants persuadables.
+buy'' is not the rule and can be its opposite. Recall the response types from Meeting~1. A response model ranks
+sure things, who buy with or without the treatment, first; the rule wants persuadables, who buy only when
+treated.
 
 \subsection{The interaction model and inference on heterogeneity}
 
@@ -109,7 +110,7 @@ Disjoint samples make the two estimates independent, and variances of independen
 Heterogeneity is shown by an interval for the \emph{difference} that excludes zero, not by one segment being
 ``significant'' and another not. With $K$ pre-specified segments each tested at level $\alpha$, the chance of a
 false positive somewhere approaches $1 - (1-\alpha)^K$; report all segments and, if the decision rests on
-several, use Bonferroni ($\alpha/K$) or Holm. Segments found by searching need fresh data (Meeting~4). The
+several, use Bonferroni ($\alpha/K$) or Holm. Segments found by searching need confirmation on fresh data. The
 segment-level effects $\text{GATE}_k = \E[\tau(X) \mid G=k]$ for a grouping $G$ are estimated by within-group
 differences in means.
 
@@ -136,7 +137,7 @@ with $W_i = \tilde D_i\tilde X_i$, is minimized at $\sum_i W_iY_i/(s+\lambda)$.
 \end{proof}
 Since $\tilde D = \pm\tfrac12$, $s = \tfrac14\sum_i \tilde X_i^2$: the interaction column has a quarter of $X$'s
 variation, so a penalty that barely moves $\beta$ can erase $\gamma$. A lasso sets a small $\gamma$ exactly to zero,
-and the model then reports the same effect for everyone. Trees do the same implicitly: a split on $D$ competes
+and the model then reports the same effect for everyone. Trees do the same implicitly. A split on $D$ competes
 with prognostic splits and loses when the effect is small.
 
 \begin{prop}{Variances add in the T-learner}{tlearner}
@@ -200,14 +201,13 @@ $\ell(X) = \mu_0(X) + e(X)\tau(X)$; subtract. The squared loss is minimized by t
 the residual is orthogonal to any function of $(D, X)$.
 \end{proof}
 The \emph{R-learner} minimizes the sample version, the \emph{R-loss}, with $\hat\ell$ and $\hat e$ fitted on other
-folds and a penalty on $t$. It regresses the outcome residual on the treatment residual, locally in $x$: the same
-idea as causal forests (Meeting~4) and double machine learning (Meeting~8).
+folds and a penalty on $t$. It regresses the outcome residual on the treatment residual, locally in $x$. Causal forests and double
+machine learning, later in the course, build on the same idea.
 
 \paragraph{A shared representation.} Neural networks offer a middle ground between sharing everything
 (S-learner) and nothing (T-learner): TARNet passes $x$ through shared layers to a representation $\Phi(x)$ and
 then through two heads, $\hat\mu_d(x) = h_d(\Phi(x))$, training each unit only on its own arm's head. Variants
-that force $\Phi(X)$ to look alike in both arms can hide an overlap failure rather than fix it. Handout H2 covers
-these architectures.
+that force $\Phi(X)$ to look alike in both arms can hide an overlap failure rather than fix it.
 
 \subsection{Why outcome accuracy cannot choose a targeting model}
 
@@ -224,8 +224,8 @@ giving $\tfrac14\Var(\tau(X))$; the irreducible noise is common to both models.
 A quarter of the effect's variance is tiny next to an outcome's own variance (about $p(1-p)$ for a purchase).
 A model can be nearly optimal by outcome loss while discarding all the heterogeneity a targeting decision
 needs. Since $\tau_i$ is never observed, the error we want, $\E[(\hatt(X) - \tau(X))^2]$, is computable only in
-simulations. On a held-out randomized fold, compare candidates by (i) the value of the policy each implies
-(Meeting~5); (ii) the R-loss; or (iii) the mean squared gap between $\hatt(X)$ and the DR pseudo-outcome $\phi$.
+simulations. On a held-out randomized fold, compare candidates by (i) the value of the policy each implies, the net
+value of the list it selects; (ii) the R-loss; or (iii) the mean squared gap between $\hatt(X)$ and the DR pseudo-outcome $\phi$.
 When nuisance models are accurate, (ii) and (iii) rank candidates as their true CATE error would. Assign
 \emph{units}, not rows, to the samples used for fitting, choosing, and assessing, so that no customer appears in two.
 
@@ -241,7 +241,7 @@ model by outcome RMSE; reporting the effect at the reference group as ``the'' ef
   legend style={draw=none, font=\footnotesize, at={(0.02,0.98)}, anchor=north west}]
 \addplot[thick, extgrey] {0.45 + 0.045*x};
 \addplot[thick, sbgreen] {0.45 + 0.045*x + 0.22 - 0.02*x};
-\legend{$\mu_0(x)$: without offer, $\mu_1(x)$: with offer}
+\legend{$\mu_0(x)$ (without offer), $\mu_1(x)$ (with offer)}
 \end{axis}
 \end{tikzpicture}
 
@@ -273,7 +273,7 @@ Long, high  & 0.93 & 0.90 & 0.03 & 0.018 & $[-0.005, 0.065]$ & $-5.87$ \\
 Each SE is $\sqrt{p_1(1-p_1)/500 + p_0(1-p_0)/500}$. The ATE is $0.1025$: offering it to everyone nets
 $600 \times 0.1025 - 80 = -$¥18.50 per member. Net values by segment are $-8$, $+52$, $-56$, and $-62$, so the
 targeted rule (short, high usage only) earns $52/4 = $ ¥13 per member in the base against $0$ for the best
-blanket rule (offer to nobody): the value of targeting in Result~\ref{prop:rule}. With four segments, Bonferroni
+blanket rule (offer to nobody). That difference is the value of targeting in Result~\ref{prop:rule}. With four segments, Bonferroni
 at $0.0125$ still accepts the short, high-usage segment ($p = 0.002$).
 
 \paragraph{Step 2: prognostic versus modifier.} Tenure is strongly prognostic (control renewal $0.49$ for short,
@@ -324,19 +324,25 @@ DR-learner.
 
 \begin{extension}[Lasso for heterogeneity]
 With many candidate modifiers, the modified-outcome or R-loss lasso selects a sparse $\tau(x)$. Selection makes
-naive standard errors invalid; use sample splitting or the best-linear-projection test of Meeting~4.
+naive standard errors invalid. Use sample splitting, or a best-linear-projection test on held-out data, a tool
+that comes later in the course.
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{K\"unzel, Sekhon, Bickel, and Yu (2019), ``Metalearners for estimating heterogeneous treatment
-effects'', \emph{PNAS}}{The S-, T-, and X-learners compared, with simulations}{Sections 1--4}{2}
-\reading{Nie and Wager (2021), ``Quasi-oracle estimation of heterogeneous treatment effects'',
-\emph{Biometrika}}{The R-learner and why residualizing first protects the effect}{Sections 1--3}{3}
-\reading{Kennedy (2023), ``Towards optimal doubly robust estimation of heterogeneous causal effects'',
-\emph{Electronic Journal of Statistics}}{The DR-learner and its error bound}{Sections 1--3}{3}
-\reading{Gelman and Stern (2006), ``The difference between significant and not significant is not itself
-statistically significant'', \emph{American Statistician}}{The segment-comparison error in four pages}{All}{1}
+\reading{K\"unzel, S\"oren R., Jasjeet S. Sekhon, Peter J. Bickel, and Bin Yu. 2019. ``Metalearners for
+Estimating Heterogeneous Treatment Effects Using Machine Learning.'' \emph{Proceedings of the National Academy of
+Sciences} 116 (10): 4156--65. \url{https://doi.org/10.1073/pnas.1804597116}}{The S-, T-, and X-learners compared, with
+simulations}{Sections 1--4}{2}
+\reading{Nie, Xinkun, and Stefan Wager. 2021. ``Quasi-Oracle Estimation of Heterogeneous Treatment Effects.''
+\emph{Biometrika} 108 (2): 299--319. \url{https://doi.org/10.1093/biomet/asaa076}}{The R-learner and why residualizing
+first protects the effect}{Sections 1--3}{3}
+\reading{Kennedy, Edward H. 2023. ``Towards Optimal Doubly Robust Estimation of Heterogeneous Causal Effects.''
+\emph{Electronic Journal of Statistics} 17 (2): 3008--49. \url{https://doi.org/10.1214/23-EJS2157}}{The DR-learner and
+its error bound}{Sections 1--3}{3}
+\reading{Gelman, Andrew, and Hal Stern. 2006. ``The Difference Between `Significant' and `Not Significant' Is Not
+Itself Statistically Significant.'' \emph{The American Statistician} 60 (4): 328--31.
+\url{https://doi.org/10.1198/000313006X152649}}{The segment-comparison error in four pages}{All}{1}
 \reading{Handout H2, \emph{Neural and foundation-model estimators}}{TARNet, DragonNet, CEVAE, and in-context
 estimators, with what each assumes}{All}{2}
 \end{readinglist}

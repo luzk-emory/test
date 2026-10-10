@@ -1,12 +1,12 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\handoutheader{H6}{Staggered Adoption}{Cohorts, clean comparisons, and what two-way fixed effects really averages}{Meeting 10 (Panel data and DiD)}
+\handoutheader{H6}{Staggered adoption}{Cohorts, clean comparisons, and what two-way fixed effects really averages}{Meeting 10 (Panel data and DiD)}
 
 \begin{decision}
 Real rollouts are staggered: some stores adopt in March, some in May, some never. The two-way fixed-effects regression that
 works for one adoption date also compares late adopters with early ones that are already treated, without saying so. If effects grow or fade
-over time, its answer can be far from any average effect, even of the wrong sign. This handout builds the estimate from clean
+over time, its answer can be far from any average effect, even of the wrong sign. The estimate should be built from clean
 comparisons instead.
 \end{decision}
 
@@ -97,7 +97,7 @@ that case.
 \subsection{Aggregation and event studies}
 
 \paragraph{By event time.} For $e \ge 0$, $\ATT(e) = \sum_g \Pr(G = g \mid g + e \le T)\,\ATT(g, g+e)$: the average effect $e$ periods after adoption, across
-cohorts observed that long. This is what a rollout decision needs: a unit adopting tomorrow starts at $e = 0$.
+cohorts observed that long. This is what a rollout decision needs, since a unit adopting tomorrow starts at $e = 0$.
 
 \paragraph{Overall.} Average all treated $\ATT(g,t)$ cells weighted by cohort size, or average within cohort first. It depends on how long each cohort has been
 observed.
@@ -106,7 +106,7 @@ observed.
 studies from clean comparisons: event-time dummies in a TWFE regression inherit the contaminated comparisons and can show spurious pre-trends.
 
 \paragraph{Imputation.} An alternative estimator fits unit and period effects on untreated observations only (never-treated units and not-yet-treated periods),
-imputes $Y_{it}(\infty)$ for treated cells, and averages $Y_{it} - \hat Y_{it}(\infty)$ with chosen weights (Borusyak, Jaravel, and Spiess, 2024). It uses all
+imputes $Y_{it}(\infty)$ for treated cells, and averages $Y_{it} - \hat Y_{it}(\infty)$ with chosen weights (Borusyak, Jaravel, and Spiess 2024). It uses all
 pre-periods efficiently and never uses treated cells as controls.
 
 \subsection{Inference}
@@ -126,8 +126,9 @@ Random assignment of dates makes cohort membership independent of the potential-
 population mean of $Y_{it}(g)$ (Meeting~1). No anticipation gives $Y_{it}(s) = Y_{it}(\infty)$ for $t < s$.
 \end{proof}
 
-No parallel-trends assumption is needed: the comparison is identified by design, as in an experiment, and the design-based inference of Meeting~2
-applies with the randomized dates (Athey and Imbens, 2022). ``Stagger the rest at random'' is therefore the cheapest upgrade to any rollout plan.
+No parallel-trends assumption is needed. The comparison is identified by design, as in an experiment, and the design-based inference of
+Meeting~2, in which potential outcomes are fixed and the only randomness is the draw, applies with the randomized dates as the draw (Athey and
+Imbens 2022). ``Stagger the rest at random'' is therefore the cheapest upgrade to any rollout plan.
 
 \begin{pitfall}[staggered DiD errors]
 TWFE with staggered adoption; event-time dummies in TWFE; a base period inside an anticipation window; later cohorts used as controls after their
@@ -156,7 +157,7 @@ N (never) & 60 & 61 & 62 \\
 $(\ATT(0), \ATT(1)) = (6, 3)$; overall average $5$.
 
 \paragraph{The contaminated comparison.} L against E, months $2 \to 3$: $(58 - 51) - (45 - 47) = 9$. Result~\ref{prop:contam} predicts
-$\ATT(L,3) - [\ATT(E,3) - \ATT(E,2)] = 6 - (3 - 6) = 9$: E's effect \emph{fell} by $3$, and the comparison credited the fall to L as extra gain.
+$\ATT(L,3) - [\ATT(E,3) - \ATT(E,2)] = 6 - (3 - 6) = 9$. E's effect \emph{fell} by $3$, and the comparison credited the fall to L as extra gain.
 
 \paragraph{TWFE.} With equal group sizes the Goodman-Bacon weights are $\tfrac13$ (E vs N), $\tfrac13$ (L vs N), $\tfrac16$ (E vs L before L adopts), and $\tfrac16$ (L vs E after
 E adopts). The four two-by-two estimates are $4.5$, $6$, $6$, and $9$, so
@@ -167,7 +168,7 @@ $5$ and reports the first-month effect as if it lasted.
 says the gain fades to $3$: no, unless the fade can be reversed.
 
 \begin{exercise}[computation]
-Add a fourth month in which both E's and L's effects are $3$ (E: 46, L: 56, N: 63). (a) Compute $\ATT(L,4)$ with N as the control and base month 2.
+Add a fourth month in which both E's and L's effects are $3$ (E at 46, L at 56, N at 63). (a) Compute $\ATT(L,4)$ with N as the control and base month 2.
 (b) Compute the same comparison with E as the control. (c) Explain the difference with Result~\ref{prop:contam}.
 \end{exercise}
 \answer{(a) $(56 - 51) - (63 - 61) = 3$. (b) $(56 - 51) - (46 - 47) = 5 + 1 = 6$. (c) E is treated in both month 2 and month 4, and its own effect fell from $6$ to
@@ -186,20 +187,28 @@ comparisons are identified by design (Result~\ref{prop:random}).}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Goodman-Bacon (2021), ``Difference-in-differences with variation in treatment timing'', \emph{Journal of Econometrics}}{The decomposition of
-TWFE into two-by-two comparisons}{Sections 1--3}{2}
-\reading{Callaway and Sant'Anna (2021), ``Difference-in-differences with multiple time periods'', \emph{Journal of Econometrics}}{Group-time effects,
-aggregation, and inference}{Sections 1--4}{2}
-\reading{Sun and Abraham (2021), ``Estimating dynamic treatment effects in event studies with heterogeneous treatment effects'', \emph{Journal of
-Econometrics}}{Why TWFE event studies mislead, and a fix}{Sections 1--3}{3}
-\reading{Borusyak, Jaravel, and Spiess (2024), ``Revisiting event-study designs: robust and efficient estimation'', \emph{Review of Economic
-Studies}}{The imputation estimator}{Sections 1--3}{3}
-\reading{de Chaisemartin and D'Haultf\oe uille (2020), ``Two-way fixed effects estimators with heterogeneous treatment effects'', \emph{AER}}{Negative
-weights in TWFE}{Sections I--III}{3}
-\reading{Athey and Imbens (2022), ``Design-based analysis in difference-in-differences settings with staggered adoption'', \emph{Journal of
-Econometrics}}{Randomized adoption dates and design-based inference}{Sections 1--4}{3}
-\reading{Roth, Sant'Anna, Bilinski, and Poe (2023), ``What's trending in difference-in-differences?'', \emph{Journal of Econometrics}}{A synthesis of
-the literature}{All}{2}
+\reading{Goodman-Bacon, Andrew. 2021. ``Difference-in-Differences with Variation in Treatment Timing.'' \emph{Journal of
+Econometrics} 225 (2): 254--277. \url{https://doi.org/10.1016/j.jeconom.2021.03.014}}{The decomposition of TWFE into
+two-by-two comparisons}{Sections 1--3}{2}
+\reading{Callaway, Brantly, and Pedro H. C. Sant'Anna. 2021. ``Difference-in-Differences with Multiple Time Periods.''
+\emph{Journal of Econometrics} 225 (2): 200--230. \url{https://doi.org/10.1016/j.jeconom.2020.12.001}}{Group-time
+effects, aggregation, and inference}{Sections 1--4}{2}
+\reading{Sun, Liyang, and Sarah Abraham. 2021. ``Estimating Dynamic Treatment Effects in Event Studies with Heterogeneous
+Treatment Effects.'' \emph{Journal of Econometrics} 225 (2): 175--199.
+\url{https://doi.org/10.1016/j.jeconom.2020.09.006}}{Why TWFE event studies mislead, and a fix}{Sections 1--3}{3}
+\reading{Borusyak, Kirill, Xavier Jaravel, and Jann Spiess. 2024. ``Revisiting Event-Study Designs: Robust and Efficient
+Estimation.'' \emph{Review of Economic Studies} 91 (6): 3253--3285. \url{https://doi.org/10.1093/restud/rdae007}}{The
+imputation estimator}{Sections 1--3}{3}
+\reading{de Chaisemartin, Cl\'ement, and Xavier D'Haultf\oe uille. 2020. ``Two-Way Fixed Effects Estimators with
+Heterogeneous Treatment Effects.'' \emph{American Economic Review} 110 (9): 2964--2996.
+\url{https://doi.org/10.1257/aer.20181169}}{Negative weights in TWFE}{Sections I--III}{3}
+\reading{Athey, Susan, and Guido W. Imbens. 2022. ``Design-Based Analysis in Difference-in-Differences Settings with
+Staggered Adoption.'' \emph{Journal of Econometrics} 226 (1): 62--79.
+\url{https://doi.org/10.1016/j.jeconom.2020.10.012}}{Randomized adoption dates and design-based inference}{Sections
+1--4}{3}
+\reading{Roth, Jonathan, Pedro H. C. Sant'Anna, Alyssa Bilinski, and John Poe. 2023. ``What's Trending in
+Difference-in-Differences? A Synthesis of the Recent Econometrics Literature.'' \emph{Journal of Econometrics} 235 (2):
+2218--2244. \url{https://doi.org/10.1016/j.jeconom.2023.03.008}}{A synthesis of the literature}{All}{2}
 \end{readinglist}
 
 \end{document}

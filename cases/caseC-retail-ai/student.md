@@ -1,14 +1,16 @@
-# Case C: Dana's AI Assistant Rollout
+# Case C: Dana's AI assistant rollout
 
 **A home-goods retail chain, Meetings 10–11.** Fictional teaching case: the company, the vendor, the people, and all data are invented.
 
 This case is handed out one part at a time. When a task says *commit*, write your answer down before the class discusses it.
 
+Parts are labeled by meeting and release: Part M10-R2 is the second part released in Meeting 10. Bonus parts, labeled B1 to B3, are optional and not examined.
+
 All sales figures are **mean weekly sales per store, in ¥000**, unless marked otherwise.
 
 ---
 
-## Meeting 10: Before, After, and Everyone Else
+## Meeting 10: Before, after, and everyone else
 
 ### Part M10-R1. The assistant
 
@@ -60,7 +62,7 @@ From Dana's rollout file:
 - "Cohorts were assigned by region, in the order the regional managers signed off, after each region's data-privacy review."
 - "Associates were trained on the assistant in weeks 51–52, in paid sessions held off the shop floor."
 - "The comparison stores are the 89 whose regions had not yet signed off."
-- "Licences are tied to store handsets: associates cannot use the assistant at another store. No two stores share a catchment."
+- "Licenses are tied to store handsets: associates cannot use the assistant at another store. No two stores share a catchment."
 - "Once the assistant took over stock checks, store managers re-planned their rotas."
 
 **Tasks. In pairs, commit first**
@@ -113,7 +115,7 @@ Then write Dana's memo in five sentences: the number, its interval, the assumpti
 
 ---
 
-## Meeting 11: The Flagship Store
+## Meeting 11: The flagship store
 
 ### Part M11-R1. One store, two years ahead
 
@@ -176,9 +178,9 @@ Two bodies of evidence are on Dana's desk: Meeting 10's cohort estimate and the 
 
 ---
 
-## Bonus (not examined): the staggered rollout
+## Bonus (not examined): The staggered rollout
 
-These parts were Meeting 11's case when it taught staggered adoption. That topic is now Handout H6; Meeting 10 ends with a warning about it. The week-104 situation is the same as in Part M11-R1.
+These parts are optional. The week-104 situation is the same as in Part M11-R1.
 
 ### Part B1. Extend it to everyone?
 

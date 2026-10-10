@@ -1,7 +1,7 @@
 % \documentclass[aspectratio=169, 11pt]{beamer}
 \documentclass[aspectratio=169, 11pt, handout]{beamer}
 
-% Meeting 1 lecture slides. Running case: Lin's coupon programme at a coffee chain (cases/caseA-coffee-chain,
+% Meeting 1 lecture slides. Running case: Lin's coupon program at a coffee chain (cases/caseA-coffee-chain,
 % releases R1 to R5). The notes' worked example (FitLife) is deliberately not reproduced here.
 % Shared with notes.tex: estimands, assumptions, notation, the statement of each Result, the order of topics.
 % Block A follows notes Sections 1.1 to 1.3; block B follows Sections 1.4 to 1.6.
@@ -31,7 +31,7 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, calc}
 
-% ── Colours: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
+% ── Colors: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
 \definecolor{sbgreen}{HTML}{00704A}
 \definecolor{noteblue}{HTML}{2060A0}
 \definecolor{warnred}{HTML}{B42318}
@@ -72,7 +72,7 @@
 \title[Meeting 1]{Meeting 1: The Coupon and the Coin}
 \subtitle{Causal basics: estimands, selection bias, randomization, and causal graphs}
 \author{Zhikun Lu}
-\date{\today}
+\date{}
 
 \begin{document}
 
@@ -124,10 +124,10 @@
     active/.style={box, fill=sbgreen!20, draw=sbgreen, very thick},
     inactive/.style={box, fill=gray!10, draw=gray!50}
 ]
-\node[active] (A) {\textbf{M1--M6}\\[2pt] A randomized control group\\[3pt] \emph{anything} may be unobserved};
-\node[inactive, right=of A] (B) {\textbf{M7--M8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
-\node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] A simulator learned from logs\\[3pt] the M7 assumption, made explicit};
-\node[inactive, right=of C] (D) {\textbf{M10--M11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
+\node[active] (A) {\textbf{Meetings 1--6}\\[2pt] A randomized control group\\[3pt] \emph{anything} may be unobserved};
+\node[inactive, right=of A] (B) {\textbf{Meetings 7--8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
+\node[inactive, right=of B] (C) {\textbf{Meeting 9}\\[2pt] A simulator learned from logs\\[3pt] the Meeting 7 assumption, made explicit};
+\node[inactive, right=of C] (D) {\textbf{Meetings 10--11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
 \draw[-{Stealth}, gray!50] (A) -- (B);
 \draw[-{Stealth}, gray!50] (B) -- (C);
 \draw[-{Stealth}, gray!50] (C) -- (D);
@@ -138,7 +138,7 @@
 
 \begin{center}
 \small Every decision in this course needs the same missing number: what \emph{would} have happened.\\
-The course gives four sources for it. Today starts with the first: a coin decides who is treated.
+The course gives four sources for it. Today starts with the first, a coin that decides who is treated.
 \end{center}
 \end{frame}
 
@@ -168,7 +168,7 @@ Regression, machine learning, AI tools: all of them live in step~3. They compute
 % [RELEASE R1: narrative and marketing's pilot numbers]
 \begin{frame}{The Coffee Chain, Before the Experiment}
 
-\textbf{Lin} runs customer analytics for a coffee chain with \textbf{10{,}000} loyalty members.
+Lin runs customer analytics for a coffee chain with 10{,}000 loyalty members.
 
 \bigskip
 
@@ -217,7 +217,7 @@ $\tau_i = Y_i(1) - Y_i(0)$ & \textbf{individual effect}
 
 \bigskip
 
-Both potential outcomes exist \textbf{before} the coupon is sent. Sending it only decides which one we see.
+Both potential outcomes exist before the coupon is sent. Sending it only decides which one we see.
 
 \bigskip
 
@@ -237,7 +237,7 @@ An estimand is a summary of potential outcomes for a named population. It specif
 
 \bigskip
 
-\textbf{Which population?} The 1{,}000 members of the test region are where an effect can be \emph{measured}: their average effect $\tau_S = \frac{1}{n}\sum_i \tau_i$ is a fixed number, and needs no assumption about how they were sampled. The 10{,}000-member base is where the decision \emph{lands}. Moving an effect from one to the other is a separate, assumed step called transport (Meeting 2).
+\textbf{Which population?} The 1{,}000 members of the test region are where an effect can be \emph{measured}: their average effect $\tau_S = \frac{1}{n}\sum_i \tau_i$ is a fixed number, and needs no assumption about how they were sampled. The 10{,}000-member base is where the decision \emph{lands}. Moving an effect from one to the other is a separate, assumed step called transport.
 \end{frame}
 
 % ====================================================================
@@ -252,7 +252,7 @@ An estimand is a summary of potential outcomes for a named population. It specif
 $\ATE$ & $\E[Y(1) - Y(0)]$ & coupon to everyone? \\
 $\ATT$ & $\E[Y(1) - Y(0) \mid D = 1]$ & keep sending it to those who get it now? \\
 $\ATU$ & $\E[Y(1) - Y(0) \mid D = 0]$ & extend it to those who do not? \\
-$\tau(x)$ & $\E[Y(1) - Y(0) \mid X = x]$ & which customers? (Meeting 3) \\
+$\tau(x)$ & $\E[Y(1) - Y(0) \mid X = x]$ & which customers? \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -280,7 +280,7 @@ With a buy-or-not outcome, each customer has one of four pairs $(Y(0), Y(1))$.
 \begin{tabular}{l|c|c|}
 \multicolumn{1}{c}{} & \multicolumn{1}{c}{\textbf{Doesn't buy with coupon}} & \multicolumn{1}{c}{\textbf{Buys with coupon}} \\
 \cline{2-3}
-\textbf{Doesn't buy without} & \cellcolor{gray!15} Lost cause & \cellcolor{green!15} \textbf{Persuadable} \\
+\textbf{Doesn't buy without} & \cellcolor{gray!15} Lost cause & \cellcolor{green!15} Persuadable \\
 & $\tau_i = 0$ & $\tau_i = +1$ \\
 \cline{2-3}
 \textbf{Buys without} & \cellcolor{red!15} Do-not-disturb & \cellcolor{blue!10} Sure thing \\
@@ -373,7 +373,7 @@ Do-not-disturb & 30 & 0 & \textcolor{warnred}{$-30$} \\
 \end{tabular}
 \end{center}
 
-The second form of Result 1.4: the coupon earns $m - c = 20$ on each purchase it causes and loses $c = 10$ on each purchase that would have happened anyway, the \textbf{sure-thing cost} $c\,p_0$.
+The second form of Result 1.4 says the coupon earns $m - c = 20$ on each purchase it causes and loses $c = 10$ on each purchase that would have happened anyway, the \textbf{sure-thing cost} $c\,p_0$.
 
 \medskip
 
@@ -407,11 +407,15 @@ D & 0 & 0 & ? & 0 & lost cause or persuadable \\
 \end{tabular}
 \end{center}
 
-More customers help us estimate \textbf{averages}. They never reveal A's missing outcome.
+More customers help us estimate averages. They never reveal A's missing outcome.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{What Writing $Y_i(d)$ Assumes}
+
+Writing $Y_i(d)$ relies on the stable unit treatment value assumption (SUTVA).
+
+\smallskip
 
 \begin{assumption}{1.5}{SUTVA}
 (i) \emph{No interference}: unit $i$'s outcome depends only on its own treatment. (ii) \emph{Consistency}: ``treated'' names one well-defined intervention, so $Y_i = Y_i(d)$ when $D_i = d$.
@@ -424,7 +428,7 @@ More customers help us estimate \textbf{averages}. They never reveal A's missing
 
 \medskip
 
-\textbf{Working rule:} state an intervention precise enough that you could, in principle, assign it.
+As a working rule, state an intervention precise enough that you could, in principle, assign it.
 
 \medskip
 
@@ -455,7 +459,7 @@ Do-not-disturb (1,0) & 60 & 40 & 100 \\
 \text{Naive difference} &= 0.68 - 0.24 = \textcolor{warnred}{0.44}
 \end{align*}
 
-\textbf{4.4 times the true effect of $0.10$.} Sure things inflate the coupon group's purchase rate.
+The naive difference is \textbf{4.4 times the true effect} of $0.10$. Sure things inflate the coupon group's purchase rate.
 \end{frame}
 
 % ====================================================================
@@ -469,7 +473,7 @@ Under consistency,
 \]
 \end{result}
 
-The idea: add and subtract $\E[Y(0) \mid D = 1]$, the one number the data never show.
+The proof adds and subtracts $\E[Y(0) \mid D = 1]$, the one number the data never show.
 
 \bigskip
 
@@ -484,7 +488,7 @@ Selection bias asks how coupon holders and the others would have differed \emph{
 % ====================================================================
 \begin{frame}{The Pilot, Decomposed}
 
-Read the decomposition off the pilot's type counts. $Y(0) = 1$ for sure things and do-not-disturbs.
+Read the decomposition off the pilot's type counts. $Y(0) = 1$ for sure things (ST) and do-not-disturbs (DND).
 
 \begin{center}
 \small
@@ -544,7 +548,7 @@ Selection on gains & $0.5 \times (0.12 - 0.08) = 0.02$ & picked slightly better 
 % [RELEASE R3: two targeting policies; pairs compute both before the reveal]
 \begin{frame}{Two Kinds of Customer}
 
-Lin's CRM splits the whole base into two segments of 5{,}000. Take the segment effects as given for now; estimating them is Meeting 3.
+Lin's customer database splits the whole base into two segments of 5{,}000. Take the segment effects as given for now; estimating effects like these from data comes later in the course.
 
 \bigskip
 
@@ -586,7 +590,7 @@ Two ways a manager might have run the pilot on the whole base. Treated $=$ one s
 \[
 \underbrace{0.70}_{\text{naive}} = \underbrace{0.05}_{\ATT} + \underbrace{0.75 - 0.10}_{\text{bias} \,=\, +0.65}
 \]
-\small Active customers buy anyway: a 14-fold \textbf{overestimate}.
+\small Active customers buy anyway: a 14-fold overestimate.
 \end{column}
 \begin{column}{0.49\textwidth}
 \textbf{(b) Coupon to the lapsed}
@@ -598,14 +602,14 @@ Two ways a manager might have run the pilot on the whole base. Treated $=$ one s
 \[
 \underbrace{-0.45}_{\text{naive}} = \underbrace{0.20}_{\ATT} + \underbrace{0.10 - 0.75}_{\text{bias} \,=\, -0.65}
 \]
-\small The coupon looks harmful. It lifts the lapsed by 20 points: a \textbf{sign reversal}.
+\small The coupon looks harmful, yet it lifts the lapsed by 20 points. The sign is reversed.
 \end{column}
 \end{columns}
 
 \medskip
 
 \begin{center}
-Same coupon, same customers. The sign is set by \textbf{who was chosen}. Keep (b) in mind: it comes back in block B and in Meeting 7.
+Same coupon, same customers. The sign is set by \textbf{who was chosen}. Keep (b) in mind. It comes back in Block B, and again later in the course with observational data.
 \end{center}
 \end{frame}
 
@@ -626,11 +630,11 @@ By consistency, $\E[Y \mid D=d] = \E[Y(d) \mid D=d]$. Independence replaces this
 
 \medskip
 
-Independence is a property of the \textbf{procedure}, not the customers. A random number generator knows nothing about anyone's potential outcomes, observed or not, so a coin also removes confounding by variables nobody recorded.
+Independence is a property of the procedure, not the customers. A random number generator knows nothing about anyone's potential outcomes, observed or not, so a coin also removes confounding by variables nobody recorded.
 \end{frame}
 
 % ====================================================================
-% [RELEASE R4: the Q2 randomised test in the pilot region]
+% [RELEASE R4: the Q2 randomized test in the pilot region]
 \begin{frame}{The Q2 Test: A Coin in the Pilot Region}
 
 In Q2, Lin draws 500 of the same 1{,}000 members at random for the coupon. If the draw split every type exactly in half:
@@ -917,7 +921,7 @@ A coin deletes every arrow into $D$, including those from $U$, which nobody meas
 % ====================================================================
 \begin{frame}{Simpson's Paradox}
 
-An association can \textbf{reverse} when the data are split by a third variable. Which answer is right is decided by the graph, not by the data.
+An association can reverse when the data are split by a third variable. Which answer is right is decided by the graph, not by the data.
 
 \bigskip
 
@@ -941,7 +945,7 @@ The same table of numbers can come from any of the three graphs. Knowing which o
 % ====================================================================
 \begin{frame}{Q3: The Win-Back Campaign}
 
-In Q3, marketing runs a win-back campaign on the whole base: coupons to 4{,}000 of the 5{,}000 lapsed members and 1{,}000 of the 5{,}000 active ones. Purchases:
+In Q3, marketing runs a win-back campaign on the whole base. Coupons go to 4{,}000 of the 5{,}000 lapsed members and 1{,}000 of the 5{,}000 active ones.
 
 \begin{center}
 \small
@@ -961,11 +965,11 @@ Pooled & 2{,}000 / 5{,}000 & 0.40 & 3{,}100 / 5{,}000 & 0.62 \\
 
 \bigskip
 
-Pooled, coupon holders buy \textbf{less}: $0.40 - 0.62 = -0.22$. Within each segment they buy more, by $0.05$ and $0.20$.
+Pooled, coupon holders buy less: $0.40 - 0.62 = -0.22$. Within each segment they buy more, by $0.05$ and $0.20$.
 
 \medskip
 
-Which comparison answers ``did the coupon help''?
+Which comparison answers ``did the coupon help'' depends on where the segment sits in the graph.
 \end{frame}
 
 % ====================================================================
@@ -988,7 +992,7 @@ ATT & the 5{,}000 coupon holders & $(1{,}000 \times 0.05 + 4{,}000 \times 0.20)/
 
 \bigskip
 
-Result 1.6 says the same thing: coupon holders would have bought at $0.23$ without the coupon, against $0.62$ for the others, so
+Result 1.6 gives the same answer. Coupon holders would have bought at $0.23$ without the coupon, against $0.62$ for the others, so
 \[
 -0.22 = \underbrace{0.17}_{\ATT} + \underbrace{(0.23 - 0.62)}_{\text{selection bias} \,=\, -0.39} .
 \]
@@ -998,7 +1002,7 @@ Result 1.6 says the same thing: coupon holders would have bought at $0.23$ witho
 % [RELEASE R5: segment economics and data roles]
 \begin{frame}{Data Roles}
 
-Every column in the Q2 export has exactly one job. Decide it \textbf{before} you fit anything.
+Every column in the Q2 export has exactly one job. Decide it before you fit anything.
 
 \begin{center}
 \small
@@ -1010,7 +1014,7 @@ Every column in the Q2 export has exactly one job. Decide it \textbf{before} you
 \texttt{coupon} & Treatment $D$ & Set by the draw; never predicted, never adjusted \\
 \texttt{purchase\_7d} & Outcome $Y$ & Measured after the draw, the same way in both arms \\
 \texttt{tier}, \texttt{recency}, \texttt{spend\_q1} & Pre-treatment $X$ & Fixed before the draw; may describe, split, or adjust \\
-\texttt{redeemed}, \texttt{app\_opens\_q2} & Post-treatment & Caused partly by $D$: \textbf{never} a control \\
+\texttt{redeemed}, \texttt{app\_opens\_q2} & Post-treatment & Caused partly by $D$: never a control \\
 \texttt{seed}, \texttt{draw\_time} & Audit & Proves the draw happened as described \\
 \bottomrule
 \end{tabular}
@@ -1057,7 +1061,7 @@ A colleague proposes to rerun the Q2 comparison only among members who opened th
 $\hatt = \bar Y_1 - \bar Y_0$ satisfies $\E_D[\hatt] = \tau_S$, where $\E_D$ averages over draws.
 \end{result}
 
-\small Why: each customer lands in the coupon arm with probability $500/1000$, so $\E_D[\bar Y_1] = \frac{1}{1000}\sum_i Y_i(1)$; the same holds for the control arm. No outcome model, no sampling assumption, no large-sample approximation.
+\small Each customer lands in the coupon arm with probability $500/1000$, so $\E_D[\bar Y_1] = \frac{1}{1000}\sum_i Y_i(1)$; the same holds for the control arm. The argument needs no outcome model, no sampling assumption, and no large-sample approximation.
 
 \normalsize
 \medskip
@@ -1068,7 +1072,7 @@ This is the \textbf{design-based} view: potential outcomes fixed, assignment ran
 % ====================================================================
 \begin{frame}{A Random Draw Need Not Balance}
 
-The same 1{,}000 customers; another draw the seed could have produced.
+Here is another draw the seed could have produced for the same 1{,}000 customers.
 
 \begin{center}
 \begin{tabular}{lrr}
@@ -1087,7 +1091,7 @@ Do-not-disturb & 45 & 55 \\
 \hatt = \frac{155 + 105}{500} - \frac{145 + 55}{500} = 0.52 - 0.40 = \mathbf{0.12} \qquad \text{(true: } 0.10\text{)}
 \]
 
-\textbf{Nothing is broken.} Unbiasedness is a statement about all the draws the seed could make, not about this one. The collection of $\hatt$ over every possible draw is the \textbf{randomization distribution}: its center is $\tau_S$, and its spread is what a standard error estimates (Meeting 2).
+\textbf{Nothing is broken.} Unbiasedness is a statement about all the draws the seed could make, not about this one. The collection of $\hatt$ over every possible draw is the \textbf{randomization distribution}: its center is $\tau_S$, and its spread is what a standard error estimates.
 \end{frame}
 
 % ====================================================================
@@ -1112,7 +1116,7 @@ Q2 randomized test & $0.10$ & \textcolor{sbgreen}{yes}: the assignment was a coi
 
 \bigskip
 
-Same regression, same software, opposite verdicts. The omitted-variable-bias formula is Result 1.6 written for a regression: for binary $D$, $\Cov(D,Y)/\Var(D) = \E[Y(0) \mid D=1] - \E[Y(0) \mid D=0] + \ATT$.
+The regression and the software are the same in both rows, and the verdicts are opposite. The omitted-variable-bias formula is Result 1.6 written for a regression: for binary $D$, $\Cov(D,Y)/\Var(D) = \E[Y(0) \mid D=1] - \E[Y(0) \mid D=0] + \ATT$.
 
 \medskip
 
@@ -1122,7 +1126,7 @@ Same regression, same software, opposite verdicts. The omitted-variable-bias for
 % ====================================================================
 \begin{frame}{The Test Against the Break-Even}
 
-Back to the rollout decision. The Q2 coupon arm bought at $p_1 = 0.50$:
+Now return to the rollout decision. The Q2 coupon arm bought at $p_1 = 0.50$:
 \[
 \tau^{\ast} = \frac{0.50}{3} = 0.167 \qquad\qquad \hatt = 0.50 - 0.40 = 0.10
 \]
@@ -1138,19 +1142,19 @@ Q2 randomized test & $0.10$ & $0.167$ & \textcolor{warnred}{$0.10 \times 30 - 5 
 \end{tabular}
 \end{center}
 
-Across 10{,}000 members: marketing forecast \textbf{+\textyen 64{,}000}; the test says \textbf{$-$\textyen 20{,}000}, \emph{if} the region's effect carries to the base (Meeting 2).
+Across 10{,}000 members: marketing forecast +\textyen 64{,}000; the test says $-$\textyen 20{,}000, \emph{if} the region's effect carries to the base.
 
 \bigskip
 
-The coupon \emph{works}: it causes purchases. It does not \emph{pay}: most of the \textyen 10 goes to sure things.
+The coupon \emph{works}, in that it causes purchases. It does not \emph{pay}, because most of the \textyen 10 goes to sure things.
 
 \medskip
 
-\small Is $0.10$ itself just the luck of one draw? Meeting 2.
+\small Whether $0.10$ is more than the luck of one draw is a question of inference, which comes later in the course.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{The Average Coupon Loses Money. Some Coupons Don't.}
+\begin{frame}{Net Value by Segment}
 
 Same margin and coupon, applied segment by segment on the base:
 \[
@@ -1168,7 +1172,7 @@ Lapsed & $+0.20$ & 0.30 & \textyen 6.00 & $0.100$ & \textcolor{sbgreen}{$+$\text
 \end{tabular}
 \end{center}
 
-Everyone: $5{,}000 \times (-6.50) + 5{,}000 \times 3.00 = \textcolor{warnred}{-\text{\textyen}\,17{,}500}$. \quad Lapsed only: \textcolor{sbgreen}{$+$\textyen 15{,}000}.
+A coupon to everyone nets $5{,}000 \times (-6.50) + 5{,}000 \times 3.00 = \textcolor{warnred}{-\text{\textyen}\,17{,}500}$; to the lapsed only, \textcolor{sbgreen}{$+$\textyen 15{,}000}.
 
 \bigskip
 
@@ -1176,7 +1180,7 @@ The active redeem 80\% of the time and are moved by 5 points. The \textyen 10 mo
 
 \bigskip
 
-\textbf{The decision is not ``coupon or no coupon'' but ``coupon whom''.} That is Meetings 3 to 6.
+\textbf{The decision is not ``coupon or no coupon'' but ``coupon whom''.} Learning whom to treat from data is where the course goes next.
 \end{frame}
 
 % ====================================================================
@@ -1218,10 +1222,17 @@ Each one has appeared today: the Q2 lift of $0.10$ is positive but below its bre
 \end{frame}
 
 % ====================================================================
+\begin{frame}{References}
+
+\small
+Bertrand, Marianne, and Sendhil Mullainathan. 2004. ``Are Emily and Greg More Employable Than Lakisha and Jamal? A Field Experiment on Labor Market Discrimination.'' \emph{American Economic Review} 94 (4): 991--1013. \url{https://doi.org/10.1257/0002828042002561}
+\end{frame}
+
+% ====================================================================
 \begin{frame}{Summary}
 
 \begin{itemize}
-  \item \spinestep{Estimand.} Name the number the decision needs, for whom, before any data: here a lift held against $\tau^\ast = p_1/3$.
+  \item \spinestep{Estimand.} Name the number the decision needs, for whom, before any data. Here it is a lift held against $\tau^\ast = p_1/3$.
   \item \spinestep{Identification.} Naive $=$ ATT $+$ selection bias; who got the coupon can inflate an effect or reverse its sign. A coin removes the bias by procedure. Without one, a graph says what to compare within: block backdoor paths, and never condition on a mediator or a collider.
   \item \spinestep{Estimation.} The difference in means, the same number as OLS on a dummy, is unbiased over draws of the coin. Any one draw misses.
   \item \textbf{An effect can be real and unprofitable.} The expensive customer is the sure thing.

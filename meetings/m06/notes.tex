@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\notesheader{6}{Allocation and Policy Learning}{From effect estimates to a deployable rule under costs, caps, budgets, and risk}
+\notesheader{6}{Allocation and policy learning}{From effect estimates to a deployable rule under costs, caps, budgets, and risk}
 
 \begin{decision}
 The effect estimates are in. Finance gives a budget, operations a cap on contacts, and management wants a rule simple
@@ -73,7 +73,7 @@ money. This is where unit-level estimates add value over segment averages.
 
 With unit costs $c_i > 0$, benefits $b_i = m\tau_i$, and a budget $C$ on expected cost, solve
 $\max_d \sum_i d_i(b_i - c_i)$ subject to $\sum_i d_ic_i \le C$. The \emph{relaxation} allows $d_i \in [0,1]$ (treating a random
-share of a segment). Order units by the benefit--cost ratio $r_i = b_i/c_i$; the \emph{greedy} assignment treats units in
+share of a segment). Order units by the benefit-cost ratio $r_i = b_i/c_i$; the \emph{greedy} assignment treats units in
 that order until the budget runs out or $r_i \le 1$, treating a fraction of the first unit $j$ that does not fit.
 
 \begin{prop}{Greedy is optimal for the relaxation; the shadow price}{knapsack}
@@ -91,9 +91,10 @@ $(r_j - 1)\delta = \lambda^\ast\delta$; as $C$ grows the marginal ratio falls, s
 \end{proof}
 
 The result has three practical consequences. The budget is spent in ratio order, not in order of $\tau$ or $v$. A
-budget can be replaced by a price: charging each unit's cost at $(1 + \lambda^\ast)$ reproduces the allocation. And
-$\lambda^\ast$ is the number to give finance: if the next-best use of the money returns more, the budget belongs there. The \emph{integer} problem is harder.
-With costs $6, 5, 5$, net values $12, 9, 9$, and budget $10$, ratio order takes the first (ratio $3.0$) and cannot afford
+budget can be replaced by a price, since charging each unit's cost at $(1 + \lambda^\ast)$ reproduces the allocation. And
+$\lambda^\ast$ is the number to give finance: if the next-best use of the money returns more, the budget belongs there.
+
+The \emph{integer} problem is harder. With costs $6, 5, 5$, net values $12, 9, 9$, and budget $10$, ratio order takes the first (ratio $3.0$) and cannot afford
 another, for $12$; the two cheaper units together are worth $18$. Greedy is exact when units are small relative to the
 budget or come in blocks (segments); otherwise use an integer solver, and note that greedy is within one unit's value of
 the optimum.
@@ -125,14 +126,16 @@ that an assignment meeting both constraints with complementary slackness is opti
 $dV/d\gamma = \partial/\partial\gamma$ of the Lagrangian, $\eta^\ast\sum_{i \in b} d_i/N_b$.
 \end{proof}
 
-In effect, a constraint on rates sets different thresholds for the two groups: the group the unconstrained rule favors
-faces a higher bar, the other a lower one, and $\eta^\ast$ sets the gap. The \emph{price of fairness} $V(\infty) - V(\gamma)$ is the value given up, and it is the value of the
-units swapped. Illustration: 10{,}000 customers in two groups of 5{,}000 and a cap of 1{,}000. Group $a$ has 750 customers at
-$v = $ ¥6 and the rest at ¥1; group $b$ has 250 at ¥6, 1{,}000 at ¥3, and the rest at ¥0.5. The unconstrained list is the 1{,}000
-customers at ¥6: rates 15\% and 5\% (3:1), value ¥6{,}000. With $\gamma = 1.25$ the rates satisfy
+In effect, a constraint on rates sets different thresholds for the two groups. The group the unconstrained rule
+favors faces a higher bar, the other a lower one, and $\eta^\ast$ sets the gap. The \emph{price of fairness}
+$V(\infty) - V(\gamma)$ is the value given up, and it is the value of the units swapped.
+
+Take 10{,}000 customers in two groups of 5{,}000 and a cap of 1{,}000. Group $a$ has 750 customers at $v = $ ¥6 and the rest
+at ¥1; group $b$ has 250 at ¥6, 1{,}000 at ¥3, and the rest at ¥0.5. The unconstrained list is the 1{,}000 customers at ¥6,
+with rates of 15\% and 5\% (three to one) and a value of ¥6{,}000. With $\gamma = 1.25$ the rates satisfy
 $5{,}000(\text{rate}_b + 1.25\,\text{rate}_b) = 1{,}000$, so group $b$ gets $444.4$ and group $a$ $555.6$ (in whole customers,
-445 and 555). The list swaps about 195 customers at ¥6 in $a$ for 195 at ¥3 in $b$: value about ¥5{,}415, a price of about ¥585. The thresholds are ¥6 in $a$ and ¥3 in $b$; solving the two
-threshold equations gives $\eta^\ast \approx$ ¥6{,}667 and $\lambda^\ast \approx$ ¥4.67, so tightening $\gamma$ from 1.25 to 1.20 costs about
+445 and 555). The list swaps about 195 customers at ¥6 in $a$ for 195 at ¥3 in $b$. Its value falls to about ¥5{,}415, a
+price of about ¥585. The thresholds are ¥6 in $a$ and ¥3 in $b$; solving the two threshold equations gives $\eta^\ast \approx$ ¥6{,}667 and $\lambda^\ast \approx$ ¥4.67, so tightening $\gamma$ from 1.25 to 1.20 costs about
 $0.05 \times 6{,}667 \times 0.089 \approx$ ¥30.
 
 Which constraint to impose is a value judgment rather than an estimation problem. Parity of treatment rates, of expected
@@ -171,10 +174,10 @@ For any $x$ with $v(x) \le 0$, the conservative rule treats it with probability 
 If $v \le 0$, $\Pr\{\hat v - z_\alpha\SE > 0\} \le \Pr\{\hat v - z_\alpha\SE > v\} = \alpha$.
 \end{proof}
 
-The guarantee is one-sided: it limits paying for losers and says nothing about profitable cells left off because their
-estimates are noisy. $z_\alpha$ expresses risk preference, not something the data supply. Bound the net value, not $\tau$:
-with arms estimated independently, $\widehat\Var(\hat v) = (m - a)^2\widehat\Var(\hat\mu_1) + m^2\widehat\Var(\hat\mu_0)$ (Meeting~2). Optimizing
-on point estimates also suffers the \emph{optimizer's curse}: units chosen because their estimates are high are
+The guarantee is one-sided. It limits paying for losers and says nothing about profitable cells left off because
+their estimates are noisy. $z_\alpha$ expresses a risk preference, not something the data supply. Bound the net value, not
+$\tau$, because the cost is estimated too. With arms estimated independently, $\widehat\Var(\hat v) = (m - a)^2\widehat\Var(\hat\mu_1) + m^2\widehat\Var(\hat\mu_0)$ (Meeting~2). Optimizing
+on point estimates also suffers the \emph{optimizer's curse}. Units chosen because their estimates are high are
 disproportionately those whose estimates are too high, so the realized value of an optimized list falls short of its
 estimate. Evaluate the frozen list on held-out data (Meeting~5).
 
@@ -225,19 +228,19 @@ and neither decision above uses it.
 
 \subsection{From predict-then-optimize to policy learning}
 
-Every rule so far is \emph{predict-then-optimize}: estimate $\tau$ (and $c$), then hand the estimates to an optimizer (a
-threshold, a sort, a knapsack). The estimates are trained for accuracy; the decision is judged by value. Three routes
+Every rule so far is \emph{predict-then-optimize}. It estimates $\tau$ (and $c$), then hands the estimates to an
+optimizer (a threshold, a sort, a knapsack). The estimates are trained for accuracy; the decision is judged by value. Three routes
 differ in how much of the training they hand to the decision.
 \begin{enumerate}
   \item \emph{Predict, then optimize} (plug-in). Fit $\hatt$ by an estimation loss and apply the optimizer. Modular and
   reusable, but accuracy is bought everywhere, including where the decision is never in doubt.
   \item \emph{Decision-focused learning.} Keep the optimizer and train the estimate on the value of the decision it
-  induces: choose $\theta$ to maximize $\frac1n\sum_i \pi_\theta(X_i)\Gamma_i$, where $\pi_\theta$ is the optimizer applied to
+  induces, choosing $\theta$ to maximize $\frac1n\sum_i \pi_\theta(X_i)\Gamma_i$, where $\pi_\theta$ is the optimizer applied to
   $\hatt_\theta$ and $\Gamma_i$ is the score of Result~\ref{prop:ewm} below. The objective jumps as the optimizer's output
-  changes, so practice uses smooth surrogates (the SPO+ loss of Elmachtoub and Grigas for linear objectives) or
+  changes, so practice uses smooth surrogates (the SPO+ loss of Elmachtoub and Grigas (2022) for linear objectives) or
   randomized optimizers. It is worth the extra effort when the optimizer couples units (a budget, a capacity, a menu), so that
   a unit's decision is not a simple function of its own estimate.
-  \item \emph{Policy learning.} Drop the estimate and search a class $\Pi$ of rules, such as depth-2 trees, for the one with
+  \item \emph{Policy learning.} Drop the estimate and search a class $\Pi$ of rules, such as depth-two trees, for the one with
   the highest estimated value. A restricted class is easy to explain, audit, and deploy.
 \end{enumerate}
 Route 2 is route 3 with the class $\Pi = \{\text{optimizer} \circ \hatt_\theta\}$. One difference from textbook
@@ -271,19 +274,19 @@ The last sum does not depend on $\pi$.
 
 Any classifier that accepts sample weights becomes a policy learner (\emph{outcome-weighted learning}). This makes the
 contrast with route 1 precise: an estimation loss penalizes errors on every unit, while the decision loss penalizes only errors
-that flip a decision, weighted by how much is at stake. Meeting~9 proves the population version (regret counts only
-misclassified units). Under a budget, replace $\Gamma_i$ by $\Gamma_i - \lambda^\ast c(X_i)$ (Result~\ref{prop:knapsack}).
+that flip a decision, weighted by how much is at stake. Later in the course, a population version of this result shows that regret counts
+only misclassified units. Under a budget, replace $\Gamma_i$ by $\Gamma_i - \lambda^\ast c(X_i)$ (Result~\ref{prop:knapsack}).
 
 A \emph{policy tree} is the case where $\Pi$ is the set of trees of depth one or two, searched exhaustively. The \emph{regret}
 of $\hat\pi$, the value it gives up relative to the best policy in $\Pi$, shrinks at a rate of order $\sqrt{\text{complexity}(\Pi)/n}$
-with doubly robust scores (Athey and Wager, 2021): a richer class can come closer to the ideal rule but needs more data to
-find its best member. Depth-2 trees are a common compromise. The selection warning of Meeting~5 applies: the learned
-policy's in-sample value is optimistic, so evaluate it on fresh data.
+with doubly robust scores (Athey and Wager 2021). A richer class can come closer to the ideal rule but needs more data
+to find its best member, and depth-two trees are a common compromise. The selection warning of Meeting~5 applies here
+too. The learned policy's in-sample value is optimistic, so evaluate it on fresh data.
 
 \subsection{Deploying so that it can still be checked}
 
 A deployed policy is a hypothesis about where value lies. Keep a small random \emph{holdout} of eligible units under the
-old policy or untreated: it keeps measuring value, detects drift, and generates experimental data for the next round. A
+old policy or untreated. It keeps measuring value, detects drift, and generates experimental data for the next round. A
 policy deployed without one destroys the data needed to evaluate it. When the rule itself randomizes (for instance, a
 bandit), log each unit's assignment probability: the logs are then experimental data with known, varying propensities,
 and the IPW identity of Meeting~5 applies with those probabilities.
@@ -292,12 +295,13 @@ and the IPW identity of Meeting~5 applies with those probabilities.
 traffic toward arms that look better as data arrive: \emph{Thompson sampling} assigns each new unit to an arm with
 probability equal to the current posterior probability that the arm is best. Bandits suit many short-lived decisions
 (creative variants); one-off strategic decisions are better served by a clean test. Sequential rules, where today's
-action depends on yesterday's response, are the subject of Handout H3.
+action depends on yesterday's response, need more care. The response is both a result of the first action and a reason
+for the next, so adjusting for it by ordinary regression biases the effect of the first action.
 
 \subsection{What the sum assumes}\label{sec:sum}
 
 Writing the value of a list as $\sum_i d_iv(X_i)$ assumes no interference and one well-defined treatment. It fails when
-treated units tell untreated ones, draw demand from them, or share a capacity (Handout H1). Then the objective is not
+treated units tell untreated ones, draw demand from them, or share a capacity. Then the objective is not
 separable and none of the sorting results holds. Check also that the list does not rank cells the experiment never
 contained (no support): the optimizer cannot tell a measured number from an extrapolated one.
 
@@ -338,7 +342,7 @@ upgrading B from ¥5 to ¥10, $(2.5 - 2.0)/(4.5 - 2.0) = 0.2$. Filling from the 
 ¥70{,}000; a linear-programming solver returns the same. The next uses of money return ¥0.20 per yuan, so
 $\lambda^\ast = 0.2$: an extra ¥10{,}000 would add about ¥2{,}000. Halving the budget costs only ¥10{,}000 of profit because the
 dropped spending was the least productive. (At exactly ¥50{,}000, \emph{removing} a yuan would cost ¥1.00, since B or E would be
-cut: the shadow price differs on the two sides of a kink.)
+cut; the shadow price differs on the two sides of a kink.)
 
 \paragraph{Step 3: the price rule.} With $\lambda = 0.2$, B scores $2.0 - 0.2 \times 2.0 = 1.6$ at ¥5 and $2.5 - 0.2 \times 4.5 = 1.6$ at ¥10:
 indifferent, which is why $0.2$ is where the budget starts to bind on B's upgrade. C's ¥5 coupon scores
@@ -360,10 +364,10 @@ $\Gamma_i$ & 3.0 & 1.0 & 2.0 & $-1.0$ & $-2.0$ & 0.5 & $-0.5$ & $-1.5$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-Estimated gain per customer, $\tfrac18\sum_i\pi(X_i)\Gamma_i$: treat everyone $1.5/8 = 0.19$; new customers $5.0/8 = 0.63$; high
-spenders $2.5/8 = 0.31$. The best depth-one tree treats new customers; depth two cannot improve (cell sums $4.0, 1.0, -1.5,
--2.0$). By Result~\ref{prop:wclass} the same search is a weighted classification: label each customer by the sign of
-$\Gamma_i$ and weight it by $|\Gamma_i|$. ``New customers'' misclassifies customers 4 and 6 (weight $1.5$); ``everyone''
+The estimated gain per customer, $\tfrac18\sum_i\pi(X_i)\Gamma_i$, is $1.5/8 = 0.19$ for treating everyone, $5.0/8 = 0.63$
+for new customers, and $2.5/8 = 0.31$ for high spenders. The best depth-one tree treats new customers; depth two cannot improve (cell sums $4.0, 1.0, -1.5,
+-2.0$). By Result~\ref{prop:wclass} the same search is a weighted classification, which labels each customer by the sign
+of $\Gamma_i$ and weights it by $|\Gamma_i|$. ``New customers'' misclassifies customers 4 and 6 (weight $1.5$); ``everyone''
 misclassifies 4, 5, 7, and 8 (weight $5.0$). The difference, $3.5$, is the difference in summed value, $5.0 - 1.5$. Eight
 customers are far too few to trust; the example only illustrates the arithmetic.
 
@@ -412,7 +416,7 @@ at little cost.}
 
 \begin{extension}[Decision-focused learning in practice]
 The value of a decision is piecewise constant in the estimates, so its gradient is zero almost everywhere. Three fixes:
-convex surrogates such as SPO+ (Elmachtoub and Grigas, 2022), which bound the regret of a linear optimizer; smoothing the
+convex surrogates such as SPO+ (Elmachtoub and Grigas 2022), which bound the regret of a linear optimizer; smoothing the
 optimizer by adding noise and averaging its output; and, for threshold and sort rules, the weighted classification of
 Result~\ref{prop:wclass}. Mandi et al.\ (2024) survey the methods and benchmarks. With causal labels, every surrogate is fed
 doubly robust scores in place of realized outcomes, and the cross-fitting rules of Meeting~3 apply.
@@ -420,7 +424,7 @@ doubly robust scores in place of realized outcomes, and the cross-fitting rules 
 
 \begin{extension}[Distributional effects]
 Quantile treatment effects compare the arms' outcome distributions at a fixed quantile; they are identified in an experiment
-and estimable by weighting (Firpo, 2007) or by quantile forests. Ban and Rudin (2019) develop data-driven newsvendor rules
+and estimable by weighting (Firpo 2007) or by quantile forests. Ban and Rudin (2019) develop data-driven newsvendor rules
 that fit the critical quantile directly from features, the one-arm version of Result~\ref{prop:fractile}.
 \end{extension}
 
@@ -431,18 +435,35 @@ extend it to doubly robust scores with estimated nuisances. The \texttt{policytr
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Kitagawa and Tetenov (2018), ``Who should be treated? Empirical welfare maximization methods for treatment choice'',
-\emph{Econometrica}}{The case for choosing a rule from a restricted class, with regret bounds}{Sections 1--3}{3}
-\reading{Athey and Wager (2021), ``Policy learning with observational data'', \emph{Econometrica}}{Doubly robust scores and
-policy trees}{Sections 1--3}{3}
-\reading{Elmachtoub and Grigas (2022), ``Smart `predict, then optimize''', \emph{Management Science}}{Training predictions on
-the decisions they induce; the SPO+ loss}{Sections 1--4}{3}
-\reading{Zhao, Zeng, Rush, and Kosorok (2012), ``Estimating individualized treatment rules using outcome weighted learning'',
-\emph{JASA}}{Policy learning as weighted classification}{Sections 1--3}{2}
-\reading{Kasy and Abebe (2021), ``Fairness, equality, and power in algorithmic decision-making'', \emph{FAccT}}{What
-fairness constraints do and do not protect, from an economist's view}{All}{1}
-\reading{Russo, Van Roy, Kazerouni, Osband, and Wen (2018), ``A tutorial on Thompson sampling'', \emph{Foundations and Trends in
-Machine Learning}}{Bandits from first principles}{Ch.\ 1--4}{2}
+\reading{Kitagawa, Toru, and Aleksey Tetenov. 2018. ``Who Should Be Treated? Empirical Welfare Maximization Methods
+for Treatment Choice.'' \emph{Econometrica} 86 (2): 591--616. \url{https://doi.org/10.3982/ECTA13288}}{The case for
+choosing a rule from a restricted class, with regret bounds}{Sections 1--3}{3}
+\reading{Athey, Susan, and Stefan Wager. 2021. ``Policy Learning with Observational Data.'' \emph{Econometrica} 89
+(1): 133--161. \url{https://doi.org/10.3982/ECTA15732}}{Doubly robust scores and policy trees}{Sections 1--3}{3}
+\reading{Elmachtoub, Adam N., and Paul Grigas. 2022. ``Smart `Predict, then Optimize'.'' \emph{Management Science} 68
+(1): 9--26. \url{https://doi.org/10.1287/mnsc.2020.3922}}{Training predictions on the decisions they induce; the SPO+
+loss}{Sections 1--4}{3}
+\reading{Mandi, Jayanta, James Kotary, Senne Berden, Maxime Mulamba, Victor Bucarey, Tias Guns, and Ferdinando
+Fioretto. 2024. ``Decision-Focused Learning: Foundations, State of the Art, Benchmark and Future Opportunities.''
+\emph{Journal of Artificial Intelligence Research} 80: 1623--1701. \url{https://doi.org/10.1613/jair.1.15320}}{A
+survey of decision-focused methods, with a benchmark of 11 of them}{Introduction}{2}
+\reading{Zhao, Yingqi, Donglin Zeng, A. John Rush, and Michael R. Kosorok. 2012. ``Estimating Individualized Treatment
+Rules Using Outcome Weighted Learning.'' \emph{Journal of the American Statistical Association} 107 (499):
+1106--1118. \url{https://doi.org/10.1080/01621459.2012.695674}}{Policy learning as weighted
+classification}{Sections 1--3}{2}
+\reading{Firpo, Sergio. 2007. ``Efficient Semiparametric Estimation of Quantile Treatment Effects.''
+\emph{Econometrica} 75 (1): 259--276. \url{https://doi.org/10.1111/j.1468-0262.2007.00738.x}}{Quantile treatment
+effects estimated by weighting}{Introduction}{3}
+\reading{Ban, Gah-Yi, and Cynthia Rudin. 2019. ``The Big Data Newsvendor: Practical Insights from Machine Learning.''
+\emph{Operations Research} 67 (1): 90--108. \url{https://doi.org/10.1287/opre.2018.1757}}{Fitting the critical
+quantile directly from features}{Introduction}{2}
+\reading{Kasy, Maximilian, and Rediet Abebe. 2021. ``Fairness, Equality, and Power in Algorithmic Decision-Making.''
+In \emph{Proceedings of the 2021 ACM Conference on Fairness, Accountability, and Transparency (FAccT '21)}, 576--586.
+\url{https://doi.org/10.1145/3442188.3445919}}{What fairness constraints do and do not protect, from an economist's
+view}{All}{1}
+\reading{Russo, Daniel J., Benjamin Van Roy, Abbas Kazerouni, Ian Osband, and Zheng Wen. 2018. ``A Tutorial on
+Thompson Sampling.'' \emph{Foundations and Trends in Machine Learning} 11 (1): 1--96.
+\url{https://doi.org/10.1561/2200000070}}{Bandits from first principles}{Ch.\ 1--4}{2}
 \reading{Handout H3, \emph{Sequential decisions}}{Dynamic treatment regimes, Q-learning, G-estimation, and bandit
 logs}{All}{2}
 \end{readinglist}

@@ -1,8 +1,8 @@
 % \documentclass[aspectratio=169, 11pt]{beamer}
 \documentclass[aspectratio=169, 11pt, handout]{beamer}
 
-% Meeting 7 lecture slides. Running case: Lin's coupon programme at a coffee chain (cases/caseA-coffee-chain,
-% Meeting 7 releases R1 to R4b): the review of the Q3 programme from its logs. The notes' worked example (FitLife) is
+% Meeting 7 lecture slides. Running case: Lin's coupon program at a coffee chain (cases/caseA-coffee-chain,
+% Meeting 7 releases R1 to R4b): the review of the Q3 program from its logs. The notes' worked example (FitLife) is
 % deliberately not reproduced here.
 % Shared with notes.tex: estimands, assumptions, notation, the statement of each Result, the order of topics.
 % Block A follows notes Sections 1.1 to 1.6; block B follows Sections 1.7 to 1.11.
@@ -34,7 +34,7 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 
-% ── Colours: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
+% ── Colors: the notes' palette (shared/coursenotes.sty), so a Result looks the same in both ──
 \definecolor{sbgreen}{HTML}{00704A}
 \definecolor{noteblue}{HTML}{2060A0}
 \definecolor{warnred}{HTML}{B42318}
@@ -77,7 +77,7 @@
 \title[Meeting 7]{Meeting 7: When the Logs Must Answer}
 \subtitle{Observational data: adjustment, propensity scores, and double robustness}
 \author{Zhikun Lu}
-\date{\today}
+\date{}
 
 \begin{document}
 
@@ -104,7 +104,7 @@
 \end{itemize}
 \end{column}
 \begin{column}{0.48\textwidth}
-\textbf{Block B: Overlap, design and\\ double robustness}
+\textbf{Block B: Overlap, design, and\\ double robustness}
 \begin{itemize}
   \item The real logs: reconstructing the rule
   \item Overlap diagnostics and trimming
@@ -122,10 +122,10 @@
 \section{Block A: Identification and adjustment}
 % ====================================================================
 
-% [RELEASE R1: the Q3 programme, sales' table and Lin's four sentences]
+% [RELEASE R1: the Q3 program, sales' table and Lin's four sentences]
 \begin{frame}{The Program on Trial}
 
-In Q3 the chain's \textbf{automated campaign engine} (Meeting 5) sent the \textbf{5{,}000} \textyen 10 coupons, half of the 10{,}000-member base. It chose members by a \textbf{score} built from recency, tier, and spend, throttled by a daily contact cap.
+In Q3 the chain's automated campaign engine from Meeting 5 sent 5{,}000 \textyen 10 coupons, to half of the 10{,}000-member base. It chose members by a score built from recency, tier, and spend, throttled by a daily contact cap.
 
 \bigskip
 
@@ -154,7 +154,7 @@ The CFO will not fund another experiment. \textbf{The Q3 logs must answer.}
 % ====================================================================
 \begin{frame}{The Number That Decides It}
 
-A purchase earns $m = $ \textyen 30 of margin. The coupon costs $c = $ \textyen 10, paid on \textbf{every} purchase a holder makes. Per coupon sent to last quarter's recipients,
+A purchase earns $m = $ \textyen 30 of margin. The coupon costs $c = $ \textyen 10, paid on every purchase a holder makes, not only on the purchases it caused. Per coupon sent to last quarter's recipients,
 \[
 \text{net} = \underbrace{30\,\tau}_{\text{purchases the coupon caused}} - \underbrace{10 \times 0.40}_{\text{coupons redeemed}} .
 \]
@@ -169,7 +169,7 @@ The recipients' purchase rate, $0.40$, is observed: for a recipient, $Y = Y(1)$.
 
 \medskip
 
-Sales' number is $-0.22$. Every estimate today is a lift, and the question is \textbf{which side of $0.133$} it lands on.
+Sales' number is $-0.22$. Every estimate today is a lift, and you want to know \textbf{which side of $0.133$} it lands on.
 \end{frame}
 
 % ====================================================================
@@ -181,14 +181,14 @@ Treatment $D$ (coupon), outcome $Y$ (purchase), pre-treatment covariates $X$ (th
 \]
 
 \begin{itemize}
-  \item When a recorded rule assigned treatment, $e$ \textbf{is that rule}, viewed as a function of its inputs.
-  \item That includes a rule written by an automated system. Its decisions are the assignment mechanism, and the logs it leaves are observational however sophisticated it was. The engine did not remove confounding; it \textbf{wrote it down}.
+  \item When a recorded rule assigned treatment, $e$ is that rule, viewed as a function of its inputs.
+  \item That includes a rule written by an automated system. Its decisions are the assignment mechanism, and the logs it leaves are observational however sophisticated it was. The engine did not remove confounding; it wrote it down.
   \item The ATE, ATT, and ATU differ whenever effects vary with $X$ and the rule's targeting depends on $X$. Which one is needed is a question about the decision.
 \end{itemize}
 
 \medskip
 
-\textbf{The CFO's question}, ``keep the program as it ran?'', is about the members who got coupons: the \textbf{ATT}, held against $\tau^\ast = 0.133$.
+The CFO's question, ``keep the program as it ran?'', is about the members who got coupons: the \textbf{ATT}, held against $\tau^\ast = 0.133$.
 \end{frame}
 
 % ====================================================================
@@ -217,11 +217,11 @@ Pooled, the table reproduces sales' numbers:
 \bar Y_0 = \frac{4{,}000(0.75) + 1{,}000(0.10)}{5{,}000} = 0.62 .
 \]
 
-Within each segment the coupon \textbf{raises} purchases: $0.80 - 0.75 = \textcolor{sbgreen}{+0.05}$ for active members, $0.30 - 0.10 = \textcolor{sbgreen}{+0.20}$ for lapsed ones.
+Within each segment the coupon raises purchases: $0.80 - 0.75 = \textcolor{sbgreen}{+0.05}$ for active members, $0.30 - 0.10 = \textcolor{sbgreen}{+0.20}$ for lapsed ones.
 
 \medskip
 
-For the rest of block A, treat segment as the rule's only input. Block B opens the full export.
+For the rest of Block A, treat segment as the rule's only input. Block B opens the full export.
 \end{frame}
 
 % ====================================================================
@@ -245,7 +245,7 @@ For the rest of block A, treat segment as the rule's only input. Block B opens t
 \end{center}
 \end{column}
 \begin{column}{0.62\textwidth}
-Recipients are $0.2$ active and $0.8$ lapsed. Split the pooled difference as in Meeting 1:
+Recipients are $0.2$ active and $0.8$ lapsed. Split the pooled difference with the selection-bias decomposition from Meeting 1:
 \small
 \begin{align*}
 \ATT &= 0.2(0.05) + 0.8(0.20) = 0.17 \\
@@ -258,7 +258,7 @@ Recipients are $0.2$ active and $0.8$ lapsed. Split the pooled difference as in 
 
 \bigskip
 
-Same logs, opposite sign: the selection bias outweighs the effect. The rule picked members who would \textbf{not} have bought anyway: lapsed status raises the chance of a coupon and lowers the chance of a purchase.
+The same logs give the opposite sign, because the selection bias outweighs the effect. The rule picked members who would not have bought anyway: lapsed status raises the chance of a coupon and lowers the chance of a purchase.
 
 \medskip
 
@@ -314,7 +314,7 @@ From Lin's description of the Q3 program:
 
 \medskip
 
-\textbf{Overlap is checkable}, and it is where a decisive rule fails. Block B checks the third sentence.
+Overlap is checkable, and it is where a decisive rule fails. Block B checks the third sentence.
 \end{frame}
 
 % ====================================================================
@@ -331,7 +331,7 @@ Within each $x$ the arms are comparable, so the within-cell difference is a caus
 \medskip
 
 \begin{itemize}
-  \item The ATT form needs only $\mu_0$, evaluated at the \textbf{recipients'} $x$: exactly where non-recipients may be scarce.
+  \item The ATT form needs only $\mu_0$, evaluated at the recipients' $x$: exactly where non-recipients may be scarce.
   \item With two segments, $\mu_0$ and $\mu_1$ are four cell means and standardization is arithmetic.
   \item With 14 fields, $\mu_d$ must be modeled (\textbf{g-computation}). The model fills in every $x$, including those where one arm is empty, and will not report where it is extrapolating.
 \end{itemize}
@@ -361,7 +361,7 @@ The CFO's question is the second:
 \ATT = 0.17 > \tau^\ast = 0.133: \qquad \text{net} = 30 \times 0.17 - 4 = +\text{\textyen}\,1.10 \text{ per coupon}.
 \]
 
-Couponing everyone is a different estimand \textbf{and a different break-even}, because everyone would redeem more: $\E[Y(1)] = 0.55$, so $\tau^\ast = 10 \times 0.55/30 = 0.183 > 0.125$. It loses \textyen 1.75 per member, as in Meeting 3.
+Couponing everyone is a different estimand with a different break-even, because everyone would redeem more: $\E[Y(1)] = 0.55$, so $\tau^\ast = 10 \times 0.55/30 = 0.183 > 0.125$. It loses \textyen 1.75 per member, as in Meeting 3.
 
 \medskip
 
@@ -436,7 +436,7 @@ $D \indep X \mid e(X)$; hence if exchangeability holds given $X$, it holds given
 
 \begin{itemize}
   \item Two members with the same $e(x)$ were treated alike by the rule, whichever of the 14 fields produced that value. Comparing them is as good as comparing members with identical $x$.
-  \item Adjusting for the scalar $e(X)$, by \textbf{weighting}, \textbf{stratifying}, or \textbf{matching} recipients to non-recipients with similar $e$, does the work of the full vector.
+  \item Adjusting for the scalar $e(X)$, by weighting, stratifying, or matching recipients to non-recipients with similar $e$, does the work of the full vector.
 \end{itemize}
 
 \medskip
@@ -453,18 +453,18 @@ $Y = \alpha + \tau D + X^\top\beta + \varepsilon$ is standardization with two re
 If $\mu_0(X) = X^\top\beta$ exactly and effects vary, the OLS coefficient on $D$ converges to $\E[\tau(X)\,e(X)(1-e(X))]/\E[e(X)(1-e(X))]$.
 \end{result}
 
-\textbf{On the Q3 logs}, regress purchase on the coupon and a lapsed dummy. $\mu_0$ is exactly linear in the dummy, so Result 1.7 applies. Each segment's weight is $n_s e_s(1 - e_s) = 5{,}000 \times 0.2 \times 0.8 = 800$, the same for both, so
+On the Q3 logs, regress purchase on the coupon and a lapsed dummy. $\mu_0$ is exactly linear in the dummy, so Result 1.7 applies. Each segment's weight is $n_s e_s(1 - e_s) = 5{,}000 \times 0.2 \times 0.8 = 800$, the same for both, so
 \[
 \hatt_{\text{OLS}} = \tfrac12(0.05 + 0.20) = 0.125 .
 \]
 
-The right control, the wrong estimand: $0.125 < 0.133$ says \textcolor{warnred}{kill}; the ATT, $0.17$, says \textcolor{sbgreen}{keep}. The weights are largest where the rule was least decided ($e$ near $0.5$). Interacting $D$ with centered $X$, or standardizing, targets the ATE or ATT instead.
+The control is right but the estimand is wrong. Since $0.125 < 0.133$, the regression says \textcolor{warnred}{kill}; the ATT, $0.17$, says \textcolor{sbgreen}{keep}. The weights are largest where the rule was least decided ($e$ near $0.5$). Interacting $D$ with centered $X$, or standardizing, targets the ATE or ATT instead.
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Good and Bad Controls}
 
-Exchangeability is a statement about a particular $X$, and enlarging $X$ can destroy it (Meeting 1's backdoor criterion).
+Exchangeability is a statement about a particular $X$, and enlarging $X$ can destroy it (the backdoor criterion from Meeting 1).
 
 \begin{center}
 \footnotesize
@@ -484,7 +484,7 @@ Store of first visit & predicts $Y$ only & optional & pre-treatment; can tighten
 
 \medskip
 
-The test is not ``is it correlated with $Y$?'': the mediator and the collider both are. Measure controls \textbf{before} the treatment decision, and justify each by its \textbf{causes}, not only its date. ``Everything in the warehouse'' almost always contains post-treatment variables.
+The test is not ``is it correlated with $Y$?'': the mediator and the collider both are. Measure controls before the treatment decision, and justify each by its causes, not only its date. ``Everything in the warehouse'' almost always contains post-treatment variables.
 \end{frame}
 
 % ====================================================================
@@ -495,10 +495,10 @@ A junior analyst: \emph{``Members who never open the app cannot see the coupon. 
 
 \bigskip
 
-Take a clean case: 1{,}000 members, coupon \textbf{randomized} 50/50, and a coupon with \textbf{no effect at all}.
+Take a clean case: 1{,}000 members, coupon randomized 50/50, and a coupon with no effect at all.
 \begin{itemize}
   \item Half the members have high intent and buy regardless; half have low intent and never buy.
-  \item A member opens the app if they received a coupon \textbf{or} have high intent.
+  \item A member opens the app if they received a coupon or have high intent.
 \end{itemize}
 
 \begin{center}
@@ -531,7 +531,7 @@ Among app openers:
 \Large ``Effect'' $= \textcolor{warnred}{-0.50}$ \quad for a true effect of $\mathbf{0}$.
 \end{center}
 
-The coupon was randomized: there was no confounding to fix. Opening the app is caused by the coupon \emph{and} by intent, so restricting to openers keeps every recipient but only the high-intent non-recipients (Meeting 1, collider result).
+The coupon was randomized: there was no confounding to fix. Opening the app is caused by the coupon \emph{and} by intent, so restricting to openers keeps every recipient but only the high-intent non-recipients (the collider result from Meeting 1).
 
 \medskip
 
@@ -542,7 +542,7 @@ The coupon was randomized: there was no confounding to fix. Opening the app is c
 \begin{frame}{End of Block A}
 
 \begin{itemize}
-  \item The engine's rule is the assignment mechanism: $e(x)$ is the rule. It confounds by construction: $-0.22$ pooled, $+0.05$ and $+0.20$ within segment.
+  \item The engine's rule is the assignment mechanism, and $e(x)$ is the rule. It confounds by construction: $-0.22$ pooled, $+0.05$ and $+0.20$ within segment.
   \item Exchangeability is a claim about how decisions were made; overlap is checkable.
   \item Standardization and IPW identify the same quantities from the outcome side and the assignment side. The CFO needs the ATT: $0.17 > 0.133$, \textyen 1.10 per coupon.
   \item The ATT rests on 1{,}538 effective non-recipients of 5{,}000. One number, $e(x)$, can stand in for all of $X$.
@@ -566,7 +566,7 @@ The coupon was randomized: there was no confounding to fix. Opening the app is c
 % [RELEASE R4: the real logs, coupon column only; the purchase column stays locked]
 \begin{frame}{The Real Logs}
 
-The engine's score reads \textbf{14 CRM fields} and cuts them into four bands; each band had a daily send probability, throttled by the cap. The export has the 14 fields, the band, and the coupon column. \textbf{The purchase column stays locked.}
+The engine's score reads 14 CRM fields and cuts them into four bands; each band had a daily send probability, throttled by the cap. The export has the 14 fields, the band, and the coupon column. \textbf{The purchase column stays locked.}
 
 \begin{center}
 \begin{tabular}{llrrr}
@@ -585,7 +585,7 @@ Total & & 10{,}000 & 5{,}000 & 5{,}000 \\
 
 \medskip
 
-The bands refine the two segments: they add up to block A's 1{,}000 and 4{,}000 coupons. Everything on the next four frames uses only these columns.
+The bands refine the two segments: they add up to Block A's 1{,}000 and 4{,}000 coupons. Everything on the next four frames uses only these columns.
 \end{frame}
 
 % ====================================================================
@@ -682,7 +682,7 @@ Effective non-recipients & 203 of 5{,}000 & 2{,}225 of 4{,}950 \\
 
 \medskip
 
-Trimming stabilizes the estimate but \textbf{changes the estimand}: the ATT for the 2{,}550 recipients in bands 1 to 3, a population twice as active as the program's. It must be reported as such:
+Trimming stabilizes the estimate but \textbf{changes the estimand} to the ATT for the 2{,}550 recipients in bands 1 to 3, a population twice as active as the program's. Report it as such:
 
 \begin{center}
 \emph{``Members in the top score band, 98\% of whom received a coupon, are excluded.''}
@@ -694,7 +694,7 @@ Their effect is not estimated away; it is reported separately, with the 50 membe
 % ====================================================================
 \begin{frame}{Design Before Analysis}
 
-Every choice so far was made without a purchase in sight, and should be (Rubin, 2008). Lin's design record:
+Every choice so far was made without a purchase in sight, and should be (Rubin 2008). Lin's design record:
 
 \begin{enumerate}
   \item \textbf{Assignment mechanism:} $\hat e$ by band, from the coupon column.
@@ -709,7 +709,7 @@ Every choice so far was made without a purchase in sight, and should be (Rubin, 
 
 \medskip
 
-The observational counterpart of the frozen partition (Meeting 4) and the frozen list (Meeting 5): choices made before the outcomes cannot be tuned to them.
+This is the observational counterpart of the frozen partition from Meeting 4 and the frozen list from Meeting 5. Choices made before the outcomes are opened cannot be tuned to them.
 \end{frame}
 
 % ====================================================================
@@ -779,7 +779,7 @@ Band 4 & 2{,}450 & 0.20 & 0.30 & 0.100 & \textcolor{sbgreen}{$+$\textyen 3.00} \
 % ====================================================================
 \begin{frame}{Silent Extrapolation, Loud Weights}
 
-Standardization does not fail visibly where overlap is thin: \textbf{the outcome model extrapolates silently}. Weighting fails loudly, with large weights and a small effective sample.
+Standardization does not fail visibly where overlap is thin: the outcome model extrapolates silently. Weighting fails loudly, with large weights and a small effective sample.
 
 \medskip
 
@@ -822,14 +822,14 @@ for working models $\tilde\mu_d$ and $\tilde e$. Under Assumptions 1.1--1.3, $\E
 \begin{itemize}
   \item The first two terms are standardization; the weighted residuals correct what the outcome model got wrong.
   \item Given $X$, the error is a sum of \textbf{products}: the outcome model's error times the propensity model's relative error. Each product vanishes if either model is right.
-  \item With flexible models, the estimator's error depends on the product of the two models' errors; with cross-fitting (Meeting 8) it has a valid normal approximation where neither IPW nor standardization alone does.
+  \item With flexible models, the estimator's error depends on the product of the two models' errors; with cross-fitting, which comes later in the course, it has a valid normal approximation where neither IPW nor standardization alone does.
 \end{itemize}
 \end{frame}
 
 % ====================================================================
 \begin{frame}{Two Chances on the Two Segments}
 
-Truth by segment: $\mu_1 = 0.80, 0.30$; $\mu_0 = 0.75, 0.10$; $e = 0.2, 0.8$; $\ATE = 0.125$. The mean of $\phi$ in each segment:
+The truth by segment is $\mu_1 = 0.80, 0.30$; $\mu_0 = 0.75, 0.10$; $e = 0.2, 0.8$; and $\ATE = 0.125$. The mean of $\phi$ in each segment:
 
 \begin{center}
 \small
@@ -848,7 +848,7 @@ First row, active members: $-0.22 + \frac{0.2}{0.2}(0.80 - 0.40) - \frac{0.8}{0.
 
 \medskip
 
-Second row: the residuals have mean zero in each segment, so wrong weights multiply nothing. Both wrong: here AIPW is back at the pooled $-0.22$.
+In the second row the residuals have mean zero in each segment, so wrong weights multiply nothing. With both models wrong, AIPW is back at the pooled $-0.22$.
 \end{frame}
 
 % ====================================================================
@@ -862,22 +862,22 @@ Second row: the residuals have mean zero in each segment, so wrong weights multi
 \begin{itemize}
   \item Bootstrap over members, re-estimating $\hat e$ (and $\hat\mu_d$) in every replicate: the propensity is estimated, and its noise belongs in the interval.
   \item If members share a store whose shocks move them together, resample stores as blocks.
-  \item Or use the cross-fitted AIPW standard error (Meeting 8).
+  \item Or use the cross-fitted AIPW standard error, which comes later in the course.
 \end{itemize}
 
 \bigskip
 
-\textbf{Trimming and the design record apply to AIPW too}: its weighted residuals carry the same $1/\tilde e$ and $1/(1 - \tilde e)$, and band 4's 50 members carry the same weight.
+Trimming and the design record apply to AIPW too: its weighted residuals carry the same $1/\tilde e$ and $1/(1 - \tilde e)$, and band 4's 50 members carry the same weight.
 \end{frame}
 
 % ====================================================================
-\begin{frame}{How Well Does Adjustment Work? The LaLonde Lesson}
+\begin{frame}{How Well Does Adjustment Work?}
 
-\textbf{LaLonde (1986)} took a job-training experiment, replaced its randomized control group with survey respondents, and asked whether adjustment recovered the experimental answer.
+LaLonde (1986) took a job-training experiment, replaced its randomized control group with survey respondents, and asked whether adjustment recovered the experimental answer.
 
 \begin{itemize}
   \item The regressions of the time missed badly, sometimes with the wrong sign.
-  \item Later work (Dehejia and Wahba, 1999, and others) found that propensity methods do well when the comparison group \textbf{overlaps} the treated \emph{and} the covariates include \textbf{prior values of the outcome}, and badly otherwise.
+  \item Later work (Dehejia and Wahba 1999, and others) found that propensity methods do well when the comparison group overlaps the treated \emph{and} the covariates include prior values of the outcome, and badly otherwise.
 \end{itemize}
 
 \bigskip
@@ -886,7 +886,7 @@ Second row: the residuals have mean zero in each segment, so wrong weights multi
 
 \medskip
 
-At the coffee chain, the defense of the Q3 review is not the choice among IPW, standardization, and AIPW. It is that the export holds every field the score read, past purchases among them, and that within a band the cap, not the members, decided who got a coupon.
+At the coffee chain, the Q3 review stands on two facts: the export holds every field the score read, past purchases among them, and within a band the cap, not the members, decided who got a coupon. The choice among IPW, standardization, and AIPW matters less.
 \end{frame}
 
 % ====================================================================
@@ -907,11 +907,11 @@ Stop coupons to active members & 0.05 & 0.267 & 0.217 \\
 \end{tabular}
 \end{center}
 
-\textbf{The yardstick:} the strongest measured confounder. Segment shifts $\mu_0$ by $\gamma = 0.75 - 0.10 = 0.65$ and differs between the arms by $\delta = 0.80 - 0.20 = 0.60$: $\gamma\delta = 0.39$, the selection bias of block A.
+Use the strongest measured confounder as the yardstick. Segment shifts $\mu_0$ by $\gamma = 0.75 - 0.10 = 0.65$ and differs between the arms by $\delta = 0.80 - 0.20 = 0.60$: $\gamma\delta = 0.39$, the selection bias of Block A.
 
 \medskip
 
-A hidden confounder a tenth as strong as segment overturns ``keep as run''; stopping the active coupons survives one over half as strong. None needs a confounder stronger than segment, so the conclusions rest on Lin's first sentence. Meeting 8 makes this precise.
+A hidden confounder a tenth as strong as segment overturns ``keep as run''; stopping the active coupons survives one over half as strong. None needs a confounder stronger than segment, so the conclusions rest on Lin's first sentence. A formal omitted-variable sensitivity analysis, later in the course, makes this precise.
 \end{frame}
 
 % ====================================================================
@@ -930,6 +930,18 @@ Each one has appeared today:
   \item the design record was written with the purchase column locked;
   \item band 4's $\hat e = 0.98$ is the model working, and the overlap failing;
   \item with both working models wrong, AIPW returns the pooled $-0.22$, and no model fixes an unrecorded VIP list.
+\end{itemize}
+\end{frame}
+
+% ====================================================================
+\begin{frame}{References}
+
+\small
+\begin{itemize}
+  \item Dehejia, Rajeev H., and Sadek Wahba. 1999. ``Causal Effects in Nonexperimental Studies: Reevaluating the Evaluation of Training Programs.'' \emph{Journal of the American Statistical Association} 94 (448): 1053--1062.
+  \item LaLonde, Robert J. 1986. ``Evaluating the Econometric Evaluations of Training Programs with Experimental Data.'' \emph{American Economic Review} 76 (4): 604--620. \url{https://www.jstor.org/stable/1806062}
+  \item Rosenbaum, Paul R., and Donald B. Rubin. 1983. ``The Central Role of the Propensity Score in Observational Studies for Causal Effects.'' \emph{Biometrika} 70 (1): 41--55. \url{https://doi.org/10.1093/biomet/70.1.41}
+  \item Rubin, Donald B. 2008. ``For Objective Causal Inference, Design Trumps Analysis.'' \emph{Annals of Applied Statistics} 2 (3): 808--840. \url{https://doi.org/10.1214/08-AOAS187}
 \end{itemize}
 \end{frame}
 

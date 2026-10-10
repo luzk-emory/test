@@ -88,7 +88,7 @@ PLACEHOLDER = re.compile(r"\\tbd\{|\bTODO\b|\bTBD\b|\bXXX\b|\[insert|lorem ipsum
 LABELS = re.compile(r"\bM[0-9]{1,2}\b(?!-R)|\bSession [0-9]|\bClass [0-9]|\bLecture [0-9]+[AB]?\b|\bLab [0-9]+[A-C]\b|"
                     r"\bBlock [0-9]", 0)
 CROSS = {
-    'slides':     r"\b[Nn]otes\b|[Hh]andout|\bLab [0-9]|\b[Cc]ase part|\bPart M[0-9]|[Ww]orksheet|\bA[1-4]\b|[Aa]ssignment",
+    'slides':     r"\b[Nn]otes\b|[Hh]andout|\bLab [0-9]|\b[Cc]ase part|\bPart M[0-9]|[Ww]orksheet|\bA[1-4]\b|[Aa]ssignment[ ~][0-9]|\bhomework\b",
     'notes':      r"\b[Ss]lides?\b|\bLab [0-9]|\b[Cc]ase part|\bPart M[0-9]|Handout[ ~]H[0-9]|\bA[1-4]\b",
     'handout':    r"\bslides?\b|\bLab [0-9]|Meeting[ ~][0-9]+,? (Result|Section|Assumption)|(Result|Assumption)s?[ ~][0-9]+\.[0-9]+ (of|in) Meeting|technical notes|\bthe notes\b",
     'case':       r"\bslides?\b|technical notes|\bthe notes\b|Handout|\bLab [0-9]|\bframe\b",
@@ -136,7 +136,9 @@ def scan(path):
         if m: add('R', f'substitute device: opener "{m.group(0)}"', n, line)
         if FRAGMENT.search(line): add('R', 'substitute device: dramatic fragment', n, line)
         if XMEET.search(line): add('R', 'cross-meeting number', n, line)
-        if k in CROSS and not re.match(r'\s*\\(node|draw|path|fill|coordinate)\b', line):
+        # Reference-list entries (Chicago "Name. Year.") and reading-list rows are navigation, not dependence.
+        if k in CROSS and not re.match(r'\s*\\(node|draw|path|fill|coordinate|documentclass|reading)\b', line) \
+                and not re.search(r'\. (19|20)[0-9]{2}[a-z]?\. ', line):
             m = re.search(CROSS[k], line, 0 if k in ('slides', 'notes') else I)
             if m: add('R', f'cross-artifact reference: {m.group(0)}', n, line)
         if mtg is not None:

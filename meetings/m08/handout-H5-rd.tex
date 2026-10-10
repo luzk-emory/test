@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\handoutheader{H5}{Regression Discontinuity}{Identification from a threshold rule}{Meeting 8 (Double machine learning)}
+\handoutheader{H5}{Regression discontinuity}{Identification from a threshold rule}{Meeting 8 (Double machine learning)}
 
 \begin{decision}
 Many business rules switch treatment on at a threshold: a loyalty tier at 100 visits, free shipping above a basket value, a
@@ -11,7 +11,7 @@ effect, for units at the threshold.
 \end{decision}
 
 \begin{goals}
-  \item state the sharp and fuzzy RD designs and their identifying assumption (continuity);
+  \item state the sharp and fuzzy regression discontinuity (RD) designs and their identifying assumption (continuity);
   \item estimate the jump by local linear regression and choose a bandwidth;
   \item run the standard checks: density of the running variable, covariate balance, bandwidth, and placebo cut-offs;
   \item interpret the effect as local and say what it implies for moving the threshold.
@@ -42,13 +42,19 @@ holds for $Y(0)$. Subtract.
 \end{proof}
 
 Continuity fails when units can sort precisely across the cut-off (members who log extra visits just to qualify) or when something else
-also changes at $c$ (a different price list starts at the same basket value). The first is partly checkable, the second must be argued from
-the institution.
+also changes at $c$ (a different price list starts at the same basket value). The first can be partly checked in the data; the second must be
+argued from how the business runs.
 
 \subsection{The fuzzy design}
 
 Often the threshold changes only the probability of treatment (the tier is offered at 100 visits, but members must opt in; some below get it by
 promotion). Let $Z = \ind{R \ge c}$ act as an instrument at the cut-off.
+
+The tool is the LATE theorem from Meeting~2. Take a randomized offer $Z$ and treatment received $D$, and call a unit a
+\emph{complier} if it takes the treatment when offered and not otherwise. If the offer moves the outcome only through the
+treatment (exclusion) and no unit takes the treatment only when not offered (monotonicity), then the ratio of the offer's effect on $Y$
+(the intention-to-treat effect, ITT) to its effect on $D$ (the first stage) equals the local average treatment effect (LATE), the
+average effect of treatment among compliers.
 
 \begin{prop}{Fuzzy RD identification}{fuzzy}
 If, near $c$, the conditions of the instrumental-variables LATE theorem hold with $Z = \ind{R \ge c}$ (continuity of potential outcomes and potential
@@ -60,7 +66,7 @@ treatments in $r$, monotonicity, and a nonzero jump in $\Pr(D = 1 \mid R)$), the
 \end{prop}
 \begin{proof}
 At the cut-off, being just above or just below is as good as random by continuity, so the numerator is the ITT and the denominator the first stage
-for units at $c$; apply the LATE theorem (Meeting~2, Result~1.15) locally.
+for units at $c$; apply the LATE theorem locally.
 \end{proof}
 
 The effect is local twice over: to compliers, and to units at the threshold.
@@ -72,12 +78,12 @@ units closer to $c$ more (a triangular kernel $w_i = \max\{0, 1 - |R_i - c|/h\}$
 \[
   Y_i = \alpha + \tau\,\ind{R_i \ge c} + \beta_0(R_i - c) + \beta_1(R_i - c)\ind{R_i \ge c} + \varepsilon_i, \quad |R_i - c| < h .
 \]
-$\hat\tau$ is the RD estimate. Lines rather than means within the window remove the bias from the slope of $\E[Y \mid R]$ near $c$. High-order global
-polynomials are not recommended: they put large weight on far-away units and can produce spurious jumps.
+$\hat\tau$ is the RD estimate. Lines rather than means within the window remove the bias from the slope of $\E[Y \mid R]$ near $c$. Avoid high-order global
+polynomials, which put large weight on far-away units and can produce spurious jumps.
 
 \paragraph{The bandwidth.} A small $h$ uses units closest to $c$ (less bias, more variance); a large $h$ the reverse. Data-driven bandwidths minimize
-the estimated mean squared error. Because the MSE-optimal bandwidth leaves bias of the same order as the SE, conventional intervals undercover;
-use robust bias-corrected intervals (Calonico, Cattaneo, and Titiunik, 2014), and show results across a range of bandwidths.
+the estimated mean squared error (MSE). Because the MSE-optimal bandwidth leaves bias of the same order as the SE, conventional intervals undercover;
+use robust bias-corrected intervals (Calonico et al. 2014), and show results across a range of bandwidths.
 
 \subsection{Checks}
 
@@ -107,7 +113,7 @@ same threshold; reading the local effect as an average for everyone.
 \paragraph{Setting.} FitLife grants ``Gold'' status, with perks costing ¥60 a year, to members with at least 100 visits in the year. Gold members renew
 more often, but they are also the most committed. A renewal is worth ¥1{,}000, so Gold pays at the margin if it raises renewal by more than $0.06$.
 Should the threshold be lowered to 95 visits? The data are 60{,}000 member-years from a simulation calibrated to this setting
-(\texttt{checks/h2\_sim.py}; true jump $0.08$).
+(true jump $0.08$).
 
 \paragraph{Step 1: naive.} Members at or above 100 visits renew $0.33$ more often than those below: mostly commitment, not Gold.
 
@@ -135,14 +141,14 @@ Bandwidth (visits) & Members used & $\hat\tau$ & SE \\
 \bottomrule
 \end{tabular}
 \end{center}
-Stable across bandwidths, about $0.085$, against a naive gap of $0.33$.
+The estimate is stable across bandwidths at about $0.085$, against a naive gap of $0.33$.
 
 \paragraph{Step 3: checks.} Counts in the five visit-values below and above the cut-off are $2{,}503$ and $2{,}472$: no pile-up. Members' age does not
 jump at the cut-off (estimate $0.30$ years, SE $0.25$).
 
 \paragraph{Step 4: the decision.} At the threshold Gold raises renewal by about $0.085$; at $h = 20$ the 95\% interval is $[0.057, 0.117]$. The
 point estimate clears the $0.06$ break-even, but the interval's lower end falls just below it. Lowering the threshold to 95 adds members just below the current cut-off; if their effect resembles that at 100, the move pays.
-That is an assumption, mild for a five-visit move and not for a fifty-visit one.
+That is an assumption, mild for a five-visit move and not for a 50-visit one.
 
 \begin{exercise}[computation]
 Suppose Gold were opt-in: just above 100 visits, 65\% of members hold Gold; just below, 5\% do (via promotions). The jump in renewal at the cut-off is
@@ -163,16 +169,22 @@ before the reminder (visits by a date before reminders start), or treats the rem
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Cattaneo, Idrobo, and Titiunik (2020), \emph{A Practical Introduction to Regression Discontinuity Designs: Foundations}, Cambridge}{The
-modern practice: local polynomials, bandwidths, robust inference, checks}{All}{2}
-\reading{Imbens and Lemieux (2008), ``Regression discontinuity designs: a guide to practice'', \emph{Journal of Econometrics}}{A concise practical
-guide}{All}{2}
-\reading{Lee and Lemieux (2010), ``Regression discontinuity designs in economics'', \emph{Journal of Economic Literature}}{Intuition, the
-as-good-as-random interpretation, many examples}{Sections 1--4}{1}
-\reading{Calonico, Cattaneo, and Titiunik (2014), ``Robust nonparametric confidence intervals for regression-discontinuity designs'',
-\emph{Econometrica}}{Why MSE-optimal bandwidths need bias correction}{Sections 1--3}{3}
-\reading{Hahn, Todd, and van der Klaauw (2001), ``Identification and estimation of treatment effects with a regression-discontinuity design'',
-\emph{Econometrica}}{The fuzzy design as local IV}{Sections 1--3}{3}
+\reading{Cattaneo, Matias D., Nicol\'as Idrobo, and Roc\'io Titiunik. 2020. \emph{A Practical Introduction to Regression
+Discontinuity Designs: Foundations}. Cambridge Elements: Quantitative and Computational Methods for the Social Sciences.
+Cambridge: Cambridge University Press. \url{https://doi.org/10.1017/9781108684606}}{The modern practice: local polynomials,
+bandwidths, robust inference, checks}{All}{2}
+\reading{Imbens, Guido W., and Thomas Lemieux. 2008. ``Regression Discontinuity Designs: A Guide to Practice.''
+\emph{Journal of Econometrics} 142 (2): 615--35.}{A concise practical guide}{All}{2}
+\reading{Lee, David S., and Thomas Lemieux. 2010. ``Regression Discontinuity Designs in Economics.'' \emph{Journal of
+Economic Literature} 48 (2): 281--355. \url{https://doi.org/10.1257/jel.48.2.281}}{Intuition, the as-good-as-random
+interpretation, many examples}{Sections 1--4}{1}
+\reading{Calonico, Sebastian, Matias D. Cattaneo, and Rocio Titiunik. 2014. ``Robust Nonparametric Confidence Intervals for
+Regression-Discontinuity Designs.'' \emph{Econometrica} 82 (6): 2295--2326. \url{https://doi.org/10.3982/ECTA11757}}{Why
+MSE-optimal bandwidths need bias correction}{Sections 1--3}{3}
+\reading{Hahn, Jinyong, Petra Todd, and Wilbert van der Klaauw. 2001. ``Identification and Estimation of Treatment Effects
+with a Regression-Discontinuity Design.'' \emph{Econometrica} 69 (1): 201--9.
+\url{https://doi.org/10.1111/1468-0262.00183}}{The fuzzy design as local instrumental variables}
+{Sections 1--3}{3}
 \end{readinglist}
 
 \end{document}

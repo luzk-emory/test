@@ -1,14 +1,16 @@
-# Case A: Lin's Coupon Program
+# Case A: Lin's coupon program
 
 **A coffee chain, Meetings 1–7.** Fictional teaching case: the company, the people, and all data are invented.
 
 This case is handed out one part at a time. Each part is released in class after the previous task is done. When a task says *commit*, write your answer down before the class discusses it, even if you are unsure.
 
+Parts are labeled by meeting and release: Part M3-R2 is the second part released in Meeting 3, and a letter (Part M3-R2b) marks a short part released between two others.
+
 The economics hold throughout unless a part says otherwise: a purchase earns **¥30 of margin**; a coupon is paid on **every** purchase its holder makes, including purchases they would have made anyway.
 
 ---
 
-## Meeting 1: The Coupon and the Coin
+## Meeting 1: The coupon and the coin
 
 ### Part M1-R1. Marketing's pilot
 
@@ -28,7 +30,7 @@ Marketing's reading: *"The coupon lifts purchases by 44 points. Send it to every
 3. Taking marketing's 0.44 at face value, what is the coupon worth per coupon and across the base?
 4. Commit: name one reason to doubt the 0.44.
 
-### Part M1-R2. A thought experiment: four kinds of customer
+### Part M1-R2. A thought experiment: Four kinds of customer
 
 **Warm-up.** Four customers from the pilot: A got the coupon and bought; B did not get it and bought; C got it and did not buy; D did not get it and did not buy. For each, write the potential outcome you know, $Y(1)$ or $Y(0)$, and the one you don't. Which response types (below) is each customer compatible with?
 
@@ -106,7 +108,7 @@ Apply the same economics segment by segment, using the table in Part R3.
 
 ---
 
-## Meeting 2: Real, Profitable, and Where It Holds
+## Meeting 2: Real, profitable, and where it holds
 
 ### Part M2-R1. The Q2 test, read two ways
 
@@ -201,7 +203,7 @@ From Lin's log:
 
 ---
 
-## Meeting 3: Coupon Whom?
+## Meeting 3: Coupon whom?
 
 ### Part M3-R1. Two lists for 5,000 coupons
 
@@ -283,7 +285,7 @@ Four learners, each fitted on the same training folds:
 
 **Task.** In pairs, predict and commit: which learner has the best out-of-fold outcome RMSE? Which list of 5,000 earns the most? Are they the same learner?
 
-### Part M3-R6. Lab 3 opener: a column written by a language model
+### Part M3-R6. A column written by a language model
 
 Marketing has a new idea. Members leave free-text feedback in the app ("moved offices, not near a store any more", "too expensive now", "love the new oat latte"). The data science team proposes to have a **language model read each member's text and label them "drifting away: yes/no"**, then use the label as the targeting field in place of the CRM's lapsed flag.
 
@@ -296,11 +298,9 @@ On 200 members whose CRM status is known, the model's label was right **80% of t
 4. What does labeling error do to the *gap* between the two groups' estimated effects?
 5. Commit: how accurate must the label be for the labeled list to break even?
 
-In the lab you will build this labeler, check it against gold labels, and measure the damage yourself.
-
 ---
 
-## Meeting 4: Honest Segments
+## Meeting 4: Honest segments
 
 ### Part M4-R1. A segment card
 
@@ -323,7 +323,7 @@ From the CFO's rule and Lin's log:
 
 **Task.** Which of the three sentences is most often broken in practice, and how?
 
-### Part M4-R2. Region 2: two fields, four cells
+### Part M4-R2. Region 2: Two fields, four cells
 
 Two CRM fields: **customer type** (executive or analyst, from the job-title field) and **spending history** (high or low). These are the population truths a perfect analysis would find. The data only ever shows noisy versions.
 
@@ -339,7 +339,7 @@ Two CRM fields: **customer type** (executive or analyst, from the job-title fiel
 2. For each line, compute its own break-even lift and the net value per coupon.
 3. Which line is closest to its break-even, and by how much?
 
-### Part M4-R3. H1: search, then commit
+### Part M4-R3. H1: Search, then commit
 
 On half A, Lin's causal tree (all 14 fields, depth 2) returns four leaves:
 
@@ -358,7 +358,7 @@ On half A, Lin's causal tree (all 14 fields, depth 2) returns four leaves:
 3. By hand: 20 candidate segments all have a true lift of 0.125, each estimated with an SE of 0.04. The expected largest of 20 standard normal draws is 1.87. What lift does the best-looking segment show on average? Compare it with the analyst–high break-even.
 4. **A second split costs information.** A leaf has 250 members per arm, buying at 0.50 with the coupon and 0.30 without. Compute the SE of its lift. Split it into two halves with the same rates. What are the new SEs? What would all 500 per arm give, and what was gained by splitting?
 
-### Part M4-R4. H2: the same leaves on half B
+### Part M4-R4. H2: The same leaves on half B
 
 Buyers / members in each arm:
 
@@ -373,7 +373,7 @@ Buyers / members in each arm:
 1. Compute each leaf's half-B lift and its SE.
 2. Revise your card. Which lines changed, and in which direction did every leaf the search liked move? What happened to the leaf the search disliked?
 
-### Part M4-R5. H3: the card
+### Part M4-R5. H3: The card
 
 Honest intervals from half B. The 98.75% intervals (lift ± 2.50 SE) hold all four lines at once with probability 0.95.
 
@@ -390,7 +390,7 @@ Honest intervals from half B. The 98.75% intervals (lift ± 2.50 SE) hold all fo
 
 ---
 
-## Meeting 5: What Is the List Worth?
+## Meeting 5: What is the list worth?
 
 ### Part M5-R1. The engine wants to run the send
 
@@ -474,7 +474,7 @@ Gain per member of the base (¥) on an evaluation fold of 5,000, each list froze
 
 ---
 
-## Meeting 6: Who Gets the Push?
+## Meeting 6: Who gets the push?
 
 ### Part M6-R1. The Q4 push
 
@@ -528,7 +528,7 @@ Now add the ¥5 coupon. It is paid only when the member buys. Push-test purchase
 
 ---
 
-## Meeting 7: When the Logs Must Answer
+## Meeting 7: When the logs must answer
 
 ### Part M7-R1. The program on trial
 

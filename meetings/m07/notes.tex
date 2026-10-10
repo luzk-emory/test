@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\notesheader{7}{Observational Data}{When the logs must answer: adjustment, propensity scores, and double robustness}
+\notesheader{7}{Observational data}{Adjustment, propensity scores, and double robustness when the logs must answer}
 
 \begin{decision}
 No experiment was run. Treatment was assigned by a business process (a targeting rule, an account manager, an automated
@@ -27,8 +27,8 @@ treated and sometimes not.
 Treatment $D$, outcome $Y$, pre-treatment covariates $X$; $\mu_d(x) = \E[Y \mid D=d, X=x]$ and $e(x) = \Pr(D=1 \mid X=x)$. When a
 recorded rule assigned treatment, $e$ is that rule viewed as a function of its inputs. This includes rules written by an
 automated system: its decisions are the assignment mechanism, and the data it leaves are observational however sophisticated
-it was. The ATE, ATT, and ATU differ whenever effects vary with $X$ and the rule's targeting depends on $X$; which one is
-needed is a question about the decision.
+it was. The ATE, ATT, and ATU differ whenever effects vary with $X$ and the rule's targeting depends on $X$; which one you
+need depends on the decision.
 
 \subsection{Identification}
 
@@ -42,7 +42,7 @@ $0 < e(x) < 1$ for every $x$ in the population the estimand refers to.
 $Y = Y(D)$: one version of treatment, no interference.
 \end{assum}
 
-Exchangeability cannot be tested from the data it concerns. When a rule assigned treatment it has a concrete reading: the
+Exchangeability cannot be tested from the data it concerns. When a rule assigned treatment, it has a concrete reading. The
 rule's inputs are all in $X$, and whatever the rule left to chance was unrelated to outcomes. Defend it by finding out how
 decisions were actually made, not by inspecting the data. Overlap is checkable and is where a decisive rule fails. For the ATT a weaker
 pair suffices: $Y(0) \indep D \mid X$ and $e(x) < 1$.
@@ -106,8 +106,8 @@ $\E[\tau(X)\,e(X)(1-e(X))]/\E[e(X)(1-e(X))]$.
 \begin{proof}
 Sketch, for $X$ saturated (so $e(X)$ is linear in $X$). Write $Y = X^\top\beta + D\tau(X) + \varepsilon$. By
 Frisch--Waugh--Lovell the coefficient is $\E[\tilde D Y]/\E[\tilde D^2]$ with $\tilde D = D - e(X)$, which is orthogonal to $X^\top\beta$.
-Given $X$, $\E[\tilde D D\tau(X) \mid X] = e(X)(1-e(X))\tau(X)$ and $\E[\tilde D^2 \mid X] = e(X)(1-e(X))$; average over $X$. Meeting~8 gives
-the general version.
+Given $X$, $\E[\tilde D D\tau(X) \mid X] = e(X)(1-e(X))\tau(X)$ and $\E[\tilde D^2 \mid X] = e(X)(1-e(X))$; average over $X$. The general version
+comes later in the course, with the partially linear model.
 \end{proof}
 
 The weights are largest where the rule was least decided ($e$ near $0.5$). Interacting $D$ with centered $X$, or standardizing
@@ -115,12 +115,12 @@ with a flexible model, targets the ATE or ATT instead.
 
 \subsection{Good and bad controls}
 
-Exchangeability is a statement about a particular $X$, and enlarging $X$ can destroy it (Meeting~1's backdoor criterion).
+Exchangeability is a statement about a particular $X$, and enlarging $X$ can destroy it (the backdoor criterion from Meeting~1).
 \begin{itemize}
   \item \textbf{Confounders} affect both $D$ and $Y$; a recorded rule's inputs are confounders by construction.
   \item \textbf{Mediators} lie on $D \to M \to Y$; adjusting removes the part of the effect through $M$.
   \item \textbf{Colliders} are caused by $D$ (or a cause of $D$) and by a cause of $Y$; adjusting creates an association
-  (Meeting~1, collider result).
+  (the collider result from Meeting~1).
   \item \textbf{Pure predictors of treatment} (instruments) add variance and can amplify the bias from any remaining
   confounder.
 \end{itemize}
@@ -138,16 +138,17 @@ model extrapolates silently. Compute both; where they disagree, look first at th
 
 \subsection{Design before analysis}
 
-Every choice so far can be made without looking at an outcome, and should be (Rubin, 2008).
+Every choice so far can be made without looking at an outcome, and should be (Rubin 2008).
 \begin{enumerate}
   \item \textbf{Reconstruct the assignment mechanism}: estimate $e(x)$ from the rule's inputs, or write it down if the rule is
   known.
   \item \textbf{Check overlap} in each arm and fix the trimming rule.
   \item \textbf{Fix the estimand} the trimmed population implies, and the estimator.
   \item \textbf{Check balance} of $X$ after weighting or matching (standardized mean differences).
-  \item Record the design in writing, with a date. \textbf{Only then open the outcomes.}
+  \item Record the design in writing, with a date. Only then open the outcomes.
 \end{enumerate}
-This is the observational counterpart of the frozen partition (Meeting~4) and the frozen list (Meeting~5).
+This is the observational counterpart of the frozen partition from Meeting~4 and the frozen list from Meeting~5: choices
+made before the outcomes are opened cannot be tuned to them.
 
 \subsection{Doubly robust estimation}
 
@@ -166,18 +167,18 @@ product that vanishes if the outcome model or the propensity is correct.
 
 The first two terms are standardization; the weighted residuals correct what the outcome model got wrong. When both nuisances
 are estimated flexibly, the product structure makes the estimator's error depend on the product of the two models' errors, and
-with cross-fitting (Meeting~8) it has a valid normal approximation where neither IPW nor standardization alone does. Double
+with cross-fitting, taken up later in the course, it has a valid normal approximation where neither IPW nor standardization alone does. Double
 robustness protects against \emph{modeling} errors, not against unmeasured confounding: if exchangeability fails, every
 estimator in these notes is biased.
 
 \paragraph{Inference.} Bootstrap over units, re-estimating $\hat e$ (and $\hat\mu_d$) in each replicate, with clusters resampled as
-blocks; or use the cross-fitted AIPW standard error of Meeting~8.
+blocks; or use the cross-fitted AIPW standard error, which comes later in the course.
 
-\subsection{How well does adjustment work? The LaLonde lesson}
+\subsection{Adjustment tested against an experiment}
 
 LaLonde (1986) replaced a job-training experiment's control group with survey respondents and asked whether adjustment recovered
-the experimental answer. The regressions of the time missed badly, sometimes with the wrong sign. Later work found propensity
-methods do well when the comparison group overlaps the treated \emph{and} the covariates include prior values of the outcome,
+the experimental answer. The regressions of the time missed badly, sometimes with the wrong sign. Later work (Dehejia and Wahba
+1999, and others) found that propensity methods do well when the comparison group overlaps the treated \emph{and} the covariates include prior values of the outcome,
 and badly otherwise. The covariates matter more than the estimator.
 
 \subsection{A first look at sensitivity}
@@ -185,7 +186,7 @@ and badly otherwise. The covariates matter more than the estimator.
 If an unmeasured $U$ shifts the outcome by $\gamma$ per unit and differs between treated and untreated units with the same $X$ by
 $\delta$, a linear adjustment is off by about $\gamma\delta$. Ask the reverse question: how large must $\gamma\delta$ be to move the
 estimate below the break-even? If that needs a confounder stronger than the strongest one measured, the conclusion is robust.
-Meeting~8 makes this precise.
+A formal omitted-variable sensitivity analysis, later in the course, makes this precise.
 
 \begin{pitfall}[adjustment errors]
 Adjusting for post-treatment or collider variables; trimming without restating the estimand; choosing the specification after
@@ -270,23 +271,29 @@ that balance covariate moments exactly.
 \end{extension}
 
 \begin{extension}[Continuous dose]
-With a continuous treatment the average dose--response $\mu(d) = \E_X[\E[Y \mid D=d, X]]$ is identified under the same three assumptions,
+With a continuous treatment the average dose-response $\mu(d) = \E_X[\E[Y \mid D=d, X]]$ is identified under the same three assumptions,
 with overlap meaning that treatment varies within every region of $X$. If $\E[Y \mid D, X] = \theta D + g(X)$ the slope is the partially linear
-model of Meeting~8.
+model, which returns later in the course.
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Rosenbaum and Rubin (1983), ``The central role of the propensity score in observational studies'',
-\emph{Biometrika}}{The balancing property and its consequences}{Sections 1--3}{2}
-\reading{Rubin (2008), ``For objective causal inference, design trumps analysis'', \emph{Annals of Applied
-Statistics}}{The case for an outcome-free design stage}{All}{1}
-\reading{Crump, Hotz, Imbens, and Mitnik (2009), ``Dealing with limited overlap'', \emph{Biometrika}}{How to choose a trimming
-rule, and what estimand results}{Sections 1--3}{3}
-\reading{LaLonde (1986), \emph{AER}; Dehejia and Wahba (1999), \emph{JASA}}{Can observational methods recover an experiment?}{Intro,
-results}{1}
-\reading{Imbens (2015), ``Matching methods in practice: three examples'', \emph{Journal of Human Resources}}{A worked tour of
-design-stage diagnostics}{All}{2}
+\reading{Crump, Richard K., V. Joseph Hotz, Guido W. Imbens, and Oscar A. Mitnik. 2009. ``Dealing with Limited Overlap in
+Estimation of Average Treatment Effects.'' \emph{Biometrika} 96 (1): 187--199. \url{https://doi.org/10.1093/biomet/asn055}}{How
+to choose a trimming rule, and what estimand results}{Sections 1--3}{3}
+\reading{Dehejia, Rajeev H., and Sadek Wahba. 1999. ``Causal Effects in Nonexperimental Studies: Reevaluating the
+Evaluation of Training Programs.'' \emph{Journal of the American Statistical Association} 94 (448): 1053--1062.}{Propensity
+methods applied to LaLonde's data}{Intro, results}{1}
+\reading{Imbens, Guido W. 2015. ``Matching Methods in Practice: Three Examples.'' \emph{Journal of Human Resources} 50 (2):
+373--419. \url{https://doi.org/10.3368/jhr.50.2.373}}{A worked tour of design-stage diagnostics}{All}{2}
+\reading{LaLonde, Robert J. 1986. ``Evaluating the Econometric Evaluations of Training Programs with Experimental Data.''
+\emph{American Economic Review} 76 (4): 604--620. \url{https://www.jstor.org/stable/1806062}}{Can observational methods
+recover an experiment?}{Intro, results}{1}
+\reading{Rosenbaum, Paul R., and Donald B. Rubin. 1983. ``The Central Role of the Propensity Score in Observational Studies
+for Causal Effects.'' \emph{Biometrika} 70 (1): 41--55. \url{https://doi.org/10.1093/biomet/70.1.41}}{The balancing property
+and its consequences}{Sections 1--3}{2}
+\reading{Rubin, Donald B. 2008. ``For Objective Causal Inference, Design Trumps Analysis.'' \emph{Annals of Applied
+Statistics} 2 (3): 808--840. \url{https://doi.org/10.1214/08-AOAS187}}{The case for an outcome-free design stage}{All}{1}
 \reading{Handout H4, \emph{Instrumental variables}}{What to do when an unmeasured confounder makes exchangeability
 implausible}{All}{2}
 \end{readinglist}

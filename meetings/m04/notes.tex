@@ -1,19 +1,19 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\notesheader{4}{Causal Trees and Forests}{Searching for heterogeneity without fooling yourself}
+\notesheader{4}{Causal trees and forests}{Searching for heterogeneity without fooling yourself}
 
 \begin{decision}
 A search through customer fields finds a segment that responds three times as much as average. Should the
-firm build a campaign on it? Only if the segment's effect is measured on data that did not choose it. These
-notes show why the search inflates what it finds, how honesty removes the inflation, and how forests turn the
-same idea into an estimate for every customer.
+firm build a campaign on it? It should do so only if the segment's effect is measured on data that did not
+choose it. A search inflates what it finds. Honest estimation removes the inflation, and a forest turns the same
+idea into an estimate for every customer.
 \end{decision}
 
 \begin{goals}
   \item explain why a causal splitting criterion ignores prognostic splits while an outcome tree favors them;
   \item quantify the winner's curse and show that honest estimation removes it;
-  \item run the discover--estimate--recommend protocol;
+  \item run the discover-estimate-recommend protocol;
   \item describe a causal forest as adaptive neighbor weights with local centering, and state what its
   intervals require;
   \item test whether a CATE model has found real heterogeneity (calibration test and GATES).
@@ -86,18 +86,18 @@ $\Pi$.
 \end{prop}
 \begin{proof}
 $B$ is independent of $A$ and hence of $\Pi$, so conditioning on $\Pi$ leaves $B$ unchanged: within a leaf, $B$'s
-units are a random sample from that leaf with randomized treatment, and the experiment results of Meetings 1
-and 2 apply.
+units are a random sample from that leaf with randomized treatment. As in any randomized experiment
+(Meetings 1 and 2), the difference in means is then unbiased for the leaf's effect and its usual SE is valid.
 \end{proof}
 
 The proof uses one fact: the partition does not depend on $B$. Consulting $B$ while tuning the tree, even
 informally, turns it into discovery data. The cost is variance, because each half does only one job. If a leaf's full-sample
 SE is $s$, honesty raises its variance from $s^2$ to $2s^2$; reporting the winner from the search instead adds a
 squared bias of about $(s\,\E[\max Z_j])^2$, which exceeds $s^2$ once four or more equal candidates are compared.
-Splitting also spends sample size: a leaf with 100 per arm and rates $0.30$ vs $0.10$ has SE $0.055$; each half of it
-has SE $0.077$.
+Splitting also spends sample size. A leaf with 100 per arm and rates $0.30$ and $0.10$ has SE $0.055$, and each half
+of it has SE $0.077$.
 
-\paragraph{The protocol.} \textbf{H1 Discover} on $A$ by any method and \emph{commit}: write the leaves and
+\paragraph{The protocol.} \textbf{H1 Discover} on $A$ by any method and \emph{commit}, writing down the leaves and
 the intended decision per leaf. \textbf{H2 Estimate} each committed leaf's effect and SE on $B$, with what the
 decision needs (the treated-arm rate, for a per-redemption break-even). \textbf{H3 Recommend} by placing each
 interval against the leaf's own threshold: above (act), straddling (undecided), below (do not act). With $L$
@@ -126,7 +126,7 @@ treatment residual, the R-learner's loss (Meeting~3) localized by $\alpha_i(x)$;
 $\theta$.
 \end{proof}
 
-Subtracting $\hat\ell$ and $\hat e$ first is \emph{local centering}: it removes what prognostic variables explain, so
+Subtracting $\hat\ell$ and $\hat e$ first is \emph{local centering}. It removes what prognostic variables explain, so
 splits concentrate on effect modifiers, and it protects the estimate when treatment probabilities vary with $x$.
 The neighbors are adaptive: the trees decide which directions in $x$ matter for the effect.
 
@@ -135,7 +135,7 @@ bounded support, overlap, honest trees whose leaves shrink in every direction, a
 $s \to \infty$, $s/n \to 0$), Wager and Athey (2018) show $\hatt(x)$ is asymptotically normal with a variance the
 infinitesimal jackknife estimates. Three cautions: the result is pointwise, not a band over all customers;
 intervals are usually wide relative to the spread of $\hatt(X_i)$; and that spread overstates the spread of
-true effects because it includes noise. Averaging does not make trees independent: with per-tree variance
+true effects because it includes noise. Averaging does not make trees independent. With per-tree variance
 $\sigma^2$ and pairwise correlation $\rho$, the forest's variance is $\sigma^2[\rho + (1-\rho)/B]$, so more trees
 remove simulation noise but not the uncertainty the trees share.
 
@@ -225,9 +225,9 @@ The denominator is $\sum_i \alpha_i(D_i - 0.5)^2 = 0.25$, so $\hatt(x) = 0.13125
 With six units this only illustrates the arithmetic.
 
 \paragraph{Step 4: is the heterogeneity real?} On a held-out set the calibration regression gives $\hat\beta_1 = 0.052$
-(SE $0.010$) and $\hat\beta_2 = 0.64$ (SE $0.21$): heterogeneity detected ($z = 3.05$), predictions somewhat too spread
-out but not significantly so ($z = (1 - 0.64)/0.21 = 1.71$). GATES by quintile of predicted effect, each with SE
-about $0.02$:
+(SE $0.010$) and $\hat\beta_2 = 0.64$ (SE $0.21$). The model has detected heterogeneity ($z = 3.05$), and its
+predictions are somewhat too spread out, but not significantly so ($z = (1 - 0.64)/0.21 = 1.71$). Figure 1 shows
+GATES by quintile of predicted effect, each with SE about $0.02$.
 
 \begin{center}
 \begin{tikzpicture}
@@ -273,29 +273,35 @@ and correlated or high-cardinality fields absorb splits arbitrarily.}
 Any parameter defined by a local moment condition $\E[\psi(O;\theta) \mid X = x] = 0$ (a quantile, a local IV effect)
 can be estimated with forest weights by solving $\sum_i \alpha_i(x)\psi(O_i;\theta) = 0$. A gradient trick turns split
 selection into ordinary CART on pseudo-outcomes. The \texttt{grf} package implements causal, quantile, IV, and survival
-forests, the calibration test, and doubly robust GATEs (Athey, Tibshirani, and Wager, 2019).
+forests, the calibration test, and doubly robust GATEs (Athey et al. 2019).
 \end{extension}
 
 \begin{extension}[Honest criteria, inference on winners, shrinkage]
-Athey and Imbens's criterion subtracts the estimation variance a split will create, discouraging small leaves
-directly. When a winner must be reported from the data that chose it, conditional intervals (Andrews, Kitagawa,
-and McCloskey, 2024) are valid given the selection; empirical Bayes shrinkage pulls noisy segments toward the
+The criterion of Athey and Imbens (2016) subtracts the estimation variance a split will create, which discourages
+small leaves directly. When a winner must be reported from the data that chose it, conditional intervals (Andrews
+et al. 2024) are valid given the selection; empirical Bayes shrinkage pulls noisy segments toward the
 mean and tempers the winner automatically.
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Athey and Imbens (2016), ``Recursive partitioning for heterogeneous causal effects'',
-\emph{PNAS}}{Causal trees and honesty, with the splitting criterion}{Sections 1--4}{2}
-\reading{Wager and Athey (2018), ``Estimation and inference of heterogeneous treatment effects using random
-forests'', \emph{JASA}}{The asymptotic normality result and its conditions}{Sections 1--3}{3}
-\reading{Athey, Tibshirani, and Wager (2019), ``Generalized random forests'', \emph{Annals of Statistics}}{Forests
-as weights for any moment condition}{Sections 1--2, 6}{3}
-\reading{Chernozhukov, Demirer, Duflo, and Fern\'andez-Val (2025), ``Fisher--Schultz Lecture: Generic machine learning inference on
-heterogeneous treatment effects in randomized experiments'', \emph{Econometrica}}{The calibration test and GATES with repeated
-splitting}{Sections 1--3}{2}
-\reading{Andrews, Kitagawa, and McCloskey (2024), ``Inference on winners'', \emph{QJE}}{Valid intervals for the
-best-looking segment}{Sections 1--2}{3}
+\reading{Athey, Susan, and Guido Imbens. 2016. ``Recursive Partitioning for Heterogeneous Causal Effects.''
+\emph{Proceedings of the National Academy of Sciences} 113 (27): 7353--7360.
+\url{https://doi.org/10.1073/pnas.1510489113}}{Causal trees and honesty, with the splitting criterion}{Sections 1--4}{2}
+\reading{Wager, Stefan, and Susan Athey. 2018. ``Estimation and Inference of Heterogeneous Treatment Effects Using
+Random Forests.'' \emph{Journal of the American Statistical Association} 113 (523): 1228--1242.
+\url{https://doi.org/10.1080/01621459.2017.1319839}}{The asymptotic normality result and its conditions}{Sections
+1--3}{3}
+\reading{Athey, Susan, Julie Tibshirani, and Stefan Wager. 2019. ``Generalized Random Forests.'' \emph{Annals of
+Statistics} 47 (2): 1148--1178. \url{https://doi.org/10.1214/18-AOS1709}}{Forests as weights for any moment
+condition}{Sections 1--2, 6}{3}
+\reading{Chernozhukov, Victor, Mert Demirer, Esther Duflo, and Iv\'an Fern\'andez-Val. 2025. ``Fisher--Schultz Lecture:
+Generic Machine Learning Inference on Heterogeneous Treatment Effects in Randomized Experiments, with an Application
+to Immunization in India.'' \emph{Econometrica} 93 (4): 1121--1164. \url{https://doi.org/10.3982/ECTA19303}}{The
+calibration test and GATES with repeated splitting}{Sections 1--3}{2}
+\reading{Andrews, Isaiah, Toru Kitagawa, and Adam McCloskey. 2024. ``Inference on Winners.'' \emph{Quarterly Journal
+of Economics} 139 (1): 305--358. \url{https://doi.org/10.1093/qje/qjad043}}{Valid intervals for the best-looking
+segment}{Sections 1--2}{3}
 \end{readinglist}
 
 \end{document}

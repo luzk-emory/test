@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\notesheader{11}{Synthetic Control}{One treated unit, and a comparison built from many}
+\notesheader{11}{Synthetic control}{One treated unit, and a comparison built from many}
 
 \begin{decision}
 A change was made in one city, one region, or one flagship store. No single untreated unit looks like it, and picking comparison
@@ -14,7 +14,7 @@ a weighted combination of untreated units that tracks the treated unit before th
   \item justify it with a factor model and say why a long, close pre-period fit matters;
   \item design before the post-period: donor pool, fitting window, held-out check;
   \item use in-space and in-time placebos and leave-one-out, and say when a placebo rank is a $p$-value;
-  \item recognize its limits (extreme units, spillovers, anticipation) and relate it to DiD, synthetic DiD, and matrix completion.
+  \item recognize its limits (extreme units, spillovers, anticipation) and relate it to difference-in-differences (DiD), synthetic DiD, and matrix completion.
 \end{goals}
 
 %=====================================================================================
@@ -23,11 +23,13 @@ a weighted combination of untreated units that tracks the treated unit before th
 \subsection{Setup}
 
 Unit $1$ is treated after period $T_0$; units $j = 2, \dots, J+1$ form the \emph{donor pool} and are never treated in the window. Outcomes
-$Y_{jt}$ are observed for $t = 1, \dots, T$. In adoption-date notation the target is
+$Y_{jt}$ are observed for $t = 1, \dots, T$. Index potential outcomes by adoption date: $Y_{jt}(g)$ is unit $j$'s outcome in period $t$ if it is
+first treated in period $g$, and $g = \infty$ means never treated. The target is
 $\tau_t = Y_{1t}(T_0 + 1) - Y_{1t}(\infty)$ for $t > T_0$, where $Y_{1t}(T_0 + 1) = Y_{1t}$ is observed and $Y_{1t}(\infty)$ must be constructed.
 
 DiD would compare the treated unit's change with the average donor's. With one treated unit that is often unlike any donor (bigger,
-faster-growing, more seasonal), the average donor is a poor counterfactual, and choosing donors by hand is easy to manipulate.
+faster-growing, more seasonal), the average donor is a poor counterfactual. If you choose donors by hand instead, you can choose the ones
+that flatter the result.
 
 \subsection{The estimator}
 
@@ -39,7 +41,7 @@ $\sum_j w_j = 1$. The synthetic control is $\hat Y_{1t}(\infty) = \sum_j w_jY_{j
 Pre-treatment covariates (population, income) can be matched along with pre-period outcomes. Non-negative weights summing to one make the
 synthetic unit an \emph{interpolation}: a point inside the donors' range. Unconstrained weights, as in a regression, can fit the pre-period
 exactly with combinations that have no real-world analog and behave wildly afterwards. The constraints also make the solution sparse
-and explainable: ``the synthetic city is 51\% city F, 26\% city E, and 22\% city D''.
+and explainable, as in ``the synthetic city is 51\% city F, 26\% city E, and 22\% city D''.
 
 \subsection{Why a close pre-period fit is evidence}
 
@@ -55,7 +57,7 @@ $\delta_t + \lambda_t^\top\mu_1$ plus mean-zero noise.
 
 The characteristics $\mu_j$ are unobserved, so weights are chosen to match outcomes instead. If a weighted donor combination tracks the treated
 unit over a \emph{long} pre-period, during which $\lambda_t$ moves, it must nearly match $\mu_1$, and so keeps tracking it afterwards. DiD is the
-special case $\lambda_t$ constant. A close fit over a few periods is easy and uninformative: weights can fit noise.
+special case in which $\lambda_t$ is constant. A close fit over a few periods is easy and uninformative: weights can fit noise.
 
 \subsection{Design before the post-period}
 
@@ -71,7 +73,7 @@ Weights tuned after seeing the post-period gap are fitted to it.
 
 \subsection{Inference by placebo}
 
-There is no standard error in the usual sense.
+With one treated unit, there is no standard error in the usual sense.
 
 \begin{prop}{When a placebo rank is a $p$-value}{placebo}
 Apply the method to every unit in turn as if it were treated (\emph{in-space placebos}) and compute each unit's ratio
@@ -117,11 +119,12 @@ placebo rank a $p$-value when the treated unit was chosen for a reason.
 
 \paragraph{Setting.} QuickBite launched same-day grocery delivery in one city (A) at the start of quarter 9. Nine other cities (B to J) did not get it in
 the study window. The outcome is monthly orders per 100 residents, averaged over the quarter. The launch is justified if it raises orders by at least
-$1.5$ per 100 residents a month within a year. City A was chosen at random among ten candidate cities by a draw recorded before launch. (Data are
-from a simulation with a factor structure, \texttt{checks/m11\_sim.py}; the planted effect grows from $1.0$ to $2.2$.)
+$1.5$ per 100 residents a month within a year. City A was chosen at random among 10 candidate cities by a draw recorded before launch. (The data are
+simulated from a factor model, with a planted effect that grows from $1.0$ to $2.2$.)
 
-\paragraph{Step 1: design.} Donor pool: the nine cities, none adjacent to A. Fitting window: quarters 1--8. Held-out check: fitting on quarters 1--6
-gives a synthetic city that misses quarters 7--8 by $0.11$ and $0.12$, against pre-period RMSPE $0.036$: acceptable.
+\paragraph{Step 1: design.} The donor pool is the nine cities, none adjacent to A, and the fitting window is quarters 1--8. For the held-out
+check, fitting on quarters 1--6 gives a synthetic city that misses quarters 7--8 by $0.11$ and $0.12$, against a pre-period RMSPE of $0.036$,
+which is acceptable.
 
 \paragraph{Step 2: weights and effect.} Fitting on quarters 1--8 gives weights $0.513$ on F, $0.264$ on E, and $0.223$ on D.
 \begin{center}
@@ -170,9 +173,10 @@ Ratio & 50.0 & 8.5 & 2.1 & 1.6 & 1.4 & 1.3 & 1.0 & 0.9 & 0.8 & 0.7 \\
 \bottomrule
 \end{tabular}
 \end{center}
-A ranks first of ten. Because A was drawn at random among the ten, Result~\ref{prop:placebo} applies: $p = 1/10$, the smallest possible with nine donors.
+A ranks first of 10. Because A was drawn at random among the 10 cities, Result~\ref{prop:placebo} applies and gives $p = 1/10$, the smallest
+possible with nine donors.
 Had A been picked as the most promising city, the same rank would be descriptive only. Cities E and D, the largest and smallest, cannot be fitted by
-the others (pre-RMSPE $2.75$ and $1.20$): their large post-period gaps mean nothing, and the ratio discounts them. A's ratio is inflated by its very
+the others (pre-RMSPE $2.75$ and $1.20$), so their large post-period gaps mean nothing, and the ratio discounts them. A's ratio is inflated by its very
 close pre-fit ($0.04$); read it as ``unusual'', not as a measure of size.
 
 \paragraph{Step 4: robustness.} Dropping F, the largest donor, gives weights on J, D, I, and E, pre-RMSPE $0.067$, and post-period gaps averaging $1.69$.
@@ -201,7 +205,7 @@ than constructed.}
 
 \subsection*{Synthetic difference-in-differences}
 
-Synthetic DiD (Arkhangelsky et al., 2021) chooses \emph{unit weights} $\omega_j$ (non-negative, summing to one, with a small ridge penalty) so that the
+Synthetic DiD (Arkhangelsky et al.\ 2021) chooses \emph{unit weights} $\omega_j$ (non-negative, summing to one, with a small ridge penalty) so that the
 weighted donors' pre-period \emph{trend} matches the treated units' up to a constant, and \emph{time weights} $\lambda_t$ on pre-periods so that the weighted
 pre-period resembles the post-period for donors. It then solves the weighted two-way fixed-effects regression
 \[
@@ -213,7 +217,7 @@ estimators are available.
 
 \subsection*{Matrix completion}
 
-Arrange untreated outcomes in a units-by-periods matrix $\mathbf Y(\infty)$ whose treated cells are missing. Matrix completion (Athey et al., 2021) assumes
+Arrange untreated outcomes in a units-by-periods matrix $\mathbf Y(\infty)$ whose treated cells are missing. Matrix completion (Athey et al.\ 2021) assumes
 $\mathbf Y(\infty) = \mathbf L + \boldsymbol\varepsilon$ with $\mathbf L$ of low rank (a factor model with few factors) and estimates
 \[
   \hat{\mathbf L} = \arg\min_{\mathbf L} \sum_{(i,t)\ \text{untreated}} (Y_{it} - L_{it})^2 + \lambda\,\|\mathbf L\|_\ast ,
@@ -223,22 +227,27 @@ rank-two special case (DiD); synthetic control and horizontal regressions are ot
 treated units' pre-periods and donors' whole histories, and suits staggered adoption.
 
 \begin{extension}[Augmented synthetic control and conformal inference]
-When the pre-period fit is imperfect, augmented synthetic control adds an outcome-model correction for the remaining imbalance (Ben-Michael, Feller, and
-Rothstein, 2021). Conformal methods give prediction intervals for the post-period counterfactual under exchangeability of residuals over time.
+When the pre-period fit is imperfect, augmented synthetic control adds an outcome-model correction for the remaining imbalance (Ben-Michael et al.\ 2021). Conformal methods give prediction intervals for the post-period counterfactual under exchangeability of residuals over time.
 \end{extension}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Abadie, Diamond, and Hainmueller (2010), ``Synthetic control methods for comparative case studies'', \emph{JASA}}{The method and the
-factor-model argument, with the Proposition 99 example}{Sections 1--3}{2}
-\reading{Abadie (2021), ``Using synthetic controls: feasibility, data requirements, and methodological aspects'', \emph{Journal of Economic
-Literature}}{When synthetic control is and is not appropriate}{All}{1}
-\reading{Arkhangelsky, Athey, Hirshberg, Imbens, and Wager (2021), ``Synthetic difference-in-differences'', \emph{AER}}{The SDID estimator and its
-properties}{Sections I--III}{3}
-\reading{Athey, Bayati, Doudchenko, Imbens, and Khosravi (2021), ``Matrix completion methods for causal panel data models'', \emph{JASA}}{Low-rank
-counterfactuals as a unifying view}{Sections 1--4}{3}
-\reading{Ben-Michael, Feller, and Rothstein (2021), ``The augmented synthetic control method'', \emph{JASA}}{Correcting imperfect fit}{Sections
-1--3}{3}
+\reading{Abadie, Alberto. 2021. ``Using Synthetic Controls: Feasibility, Data Requirements, and Methodological Aspects.''
+\emph{Journal of Economic Literature} 59 (2): 391--425. \url{https://doi.org/10.1257/jel.20191450}}{When synthetic control is and is
+not appropriate}{All}{1}
+\reading{Abadie, Alberto, Alexis Diamond, and Jens Hainmueller. 2010. ``Synthetic Control Methods for Comparative Case Studies:
+Estimating the Effect of California's Tobacco Control Program.'' \emph{Journal of the American Statistical Association} 105 (490):
+493--505. \url{https://doi.org/10.1198/jasa.2009.ap08746}}{The method and the factor-model argument, with the Proposition 99
+example}{Sections 1--3}{2}
+\reading{Arkhangelsky, Dmitry, Susan Athey, David A. Hirshberg, Guido W. Imbens, and Stefan Wager. 2021. ``Synthetic
+Difference-in-Differences.'' \emph{American Economic Review} 111 (12): 4088--4118.
+\url{https://doi.org/10.1257/aer.20190159}}{The synthetic DiD estimator and its properties}{Sections I--III}{3}
+\reading{Athey, Susan, Mohsen Bayati, Nikolay Doudchenko, Guido Imbens, and Khashayar Khosravi. 2021. ``Matrix Completion Methods
+for Causal Panel Data Models.'' \emph{Journal of the American Statistical Association} 116 (536): 1716--1730.
+\url{https://doi.org/10.1080/01621459.2021.1891924}}{Low-rank counterfactuals as a unifying view}{Sections 1--4}{3}
+\reading{Ben-Michael, Eli, Avi Feller, and Jesse Rothstein. 2021. ``The Augmented Synthetic Control Method.'' \emph{Journal of the
+American Statistical Association} 116 (536): 1789--1803. \url{https://doi.org/10.1080/01621459.2021.1929245}}{Correcting imperfect
+fit}{Sections 1--3}{3}
 \end{readinglist}
 
 \end{document}

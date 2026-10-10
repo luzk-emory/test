@@ -1,14 +1,16 @@
-# Case B: Wen's Rate Decisions
+# Case B: Wen's rate decisions
 
 **Meridian Hotels, Meetings 8–9.** Fictional teaching case: the company, the people, and all data are invented.
 
 This case is handed out one part at a time. When a task says *commit*, write your answer down before the class discusses it.
 
+Parts are labeled by meeting and release: Part M8-R2 is the second part released in Meeting 8. Bonus parts, labeled B1 to B4, are optional and not examined.
+
 Throughout: the current midweek premium rate is **¥800** a night, and the variable cost of an occupied room is **¥200**.
 
 ---
 
-## Meeting 8: Flexible Controls and Double Machine Learning
+## Meeting 8: Flexible controls and double machine learning
 
 ### Part M8-R1. The proposal
 
@@ -230,9 +232,9 @@ Write the memo to Wen, in five sentences or fewer:
 
 ---
 
-## Bonus (not examined): the member-rate coin
+## Bonus (not examined): The member-rate coin
 
-These parts were Meeting 9's case when it taught instrumental variables. The experimental core of IV (noncompliance, the ITT, and the LATE) now closes Meeting 2; Handout H4 goes further. They use the same hotels, and Part M9-R3's backtest refers to Part B1's test.
+These parts are optional. They use the same hotels, and Part M9-R3's backtest refers to Part B1's test.
 
 ### Part B1. The member-rate test
 

@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{coursenotes}
 \begin{document}
-\handoutheader{H2}{Neural and Foundation-Model Estimators}{What deep learning adds to effect estimation, and what it cannot}{Meetings 3 (Conditional effects) and 9 (Generative AI)}
+\handoutheader{H2}{Neural and foundation-model estimators}{What deep learning adds to effect estimation, and what it cannot}{Meetings 3 (Conditional effects) and 9 (Generative AI)}
 
 \begin{decision}
 A vendor offers a deep-learning model that ``estimates each customer's response from their app behavior and
@@ -23,8 +23,10 @@ architecture can help without assumptions).
 
 \subsection{Where neural networks help}
 
-Everything in the conditional-effects notes holds: under conditional independence and overlap,
-$\tau(x) = \mu_1(x) - \mu_0(x)$, and the problem is to estimate two regression functions well. Neural networks are
+With treatment $D$, outcome $Y$, and pre-treatment covariates $X$, write $\mu_d(x) = \E[Y \mid D=d, X=x]$ for the
+outcome regression in arm $d$ and $\tau(x) = \E[Y(1) - Y(0) \mid X=x]$ for the conditional average treatment effect
+(CATE). Under conditional independence, $\{Y(0), Y(1)\} \indep D \mid X$, and overlap, $0 < \Pr(D=1 \mid X=x) < 1$,
+the CATE is $\tau(x) = \mu_1(x) - \mu_0(x)$. The problem is then to estimate two regression functions well. Neural networks are
 useful when $x$ is high-dimensional or unstructured (text, images, event sequences) and when the two arms
 share structure, so that learning features from all the data helps both. They do not change what is identified.
 
@@ -51,8 +53,7 @@ extrapolation that looks like an estimate.
 \subsection{Counterfactual regression: balancing the representation}
 
 CFR adds a penalty $\alpha \cdot \text{IPM}(\Phi \mid D=1,\ \Phi \mid D=0)$ that makes the distribution of $\Phi(X)$ similar
-in the two arms (an integral probability metric such as the Wasserstein distance or MMD). Shalit, Johansson, and
-Sontag (2017) bound the estimation error of $\tau$ by the factual losses plus a constant times this distance, which
+in the two arms (an integral probability metric such as the Wasserstein distance or MMD). Shalit et al.\ (2017) bound the estimation error of $\tau$ by the factual losses plus a constant times this distance, which
 motivates the penalty. The bound assumes $\Phi$ is invertible. A penalized network need not be, and then balancing has
 a cost.
 
@@ -73,7 +74,7 @@ comparability. Check overlap on $X$ (propensity scores), not on the learned repr
 \subsection{DragonNet: adding the propensity}
 
 DragonNet adds a third head that predicts $D$ from $\Phi(x)$. By the balancing property of the propensity score
-(Meeting~7), conditioning on $e(X)$ suffices for adjustment, so a representation need only keep the information that
+$e(x) = \Pr(D=1 \mid X=x)$, conditioning on $e(X)$ suffices for adjustment, so a representation need only keep the information that
 predicts treatment and outcome; the propensity head pushes $\Phi$ to keep it. A \emph{targeted regularization} term adds
 a one-parameter correction that makes the final estimate behave like the doubly robust (AIPW) estimator. The
 architecture's gains are in estimation efficiency; identification still rests on conditional independence and
@@ -97,7 +98,7 @@ and $\Pr(Y=1 \mid D=0) = 0.2 \cdot \tfrac23 + 0.8 \cdot \tfrac13 = 0.4$.
 \end{proof}
 
 Any method fitted to the observed distribution, however flexible, cannot choose between A and B. Proxies help only
-under explicit structure. \emph{Proximal causal inference} (Miao, Geng, and Tchetgen Tchetgen, 2018) shows
+under explicit structure. \emph{Proximal causal inference} (Miao et al.\ 2018) shows
 identification when two proxies play distinct roles: a negative-control \emph{exposure} (related to $U$, with no
 effect on $Y$) and a negative-control \emph{outcome} (related to $U$, unaffected by $D$), plus a completeness
 condition. CEVAE leaves that structure implicit, and Rissanen and Marttinen (2021) show it can be inconsistent when
@@ -108,15 +109,16 @@ an identification claim and ask for the assumptions.
 
 With treatments over time (a sequence of offers), past treatments affect future covariates that affect future
 treatments: \emph{time-varying confounding}. Sequence models (recurrent networks, the causal transformer of
-Melnychuk, Frauen, and Feuerriegel, 2022) estimate counterfactual trajectories, using balancing representations at
-each step. The identifying assumption is sequential conditional independence (Handout H3), the same as for
-G-computation, which remains the transparent baseline.
+Melnychuk et al.\ 2022) estimate counterfactual trajectories, using balancing representations at
+each step. The identifying assumption is sequential conditional independence (at each step, treatment is independent of
+the potential outcomes given the history of past treatments and covariates). It is the same assumption
+G-computation needs, and G-computation remains the transparent baseline.
 
 \subsection{In-context and foundation-model estimators}
 
 A \emph{prior-fitted network} (PFN) is a transformer trained on millions of simulated datasets, each drawn from a prior
 over structural causal models. Given a new dataset in its context window, it outputs an estimate of an interventional
-quantity directly, approximating the posterior-predictive answer under that prior. Do-PFN (Robertson et al., 2025)
+quantity directly, approximating the posterior-predictive answer under that prior. Do-PFN (Robertson et al.\ 2025)
 applies this to effect estimation.
 
 \begin{prop}{The identification lives in the prior}{pfn}
@@ -130,7 +132,7 @@ weights unchanged, so the posterior-predictive effect averages the two effects w
 
 When the effect is identified (for example, conditional independence holds in every model of the prior), a PFN can
 be an efficient estimator with no tuning. When it is not, its answer reflects the simulator designer's prior over
-worlds, which is where its assumptions must be examined (Meeting~9: planted versus asserted truth).
+worlds, which is where its assumptions must be examined.
 
 \subsection{Evaluating neural estimators}
 
@@ -138,7 +140,8 @@ Semi-synthetic benchmarks (IHDP, ACIC) simulate outcomes on real covariates so t
 (2021) show that rankings on them can reflect how the outcomes were simulated rather than real-world performance; for
 example, benchmarks whose effects are simple functions of features that the response surfaces also use reward
 architectures that share structure across arms. Evaluate on the decision instead: the value of the targeting policy a
-model implies, on held-out randomized data (Meeting~5), and the calibration test of Meeting~4.
+model implies, on held-out randomized data, and a test of whether its estimated effects are calibrated on
+the same data.
 
 \begin{pitfall}[reading a deep-learning causal claim]
 Treating representation balance as overlap; treating a VAE's latent variable as a measured confounder; ranking models
@@ -150,7 +153,7 @@ on one semi-synthetic benchmark; accepting a foundation model's estimate without
 
 \paragraph{Setting.} QuickBite wants to estimate the effect of a ``featured restaurant'' slot on a restaurant's weekly
 orders from two years of logs. Restaurants are described by menu text, photos, and history. Three regions of covariate
-space matter: (a) small new restaurants, (b) mid-sized ones, (c) large chains. The slot was sold mostly to chains: in
+space matter: (a) small new restaurants, (b) mid-sized ones, (c) large chains. The slot was sold mostly to chains, and in
 region (c) every restaurant was featured.
 
 \paragraph{Step 1: overlap.} A propensity model on menu embeddings and history gives $\hat e \approx 0.15$ in (a), $0.5$ in
@@ -190,22 +193,34 @@ can it be validated against a QuickBite randomized test?}
 
 \subsection*{Annotated reading}
 \begin{readinglist}
-\reading{Shalit, Johansson, and Sontag (2017), ``Estimating individual treatment effect: generalization bounds and
-algorithms'', \emph{ICML}}{TARNet and CFR, with the error bound that motivates balancing}{Sections 1--4}{3}
-\reading{Shi, Blei, and Veitch (2019), ``Adapting neural networks for the estimation of treatment effects'',
-\emph{NeurIPS}}{DragonNet and targeted regularization}{Sections 1--3}{3}
-\reading{Louizos et al.\ (2017), ``Causal effect inference with deep latent-variable models'', \emph{NeurIPS}}{The CEVAE
-proposal}{Sections 1--3}{3}
-\reading{Rissanen and Marttinen (2021), ``A critical look at the consistency of causal estimation with deep latent
-variable models'', \emph{NeurIPS}}{When CEVAE fails, with simulations}{Sections 1--4}{2}
-\reading{Miao, Geng, and Tchetgen Tchetgen (2018), ``Identifying causal effects with proxy variables of an unmeasured
-confounder'', \emph{Biometrika}}{The conditions under which proxies do identify effects}{Sections 1--3}{3}
-\reading{Curth, Svensson, Weatherall, and van der Schaar (2021), ``Really doing great at estimating CATE?'', NeurIPS
-Datasets and Benchmarks}{Why benchmark rankings mislead}{All}{2}
-\reading{Melnychuk, Frauen, and Feuerriegel (2022), ``Causal transformer for estimating counterfactual outcomes'',
-\emph{ICML}}{Sequence models for time-varying treatments}{Sections 1--4}{3}
-\reading{Robertson et al.\ (2025), ``Do-PFN: in-context learning for causal effect estimation'',
-\emph{NeurIPS}}{A foundation-model estimator trained on simulated causal worlds}{Sections 1--4}{3}
+\reading{Shalit, Uri, Fredrik D. Johansson, and David Sontag. 2017. ``Estimating Individual Treatment Effect:
+Generalization Bounds and Algorithms.'' In \emph{Proceedings of the 34th International Conference on Machine
+Learning}, PMLR 70: 3076--85.}{TARNet and CFR, with the error bound that motivates balancing}{Sections 1--4}{3}
+\reading{Shi, Claudia, David M. Blei, and Victor Veitch. 2019. ``Adapting Neural Networks for the Estimation of
+Treatment Effects.'' In \emph{Advances in Neural Information Processing Systems 32} (NeurIPS 2019).}{DragonNet and
+targeted regularization}{Sections 1--3}{3}
+\reading{Louizos, Christos, Uri Shalit, Joris M. Mooij, David Sontag, Richard Zemel, and Max Welling. 2017.
+``Causal Effect Inference with Deep Latent-Variable Models.'' In \emph{Advances in Neural Information Processing
+Systems 30} (NeurIPS 2017).}{The CEVAE proposal}{Sections 1--3}{3}
+\reading{Rissanen, Severi, and Pekka Marttinen. 2021. ``A Critical Look at the Consistency of Causal Estimation
+with Deep Latent Variable Models.'' In \emph{Advances in Neural Information Processing Systems 34} (NeurIPS
+2021).}{When CEVAE fails, with simulations}{Sections 1--4}{2}
+
+\reading{Miao, Wang, Zhi Geng, and Eric J. Tchetgen Tchetgen. 2018. ``Identifying Causal Effects with Proxy
+Variables of an Unmeasured Confounder.'' \emph{Biometrika} 105 (4): 987--93.
+\url{https://doi.org/10.1093/biomet/asy038}}{The conditions under which proxies do identify effects}{Sections
+1--3}{3}
+\reading{Curth, Alicia, David Svensson, James Weatherall, and Mihaela van der Schaar. 2021. ``Really Doing Great
+at Estimating CATE? A Critical Look at ML Benchmarking Practices in Treatment Effect Estimation.'' In
+\emph{Proceedings of the Neural Information Processing Systems Track on Datasets and Benchmarks} (NeurIPS
+2021).}{Why benchmark rankings mislead}{All}{2}
+\reading{Melnychuk, Valentyn, Dennis Frauen, and Stefan Feuerriegel. 2022. ``Causal Transformer for Estimating
+Counterfactual Outcomes.'' In \emph{Proceedings of the 39th International Conference on Machine Learning}, PMLR
+162: 15293--329.}{Sequence models for time-varying treatments}{Sections 1--4}{3}
+\reading{Robertson, Jake, Arik Reuter, Siyuan Guo, Noah Hollmann, Frank Hutter, and Bernhard Sch\"olkopf. 2025.
+``Do-PFN: In-Context Learning for Causal Effect Estimation.'' In \emph{Advances in Neural Information Processing
+Systems 38} (NeurIPS 2025). arXiv:2506.06039.}{A foundation-model estimator trained on simulated causal
+worlds}{Sections 1--4}{3}
 \end{readinglist}
 
 \end{document}
