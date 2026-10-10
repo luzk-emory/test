@@ -72,7 +72,7 @@
 \title[Meeting 1]{Meeting 1: The Coupon and the Coin}
 \subtitle{Causal basics: estimands, selection bias, randomization, and causal graphs}
 \author{Zhikun Lu}
-\date{\today}
+\date{}
 
 \begin{document}
 
@@ -124,10 +124,10 @@
     active/.style={box, fill=sbgreen!20, draw=sbgreen, very thick},
     inactive/.style={box, fill=gray!10, draw=gray!50}
 ]
-\node[active] (A) {\textbf{M1--M6}\\[2pt] A randomized control group\\[3pt] \emph{anything} may be unobserved};
-\node[inactive, right=of A] (B) {\textbf{M7--M8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
-\node[inactive, right=of B] (C) {\textbf{M9}\\[2pt] A simulator learned from logs\\[3pt] the M7 assumption, made explicit};
-\node[inactive, right=of C] (D) {\textbf{M10--M11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
+\node[active] (A) {\textbf{Meetings 1--6}\\[2pt] A randomized control group\\[3pt] \emph{anything} may be unobserved};
+\node[inactive, right=of A] (B) {\textbf{Meetings 7--8}\\[2pt] Units alike on measured $X$\\[3pt] \emph{nothing} relevant unobserved};
+\node[inactive, right=of B] (C) {\textbf{Meeting 9}\\[2pt] A simulator learned from logs\\[3pt] the Meeting 7 assumption, made explicit};
+\node[inactive, right=of C] (D) {\textbf{Meetings 10--11}\\[2pt] Untreated units over time\\[3pt] time-stable confounders};
 \draw[-{Stealth}, gray!50] (A) -- (B);
 \draw[-{Stealth}, gray!50] (B) -- (C);
 \draw[-{Stealth}, gray!50] (C) -- (D);
