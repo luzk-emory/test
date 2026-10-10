@@ -1,3 +1,12 @@
+# Editorial pass, Meetings 9 to 11 (2026-10-09)
+
+- Under `plan/editorial-guide.md`, for the M9 to M11 slides and notes and Handout H6. Formulas, numbers, results, and box wording unchanged (the M9 pitfall box spells out "language-model label" identically in both files); a math and number diff against the previous commit shows only removed meeting pointers, bold removed inside math, and restated definitions.
+- Self-containment: the M9 notes restate the two Handout H2 results they pointed to, the M10 notes the two Handout H6 points, and M11 defines the adoption-date notation it used from Meeting 10. The pointer from M10 to Meeting 11 is a concept preview. Abbreviations (DML, RM, VAE, DiD) spelled out at first use. Internal script paths removed from the rendered notes.
+- References: every reading list is Chicago author-date; three works cited but missing from their lists added (3 failures to 0).
+- Slides: emphasis bold (31 hits to 8, the rest defined terms and labels), colons and fragments (37 to 9, the rest lead-ins and reference entries), question titles (4 to 2, both answered on the frame), voice.
+- Case C's rollout-file quote spells "Licenses", matching the M10 deck.
+- New flags in `plan/FLAGS.md`, among them technical points for a later pass: the M10 event-study standard errors and pre-trend independence, the M11 symbol clashes ($\lambda$, $\mu$, $w$ against $\omega$), the M9 $V$ clash with policy value, and the PPI gold-sample caveat in the M9 notes.
+
 # Editorial pass, Meetings 5 to 8 (2026-10-09)
 
 - Under `plan/editorial-guide.md`, for the M5 to M8 slides, notes, and handouts H3 to H5. Formulas, numbers, results, and box wording unchanged; a math and number diff against the previous commit shows only removed meeting and result numbers, added years, spelled-out small numbers, and the restated content below.
